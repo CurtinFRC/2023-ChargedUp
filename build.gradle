@@ -1,0 +1,37 @@
+plugins {
+  id 'org.ysb33r.doxygen' version '0.7.0'
+  id 'edu.wpi.first.GradleRIO' version '2022.4.1'
+}
+
+allprojects {
+  plugins.withType(edu.wpi.first.toolchain.roborio.RoboRioToolchainPlugin).whenPluginAdded {
+    if (project.hasProperty('no-roborio'))
+      toolchainsPlugin.getByName('roboRio').optional = true
+  }
+
+  plugins.withType(NativeComponentPlugin).whenPluginAdded {
+    project.model {
+      binaries {
+        all {
+          if (it instanceof NativeBinarySpec) {
+            if (project.hasProperty('no-desktop') && targetPlatform.name == edu.wpi.first.toolchain.NativePlatforms.desktop) {
+              it.buildable = false
+            }
+            if (project.hasProperty('no-roborio') && targetPlatform.name == edu.wpi.first.toolchain.NativePlatforms.roborio) {
+              it.buildable = false
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+// Makes all projects use the same buildDir, more efficient for "expanding archives"
+subprojects {
+  project.buildDir = rootProject.buildDir
+}
+
+wrapper {
+  gradleVersion = '7.3.3'
+}

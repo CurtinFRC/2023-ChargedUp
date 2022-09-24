@@ -1,0 +1,11 @@
+ext {
+  // Robot Project Options
+
+  teamNum = 4788
+  nativeName = "${teamNum}"
+
+  includeDesktopSupport = false
+  includeSrcInIncludeRoot = true
+}
+
+apply from: rootProject.file('robot.gradle')
