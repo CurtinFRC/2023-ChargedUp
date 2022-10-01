@@ -22,8 +22,3 @@ void Robot::DisabledPeriodic() {}
 
 void Robot::TestInit() {}
 void Robot::TestPeriodic() {}
-
-
-
-
-//make a function to very easily print stuff to network tables. - put into WML rewrite 

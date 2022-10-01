@@ -1,0 +1,87 @@
+apply plugin: 'maven-publish'
+
+apply from: project.file('../shared/prePublish.gradle')
+apply from: project.file('../shared/vendor.gradle')
+
+
+publishing {
+	repositories {
+		maven {
+			if (localMaven) {
+				println "${nativeName}: Using Local Maven"
+				name = "all_wml_maven"
+				mavenURL = "${rootProject.buildDir}/maven"
+				url = mavenURL
+			} else {
+				println "${nativeName}: Using Remote maven - I sure hope you know what your doing"
+				println "Publishing to: ${mavenURL}"
+				url = mavenURL
+				credentials {
+					username = project.getProperty("publish_user")
+					password = project.getProperty("publish_pass")
+				}
+			}
+		}
+	}
+
+	publications {
+		if (!nullBuild) {
+			// Vendor Dep Publish
+			"vendordeps-${nativeName}"(MavenPublication) {
+				groupId = artifactGroupID
+				artifactId "${nativeName}-Deps"
+				version = artifactVersion
+				artifact(generateVendorDepsJson.outputs.files.files[0]) {
+					builtBy generateVendorDepsJson
+				}
+			}
+
+			"vendordeps-${nativeName}-Latest"(MavenPublication) {
+				groupId = artifactGroupID
+				artifactId "${nativeName}-Deps"
+				version = "latest"
+				artifact(generateVendorDepsJson.outputs.files.files[1]) {
+					builtBy generateVendorDepsJson
+				}
+			}
+
+			// Native Src/Headers/Binaries Publish
+			"${nativeName}"(MavenPublication) {
+				groupId = artifactGroupID
+				artifactId = baseID
+				version = artifactVersion
+
+				if (headerZip) {
+					artifact cppHeadersZip
+				}
+
+				if (srcZip) {
+					artifact cppSourcesZip
+					binaryArtifacts(it, nativeName) // binary artifact type (check root build.gradle)
+				}
+			}
+
+
+			// Doxygen Publish
+			if (project.hasProperty("masterPublish")) {
+				"${nativeName}Doxygen"(MavenPublication) {
+					groupId = artifactGroupID
+					artifactId = "${nativeName}-Docs"
+					version = artifactVersion
+
+					artifact documentationZip
+				}
+
+				"${nativeName}Doxygen-Latest"(MavenPublication) {
+					groupId = artifactGroupID
+					artifactId = "${nativeName}-Docs"
+					version = "latest"
+
+					artifact documentationZip
+				}
+			}
+		}
+	}
+}
+
+publish.dependsOn(build)

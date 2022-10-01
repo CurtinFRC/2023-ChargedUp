@@ -4,6 +4,10 @@
 
 #include <frc/TimedRobot.h>
 #include <frc/smartdashboard/SendableChooser.h>
+// #include "startup.h"
+#include "RobotStart.h"
+
+#include <frc/RobotBase.h>
 
 class Robot : public frc::TimedRobot {
  public:

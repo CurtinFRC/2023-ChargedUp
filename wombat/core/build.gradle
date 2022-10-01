@@ -1,0 +1,18 @@
+ext {
+	nativeName = 'wombat-Core'
+	req_proj_libs = []
+	req_libs = []
+	lang = 'cpp'
+	projectVersion = '2023.0.0'
+	baseUUID = 'a6d30c03-12a8-476d-8fdc-41dacdb7790f'
+
+	desktopSupport = true
+
+	overrideSrc = false
+	overrideTestSrc = false
+
+	srcZip = true
+	headerZip = true
+}
+
+apply from: project.file('../shared/mainBuild.gradle')

@@ -1,0 +1,222 @@
+import edu.wpi.first.toolchain.NativePlatforms
+
+apply plugin: 'org.ysb33r.doxygen'
+apply plugin: 'cpp'
+apply plugin: 'google-test-test-suite'
+apply plugin: 'edu.wpi.first.GradleRIO'
+apply plugin: 'base'
+
+apply from: project.file('../config.gradle')
+
+if (project.hasProperty("remotePublish")) {
+	ext.localMaven = false
+} else {
+	ext.localMaven = true
+}
+
+ext {
+	projectGroup = 'first'
+	artifactGroupID = "${projectGroup}.${nativeName}"
+	artifactGroupID_URL = "${projectGroup}/${nativeName}"
+	artifactLang = "${nativeName}-${lang}"
+	artifactVersion = projectVersion
+	
+	baseID = "${artifactLang}"
+
+	artifactUUID = baseUUID
+
+	// Vendor Dep name
+	depsName = "${nativeName}-Deps"
+
+	if (!desktopSupport && project.hasProperty("azureBuild") && !project.hasProperty("masterPublish")) {
+		nullBuild = true
+	} else {
+		nullBuild = false
+	}
+
+
+	//=====================
+	// Vendor Publish Ctrl
+	//=====================
+
+	if (project.hasProperty("supportedPlatforms")) {
+		println "${nativeName}: Override Supported Platforms"
+		println "${nativeName}. Compiling for platforms: ${supportedPlatforms}"
+	} else {
+		println "${nativeName}: Using Default Supported Platforms"
+
+		// Assume if zipping src it has binaries
+		if (srcZip) {
+			vendorSrcClassifier = 
+			supportedPlatforms = [
+				"linuxx86-64",
+				"windowsx86-64",
+				"osxx86-64",
+				"linuxathena"
+			]
+		} else {
+			supportedPlatforms = []
+		}
+
+		println "${nativeName}. Compiling for platforms: ${supportedPlatforms}"
+	}
+
+	cpp_optionalDependencies = [
+		groupId: artifactGroupID,
+		artifactId: baseID,
+		version: artifactVersion,
+		libName: "${nativeName}"
+	]
+
+	if (headerZip) {
+		cpp_optionalDependencies += [headerClassifier: "headers"]
+	}
+
+	if (srcZip) {
+		cpp_optionalDependencies += [sourcesClassifier: "sources"]
+	}
+
+	cpp_optionalDependencies += [
+		sharedLibrary: (project.hasProperty("sharedLib") ? sharedLib : true),
+		skipInvalidPlatforms: (project.hasProperty("skipPlatforms") ? skipPlatforms : true),
+		binaryPlatforms: supportedPlatforms
+	]
+
+	if (project.hasProperty("sharedLib")) {
+		lib_link = "shared"
+	} else {
+		lib_link = "static"
+	}
+}
+
+// BINARY PUBLISHER & ARTIFACTS
+ext.binaryPublishers = [:]
+ext.binaryArtifacts = { scope, name ->
+	if (binaryPublishers[name] == null) {
+		binaryPublishers[name] = []
+	}
+
+	println "Binary Artifact: ${name}"
+	binaryPublishers[name] << [scope: scope]
+}
+
+
+
+model {
+	components {
+		"${nativeName}"(NativeLibrarySpec) {
+			if (desktopSupport) {
+				targetPlatform NativePlatforms.desktop
+			}
+
+			targetPlatform NativePlatforms.roborio
+			sources {
+				cpp {
+					source {
+						if (overrideSrc) {
+							srcDir srcLoc
+						} else {
+							srcDir 'src/main/cpp'
+						}
+					}
+
+					exportedHeaders {
+						if (overrideSrc) {
+							srcDir headersLoc
+						} else {
+							srcDir 'src/main/include'
+						}
+					}
+				}
+			}
+
+			binaries.all {
+				// println targetPlatform.name
+
+				if (req_proj_libs.size() >= 1) {
+					req_proj_libs.each { req_library ->
+						lib project: ":${req_library}", library: "${req_library}", linkage: "${lib_link}"
+					}
+				}
+
+				if (req_libs.size() >= 1) {
+					req_libs.each { req_library ->
+						lib library: "${req_library}"
+					}
+				}
+
+				if (desktopSupport) {
+					cppCompiler.define "WML_DESKTOP_SUPPORT"
+				}
+			}
+
+			wpi.deps.vendor.cpp(it)
+			wpi.deps.wpilib(it)
+		}
+	}
+
+	testSuites {
+		"${nativeName}Test"(GoogleTestTestSuiteSpec) {
+			for(NativeComponentSpec c : $.components) {
+				if (c.name == nativeName) {
+					testing c
+					break
+				}
+			}
+
+			sources.cpp {
+				source {
+					if (overrideTestSrc) {
+						srcDir testSrcLoc
+					} else {
+						srcDir 'src/test/cpp'
+					}
+					include '**/*.cpp'
+				}
+			}
+
+			binaries.all {
+				lib library: "${nativeName}", linkage: "${lib_link}"
+
+				if (req_proj_libs.size() >= 1) {
+					req_proj_libs.each { req_library ->
+						lib project: ":${req_library}", library: "${req_library}", linkage: "${lib_link}"
+					}
+				}
+
+				if (req_libs.size() >= 1) {
+					req_libs.each { req_library ->
+						lib library: "${req_library}"
+					}
+				}
+
+				if (desktopSupport) {
+					cppCompiler.define "WML_DESKTOP_SUPPORT"
+				}
+			}
+
+			wpi.deps.vendor.cpp(it)
+			wpi.deps.wpilib(it)
+			wpi.deps.googleTest(it)
+
+		}
+	}
+}
+
+if (project.hasProperty("masterPublish")) {
+	doxygen {
+		executables {
+			doxygen version : '1.8.13'
+		}
+
+		generate_html true
+		if (overrideSrc) {
+			source project.file(headersLoc)
+		} else {
+			source project.file('src/main/include')
+		}
+		outputDir new File(buildDir,"docs/${nativeName}/doxygen")
+	}
+}
+
+apply from: project.file('../shared/publish.gradle')

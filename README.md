@@ -1,4 +1,4 @@
-# 2023-RapidReact
+# 2023-Charged Up
 Our code for FRC 2023: CHARGED UP, using multiproject Gradle
 
 # Project Setup
@@ -14,18 +14,18 @@ Our code for FRC 2023: CHARGED UP, using multiproject Gradle
 
 2. "Desktop development with C++" from VS required for local debugging and simulation support https://visualstudio.microsoft.com/downloads/
 
-3. After this is complete you can fork or clone the project recursivly to grab the submodules needed for this project. `git clone --recurse-submodules https://github.com/CurtinFRC/2022-RapidReact.git`
+3. After this is complete you can fork or clone the project recursivly to grab the submodules needed for this project. `git clone --recurse-submodules https://github.com/CurtinFRC/2023-ChargedUp.git`
 
 
 ### Linux
 1. Linux requires the build-essentials (GCC, CMake, etc...)
 
-2. After this is complete you can fork or clone the project recursivly to grab the submodules needed for this project. E.g `git clone --recurse-submodules https://github.com/CurtinFRC/2022-RapidReact.git`
+2. After this is complete you can fork or clone the project recursivly to grab the submodules needed for this project. E.g `git clone --recurse-submodules https://github.com/CurtinFRC/2023-ChargedUp.git`
 
 ### Mac
 1. Download Xcode from the app store https://apps.apple.com/au/app/xcode/id497799835?mt=12
 
-2. After this is complete you can fork or clone the project recursivly to grab the submodules needed for this project. `git clone --recurse-submodules https://github.com/CurtinFRC/2022-RapidReact.git`
+2. After this is complete you can fork or clone the project recursivly to grab the submodules needed for this project. `git clone --recurse-submodules https://github.com/CurtinFRC/2023-ChargedUp.git`
 
 ## Project Install/Build
 
