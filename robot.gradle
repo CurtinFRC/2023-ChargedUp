@@ -1,10 +1,10 @@
-apply plugin: 'org.ysb33r.doxygen'
+  apply plugin: 'org.ysb33r.doxygen'
   apply plugin: 'cpp'
   apply plugin: 'google-test-test-suite'
   apply plugin: 'edu.wpi.first.GradleRIO'
 
   ext {
-    teamID = teamNum
+    teamID = 4788
   }
 
   // Define my targets (RoboRIO) and artifacts (deployable files)
@@ -16,7 +16,7 @@ apply plugin: 'org.ysb33r.doxygen'
         // or from command line. If not found an exception will be thrown.
         // You can use getTeamOrDefault(team) instead of getTeamNumber if you
         // want to store a team number in this file.
-        team = teamNum
+        team = 4788
 
         artifacts {
           frcCpp(getArtifactTypeClass('FRCNativeArtifact')) { // <- wtf is this WPI
@@ -43,33 +43,8 @@ apply plugin: 'org.ysb33r.doxygen'
 
   model {
     components {
-
-      mP_Trajedy(NativeLibrarySpec) {
-        targetPlatform wpi.platforms.roborio
-        if (includeDesktopSupport) {
-          targetPlatform wpi.platforms.desktop
-        }
-
-        sources.cpp {
-          source {
-            srcDir 'MP_Trajedy/cpp'
-            include '**/*.cpp', '**/.cc'
-          }
-
-          exportedHeaders {
-            srcDir 'MP_Trajedy/include'
-          }
-        }
-
-
-        binaries.all {
-          if (includeDesktopSupport) {
-            cppCompiler.define "WML_DESKTOP_SUPPORT"
-          }
-        }
-      }
       
-      "${nativeName}"(NativeExecutableSpec) { // frc user
+      frcUserProgram(NativeExecutableSpec) { // frc user
         targetPlatform wpi.platforms.roborio
         if (includeDesktopSupport) {
           targetPlatform wpi.platforms.desktop
@@ -92,11 +67,11 @@ apply plugin: 'org.ysb33r.doxygen'
 
         binaries.all {
           if (includeDesktopSupport) {
-            cppCompiler.define "WML_DESKTOP_SUPPORT"
+            cppCompiler.define "WOMBAT_DESKTOP_SUPPORT"
           }
 
-          // lib project: mP_Trajedy, library: mP_Trajedy, linkage: 'shared' 
-          lib library: "mP_Trajedy"
+        //   // lib project: mP_Trajedy, library: mP_Trajedy, linkage: 'shared' 
+          lib project: ':Wombat', library: 'Wombat', linkage: 'static'
         }
 
         // Specify this component for deploying.
@@ -113,35 +88,35 @@ apply plugin: 'org.ysb33r.doxygen'
       } // frc user
     }
 
-    testSuites {
-      "${nativeName}Test"(GoogleTestTestSuiteSpec) {
-        for(NativeComponentSpec c : $.components) {
-          if (c.name == nativeName) {
-            testing c
-            break
-          }
-        }
+    // testSuites {
+    //   "${nativeName}Test"(GoogleTestTestSuiteSpec) {
+    //     for(NativeComponentSpec c : $.components) {
+    //       if (c.name == nativeName) {
+    //         testing c
+    //         break
+    //       }
+    //     }
 
-        sources.cpp {
-          source {
-            srcDir 'src/test/cpp'
-            include '**/*.cpp'
-          }
-        }
+    //     sources.cpp {
+    //       source {
+    //         srcDir 'src/test/cpp'
+    //         include '**/*.cpp'
+    //       }
+    //     }
 
-        binaries.all {
-          if (includeDesktopSupport) {
-            cppCompiler.define "WML_DESKTOP_SUPPORT"
-          }
-        }
+    //     // binaries.all {
+    //     //   if (includeDesktopSupport) {
+    //     //     cppCompiler.define "WOMBAT_DESKTOP_SUPPORT"
+    //     //   }
+    //     // }
 
-        wpi.cpp.enableExternalTasks(it)
+    //     wpi.cpp.enableExternalTasks(it)
 
-        wpi.cpp.vendor.cpp(it)
-        wpi.cpp.deps.wpilib(it)
-        wpi.cpp.deps.googleTest(it)
-      }
-    }
+    //     wpi.cpp.vendor.cpp(it)
+    //     wpi.cpp.deps.wpilib(it)
+    //     wpi.cpp.deps.googleTest(it)
+    //   }
+    // }
   }
 
   task sim(dependsOn: "simulate${nativeName}${wpi.platforms.desktop.capitalize()}DebugExecutable")

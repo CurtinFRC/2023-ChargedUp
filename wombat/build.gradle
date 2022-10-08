@@ -1,130 +1,136 @@
-import static org.apache.tools.ant.taskdefs.condition.Os.*
+import edu.wpi.first.toolchain.NativePlatforms
 
-plugins {
-	// cpp
-	id 'cpp'
+// apply plugin: 'org.ysb33r.doxygen'
+// apply plugin: 'cpp'
+// apply plugin: 'google-test-test-suite'
+// apply plugin: 'edu.wpi.first.GradleRIO'
+// apply plugin: 'base' //based
 
-	// Publish library to maven
-	id 'maven-publish'
+apply plugin: 'org.ysb33r.doxygen'
+apply plugin: 'cpp'
+apply plugin: 'google-test-test-suite'
+apply plugin: 'edu.wpi.first.GradleRIO'
 
-	// Add basic gradle conventions like archiving
-	id 'base'
+ext {
+  desktopSupport = true
+  srcZip = true
+  headerZip = true
+  overrideSrc = false
+  nativeName = 'Wombat'
+  lang = 'cpp'
+  overrideTestSrc = false
+  req_proj_libs = []
+  req_proj = []
 
-	// Google test suite for native build
-	id 'google-test-test-suite'
+  projectGroup = 'first'
+  artifactGroupID = "${projectGroup}.${nativeName}"
+  artifactGroupID_URL = "${projectGroup}/${nativeName}"
+  artifactLang = "${nativeName}-${lang}"
+  artifactVersion = '2023.0.0'
 
-	// GradleRIO
-	id 'edu.wpi.first.GradleRIO'
+  baseID = "${artifactLang}" //based
 
-	// Doxygen
-	id 'org.ysb33r.doxygen' version '0.7.0'
-}
+  // artifactID = baseUUID
 
-allprojects {
-	plugins.withType(edu.wpi.first.toolchain.roborio.RoboRioToolchainPlugin).whenPluginAdded {
-		if (project.hasProperty('no-roborio'))
-			toolchainsPlugin.getByName('roboRio').optional = true
-	}
+  depsName = "${nativeName}-Deps"
 
-	plugins.withType(NativeComponentPlugin).whenPluginAdded {
-		project.model {
-			binaries {
-				all {
-					if (it instanceof NativeBinarySpec) {
-						if (project.hasProperty('no-desktop') && targetPlatform.name == edu.wpi.first.toolchain.NativePlatforms.desktop) {
-							it.buildable = false
-						}
-						if (project.hasProperty('no-roborio') && targetPlatform.name == edu.wpi.first.toolchain.NativePlatforms.roborio) {
-							it.buildable = false
-						}
-					}
+  if (!desktopSupport && project.hasProperty("azureBuild")) {
+    nullBuild = true
+  } else {
+    nullBuild = false
+  }
 
-					// Toolchain defines (cpp version)
-					if (toolChain in [Gcc, Clang]) {
-						println "Using Gcc"
-						cppCompiler.args "-std=${cpp_version}"
-					} else if (toolChain in VisualCpp) {
-						cppCompiler.args "/std:${cpp_version}"
-					}
-					
-				}
-			}
+
+
+  if (project.hasProperty("supportedPlatforms")) {
+		println "${nativeName}: Override Supported Platforms"
+		println "${nativeName}. Compiling for platforms: ${supportedPlatforms}"
+	} else {
+		println '${nativeName}: Using Default Supported Platforms'
+
+		// Assume if zipping src it has binaries
+		if (srcZip) {
+			vendorSrcClassifier = 
+			supportedPlatforms = [
+				"linuxx86-64",
+				"windowsx86-64",
+				"osxx86-64",
+				"linuxathena"
+			]
+		} else {
+			supportedPlatforms = []
 		}
+
+		println "${nativeName}. Compiling for platforms: ${supportedPlatforms}"
+	}
+
+	cpp_optionalDependencies = [
+		groupId: artifactGroupID,
+		artifactId: baseID,
+		version: artifactVersion,
+		libName: "${nativeName}"
+	]
+
+	if (headerZip) {
+		cpp_optionalDependencies += [headerClassifier: "headers"]
+	}
+
+	if (srcZip) {
+		cpp_optionalDependencies += [sourcesClassifier: "sources"]
+	}
+
+	cpp_optionalDependencies += [
+		sharedLibrary: (project.hasProperty("sharedLib") ? sharedLib : true),
+		skipInvalidPlatforms: (project.hasProperty("skipPlatforms") ? skipPlatforms : true),
+		binaryPlatforms: supportedPlatforms
+	]
+
+	if (project.hasProperty("sharedLib")) {
+		lib_link = "shared"
+	} else {
+		lib_link = "static"
 	}
 }
 
-subprojects {
-	project.buildDir = rootProject.buildDir
-
-	plugins.withType(CppPlugin).whenPluginAdded {
-		project.apply plugin: 'visual-studio'
+// BINARY PUBLISHER & ARTIFACTS
+ext.binaryPublishers = [:]
+ext.binaryArtifacts = { scope, name ->
+	if (binaryPublishers[name] == null) {
+		binaryPublishers[name] = []
 	}
 
-	ext.binaryPublishers = [:]
-	ext.binaryArtifacts = { scope, name ->
-		if (binaryPublishers[name] == null)
-			binaryPublishers[name] = []
-		binaryPublishers[name] << [scope: scope]
-	}
-
-	project.model {
-		binaries {
-			withType(NativeBinarySpec) {
-
-				// Create classified binary zip task i.e -> maven_test-2021.3.1-cpp-linuxathena.zip
-				def bin = it
-				if (it.buildable && (it instanceof SharedLibraryBinary || it instanceof StaticLibraryBinary)) {
-					def sharedlib = bin instanceof SharedLibraryBinary
-					def staticlib = bin instanceof StaticLibraryBinary
-					def taskSuffix = "${component.name}${targetPlatform.name}${buildType.name}"
-					def source = (sharedlib ? bin.sharedLibraryFile : bin.staticLibraryFile)
-
-					def type = (sharedlib ? "" : "static")
-					def ziptask = task "zip${taskSuffix}${type}"(type: Zip) {
-						def allsrc = [source]
-						if (sharedlib && bin.targetPlatform.operatingSystem.isWindows()) {
-							allsrc << bin.sharedLibraryLinkFile
-						} else if (staticlib && bin.targetPlatform.operatingSystem.isWindows()) {
-							allsrc << bin.staticLibraryFile
-						}
-
-						destinationDirectory = outputFolder
-
-						ext.platformArc = targetPlatform.name
-						platformArc = platformArc.replace("${OS_NAME}", "")
-
-						from(allsrc as Set<File>) {
-							into("${OS_NAME}/${platformArc}/" + (sharedlib ? "shared" : "static"))
-						}
-
-						from(licenseFile) {
-							into("${OS_NAME}/${platformArc}/" + (sharedlib ? "shared" : "static"))
-						}
-
-						baseName = component.name
-						classifier = targetPlatform.name + (buildType.name == 'debug' ? "${type}debug" : "${type}")
-
-						dependsOn(build)
-						dependsOn bin.tasks.withType(AbstractLinkTask)
-					}
-
-
-					// Binary Publisher classifier
-					if (binaryPublishers[bin.component.name] != null) {
-						binaryPublishers[bin.component.name].each { entry ->
-							entry.scope.artifact(ziptask) {
-								classifier targetPlatform.name + (buildType.name == 'debug' ? "${type}debug" : "${type}")
-							}
-						}
-					}
-
-
-				}
-			}
-		}
-	}
+	println "Binary Artifact: ${name}"
+	binaryPublishers[name] << [scope: scope]
 }
 
-wrapper {
-	gradleVersion = '6.8'
+model {
+  components {
+    Wombat(NativeLibrarySpec) {
+      if (desktopSupport) {
+        targetPlatform NativePlatforms.desktop
+      }
+
+      targetPlatform NativePlatforms.roborio 
+      sources {
+        cpp {
+          source {
+            if (overrideSrc) {
+              srcDir srcLoc
+            } else {
+              srcDir 'src/main/cpp'
+            }
+          }
+
+          exportedHeaders {
+            if (overrideSrc) {
+              srcDir headersLoc
+            } else {
+              srcDir 'src/main/include'
+            }
+          }
+        }
+      }
+
+    }
+  }
 }
