@@ -8,6 +8,8 @@
 // #include "RobotStart.h"
 // #include "RobotStartup.h"
 
+#include <ctre/Phoenix.h>
+
 // #include <frc/RobotBase.h>
 
 class Robot : public frc::TimedRobot {

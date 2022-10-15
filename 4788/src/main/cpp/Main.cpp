@@ -4,9 +4,6 @@
 */
 
 #include "Robot.h"
+#include "RobotStartup.h"
 
-#ifndef RUNNING_FRC_TESTS
-int main() {
-  return frc::StartRobot<Robot>();
-}
-#endif
+WOMBAT_ROBOT_MAIN(Robot)

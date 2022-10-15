@@ -28,6 +28,7 @@ ext {
   artifactLang = "${nativeName}-${lang}"
   artifactVersion = '2023.0.0'
 
+  includeSrcInIncludeRoot = true;
   baseID = "${artifactLang}" //based
 
   // artifactID = baseUUID
@@ -112,24 +113,24 @@ model {
 
       targetPlatform NativePlatforms.roborio 
       sources {
-        cpp {
+        sources.cpp {
           source {
-            if (overrideSrc) {
-              srcDir srcLoc
-            } else {
-              srcDir 'src/main/cpp'
-            }
+            srcDir 'src/main/cpp'
+            include '**/*.cpp', '**/*.cc'
           }
 
           exportedHeaders {
-            if (overrideSrc) {
-              srcDir headersLoc
-            } else {
-              srcDir 'src/main/include'
+            srcDir 'src/main/include'
+
+            if (includeSrcInIncludeRoot) {
+              srcDir 'src/main.cpp'
             }
           }
         }
       }
+
+      wpi.cpp.vendor.cpp(it)
+      wpi.cpp.deps.wpilib(it)
 
     }
   }
