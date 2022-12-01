@@ -1,8 +1,9 @@
 ext {
   // Robot Project Options
 
-  teamNum = 4788
-  nativeName = "${teamNum}"
+  // teamNum = 4788
+  // nativeName = "${teamNum}"
+  nativeName = '4788'
 
   includeDesktopSupport = false
   includeSrcInIncludeRoot = true

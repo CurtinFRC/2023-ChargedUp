@@ -1,0 +1,137 @@
+import edu.wpi.first.toolchain.NativePlatforms
+
+// apply plugin: 'org.ysb33r.doxygen'
+// apply plugin: 'cpp'
+// apply plugin: 'google-test-test-suite'
+// apply plugin: 'edu.wpi.first.GradleRIO'
+// apply plugin: 'base' //based
+
+apply plugin: 'org.ysb33r.doxygen'
+apply plugin: 'cpp'
+apply plugin: 'google-test-test-suite'
+apply plugin: 'edu.wpi.first.GradleRIO'
+
+ext {
+  desktopSupport = true
+  srcZip = true
+  headerZip = true
+  overrideSrc = false
+  nativeName = 'Wombat'
+  lang = 'cpp'
+  overrideTestSrc = false
+  req_proj_libs = []
+  req_proj = []
+
+  projectGroup = 'first'
+  artifactGroupID = "${projectGroup}.${nativeName}"
+  artifactGroupID_URL = "${projectGroup}/${nativeName}"
+  artifactLang = "${nativeName}-${lang}"
+  artifactVersion = '2023.0.0'
+
+  includeSrcInIncludeRoot = true;
+  baseID = "${artifactLang}" //based
+
+  // artifactID = baseUUID
+
+  depsName = "${nativeName}-Deps"
+
+  if (!desktopSupport && project.hasProperty("azureBuild")) {
+    nullBuild = true
+  } else {
+    nullBuild = false
+  }
+
+
+
+  if (project.hasProperty("supportedPlatforms")) {
+		println "${nativeName}: Override Supported Platforms"
+		println "${nativeName}. Compiling for platforms: ${supportedPlatforms}"
+	} else {
+		println '${nativeName}: Using Default Supported Platforms'
+
+		// Assume if zipping src it has binaries
+		if (srcZip) {
+			vendorSrcClassifier = 
+			supportedPlatforms = [
+				"linuxx86-64",
+				"windowsx86-64",
+				"osxx86-64",
+				"linuxathena"
+			]
+		} else {
+			supportedPlatforms = []
+		}
+
+		println "${nativeName}. Compiling for platforms: ${supportedPlatforms}"
+	}
+
+	cpp_optionalDependencies = [
+		groupId: artifactGroupID,
+		artifactId: baseID,
+		version: artifactVersion,
+		libName: "${nativeName}"
+	]
+
+	if (headerZip) {
+		cpp_optionalDependencies += [headerClassifier: "headers"]
+	}
+
+	if (srcZip) {
+		cpp_optionalDependencies += [sourcesClassifier: "sources"]
+	}
+
+	cpp_optionalDependencies += [
+		sharedLibrary: (project.hasProperty("sharedLib") ? sharedLib : true),
+		skipInvalidPlatforms: (project.hasProperty("skipPlatforms") ? skipPlatforms : true),
+		binaryPlatforms: supportedPlatforms
+	]
+
+	if (project.hasProperty("sharedLib")) {
+		lib_link = "shared"
+	} else {
+		lib_link = "static"
+	}
+}
+
+// BINARY PUBLISHER & ARTIFACTS
+ext.binaryPublishers = [:]
+ext.binaryArtifacts = { scope, name ->
+	if (binaryPublishers[name] == null) {
+		binaryPublishers[name] = []
+	}
+
+	println "Binary Artifact: ${name}"
+	binaryPublishers[name] << [scope: scope]
+}
+
+model {
+  components {
+    Wombat(NativeLibrarySpec) {
+      if (desktopSupport) {
+        targetPlatform NativePlatforms.desktop
+      }
+
+      targetPlatform NativePlatforms.roborio 
+      sources {
+        sources.cpp {
+          source {
+            srcDir 'src/main/cpp'
+            include '**/*.cpp', '**/*.cc'
+          }
+
+          exportedHeaders {
+            srcDir 'src/main/include'
+
+            if (includeSrcInIncludeRoot) {
+              srcDir 'src/main.cpp'
+            }
+          }
+        }
+      }
+
+      wpi.cpp.vendor.cpp(it)
+      wpi.cpp.deps.wpilib(it)
+
+    }
+  }
+}
