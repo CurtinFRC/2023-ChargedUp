@@ -71,7 +71,7 @@
           }
 
         //   // lib project: mP_Trajedy, library: mP_Trajedy, linkage: 'shared' 
-          lib project: ':Wombat', library: 'Wombat', linkage: 'static'
+          lib project: ':wombat', library: 'Wombat', linkage: 'static'
         }
 
         // Specify this component for deploying.

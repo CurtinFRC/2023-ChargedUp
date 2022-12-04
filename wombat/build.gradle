@@ -131,7 +131,22 @@ model {
 
       wpi.cpp.vendor.cpp(it)
       wpi.cpp.deps.wpilib(it)
+    }
+  }
+  testSuites {
+    WombatTest(GoogleTestTestSuiteSpec) {
+      testing $.components.Wombat;
 
+      sources.cpp {
+        source {
+          srcDir 'src/test/cpp'
+          include '**/*.cpp'
+        }
+      }
+
+      wpi.cpp.vendor.cpp(it)
+      wpi.cpp.deps.wpilib(it)
+      wpi.cpp.deps.googleTest(it)
     }
   }
 }
