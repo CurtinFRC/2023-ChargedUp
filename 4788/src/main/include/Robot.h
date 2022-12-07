@@ -7,6 +7,7 @@
 // #include "startup.h"
 // #include "RobotStart.h"
 // #include "RobotStartup.h"
+#include "Encoder.h"
 
 #include <ctre/Phoenix.h>
 
