@@ -1,14 +1,14 @@
 #pragma once
 
-#include <frc/PowerDistributionPanel.h>
-#include <frc/SpeedController.h>
-#include <frc/SpeedControllerGroup.h>
+#include <frc/motorcontrol/MotorController.h>
+#include <frc/motorcontrol/MotorControllerGroup.h>
+#include <units/voltage.h>
 
+#include "Util.h"
 
 namespace wom {
-namespace actuators { 
   /**
-   * A VoltageController is analagous to a SpeedController, but in terms of voltage instead
+   * A VoltageController is analagous to a MotorController, but in terms of voltage instead
    * of speed.
    */
   class VoltageController {
@@ -16,11 +16,11 @@ namespace actuators {
     /**
      * Set the voltage of the output.
      */
-    virtual void SetVoltage(double voltage) = 0;
+    virtual void SetVoltage(units::volt_t voltage) = 0;
     /**
      * Get the voltage of the output.
      */
-    virtual double GetVoltage() = 0;
+    virtual units::volt_t GetVoltage() = 0;
 
     /**
      * Set the output as inverted.
@@ -30,38 +30,26 @@ namespace actuators {
      * Get whether the output is inverted
      */
     virtual bool GetInverted() = 0;
-
-    /**
-     * Get the physical port of the Voltage Controller.
-     */
-    virtual int GetPhysicalPort() = 0;
-
-    /**
-     * Get the current output.
-     */
-    virtual double GetCurrent() { return frc::PowerDistributionPanel(0).GetCurrent(GetPhysicalPort()); };
   };
 
   /**
-   * The MotorVoltageController is an adapter for an frc::SpeedController to
+   * The MotorVoltageController is an adapter for an frc::MotorController to
    * a VoltageController.
    */
   class MotorVoltageController : public VoltageController {
    public:
-    MotorVoltageController(frc::SpeedController *speedController);
+    MotorVoltageController(frc::MotorController *MotorController);
 
-    void SetVoltage(double voltage) override;
-    double GetVoltage() override;
+    void SetVoltage(units::volt_t voltage) override;
+    units::volt_t GetVoltage() override;
 
     void SetInverted(bool invert) override;
     bool GetInverted() override;
 
-    virtual int GetPhysicalPort() override { return -1; }; // override me!
-
-    double GetBusVoltage();
+    units::volt_t GetBusVoltage();
 
     /**
-     * Create a MotorVoltageController with a given frc::SpeedController
+     * Create a MotorVoltageController with a given frc::MotorController
      * subclass. Please note that this creates an unsafe pointer (will never dealloc)
      */
     template<typename T, typename ...Args>
@@ -72,11 +60,10 @@ namespace actuators {
 
     template<typename ...Args>
     static MotorVoltageController Group(Args& ...args) {
-      return Of<frc::SpeedControllerGroup>(args...);
+      return Of<frc::MotorControllerGroup>(args...);
     }
 
    private:
-    frc::SpeedController *_speedController;
+    frc::MotorController *_MotorController;
   };
-}
 }  // namespace wom

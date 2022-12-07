@@ -1,9 +1,9 @@
 #pragma once 
 
 #include "Encoder.h"
-#include "DcMotor.h"
 #include "VoltageController.h"
-#include <frc/system/plant/DCMotor.h>
+// #include <frc/system/plant/DCMotor.h>
+#include "DCMotor.h"
 
 namespace wom {
 /**
@@ -17,15 +17,21 @@ struct Gearbox {
   /**
    * The VoltageController (Motor Controller). May not be null.
    */
-  actuators::VoltageController *transmission;
+  VoltageController *transmission;
 
   /**
    * The Encoder. May be null, depending on the consumer of this structure.
    */
-  sensors::Encoder *encoder = nullptr;
+  Encoder *encoder = nullptr;
+
+  /**
+   * The gearbox reduction
+   */
+  double reduction = 1.0;
+
   /**
    * The motor being used. By default, this is a dual CIM.
    */
-  frc::DCMotor motor = frc::DCMotor::CIM(2);
+  wom::DCMotor motor = wom::DCMotor::CIM(2);
 };
 } //ns wom 

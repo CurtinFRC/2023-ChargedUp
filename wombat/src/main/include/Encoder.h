@@ -1,9 +1,14 @@
 #pragma once
 
 #include <frc/Encoder.h>
+#include <units/angle.h>
+#include <units/angular_velocity.h>
+
+#include <rev/CANSparkMax.h>
+
+#include "Util.h"
 
 namespace wom {
-namespace sensors {
   class Encoder {
    public:
     Encoder(int encoderTicksPerRotation) : _encoderTicksPerRotation(encoderTicksPerRotation){};
@@ -12,11 +17,10 @@ namespace sensors {
     virtual void    ZeroEncoder();
 
     int    GetEncoderTicks();
-    double GetEncoderRotations();
     int    GetEncoderTicksPerRotation();
 
-    double GetEncoderAngularVelocity();   // rad/s
-
+    units::radian_t GetEncoderPosition();
+    units::radians_per_second_t GetEncoderAngularVelocity();   // rad/s
 
    private:
     int _encoderTicksPerRotation;
@@ -43,5 +47,14 @@ namespace sensors {
     int          _channelA, _channelB;
     frc::Encoder _nativeEncoder;
   };
-}  // namespace sensors
+
+  class CANSparkMaxEncoder : public Encoder {
+   public:
+    CANSparkMaxEncoder(rev::CANSparkMax *controller);
+
+    int GetEncoderRawTicks() override;
+    double GetEncoderTickVelocity() override;
+   private:
+    rev::SparkMaxRelativeEncoder _encoder;
+  };
 }  // namespace wom

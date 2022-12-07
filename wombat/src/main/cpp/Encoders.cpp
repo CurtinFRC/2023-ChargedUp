@@ -1,10 +1,7 @@
 #include "Encoder.h"
 
-using namespace wom::sensors;
+using namespace wom;
 
-double Encoder::GetEncoderRotations() {
-  return GetEncoderTicks() / (double)GetEncoderTicksPerRotation();
-}
 
 int Encoder::GetEncoderTicks() {
   return GetEncoderRawTicks() - _offset;
@@ -18,8 +15,14 @@ void Encoder::ZeroEncoder() {
   _offset = GetEncoderRawTicks();
 }
 
-double Encoder::GetEncoderAngularVelocity() {
-  return GetEncoderTickVelocity() / (double)GetEncoderTicksPerRotation() * 2 * 3.1415926;
+units::radian_t Encoder::GetEncoderPosition() {
+  return (GetEncoderTicks() / (double)GetEncoderTicksPerRotation()) * 1_rad;
+}
+
+units::radians_per_second_t Encoder::GetEncoderAngularVelocity() {
+  // return GetEncoderTickVelocity() / (double)GetEncoderTicksPerRotation() * 2 * 3.1415926;
+  units::turns_per_second_t n_turns_per_s{GetEncoderTickVelocity() / GetEncoderTicksPerRotation()};
+  return n_turns_per_s;
 }
 
 int DigitalEncoder::GetEncoderRawTicks() {
@@ -40,4 +43,15 @@ int DigitalEncoder::GetChannelB() {
 
 int DigitalEncoder::GetSimulationHandle() {
   return _nativeEncoder.GetFPGAIndex();
+}
+
+CANSparkMaxEncoder::CANSparkMaxEncoder(rev::CANSparkMax *controller)
+  : Encoder(42), _encoder(controller->GetEncoder()) {}
+
+int CANSparkMaxEncoder::GetEncoderRawTicks() {
+  return _encoder.GetPosition() * GetEncoderTicksPerRotation();
+}
+
+double CANSparkMaxEncoder::GetEncoderTickVelocity() {
+  return _encoder.GetVelocity() * GetEncoderTicksPerRotation() / 60;
 }
