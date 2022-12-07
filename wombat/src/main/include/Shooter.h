@@ -3,6 +3,7 @@
 #include "Gearbox.h"
 #include "PID.h"
 #include "behaviour/HasBehaviour.h"
+#include "behaviour/Behaviour.h"
 
 #include <networktables/NetworkTable.h>
 #include <units/angular_velocity.h>
@@ -44,5 +45,26 @@ namespace wom {
     PIDController<units::radians_per_second, units::volt> _pid;
 
     std::shared_ptr<nt::NetworkTable> _table;
+  };
+
+  class ShooterConstant : public behaviour::Behaviour {
+   public:
+    ShooterConstant(Shooter *s, units::volt_t setpoint);
+
+    void OnTick(units::second_t dt) override;
+   private:
+    Shooter *_shooter;
+    units::volt_t _setpoint;
+  };
+
+  class ShooterSpinup : public behaviour::Behaviour {
+   public:
+    ShooterSpinup(Shooter *s, units::radians_per_second_t speed, bool hold = false);
+
+    void OnTick(units::second_t dt) override;
+   private:
+    Shooter *_shooter;
+    units::radians_per_second_t _speed;
+    bool _hold;
   };
 }

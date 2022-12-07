@@ -452,4 +452,13 @@ struct WaitTime : public Behaviour {
   std::function<units::time::second_t()> _time_fn;
   units::time::second_t                  _time;
 };
+
+struct Print : public Behaviour {
+ public:
+  Print(std::string message);
+
+  void OnTick(units::time::second_t dt) override;
+ private:
+  std::string _message;
+};
 }  // namespace behaviour

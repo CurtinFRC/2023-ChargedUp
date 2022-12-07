@@ -19,7 +19,7 @@ void Shooter::OnUpdate(units::second_t dt) {
       break;
     case ShooterState::kPID:
       {
-        auto feedforward = _params.gearbox.motor.Voltage(0_Nm, _pid.setpoint);
+        auto feedforward = _params.gearbox.motor.Voltage(0_Nm, _pid.GetSetpoint());
         voltage = _pid.Calculate(currentSpeed, dt, feedforward);
       }
       break;
@@ -37,7 +37,8 @@ void Shooter::OnUpdate(units::second_t dt) {
 
   _table->GetEntry("output_volts").SetDouble(voltage.value());
   _table->GetEntry("speed_rpm").SetDouble(currentSpeed.value());
-  _table->GetEntry("setpoint_rpm").SetDouble(units::revolutions_per_minute_t{_pid.setpoint}.value());
+  _table->GetEntry("setpoint_rpm").SetDouble(units::revolutions_per_minute_t{_pid.GetSetpoint()}.value());
+  _table->GetEntry("stable").SetBoolean(_pid.IsStable());
 }
 
 void Shooter::SetManual(units::volt_t voltage) {
@@ -48,7 +49,7 @@ void Shooter::SetManual(units::volt_t voltage) {
 
 void Shooter::SetPID(units::radians_per_second_t goal) {
   _state = ShooterState::kPID;
-  _pid.setpoint = goal;
+  _pid.SetSetpoint(goal);
 }
 
 void Shooter::SetIdle() {
@@ -57,4 +58,29 @@ void Shooter::SetIdle() {
 
 bool Shooter::IsStable() const {
   return _pid.IsStable();
+}
+
+//Shooter Manual Set 
+
+ShooterConstant::ShooterConstant(Shooter *s, units::volt_t setpoint)
+  : _shooter(s), _setpoint(setpoint) {
+    Controls(_shooter);
+  }
+  
+void ShooterConstant::OnTick(units::second_t dt) {
+  _shooter->SetManual(_setpoint);
+}
+
+// ShooterSpinup
+
+ShooterSpinup::ShooterSpinup(Shooter *s, units::radians_per_second_t speed, bool hold)
+  : _shooter(s), _speed(speed), _hold(hold) {
+  Controls(_shooter);
+}
+
+void ShooterSpinup::OnTick(units::second_t dt) {
+  _shooter->SetPID(_speed);
+
+  if (!_hold && _shooter->IsStable())
+    SetDone();
 }

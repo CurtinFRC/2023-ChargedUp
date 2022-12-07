@@ -33,8 +33,8 @@ struct RobotMap {
       0.02_V / (2000_rpm * 1_s),
       0_V / (5000_rpm / 1_s),
 
-      25_rpm,
-      10_rpm / 1_s
+      50_rpm,
+      25_rpm / 1_s
     };
 
     units::ampere_t currentLimit{35};
