@@ -2,6 +2,8 @@
 #include <networktables/NetworkTableInstance.h>
 #include <iostream>
 
+#include <units/acceleration.h>
+
 using namespace wom;
 
 Elevator::Elevator(ElevatorParams params)
@@ -24,7 +26,7 @@ void Elevator::OnUpdate(units::second_t dt) {
       break;
     case ElevatorState::kPID:
       {
-        auto feedforward = _params.gearbox.motor.Voltage((_params.mass * 9.81_m / (1_s * 1_s)) / _params.radius, units::radians_per_second_t{0});
+        auto feedforward = _params.gearbox.motor.Voltage((_params.mass * 9.81_mps_sq) * _params.radius, 0_rad_per_s);
         voltage = _pid.Calculate(height, dt, feedforward);
       }
       break;
