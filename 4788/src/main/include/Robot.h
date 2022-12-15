@@ -12,6 +12,10 @@
 
 // #include <frc/RobotBase.h>
 
+#include <frc/XboxController.h>
+
+
+
 class Robot : public frc::TimedRobot {
  public:
   void RobotInit() override;
@@ -26,4 +30,8 @@ class Robot : public frc::TimedRobot {
   void TestPeriodic() override;
 
  private:
+ TalonSRX *talonsrx;
+ frc::XboxController *xboxcontroller;
+ VictorSPX *victorspx;
+ TalonFX *talonfx;
 };
