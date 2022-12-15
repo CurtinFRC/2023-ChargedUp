@@ -35,6 +35,7 @@ void Robot::AutonomousInit() {
     << make<WaitTime>(1_s)
     << make<ShooterSpinup>(shooter, 3000_rpm)
   );
+
 }
 void Robot::AutonomousPeriodic() {}
 
