@@ -11,7 +11,7 @@ Shooter::Shooter(ShooterParams params)
 
 void Shooter::OnUpdate(units::second_t dt) {
   units::volt_t voltage{0};
-  units::revolutions_per_minute_t currentSpeed = _params.gearbox.encoder->GetEncoderAngularVelocity() / _params.gearbox.reduction;
+  units::revolutions_per_minute_t currentSpeed = _params.gearbox.encoder->GetEncoderAngularVelocity();
 
   switch(_state) {
     case ShooterState::kManual:

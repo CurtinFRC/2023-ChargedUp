@@ -5,17 +5,20 @@
 #include "behaviour/HasBehaviour.h"
 #include "behaviour/Behaviour.h"
 #include <frc/interfaces/Gyro.h>
+#include <frc/kinematics/DifferentialDriveKinematics.h>
+#include <frc/estimator/DifferentialDrivePoseEstimator.h>
+#include "PID.h"
 
+#include <units/angular_velocity.h>
 #include <units/charge.h>
 
 namespace wom {
   enum class DrivetrainState {
     kManual, 
-    kPID,
-    kIdle,
-    kTurnToAngle,
-    kDriveToDistance, 
-    kSpline
+    kIdle, 
+    kRaw,
+    kVelocity,
+    kPose
   };
 
   struct DrivetrainConfig {
@@ -24,8 +27,10 @@ namespace wom {
 
     frc::Gyro *gyro;
 
-    double wheelRadius;
-    bool reversed = false;
+    units::meter_t wheelRadius;
+    units::meter_t trackWidth;
+
+    PIDConfig<units::meters_per_second, units::volt> pidConfig;
   };
 
   class Drivetrain : public behaviour::HasBehaviour {
@@ -34,49 +39,41 @@ namespace wom {
 
     void OnUpdate(units::second_t dt);
 
-    void Set(double leftPower, double rightPower);
-    void SetVoltage(double left, double right);
-
-    void SetInverted(bool inverted = false);
-    bool GetInverted() { return _config.reversed; }
+    void SetRawVoltage(units::volt_t left, units::volt_t right);
+    void SetManual(double leftPower, double rightPower);
+    void SetIdle();
+    void SetVelocity(frc::ChassisSpeeds speeds);
+    void SetTargetPose(frc::Pose2d pose);
 
     DrivetrainConfig &GetConfig() { return _config; }
 
-    double GetLeftDistance();
-    double GetRightDistance();
+    units::meter_t GetLeftDistance() const;
+    units::meter_t GetRightDistance() const;
 
-    void TurnToAngle(double goal, units::second_t dt);
+    units::meters_per_second_t GetLeftSpeed() const;
+    units::meters_per_second_t GetRightSpeed() const;
 
    protected: 
     Gearbox &GetLeft();
     Gearbox &GetRight();
+
    private: 
     DrivetrainConfig _config;
-  };
+    DrivetrainState _state;
 
-  struct SwerveDriveConfig {
+    units::volt_t _leftRawSetpoint;
+    units::volt_t _rightRawSetpoint;
 
-  };
+    units::volt_t _leftManualSetpoint;
+    units::volt_t _rightManualSetpoint;
 
-  class SwerveDrive : public behaviour::HasBehaviour {
-   public:
-    SwerveDrive(SwerveDriveConfig config);
-   protected:
+    frc::ChassisSpeeds _speed;
+    frc::Pose2d _targetPose;
 
-   private:
-    SwerveDriveConfig _config;
-  };
+    frc::DifferentialDriveKinematics _kinematics;
+    PIDController<units::meters_per_second, units::volt> _leftVelocityController;
+    PIDController<units::meters_per_second, units::volt> _rightVelocityController;
 
-  struct WaspDriveConfig {
-    
-  };
-
-  class WaspDrive : public behaviour::HasBehaviour {
-   public: 
-    WaspDrive(WaspDriveConfig config);
-
-   private: 
-    WaspDriveConfig _config;
   };
 }
 

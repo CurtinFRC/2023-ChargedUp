@@ -15,7 +15,7 @@ Elevator::Elevator(ElevatorParams params)
 void Elevator::OnUpdate(units::second_t dt) {
   units::volt_t voltage{0};
 
-  units::meter_t height = (_params.gearbox.encoder->GetEncoderPosition() / _params.gearbox.reduction).value() * _params.radius;
+  units::meter_t height = _params.gearbox.encoder->GetEncoderPosition().value() * _params.radius;
 
   switch(_state) {
     case ElevatorState::kIdle:

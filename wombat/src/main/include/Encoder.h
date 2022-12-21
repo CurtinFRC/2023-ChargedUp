@@ -11,40 +11,32 @@
 namespace wom {
   class Encoder {
    public:
-    Encoder(int encoderTicksPerRotation) : _encoderTicksPerRotation(encoderTicksPerRotation){};
-    virtual int     GetEncoderRawTicks() = 0;
-    virtual double  GetEncoderTickVelocity() = 0;  // ticks/s
-    virtual void    ZeroEncoder();
+    Encoder(double encoderTicksPerRotation) : _encoderTicksPerRotation(encoderTicksPerRotation){};
+    virtual double    GetEncoderRawTicks() const = 0;
+    virtual double    GetEncoderTickVelocity() const = 0;  // ticks/s
+    virtual void      ZeroEncoder();
 
-    int    GetEncoderTicks();
-    int    GetEncoderTicksPerRotation();
+    double  GetEncoderTicks() const;
+    double  GetEncoderTicksPerRotation() const;
 
     units::radian_t GetEncoderPosition();
     units::radians_per_second_t GetEncoderAngularVelocity();   // rad/s
 
    private:
-    int _encoderTicksPerRotation;
-    int _offset = 0;
+    double _encoderTicksPerRotation;
+    double _offset = 0;
   };
 
   class DigitalEncoder : public Encoder {
    public:
-    DigitalEncoder(int channelA, int channelB, int ticksPerRotation)
+    DigitalEncoder(int channelA, int channelB, uint64_t ticksPerRotation)
         : Encoder(ticksPerRotation),
-          _channelA(channelA),
-          _channelB(channelB),
           _nativeEncoder(channelA, channelB){};
 
-    int GetEncoderRawTicks() override;
-    double GetEncoderTickVelocity() override;
-
-    int GetChannelA();
-    int GetChannelB();
-
-    int GetSimulationHandle();
+    double GetEncoderRawTicks() const override;
+    double GetEncoderTickVelocity() const override;
 
    private:
-    int          _channelA, _channelB;
     frc::Encoder _nativeEncoder;
   };
 
@@ -52,8 +44,8 @@ namespace wom {
    public:
     CANSparkMaxEncoder(rev::CANSparkMax *controller);
 
-    int GetEncoderRawTicks() override;
-    double GetEncoderTickVelocity() override;
+    double GetEncoderRawTicks() const override;
+    double GetEncoderTickVelocity() const override;
    private:
     rev::SparkMaxRelativeEncoder _encoder;
   };
