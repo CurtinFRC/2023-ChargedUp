@@ -5,7 +5,7 @@
 
 #include <frc/filter/LinearFilter.h>
 
-#include <iostream>
+#include <optional>
 
 namespace wom {
   template<typename IN, typename OUT>
@@ -23,6 +23,8 @@ namespace wom {
 
     error_t stableThresh{-1};
     deriv_t stableDerivThresh{-1};
+
+    units::unit_t<IN> izone{-1};
   };
 
   template<typename IN, typename OUT>
@@ -50,9 +52,16 @@ namespace wom {
       return _setpoint;
     }
 
+    void SetWrap(std::optional<in_t> range) {
+      _wrap_range = range;
+    }
+
     out_t Calculate(in_t pv, units::second_t dt, out_t feedforward = out_t{0}) {
-      auto error = _setpoint - pv;
-      _integralSum += pv * dt;
+      auto error = do_wrap(_setpoint - pv);
+      _integralSum += error * dt;
+      if (config.izone.value() > 0 && units::math::abs(error) > config.izone)
+        _integralSum = in_t{0};
+      
       typename config_t::deriv_t deriv{0};
 
       if (_iterations > 0)
@@ -75,9 +84,26 @@ namespace wom {
     }
 
    private:
+    in_t do_wrap(in_t val) {
+      if (_wrap_range.has_value()) {
+        double wr = _wrap_range.value().value();
+        double v = val.value();
+
+        v = std::fmod(v, wr);
+        if (std::abs(v) > (wr / 2.0)) {
+          return in_t{(v > 0) ? v - wr : v + wr};
+        } else {
+          return in_t{v};
+        }
+      }
+      return val;
+    }
+
     units::unit_t<units::compound_unit<IN, units::second>> _integralSum;
     in_t _setpoint;
     in_t _last_pv{0};
+
+    std::optional<in_t> _wrap_range;
     
     int _iterations = 0;
 
