@@ -1,7 +1,6 @@
 #include <gtest/gtest.h>
 
 #include "drivetrain/Drivetrain.h"
-#include "behaviour/BehaviourScheduler.h"
 
 #include "FakeVoltageController.h"
 #include "FakeEncoder.h"

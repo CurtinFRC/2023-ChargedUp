@@ -33,6 +33,7 @@ namespace wom {
     using config_t = PIDConfig<IN, OUT>;
     using in_t = units::unit_t<IN>;
     using out_t = units::unit_t<OUT>;
+    using sum_t = units::unit_t<units::compound_unit<IN, units::second>>;
 
     config_t config;
 
@@ -59,8 +60,8 @@ namespace wom {
     out_t Calculate(in_t pv, units::second_t dt, out_t feedforward = out_t{0}) {
       auto error = do_wrap(_setpoint - pv);
       _integralSum += error * dt;
-      if (config.izone.value() > 0 && units::math::abs(error) > config.izone)
-        _integralSum = in_t{0};
+      if (config.izone.value() > 0 && (error > config.izone || error < -config.izone))
+        _integralSum = sum_t{0};
       
       typename config_t::deriv_t deriv{0};
 
@@ -99,7 +100,7 @@ namespace wom {
       return val;
     }
 
-    units::unit_t<units::compound_unit<IN, units::second>> _integralSum;
+    sum_t _integralSum;
     in_t _setpoint;
     in_t _last_pv{0};
 
