@@ -11,11 +11,15 @@ namespace wom {
     }
 
     double GetAngle() const override {
-      return _angle.value();
+      return -_angle.value();
     }
 
     double GetRate() const override {
       return 0;
+    }
+
+    void SetAngle(units::degree_t angle) {
+      _angle = angle;
     }
    private:
     units::degree_t _angle{0};

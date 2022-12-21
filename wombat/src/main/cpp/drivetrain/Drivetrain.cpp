@@ -2,7 +2,7 @@
 
 using namespace wom;
 
-Drivetrain::Drivetrain(DrivetrainConfig config) : _config(config), _kinematics(config.trackWidth), _leftVelocityController(config.pidConfig), _rightVelocityController(config.pidConfig) {}
+Drivetrain::Drivetrain(DrivetrainConfig config) : _config(config), _kinematics(config.trackWidth), _leftVelocityController(config.velocityPID), _rightVelocityController(config.velocityPID) {}
 
 void Drivetrain::OnUpdate(units::second_t dt) {
   units::volt_t leftVoltage{0};
@@ -94,9 +94,9 @@ units::meters_per_second_t Drivetrain::GetRightSpeed() const {
 
 // Drivetrain Behaviours
 
-DrivetrainDriveDistance::DrivetrainDriveDistance(Drivetrain *d, DrivetrainDriveDistance::pid_config_t pid, units::meter_t setpoint) : _drivetrain(d), _pid(pid) {
+DrivetrainDriveDistance::DrivetrainDriveDistance(Drivetrain *d, units::meter_t length, std::optional<units::meter_t> radius) : _drivetrain(d), _pid(d->GetConfig().distancePID), _radius(radius) {
   Controls(d);
-  _pid.SetSetpoint(setpoint);
+  _pid.SetSetpoint(length);
 }
 
 units::meter_t DrivetrainDriveDistance::GetDistance() const {
@@ -107,13 +107,43 @@ void DrivetrainDriveDistance::OnStart() {
   _start_distance = GetDistance();
 }
 
-#include <iostream>
-
 void DrivetrainDriveDistance::OnTick(units::second_t dt) {
   auto speed = _pid.Calculate(GetDistance() - _start_distance, dt);
-  std::cout << (GetDistance() - _start_distance).value() << " - " << speed.value() << std::endl;
+  if (_radius.has_value()) {
+    _drivetrain->SetVelocity(frc::ChassisSpeeds {
+      speed, 0_mps, units::radians_per_second_t{(speed / _radius.value()).value()}
+    });
+  } else {
+    _drivetrain->SetVelocity(frc::ChassisSpeeds {
+      speed, 0_mps, 0_deg_per_s
+    });
+  }
+
+  if (_pid.IsStable()) {
+    _drivetrain->SetIdle();
+    SetDone();
+  }
+}
+
+// Turn to angle behaviours 
+
+DrivetrainTurnToAngle::DrivetrainTurnToAngle(Drivetrain *d, units::degree_t setpoint) : _drivetrain(d), _pid(d->GetConfig().anglePID) {
+  Controls(d);
+  _pid.SetSetpoint(setpoint);
+} 
+
+units::degree_t DrivetrainTurnToAngle::GetAngle() const {
+  return _drivetrain->GetConfig().gyro->GetRotation2d().Degrees();
+}
+
+void DrivetrainTurnToAngle::OnStart() {
+  _start_angle = GetAngle();
+}
+
+void DrivetrainTurnToAngle::OnTick(units::second_t dt) {
+  auto speed = _pid.Calculate(GetAngle() - _start_angle, dt);
   _drivetrain->SetVelocity(frc::ChassisSpeeds {
-    speed, 0_mps, 0_deg_per_s
+    0_mps, 0_mps, speed
   });
 
   if (_pid.IsStable()) {

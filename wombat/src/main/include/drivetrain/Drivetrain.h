@@ -12,6 +12,8 @@
 #include <units/angular_velocity.h>
 #include <units/charge.h>
 
+#include <optional>
+
 namespace wom {
   enum class DrivetrainState {
     kManual, 
@@ -30,7 +32,9 @@ namespace wom {
     units::meter_t wheelRadius;
     units::meter_t trackWidth;
 
-    PIDConfig<units::meters_per_second, units::volt> pidConfig;
+    PIDConfig<units::meters_per_second, units::volt> velocityPID;
+    PIDConfig<units::meter, units::meters_per_second> distancePID;
+    PIDConfig<units::degree, units::degrees_per_second> anglePID;
   };
 
   class Drivetrain : public behaviour::HasBehaviour {
@@ -78,9 +82,7 @@ namespace wom {
 
   class DrivetrainDriveDistance : public behaviour::Behaviour {
    public:
-    using pid_config_t = PIDConfig<units::meter, units::meters_per_second>;
-
-    DrivetrainDriveDistance(Drivetrain *d, pid_config_t pid, units::meter_t setpoint);
+    DrivetrainDriveDistance(Drivetrain *d, units::meter_t length, std::optional<units::meter_t> radius = {});
 
     units::meter_t GetDistance() const;
 
@@ -89,8 +91,24 @@ namespace wom {
    private:
     Drivetrain *_drivetrain;
     units::meter_t _start_distance{0};
+    std::optional<units::meter_t> _radius;
 
     PIDController<units::meter, units::meters_per_second> _pid;
+  };
+
+  class DrivetrainTurnToAngle : public behaviour::Behaviour {
+   public: 
+    DrivetrainTurnToAngle(Drivetrain *d, units::degree_t setpoint);
+
+    units::degree_t GetAngle() const;
+
+    void OnStart() override;
+    void OnTick(units::second_t dt) override;
+   private:
+    Drivetrain *_drivetrain;
+    units::degree_t _start_angle{0};
+
+    PIDController<units::degree, units::degrees_per_second> _pid;
   };
 }
 
