@@ -75,5 +75,22 @@ namespace wom {
     PIDController<units::meters_per_second, units::volt> _rightVelocityController;
 
   };
+
+  class DrivetrainDriveDistance : public behaviour::Behaviour {
+   public:
+    using pid_config_t = PIDConfig<units::meter, units::meters_per_second>;
+
+    DrivetrainDriveDistance(Drivetrain *d, pid_config_t pid, units::meter_t setpoint);
+
+    units::meter_t GetDistance() const;
+
+    void OnStart() override;
+    void OnTick(units::second_t dt) override;
+   private:
+    Drivetrain *_drivetrain;
+    units::meter_t _start_distance{0};
+
+    PIDController<units::meter, units::meters_per_second> _pid;
+  };
 }
 

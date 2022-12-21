@@ -15,7 +15,8 @@ void Encoder::ZeroEncoder() {
 }
 
 units::radian_t Encoder::GetEncoderPosition() {
-  return (GetEncoderTicks() / (double)GetEncoderTicksPerRotation()) * 1_rad;
+  units::turn_t n_turns{GetEncoderTicks() / GetEncoderTicksPerRotation()};
+  return n_turns;
 }
 
 units::radians_per_second_t Encoder::GetEncoderAngularVelocity() {

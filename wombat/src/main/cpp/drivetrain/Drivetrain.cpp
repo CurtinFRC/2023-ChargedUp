@@ -91,3 +91,33 @@ units::meters_per_second_t Drivetrain::GetLeftSpeed() const {
 units::meters_per_second_t Drivetrain::GetRightSpeed() const {
   return units::meters_per_second_t{_config.rightDrive.encoder->GetEncoderAngularVelocity().value() * _config.wheelRadius.value()};
 }
+
+// Drivetrain Behaviours
+
+DrivetrainDriveDistance::DrivetrainDriveDistance(Drivetrain *d, DrivetrainDriveDistance::pid_config_t pid, units::meter_t setpoint) : _drivetrain(d), _pid(pid) {
+  Controls(d);
+  _pid.SetSetpoint(setpoint);
+}
+
+units::meter_t DrivetrainDriveDistance::GetDistance() const {
+  return (_drivetrain->GetLeftDistance() + _drivetrain->GetRightDistance()) / 2;
+}
+
+void DrivetrainDriveDistance::OnStart() {
+  _start_distance = GetDistance();
+}
+
+#include <iostream>
+
+void DrivetrainDriveDistance::OnTick(units::second_t dt) {
+  auto speed = _pid.Calculate(GetDistance() - _start_distance, dt);
+  std::cout << (GetDistance() - _start_distance).value() << " - " << speed.value() << std::endl;
+  _drivetrain->SetVelocity(frc::ChassisSpeeds {
+    speed, 0_mps, 0_deg_per_s
+  });
+
+  if (_pid.IsStable()) {
+    _drivetrain->SetIdle();
+    SetDone();
+  }
+}
