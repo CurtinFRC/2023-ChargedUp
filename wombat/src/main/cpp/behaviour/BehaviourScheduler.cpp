@@ -55,11 +55,13 @@ void BehaviourScheduler::Schedule(Behaviour::ptr behaviour) {
 void BehaviourScheduler::Tick() {
   std::lock_guard<std::recursive_mutex> lk(_active_mtx);
   for (HasBehaviour *sys : _systems) {
-    if (sys->_active_behaviour->IsFinished()) {
-      if (sys->_default_behaviour_producer == nullptr) {
-        sys->_active_behaviour = nullptr;
-      } else {
-        Schedule(sys->_default_behaviour_producer());
+    if (sys->_active_behaviour != nullptr) {
+      if (sys->_active_behaviour->IsFinished()) {
+        if (sys->_default_behaviour_producer == nullptr) {
+          sys->_active_behaviour = nullptr;
+        } else {
+          Schedule(sys->_default_behaviour_producer());
+        }
       }
     }
   }

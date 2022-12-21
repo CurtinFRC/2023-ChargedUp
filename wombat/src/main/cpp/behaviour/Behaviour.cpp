@@ -259,3 +259,10 @@ void WaitTime::OnStart() {
 void WaitTime::OnTick(units::time::second_t dt) {
   if (GetRunTime() > _time) SetDone();
 }
+
+// Print
+Print::Print(std::string message) : _message(message) {}
+void Print::OnTick(units::time::second_t dt) {
+  std::cout << _message << std::endl;
+  SetDone();
+}
