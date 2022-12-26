@@ -1,7 +1,6 @@
 #pragma once 
 
 #include "Gearbox.h"
-#include <frc/SpeedController.h>
 #include "behaviour/HasBehaviour.h"
 #include "behaviour/Behaviour.h"
 #include "VoltageController.h"
@@ -22,25 +21,26 @@ namespace wom {
   struct SwerveModuleConfig {
     frc::Translation2d position;
 
-    Gearbox &driveMotor;
-    Gearbox &turnMotor;
+    Gearbox driveMotor;
+    Gearbox turnMotor;
 
     units::meter_t wheelRadius;
   };
 
   class SwerveModule {
    public:
-    using angle_pid_conf_t = PIDConfig<units::radians, units::volt>;
+    using angle_pid_conf_t = PIDConfig<units::radian, units::volt>;
     using velocity_pid_conf_t = PIDConfig<units::meters_per_second, units::volt>;
 
     SwerveModule(SwerveModuleConfig config, angle_pid_conf_t anglePID, velocity_pid_conf_t velocityPID);
-
     void OnUpdate(units::second_t dt);
 
     void SetIdle();
     void SetPID(units::radian_t angle, units::meters_per_second_t speed);
   
     units::meters_per_second_t GetSpeed() const;
+
+    const SwerveModuleConfig &GetConfig() const;
 
    private:
     SwerveModuleConfig _config;
@@ -51,8 +51,8 @@ namespace wom {
   };
 
   struct SwerveDriveConfig {
-    PIDConfig<units::degree, units::degrees_per_second> anglePID;
-    PIDConfig<units::meters_per_second, units::volt> velocityPID;
+    SwerveModule::angle_pid_conf_t anglePID;
+    SwerveModule::velocity_pid_conf_t velocityPID;
 
     wpi::array<SwerveModuleConfig, 4> &modules;
 
@@ -71,7 +71,7 @@ namespace wom {
     void OnUpdate(units::second_t dt);
 
     void SetIdle();
-    void SetVelocity();
+    void SetVelocity(frc::ChassisSpeeds speeds);
 
     SwerveDriveConfig &GetConfig() { return _config; }
 
@@ -79,7 +79,10 @@ namespace wom {
 
    private:
     SwerveDriveConfig _config;
-    SwerveDriveState _state;
+    SwerveDriveState _state = SwerveDriveState::kIdle;
+    std::vector<SwerveModule> _modules;
+
+    frc::ChassisSpeeds _target_speed;
 
     frc::SwerveDriveKinematics<4> _kinematics;
   };

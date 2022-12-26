@@ -1,7 +1,6 @@
 #pragma once 
 
 #include "Gearbox.h"
-#include <frc/SpeedController.h>
 #include "behaviour/HasBehaviour.h"
 #include "behaviour/Behaviour.h"
 #include <frc/interfaces/Gyro.h>

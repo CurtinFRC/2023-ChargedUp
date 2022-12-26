@@ -4,6 +4,7 @@
 
 #include "FakeVoltageController.h"
 #include "FakeEncoder.h"
+#include "SwerveSim.h"
 
 #include <frc/simulation/DCMotorSim.h>
 
@@ -35,8 +36,9 @@ class SwerveModuleTest : public ::testing::Test {
 
   SwerveModule mod{config, anglePID, velocityPID};
 
-  frc::sim::DCMotorSim turnSim{ turn.motor.ToWPI(), 1.0, 0.5 * 6_lb * 7.5_in * 7.5_in };
-  frc::sim::DCMotorSim driveSim{ drive.motor.ToWPI(), 1.0, units::kilogram_square_meter_t{0.1} };
+  // frc::sim::DCMotorSim turnSim{ turn.motor.ToWPI(), 1.0, 0.5 * 6_lb * 7.5_in * 7.5_in };
+  // frc::sim::DCMotorSim driveSim{ drive.motor.ToWPI(), 1.0, units::kilogram_square_meter_t{0.1} };
+  SwerveModuleSim sim{ turn.motor, drive.motor, 54_kg / 4, 0.5 * 6_lb * 7.5_in * 7.5_in, config.wheelRadius };
 };
 
 TEST_F(SwerveModuleTest, Simple) {
@@ -50,15 +52,16 @@ TEST_F(SwerveModuleTest, Simple) {
       mod.SetPID(45_deg, 8_ft / 1_s);
     
     mod.OnUpdate(20_ms);
-    turnSim.SetInputVoltage(turnMotor.GetVoltage());
-    turnSim.Update(20_ms);
-    driveSim.SetInputVoltage(driveMotor.GetVoltage());
-    driveSim.Update(20_ms);
+    sim.Calculate(turnMotor.GetVoltage(), driveMotor.GetVoltage(), 20_ms);
+    // turnSim.SetInputVoltage(turnMotor.GetVoltage());
+    // turnSim.Update(20_ms);
+    // driveSim.SetInputVoltage(driveMotor.GetVoltage());
+    // driveSim.Update(20_ms);
 
-    turnEncoder.SetTurns(turnSim.GetAngularPosition());
-    driveEncoder.SetTurnVelocity(driveSim.GetAngularVelocity(), 20_ms);
+    turnEncoder.SetTurns(sim.GetAngle());
+    driveEncoder.SetTurnVelocity(sim.GetSpeed(), 20_ms);
 
-    out << t.value() << "," << turnSim.GetAngularPosition().convert<units::degree>().value() << "," 
-        << driveSim.GetAngularVelocity().value() * config.wheelRadius.value() << std::endl;
+    out << t.value() << "," << sim.GetAngle().convert<units::degree>().value() << "," 
+        << sim.GetVelocity().value() << std::endl;
   }
 }
