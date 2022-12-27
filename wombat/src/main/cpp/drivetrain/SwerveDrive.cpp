@@ -3,7 +3,9 @@
 using namespace wom;
 
 SwerveModule::SwerveModule(SwerveModuleConfig config, SwerveModule::angle_pid_conf_t anglePID, SwerveModule::velocity_pid_conf_t velocityPID) 
-  : _config(config), _anglePIDController(anglePID), _velocityPIDController(velocityPID) {}
+  : _config(config), _anglePIDController(anglePID), _velocityPIDController(velocityPID) {
+    _anglePIDController.SetWrap(180_deg);
+  }
 
 void SwerveModule::OnUpdate(units::second_t dt) {
   units::volt_t driveVoltage{0};
@@ -19,6 +21,7 @@ void SwerveModule::OnUpdate(units::second_t dt) {
         auto feedforward = _config.driveMotor.motor.Voltage(0_Nm, units::radians_per_second_t{(_velocityPIDController.GetSetpoint() / _config.wheelRadius).value()});
         driveVoltage = _velocityPIDController.Calculate(GetSpeed(), dt, feedforward);
         turnVoltage = _anglePIDController.Calculate(_config.turnMotor.encoder->GetEncoderPosition(), dt);
+        std::cout << _config.turnMotor.encoder->GetEncoderPosition().value() << std::endl;
       }
       break;
   }
@@ -55,7 +58,8 @@ SwerveDrive::SwerveDrive(SwerveDriveConfig config) :
 }
 
 void SwerveDrive::OnUpdate(units::second_t dt) {
-  auto target_module_states = _kinematics.ToSwerveModuleStates(_target_speed);
+  auto chassis_states = frc::ChassisSpeeds::FromFieldRelativeSpeeds(_target_speed.vx, _target_speed.vy, _target_speed.omega, _config.gyro->GetRotation2d());
+  auto target_module_states = _kinematics.ToSwerveModuleStates(chassis_states);
 
   switch (_state) {
     case SwerveDriveState::kIdle:
@@ -69,6 +73,10 @@ void SwerveDrive::OnUpdate(units::second_t dt) {
         _modules[i].SetPID(target_state.angle.Radians(), target_state.speed);
       }
       break;
+  }
+
+  for (auto i = 0; i < _modules.size(); i++) {
+    _modules[i].OnUpdate(dt);
   }
 }
 

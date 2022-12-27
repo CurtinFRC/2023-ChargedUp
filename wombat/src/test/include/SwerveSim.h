@@ -78,23 +78,23 @@ class SwerveModuleSim {
 
 class SwerveSim {
  public:
-  SwerveSim(frc::SwerveDriveKinematics<4> kinematics, SwerveModuleSim module) : _kinematics(kinematics), _module(module) { }
+  SwerveSim(frc::SwerveDriveKinematics<4> kinematics, wpi::array<SwerveModuleSim*, 4> mods) : _kinematics(kinematics), modules(mods) { }
  
   void Calculate(wpi::array<units::volt_t, 4> turnVoltage, wpi::array<units::volt_t, 4> driveVoltage, units::second_t dt) {
-    frc::SwerveModuleState  s0 = _module.Calculate(turnVoltage[0], driveVoltage[0], dt),
-                            s1 = _module.Calculate(turnVoltage[1], driveVoltage[1], dt),
-                            s2 = _module.Calculate(turnVoltage[2], driveVoltage[2], dt),
-                            s3 = _module.Calculate(turnVoltage[3], driveVoltage[3], dt);
+    frc::SwerveModuleState  s0 = modules[0]->Calculate(turnVoltage[0], driveVoltage[0], dt),
+                            s1 = modules[1]->Calculate(turnVoltage[1], driveVoltage[1], dt),
+                            s2 = modules[2]->Calculate(turnVoltage[2], driveVoltage[2], dt),
+                            s3 = modules[3]->Calculate(turnVoltage[3], driveVoltage[3], dt);
 
     auto chassis_state = _kinematics.ToChassisSpeeds(s0, s1, s2, s3);
-    x += chassis_state.vx * dt;
-    y += chassis_state.vy * dt;
+    x += (chassis_state.vx * units::math::cos(-theta) + chassis_state.vy * units::math::sin(-theta)) * dt;
+    y += (chassis_state.vx * -units::math::sin(-theta) + chassis_state.vy * units::math::cos(-theta)) * dt;
     theta += chassis_state.omega * dt;
   }
 
   units::meter_t x, y;
   units::radian_t theta;
+  wpi::array<SwerveModuleSim*, 4> modules;
  private:
   frc::SwerveDriveKinematics<4> _kinematics;
-  SwerveModuleSim _module;
 };

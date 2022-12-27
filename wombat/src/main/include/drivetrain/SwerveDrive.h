@@ -54,7 +54,7 @@ namespace wom {
     SwerveModule::angle_pid_conf_t anglePID;
     SwerveModule::velocity_pid_conf_t velocityPID;
 
-    wpi::array<SwerveModuleConfig, 4> &modules;
+    wpi::array<SwerveModuleConfig, 4> modules;
 
     frc::Gyro *gyro;
   };
