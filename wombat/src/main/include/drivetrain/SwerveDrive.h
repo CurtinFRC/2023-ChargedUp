@@ -11,6 +11,7 @@
 #include <units/charge.h>
 
 #include <frc/kinematics/SwerveDriveKinematics.h>
+#include <frc/estimator/SwerveDrivePoseEstimator.h>
 
 namespace wom {
   enum class SwerveModuleState {
@@ -38,6 +39,8 @@ namespace wom {
     void SetIdle();
     void SetPID(units::radian_t angle, units::meters_per_second_t speed);
   
+    frc::SwerveModuleState GetState();
+
     units::meters_per_second_t GetSpeed() const;
 
     const SwerveModuleConfig &GetConfig() const;
@@ -57,21 +60,49 @@ namespace wom {
     wpi::array<SwerveModuleConfig, 4> modules;
 
     frc::Gyro *gyro;
+
+    wpi::array<double, 3> stateStdDevs{0.0, 0.0, 0.0};
+    wpi::array<double, 1> localMeasurementStdDevs{0.0};
+    wpi::array<double, 3> visionMeasurementStdDevs{0.0, 0.0, 0.0};
   };
 
   enum class SwerveDriveState {
     kIdle, 
-    kVelocity
+    kVelocity,
+    kFieldRelativeVelocity
+  };
+
+  struct FieldRelativeSpeeds {
+    /**
+     * Represents the velocity in the x dimension (your alliance to opposite alliance)
+     */
+    units::meters_per_second_t vx{0};
+    /**
+     * Represents the velocity in the y dimension (to your left when standing behind alliance wall)
+     */
+    units::meters_per_second_t vy{0};
+    /**
+     * The angular velocity of the robot (CCW is +)
+     */
+    units::radians_per_second_t omega{0};
+
+    frc::ChassisSpeeds ToChassisSpeeds(const units::radian_t robotHeading);
   };
 
   class SwerveDrive : public behaviour::HasBehaviour {
    public:
-    SwerveDrive(SwerveDriveConfig config);
+    SwerveDrive(SwerveDriveConfig config, frc::Pose2d initialPose);
 
     void OnUpdate(units::second_t dt);
 
     void SetIdle();
     void SetVelocity(frc::ChassisSpeeds speeds);
+    void SetFieldRelativeVelocity(FieldRelativeSpeeds speeds);
+
+    void ResetPose(frc::Pose2d pose);
+
+    frc::Pose2d GetPose();
+    void AddVisionMeasurement(frc::Pose2d pose, units::second_t timestamp);
 
     SwerveDriveConfig &GetConfig() { return _config; }
 
@@ -83,8 +114,11 @@ namespace wom {
     std::vector<SwerveModule> _modules;
 
     frc::ChassisSpeeds _target_speed;
+    FieldRelativeSpeeds _target_fr_speeds;
 
     frc::SwerveDriveKinematics<4> _kinematics;
+    frc::SwerveDrivePoseEstimator<4> _poseEstimator;
+
   };
 }
 
