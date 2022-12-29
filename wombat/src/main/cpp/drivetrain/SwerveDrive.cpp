@@ -58,26 +58,6 @@ SwerveDrive::SwerveDrive(SwerveDriveConfig config) :
 }
 
 void SwerveDrive::OnUpdate(units::second_t dt) {
-  auto chassis_states = frc::ChassisSpeeds::FromFieldRelativeSpeeds(_target_speed.vx, _target_speed.vy, _target_speed.omega, _config.gyro->GetRotation2d());
-  auto target_module_states = _kinematics.ToSwerveModuleStates(chassis_states);
-
-  switch (_state) {
-    case SwerveDriveState::kIdle:
-      for (auto i = 0; i < _modules.size(); i++) {
-        _modules[i].SetIdle();
-      }
-      break;
-    case SwerveDriveState::kVelocity:
-      for (auto i = 0; i < _modules.size(); i++) {
-        auto target_state = target_module_states[i];
-        _modules[i].SetPID(target_state.angle.Radians(), target_state.speed);
-      }
-      break;
-  }
-
-  for (auto i = 0; i < _modules.size(); i++) {
-    _modules[i].OnUpdate(dt);
-  }
 }
 
 void SwerveDrive::SetIdle() {
