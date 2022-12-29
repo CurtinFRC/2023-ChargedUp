@@ -4,7 +4,7 @@ using namespace wom;
 
 SwerveModule::SwerveModule(SwerveModuleConfig config, SwerveModule::angle_pid_conf_t anglePID, SwerveModule::velocity_pid_conf_t velocityPID) 
   : _config(config), _anglePIDController(anglePID), _velocityPIDController(velocityPID) {
-    _anglePIDController.SetWrap(180_deg);
+    _anglePIDController.SetWrap(360_deg);
     
   }
 
@@ -61,7 +61,7 @@ SwerveDrive::SwerveDrive(SwerveDriveConfig config, frc::Pose2d initialPose) :
   _poseEstimator(_config.gyro->GetRotation2d(), initialPose, _kinematics, _config.stateStdDevs, _config.localMeasurementStdDevs, _config.visionMeasurementStdDevs),
   _anglePIDController(_config.poseAnglePID), _xPIDController(_config.posePositionPID), _yPIDController(_config.posePositionPID) {
 
-  _anglePIDController.SetWrap(180_deg);
+  _anglePIDController.SetWrap(360_deg);
   
   for (auto cfg : _config.modules) {
     _modules.emplace_back(cfg, config.anglePID, config.velocityPID);

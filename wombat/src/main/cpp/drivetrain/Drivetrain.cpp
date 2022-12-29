@@ -129,6 +129,7 @@ void DrivetrainDriveDistance::OnTick(units::second_t dt) {
 
 DrivetrainTurnToAngle::DrivetrainTurnToAngle(Drivetrain *d, units::degree_t setpoint) : _drivetrain(d), _pid(d->GetConfig().anglePID) {
   Controls(d);
+  _pid.SetWrap(360_deg);
   _pid.SetSetpoint(setpoint);
 } 
 

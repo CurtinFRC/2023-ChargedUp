@@ -85,7 +85,7 @@ class SwerveTest : public ::testing::Test {
       (180_deg / 1_s) / 45_deg
     },
     {
-      0_mps / 1_m
+      4_mps / 1_m
     },
     { 0.1, 0.1, 0.1 },
     { 0.05 },
