@@ -3,7 +3,7 @@ set output "swerve.png"
 set multiplot layout 3, 4 title "Swerve"
 
 set xrange[-2:2]
-set yrange[-10:10]
+set yrange[-2:2]
 
 set title "XY"
 plot "swerve.csv" using 2:3 w l

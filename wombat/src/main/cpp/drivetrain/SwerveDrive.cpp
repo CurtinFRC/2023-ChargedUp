@@ -58,7 +58,10 @@ const SwerveModuleConfig &SwerveModule::GetConfig() const {
 SwerveDrive::SwerveDrive(SwerveDriveConfig config, frc::Pose2d initialPose) :
   _config(config),
   _kinematics( _config.modules[0].position, _config.modules[1].position, _config.modules[2].position, _config.modules[3].position),
-  _poseEstimator(_config.gyro->GetRotation2d(), initialPose, _kinematics, _config.stateStdDevs, _config.localMeasurementStdDevs, _config.visionMeasurementStdDevs) {
+  _poseEstimator(_config.gyro->GetRotation2d(), initialPose, _kinematics, _config.stateStdDevs, _config.localMeasurementStdDevs, _config.visionMeasurementStdDevs),
+  _anglePIDController(_config.poseAnglePID), _xPIDController(_config.posePositionPID), _yPIDController(_config.posePositionPID) {
+
+  _anglePIDController.SetWrap(180_deg);
   
   for (auto cfg : _config.modules) {
     _modules.emplace_back(cfg, config.anglePID, config.velocityPID);
@@ -76,6 +79,12 @@ void SwerveDrive::OnUpdate(units::second_t dt) {
         mod->SetIdle();
       }
       break;
+    case SwerveDriveState::kPose:
+      {
+        _target_fr_speeds.vx = _xPIDController.Calculate(GetPose().X(), dt);
+        _target_fr_speeds.vy = _yPIDController.Calculate(GetPose().Y(), dt);
+        _target_fr_speeds.omega = _anglePIDController.Calculate(GetPose().Rotation().Radians(), dt);
+      }
     case SwerveDriveState::kFieldRelativeVelocity:
       _target_speed = _target_fr_speeds.ToChassisSpeeds(_config.gyro->GetRotation2d().Radians());
     case SwerveDriveState::kVelocity:
@@ -86,6 +95,7 @@ void SwerveDrive::OnUpdate(units::second_t dt) {
         }
       }
       break;
+
   }
 
   for (auto mod = _modules.begin(); mod < _modules.end(); mod++) {
@@ -107,6 +117,17 @@ void SwerveDrive::SetVelocity(frc::ChassisSpeeds speeds) {
 void SwerveDrive::SetFieldRelativeVelocity(FieldRelativeSpeeds speeds) {
   _state = SwerveDriveState::kFieldRelativeVelocity;
   _target_fr_speeds = speeds;
+}
+
+void SwerveDrive::SetPose(frc::Pose2d pose) {
+  _state = SwerveDriveState::kPose;
+  _anglePIDController.SetSetpoint(pose.Rotation().Radians());
+  _xPIDController.SetSetpoint(pose.X());
+  _yPIDController.SetSetpoint(pose.Y());
+}
+
+bool SwerveDrive::IsAtSetPose() {
+  return _anglePIDController.IsStable() && _xPIDController.IsStable() && _yPIDController.IsStable();
 }
 
 void SwerveDrive::ResetPose(frc::Pose2d pose) {

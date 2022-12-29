@@ -61,15 +61,20 @@ namespace wom {
 
     frc::Gyro *gyro;
 
+    PIDConfig<units::radian, units::radians_per_second> poseAnglePID;
+    PIDConfig<units::meter, units::meters_per_second> posePositionPID;
+
     wpi::array<double, 3> stateStdDevs{0.0, 0.0, 0.0};
     wpi::array<double, 1> localMeasurementStdDevs{0.0};
     wpi::array<double, 3> visionMeasurementStdDevs{0.0, 0.0, 0.0};
+
   };
 
   enum class SwerveDriveState {
     kIdle, 
     kVelocity,
-    kFieldRelativeVelocity
+    kFieldRelativeVelocity,
+    kPose
   };
 
   struct FieldRelativeSpeeds {
@@ -98,6 +103,8 @@ namespace wom {
     void SetIdle();
     void SetVelocity(frc::ChassisSpeeds speeds);
     void SetFieldRelativeVelocity(FieldRelativeSpeeds speeds);
+    void SetPose(frc::Pose2d pose);
+    bool IsAtSetPose();
 
     void ResetPose(frc::Pose2d pose);
 
@@ -119,6 +126,9 @@ namespace wom {
     frc::SwerveDriveKinematics<4> _kinematics;
     frc::SwerveDrivePoseEstimator<4> _poseEstimator;
 
+    PIDController<units::radian, units::radians_per_second> _anglePIDController;
+    PIDController<units::meter, units::meters_per_second> _xPIDController;
+    PIDController<units::meter, units::meters_per_second> _yPIDController;
   };
 }
 

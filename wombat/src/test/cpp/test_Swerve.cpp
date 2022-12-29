@@ -81,6 +81,12 @@ class SwerveTest : public ::testing::Test {
     modules[0]->anglePID, modules[1]->velocityPID,
     { modules[0]->config, modules[1]->config, modules[2]->config, modules[3]->config },
     &gyro,
+    {
+      (180_deg / 1_s) / 45_deg
+    },
+    {
+      0_mps / 1_m
+    },
     { 0.1, 0.1, 0.1 },
     { 0.05 },
     { 0.0, 0.0, 0.0 }
@@ -102,16 +108,13 @@ TEST_F(SwerveTest, Simple) {
 
   for (units::second_t t = 0_s; t < 2_s; t += 20_ms) {
     if (t > 20_ms)
-      swerve.SetFieldRelativeVelocity(FieldRelativeSpeeds {
-        1_mps, 1_mps, 45_deg / 1_s
+      // swerve.SetFieldRelativeVelocity(FieldRelativeSpeeds {
+      //   1_mps, 1_mps, 45_deg / 1_s
+      // });
+      swerve.SetPose(frc::Pose2d {
+        frc::Translation2d{1_m, 1.5_m},
+        frc::Rotation2d{45_deg}
       });
-
-    if (t == 6_s) {
-      swerve.AddVisionMeasurement(frc::Pose2d {
-        frc::Translation2d{ sim.x, sim.y },
-        frc::Rotation2d{ sim.theta }
-      }, units::microsecond_t{(double)wpi::Now()});
-    }
     
     swerve.OnUpdate(20_ms);
     sim.Calculate({
