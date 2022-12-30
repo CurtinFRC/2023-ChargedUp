@@ -6,9 +6,9 @@
 
 using namespace wom;
 
-Elevator::Elevator(ElevatorParams params)
+Elevator::Elevator(std::string path, ElevatorParams params)
   : _params(params), _state(ElevatorState::kIdle),
-  _pid{params.pid},
+  _pid{path + "/pid", params.pid},
   _table(nt::NetworkTableInstance::GetDefault().GetTable("elevator")) {}
 
 

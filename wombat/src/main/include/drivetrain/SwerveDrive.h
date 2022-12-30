@@ -33,7 +33,7 @@ namespace wom {
     using angle_pid_conf_t = PIDConfig<units::radian, units::volt>;
     using velocity_pid_conf_t = PIDConfig<units::meters_per_second, units::volt>;
 
-    SwerveModule(SwerveModuleConfig config, angle_pid_conf_t anglePID, velocity_pid_conf_t velocityPID);
+    SwerveModule(std::string path, SwerveModuleConfig config, angle_pid_conf_t anglePID, velocity_pid_conf_t velocityPID);
     void OnUpdate(units::second_t dt);
 
     void SetIdle();
@@ -96,7 +96,7 @@ namespace wom {
 
   class SwerveDrive : public behaviour::HasBehaviour {
    public:
-    SwerveDrive(SwerveDriveConfig config, frc::Pose2d initialPose);
+    SwerveDrive(std::string path, SwerveDriveConfig config, frc::Pose2d initialPose);
 
     void OnUpdate(units::second_t dt);
 

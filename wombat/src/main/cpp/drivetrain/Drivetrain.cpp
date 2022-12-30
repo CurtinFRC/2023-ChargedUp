@@ -2,7 +2,10 @@
 
 using namespace wom;
 
-Drivetrain::Drivetrain(DrivetrainConfig config) : _config(config), _kinematics(config.trackWidth), _leftVelocityController(config.velocityPID), _rightVelocityController(config.velocityPID) {}
+Drivetrain::Drivetrain(std::string path, DrivetrainConfig config)
+  : _config(config), _kinematics(config.trackWidth), 
+    _leftVelocityController(path + "/pid/left", config.velocityPID),
+    _rightVelocityController(path + "/pid/right", config.velocityPID) {}
 
 void Drivetrain::OnUpdate(units::second_t dt) {
   units::volt_t leftVoltage{0};
@@ -94,7 +97,7 @@ units::meters_per_second_t Drivetrain::GetRightSpeed() const {
 
 // Drivetrain Behaviours
 
-DrivetrainDriveDistance::DrivetrainDriveDistance(Drivetrain *d, units::meter_t length, std::optional<units::meter_t> radius) : _drivetrain(d), _pid(d->GetConfig().distancePID), _radius(radius) {
+DrivetrainDriveDistance::DrivetrainDriveDistance(Drivetrain *d, units::meter_t length, std::optional<units::meter_t> radius) : _drivetrain(d), _pid("drivetrain/behaviours/DrivetrainDriveDistance/pid", d->GetConfig().distancePID), _radius(radius) {
   Controls(d);
   _pid.SetSetpoint(length);
 }
@@ -127,7 +130,7 @@ void DrivetrainDriveDistance::OnTick(units::second_t dt) {
 
 // Turn to angle behaviours 
 
-DrivetrainTurnToAngle::DrivetrainTurnToAngle(Drivetrain *d, units::degree_t setpoint) : _drivetrain(d), _pid(d->GetConfig().anglePID) {
+DrivetrainTurnToAngle::DrivetrainTurnToAngle(Drivetrain *d, units::degree_t setpoint) : _drivetrain(d), _pid("drivetrain/behaviours/DrivetrainTurnAngle/pid", d->GetConfig().anglePID) {
   Controls(d);
   _pid.SetWrap(360_deg);
   _pid.SetSetpoint(setpoint);

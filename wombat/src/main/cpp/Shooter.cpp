@@ -4,9 +4,9 @@
 
 using namespace wom;
 
-Shooter::Shooter(ShooterParams params) 
+Shooter::Shooter(std::string path, ShooterParams params) 
   : _params(params), _state(ShooterState::kIdle), 
-    _pid{params.pid}, 
+    _pid{path + "/pid", params.pid}, 
     _table(nt::NetworkTableInstance::GetDefault().GetTable("shooter")) {}
 
 void Shooter::OnUpdate(units::second_t dt) {

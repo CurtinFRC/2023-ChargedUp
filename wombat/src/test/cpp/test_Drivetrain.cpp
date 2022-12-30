@@ -27,9 +27,11 @@ class DrivetrainTest : public ::testing::Test {
     4_in / 2,
     0.5_m,
     {
+      "dt/pid/config",
       12_V / 2_mps,
     },
     {
+      "dt/pid/config2",
       4_mps / 1_m,
       0_mps / 1_s / 1_m,
       0_m / 1_m,
@@ -37,6 +39,7 @@ class DrivetrainTest : public ::testing::Test {
       0.2_mps
     },
     {
+      "dt/pid/config3",
       (180_deg / 0.5_s) / 45_deg,
       0_deg / 1_s / 1_s / 1_deg,
       0_deg / 1_deg,
@@ -45,7 +48,7 @@ class DrivetrainTest : public ::testing::Test {
     }
   };
 
-  Drivetrain dt{config};
+  Drivetrain dt{"dt", config};
 
   frc::sim::DifferentialDrivetrainSim sim{
     left.motor.ToWPI(), 1.0, units::kilogram_square_meter_t{5}, 50_kg, config.wheelRadius, config.trackWidth

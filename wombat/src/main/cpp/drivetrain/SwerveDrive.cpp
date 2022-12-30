@@ -2,10 +2,9 @@
 
 using namespace wom;
 
-SwerveModule::SwerveModule(SwerveModuleConfig config, SwerveModule::angle_pid_conf_t anglePID, SwerveModule::velocity_pid_conf_t velocityPID) 
-  : _config(config), _anglePIDController(anglePID), _velocityPIDController(velocityPID) {
+SwerveModule::SwerveModule(std::string path, SwerveModuleConfig config, SwerveModule::angle_pid_conf_t anglePID, SwerveModule::velocity_pid_conf_t velocityPID) 
+  : _config(config), _anglePIDController(path + "/pid/angle", anglePID), _velocityPIDController(path + "/pid/velocity", velocityPID) {
     _anglePIDController.SetWrap(360_deg);
-    
   }
 
 void SwerveModule::OnUpdate(units::second_t dt) {
@@ -55,16 +54,18 @@ const SwerveModuleConfig &SwerveModule::GetConfig() const {
   return _config;
 }
 
-SwerveDrive::SwerveDrive(SwerveDriveConfig config, frc::Pose2d initialPose) :
+SwerveDrive::SwerveDrive(std::string path, SwerveDriveConfig config, frc::Pose2d initialPose) :
   _config(config),
   _kinematics( _config.modules[0].position, _config.modules[1].position, _config.modules[2].position, _config.modules[3].position),
   _poseEstimator(_config.gyro->GetRotation2d(), initialPose, _kinematics, _config.stateStdDevs, _config.localMeasurementStdDevs, _config.visionMeasurementStdDevs),
-  _anglePIDController(_config.poseAnglePID), _xPIDController(_config.posePositionPID), _yPIDController(_config.posePositionPID) {
+  _anglePIDController(path + "/pid/heading", _config.poseAnglePID), _xPIDController(path + "/pid/x", _config.posePositionPID), _yPIDController(path + "/pid/y", _config.posePositionPID) {
 
   _anglePIDController.SetWrap(360_deg);
   
+  int i = 1;
   for (auto cfg : _config.modules) {
-    _modules.emplace_back(cfg, config.anglePID, config.velocityPID);
+    _modules.emplace_back(path + "/modules/" + std::to_string(i), cfg, config.anglePID, config.velocityPID);
+    i++;
   }
 }
 

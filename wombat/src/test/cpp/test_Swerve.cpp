@@ -14,7 +14,7 @@
 using namespace wom;
 
 struct SwerveModuleTestVars {
-  SwerveModuleTestVars(frc::Translation2d pos) : config{ pos, drive, turn, 4_in / 2 }, mod{ config, anglePID, velocityPID } {}
+  SwerveModuleTestVars(frc::Translation2d pos) : config{ pos, drive, turn, 4_in / 2 }, mod{ "mod", config, anglePID, velocityPID } {}
 
   FakeVoltageController driveMotor, turnMotor;
   FakeEncoder driveEncoder{1024}, turnEncoder{1024};
@@ -25,10 +25,12 @@ struct SwerveModuleTestVars {
   SwerveModuleConfig config;
 
   SwerveModule::angle_pid_conf_t anglePID{
+    "/mod/pid/angle/config",
     12_V / 90_deg,
   };
 
   SwerveModule::velocity_pid_conf_t velocityPID{
+    "/mod/pid/velocity/config",
     12_V / 1_mps
   };
 
@@ -82,9 +84,11 @@ class SwerveTest : public ::testing::Test {
     { modules[0]->config, modules[1]->config, modules[2]->config, modules[3]->config },
     &gyro,
     {
+      "swerve/pid/heading/config",
       (180_deg / 1_s) / 45_deg
     },
     {
+      "swerve/pid/position/config",
       4_mps / 1_m
     },
     { 0.1, 0.1, 0.1 },
@@ -92,7 +96,7 @@ class SwerveTest : public ::testing::Test {
     { 0.0, 0.0, 0.0 }
   };
 
-  SwerveDrive swerve{cfg, frc::Pose2d{ frc::Translation2d{0_m, 0_m}, frc::Rotation2d{ 0_deg } }};
+  SwerveDrive swerve{"swerve", cfg, frc::Pose2d{ frc::Translation2d{0_m, 0_m}, frc::Rotation2d{ 0_deg } }};
 
   SwerveSim sim{
     frc::SwerveDriveKinematics(modules[0]->config.position, modules[1]->config.position, modules[2]->config.position, modules[3]->config.position),

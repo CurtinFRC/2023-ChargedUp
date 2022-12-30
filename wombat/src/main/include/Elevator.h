@@ -31,7 +31,7 @@ namespace wom {
 
   class Elevator : public behaviour::HasBehaviour {
    public: 
-    Elevator(ElevatorParams params);
+    Elevator(std::string path, ElevatorParams params);
 
     void OnUpdate(units::second_t dt);
 

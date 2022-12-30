@@ -38,7 +38,7 @@ namespace wom {
 
   class Drivetrain : public behaviour::HasBehaviour {
    public: 
-    Drivetrain(DrivetrainConfig config); 
+    Drivetrain(std::string path, DrivetrainConfig config); 
 
     void OnUpdate(units::second_t dt);
 
