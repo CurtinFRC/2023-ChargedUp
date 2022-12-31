@@ -6,16 +6,16 @@
 
 using namespace wom;
 
-Elevator::Elevator(ElevatorParams params)
+Elevator::Elevator(std::string path, ElevatorParams params)
   : _params(params), _state(ElevatorState::kIdle),
-  _pid{params.pid},
+  _pid{path + "/pid", params.pid},
   _table(nt::NetworkTableInstance::GetDefault().GetTable("elevator")) {}
 
 
 void Elevator::OnUpdate(units::second_t dt) {
   units::volt_t voltage{0};
 
-  units::meter_t height = (_params.gearbox.encoder->GetEncoderPosition() / _params.gearbox.reduction).value() * _params.radius;
+  units::meter_t height = _params.gearbox.encoder->GetEncoderPosition().value() * _params.radius;
 
   switch(_state) {
     case ElevatorState::kIdle:

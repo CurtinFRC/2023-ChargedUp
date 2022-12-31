@@ -26,7 +26,7 @@ namespace wom {
 
   class Shooter : public behaviour::HasBehaviour {
    public:
-    Shooter(ShooterParams params);
+    Shooter(std::string path, ShooterParams params);
 
     void SetManual(units::volt_t voltage);
     void SetPID(units::radians_per_second_t goal);

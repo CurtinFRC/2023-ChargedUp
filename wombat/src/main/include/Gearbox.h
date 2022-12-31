@@ -25,11 +25,6 @@ struct Gearbox {
   Encoder *encoder = nullptr;
 
   /**
-   * The gearbox reduction
-   */
-  double reduction = 1.0;
-
-  /**
    * The motor being used. By default, this is a dual CIM.
    */
   wom::DCMotor motor = wom::DCMotor::CIM(2);

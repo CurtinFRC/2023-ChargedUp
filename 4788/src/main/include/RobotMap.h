@@ -24,11 +24,11 @@ struct RobotMap {
     wom::Gearbox shooterGearbox {
       &shooterMotorGroup,
       &encoder,
-      1.0,
       wom::DCMotor::NEO(3)
     };
 
     wom::PIDConfig<units::radians_per_second, units::volt> pid{
+      "shooter/pid/config",
       12_V / 3500_rpm,
       0.02_V / (2000_rpm * 1_s),
       0_V / (5000_rpm / 1_s),

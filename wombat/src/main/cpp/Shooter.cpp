@@ -4,14 +4,14 @@
 
 using namespace wom;
 
-Shooter::Shooter(ShooterParams params) 
+Shooter::Shooter(std::string path, ShooterParams params) 
   : _params(params), _state(ShooterState::kIdle), 
-    _pid{params.pid}, 
+    _pid{path + "/pid", params.pid}, 
     _table(nt::NetworkTableInstance::GetDefault().GetTable("shooter")) {}
 
 void Shooter::OnUpdate(units::second_t dt) {
   units::volt_t voltage{0};
-  units::revolutions_per_minute_t currentSpeed = _params.gearbox.encoder->GetEncoderAngularVelocity() / _params.gearbox.reduction;
+  units::revolutions_per_minute_t currentSpeed = _params.gearbox.encoder->GetEncoderAngularVelocity();
 
   switch(_state) {
     case ShooterState::kManual:

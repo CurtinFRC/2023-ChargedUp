@@ -2,12 +2,11 @@
 
 using namespace wom;
 
-
-int Encoder::GetEncoderTicks() {
+double Encoder::GetEncoderTicks() const {
   return GetEncoderRawTicks() - _offset;
 }
 
-int Encoder::GetEncoderTicksPerRotation() {
+double Encoder::GetEncoderTicksPerRotation() const {
   return _encoderTicksPerRotation;
 }
 
@@ -16,7 +15,8 @@ void Encoder::ZeroEncoder() {
 }
 
 units::radian_t Encoder::GetEncoderPosition() {
-  return (GetEncoderTicks() / (double)GetEncoderTicksPerRotation()) * 1_rad;
+  units::turn_t n_turns{GetEncoderTicks() / GetEncoderTicksPerRotation()};
+  return n_turns;
 }
 
 units::radians_per_second_t Encoder::GetEncoderAngularVelocity() {
@@ -25,33 +25,21 @@ units::radians_per_second_t Encoder::GetEncoderAngularVelocity() {
   return n_turns_per_s;
 }
 
-int DigitalEncoder::GetEncoderRawTicks() {
+double DigitalEncoder::GetEncoderRawTicks() const {
   return _nativeEncoder.Get();
 }
 
-double DigitalEncoder::GetEncoderTickVelocity() {
+double DigitalEncoder::GetEncoderTickVelocity() const {
   return 1.0 / (double)_nativeEncoder.GetPeriod();
-}
-
-int DigitalEncoder::GetChannelA() {
-  return _channelA;
-}
-
-int DigitalEncoder::GetChannelB() {
-  return _channelB;
-}
-
-int DigitalEncoder::GetSimulationHandle() {
-  return _nativeEncoder.GetFPGAIndex();
 }
 
 CANSparkMaxEncoder::CANSparkMaxEncoder(rev::CANSparkMax *controller)
   : Encoder(42), _encoder(controller->GetEncoder()) {}
 
-int CANSparkMaxEncoder::GetEncoderRawTicks() {
+double CANSparkMaxEncoder::GetEncoderRawTicks() const {
   return _encoder.GetPosition() * GetEncoderTicksPerRotation();
 }
 
-double CANSparkMaxEncoder::GetEncoderTickVelocity() {
+double CANSparkMaxEncoder::GetEncoderTickVelocity() const {
   return _encoder.GetVelocity() * GetEncoderTicksPerRotation() / 60;
 }

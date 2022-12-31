@@ -20,7 +20,7 @@ namespace wom {
     /**
      * Get the voltage of the output.
      */
-    virtual units::volt_t GetVoltage() = 0;
+    virtual units::volt_t GetVoltage() const = 0;
 
     /**
      * Set the output as inverted.
@@ -29,7 +29,7 @@ namespace wom {
     /**
      * Get whether the output is inverted
      */
-    virtual bool GetInverted() = 0;
+    virtual bool GetInverted() const = 0;
   };
 
   /**
@@ -41,12 +41,12 @@ namespace wom {
     MotorVoltageController(frc::MotorController *MotorController);
 
     void SetVoltage(units::volt_t voltage) override;
-    units::volt_t GetVoltage() override;
+    units::volt_t GetVoltage() const override;
 
     void SetInverted(bool invert) override;
-    bool GetInverted() override;
+    bool GetInverted() const override;
 
-    units::volt_t GetBusVoltage();
+    units::volt_t GetBusVoltage() const;
 
     /**
      * Create a MotorVoltageController with a given frc::MotorController
