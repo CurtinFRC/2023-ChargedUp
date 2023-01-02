@@ -5,7 +5,7 @@
 #include "FakeVoltageController.h"
 #include "FakeEncoder.h"
 #include "FakeGyro.h"
-#include "SwerveSim.h"
+#include "sim/SwerveSim.h"
 
 #include <frc/simulation/DCMotorSim.h>
 
