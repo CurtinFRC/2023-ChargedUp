@@ -24,7 +24,6 @@ void Robot::RobotInit() {
     return make<ShooterConstant>(shooter, 0_V);
   });
 
-
   drivetrain = new Drivetrain("drivetrain", map.drivetrain.config);
   drivetrain->GetConfig().gyro->Reset();
   drivetrain->GetConfig().rightDrive.transmission->SetInverted(true);
@@ -46,6 +45,10 @@ void Robot::RobotPeriodic() {
 
 void Robot::AutonomousInit() {
   BehaviourScheduler::GetInstance()->Schedule(
+    // make<DrivetrainDriveDistance>(drivetrain, -1_m) <<
+    make<DrivetrainTurnToAngle>(drivetrain, -45_deg) <<
+    make<DrivetrainDriveDistance>(drivetrain, 1_m) <<
+    make<DrivetrainTurnToAngle>(drivetrain, 180_deg) <<
     make<DrivetrainDriveDistance>(drivetrain, 1_m)
     // make<ShooterSpinup>(shooter, 1500_rpm)
     // << make<WaitTime>(1_s)

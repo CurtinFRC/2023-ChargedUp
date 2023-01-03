@@ -73,19 +73,19 @@ struct RobotMap {
     wom::PIDConfig<units::meter, units::meters_per_second> distancePID {
       "drivetrain/behaviours/DrivetrainDriveDistance/pid/config",
       4_mps / 1_m,
-      // 0_mps / 1_s / 1_m,
-      // 0_m / 1_m,
-      // 5_cm,
-      // 0.2_mps
+      0_mps / 1_s / 1_m,
+      0_m / 1_m,
+      5_cm,
+      0.2_mps
     };
 
     wom::PIDConfig<units::degree, units::degrees_per_second> anglePID {
       "drivetrain/behaviours/DrivetrainTurnAngle/pid/config",
       (180_deg / 0.5_s) / 45_deg,
-      // 0_deg / 1_s / 1_s / 1_deg,
-      // 0_deg / 1_deg,
-      // 2_deg,
-      // 1_deg / 1_s
+      -0.0005_deg / 1_s / 1_s / 1_deg,
+      0_deg / 1_deg,
+      2_deg,
+      1_deg / 1_s
     };
 
     wom::DrivetrainConfig config{

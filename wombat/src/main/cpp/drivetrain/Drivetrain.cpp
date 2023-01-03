@@ -97,32 +97,44 @@ units::meters_per_second_t Drivetrain::GetRightSpeed() const {
 
 // Drivetrain Behaviours
 
-DrivetrainDriveDistance::DrivetrainDriveDistance(Drivetrain *d, units::meter_t length, std::optional<units::meter_t> radius) : _drivetrain(d), _pid("drivetrain/behaviours/DrivetrainDriveDistance/pid", d->GetConfig().distancePID), _radius(radius) {
+DrivetrainDriveDistance::DrivetrainDriveDistance(Drivetrain *d, units::meter_t length, std::optional<units::meter_t> radius)
+  : _drivetrain(d), _radius(radius),
+    _distancePID("drivetrain/behaviours/DrivetrainDriveDistance/pid/distance", d->GetConfig().distancePID),
+    _anglePID("drivetrain/behaviours/DrivetrainDriveDistance/pid/angle", d->GetConfig().anglePID) {
   Controls(d);
-  _pid.SetSetpoint(length);
+  _distancePID.SetSetpoint(length);
+  _anglePID.SetSetpoint(0_deg);
+  _anglePID.SetWrap(360_deg);
 }
 
 units::meter_t DrivetrainDriveDistance::GetDistance() const {
   return (_drivetrain->GetLeftDistance() + _drivetrain->GetRightDistance()) / 2;
 }
 
+units::degree_t DrivetrainDriveDistance::GetAngle() const {
+  return _drivetrain->GetConfig().gyro->GetRotation2d().Degrees();
+}
+
 void DrivetrainDriveDistance::OnStart() {
   _start_distance = GetDistance();
+  _start_angle = GetAngle();
 }
 
 void DrivetrainDriveDistance::OnTick(units::second_t dt) {
-  auto speed = _pid.Calculate(GetDistance() - _start_distance, dt);
+  auto fwd_speed = _distancePID.Calculate(GetDistance() - _start_distance, dt);
+  units::radian_t target_angle = 0_deg;
   if (_radius.has_value()) {
-    _drivetrain->SetVelocity(frc::ChassisSpeeds {
-      speed, 0_mps, units::radians_per_second_t{(speed / _radius.value()).value()}
-    });
-  } else {
-    _drivetrain->SetVelocity(frc::ChassisSpeeds {
-      speed, 0_mps, 0_deg_per_s
-    });
+    target_angle = 1_rad * (GetDistance() / _radius.value());
   }
+  
+  _anglePID.SetSetpoint(target_angle);
+  auto ang_speed = _anglePID.Calculate(GetAngle() - _start_angle, dt);
 
-  if (_pid.IsStable()) {
+  _drivetrain->SetVelocity(frc::ChassisSpeeds {
+    fwd_speed, 0_mps, ang_speed
+  });
+
+  if (_distancePID.IsStable() && _anglePID.IsStable()) {
     _drivetrain->SetIdle();
     SetDone();
   }
