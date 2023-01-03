@@ -125,8 +125,8 @@ units::meters_per_second_t Drivetrain::GetRightSpeed() const {
 
 // Drivetrain Behaviours
 
-DrivetrainDriveDistance::DrivetrainDriveDistance(Drivetrain *d, units::meter_t length, std::optional<units::meter_t> radius)
-  : _drivetrain(d), _radius(radius),
+DrivetrainDriveDistance::DrivetrainDriveDistance(Drivetrain *d, units::meter_t length)
+  : _drivetrain(d),
     _distancePID("drivetrain/behaviours/DrivetrainDriveDistance/pid/distance", d->GetConfig().distancePID),
     _anglePID("drivetrain/behaviours/DrivetrainDriveDistance/pid/angle", d->GetConfig().anglePID) {
   Controls(d);
@@ -151,9 +151,6 @@ void DrivetrainDriveDistance::OnStart() {
 void DrivetrainDriveDistance::OnTick(units::second_t dt) {
   auto fwd_speed = _distancePID.Calculate(GetDistance() - _start_distance, dt);
   units::radian_t target_angle = 0_deg;
-  if (_radius.has_value()) {
-    target_angle = 1_rad * (GetDistance() / _radius.value());
-  }
   
   _anglePID.SetSetpoint(target_angle);
   auto ang_speed = _anglePID.Calculate(GetAngle() - _start_angle, dt);

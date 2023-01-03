@@ -84,7 +84,7 @@ namespace wom {
 
   class DrivetrainDriveDistance : public behaviour::Behaviour {
    public:
-    DrivetrainDriveDistance(Drivetrain *d, units::meter_t length, std::optional<units::meter_t> radius = {});
+    DrivetrainDriveDistance(Drivetrain *d, units::meter_t length);
 
     units::meter_t GetDistance() const;
     units::degree_t GetAngle() const;
@@ -95,8 +95,6 @@ namespace wom {
     Drivetrain *_drivetrain;
     units::meter_t _start_distance{0};
     units::degree_t _start_angle{0};
-
-    std::optional<units::meter_t> _radius;
 
     PIDController<units::meter, units::meters_per_second> _distancePID;
     PIDController<units::degree, units::degrees_per_second> _anglePID;

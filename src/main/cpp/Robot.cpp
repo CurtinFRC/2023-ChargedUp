@@ -45,11 +45,11 @@ void Robot::RobotPeriodic() {
 
 void Robot::AutonomousInit() {
   BehaviourScheduler::GetInstance()->Schedule(
-    // make<DrivetrainDriveDistance>(drivetrain, -1_m) <<
-    make<DrivetrainTurnToAngle>(drivetrain, -45_deg) <<
-    make<DrivetrainDriveDistance>(drivetrain, 1_m) <<
-    make<DrivetrainTurnToAngle>(drivetrain, 180_deg) <<
-    make<DrivetrainDriveDistance>(drivetrain, 1_m)
+    make<DrivetrainDriveDistance>(drivetrain, 3.14_m / 2) 
+    // make<DrivetrainTurnToAngle>(drivetrain, -45_deg) <<
+    // make<DrivetrainDriveDistance>(drivetrain, 1_m) <<
+    // make<DrivetrainTurnToAngle>(drivetrain, 180_deg) <<
+    // make<DrivetrainDriveDistance>(drivetrain, 1_m)
     // make<ShooterSpinup>(shooter, 1500_rpm)
     // << make<WaitTime>(1_s)
     // << make<ShooterSpinup>(shooter, 2000_rpm)
