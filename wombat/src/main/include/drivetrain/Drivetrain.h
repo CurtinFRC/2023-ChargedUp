@@ -10,6 +10,7 @@
 
 #include <units/angular_velocity.h>
 #include <units/charge.h>
+#include <units/current.h>
 
 #include <optional>
 
@@ -30,6 +31,8 @@ namespace wom {
 
     units::meter_t wheelRadius;
     units::meter_t trackWidth;
+
+    units::ampere_t currentLimit;
 
     PIDConfig<units::meters_per_second, units::volt> velocityPID;
     PIDConfig<units::meter, units::meters_per_second> distancePID;

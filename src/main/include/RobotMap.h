@@ -81,8 +81,8 @@ struct RobotMap {
 
     wom::PIDConfig<units::degree, units::degrees_per_second> anglePID {
       "drivetrain/behaviours/DrivetrainTurnAngle/pid/config",
-      (180_deg / 0.5_s) / 45_deg,
-      -0.0005_deg / 1_s / 1_s / 1_deg,
+      (270_deg / 0.5_s) / 45_deg,
+      -0.001_deg / 1_s / 1_s / 1_deg,
       0_deg / 1_deg,
       2_deg,
       1_deg / 1_s
@@ -97,6 +97,8 @@ struct RobotMap {
       4_in / 2,
       0.54_m,
       
+      70_A,
+
       velocityPID,
       distancePID,
       anglePID

@@ -10,6 +10,7 @@ Drivetrain::Drivetrain(std::string path, DrivetrainConfig config)
 void Drivetrain::OnUpdate(units::second_t dt) {
   units::volt_t leftVoltage{0};
   units::volt_t rightVoltage{0};
+
   auto wheelSpeeds = _kinematics.ToWheelSpeeds(_speed);
   wheelSpeeds.Desaturate((_config.leftDrive.motor.freeSpeed.value() * _config.wheelRadius.value()) * 1_mps);
 
@@ -41,10 +42,37 @@ void Drivetrain::OnUpdate(units::second_t dt) {
       break;
   }
 
+  // units::newton_meter_t torque_limit_left = _config.leftDrive.motor.Torque(_config.currentLimit);
+  // units::newton_meter_t torque_limit_right = _config.rightDrive.motor.Torque(_config.currentLimit);
+
+  // units::volt_t max_voltage_left = _config.leftDrive.motor.Voltage(torque_limit_left, GetLeftSpeed());
+  // units::volt_t max_voltage_right = _config.rightDrive.motor.Voltage(torque_limit_left, GetRightSpeed());
+
+  units::newton_meter_t torque_limit = _config.leftDrive.motor.Torque(_config.currentLimit);
+  units::volt_t max_volt = _config.leftDrive.motor.Voltage(torque_limit, units::math::max(
+    units::math::abs(_config.leftDrive.encoder->GetEncoderAngularVelocity()),
+    units::math::abs(_config.rightDrive.encoder->GetEncoderAngularVelocity())
+  ));
+
+  units::volt_t real_max_volt = units::math::max(units::math::abs(leftVoltage), units::math::abs(rightVoltage));
+
+  if (real_max_volt > max_volt) {
+    rightVoltage = rightVoltage / real_max_volt * max_volt;
+    leftVoltage = leftVoltage / real_max_volt * max_volt;
+  }
+
+  // auto ratio = leftVoltage / rightVoltage;
+  // auto motor = _config.leftDrive.motor;
+  // units::volt_t rightVoltageLimit = units::math::abs(
+  //   (_config.currentLimit*motor.R + 1.0/motor.Kv * (_config.leftDrive.encoder->GetEncoderAngularVelocity() + _config.rightDrive.encoder->GetEncoderAngularVelocity()))
+  //   / (ratio + 1));
+
+  // // rightVoltage = std::min(std::max(rightVoltage, -std::abs(rightVoltageLimit)), std::abs(rightVoltageLimit));
+  // rightVoltage = units::math::max(units::math::min(rightVoltage, rightVoltageLimit), -rightVoltageLimit);
+  // leftVoltage = rightVoltage * ratio;
 
   _config.leftDrive.transmission->SetVoltage(leftVoltage);
   _config.rightDrive.transmission->SetVoltage(rightVoltage);
-
   // units::newton_meter_t max_torque_at_current_limit = _config.leftDrive.motor.Torque(_config.currentLimit);
   // units::volt_t max_voltage_for_current_limit = _config.leftDrive.motor.Voltage(max_torque_at_current_limit, wheelSpeeds.left);
 
