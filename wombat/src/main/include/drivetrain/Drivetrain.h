@@ -10,6 +10,7 @@
 
 #include <units/angular_velocity.h>
 #include <units/charge.h>
+#include <units/current.h>
 
 #include <optional>
 
@@ -30,6 +31,8 @@ namespace wom {
 
     units::meter_t wheelRadius;
     units::meter_t trackWidth;
+
+    units::ampere_t currentLimit;
 
     PIDConfig<units::meters_per_second, units::volt> velocityPID;
     PIDConfig<units::meter, units::meters_per_second> distancePID;
@@ -81,18 +84,20 @@ namespace wom {
 
   class DrivetrainDriveDistance : public behaviour::Behaviour {
    public:
-    DrivetrainDriveDistance(Drivetrain *d, units::meter_t length, std::optional<units::meter_t> radius = {});
+    DrivetrainDriveDistance(Drivetrain *d, units::meter_t length);
 
     units::meter_t GetDistance() const;
+    units::degree_t GetAngle() const;
 
     void OnStart() override;
     void OnTick(units::second_t dt) override;
    private:
     Drivetrain *_drivetrain;
     units::meter_t _start_distance{0};
-    std::optional<units::meter_t> _radius;
+    units::degree_t _start_angle{0};
 
-    PIDController<units::meter, units::meters_per_second> _pid;
+    PIDController<units::meter, units::meters_per_second> _distancePID;
+    PIDController<units::degree, units::degrees_per_second> _anglePID;
   };
 
   class DrivetrainTurnToAngle : public behaviour::Behaviour {
