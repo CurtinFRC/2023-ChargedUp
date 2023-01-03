@@ -7,11 +7,15 @@ double Encoder::GetEncoderTicks() const {
 }
 
 double Encoder::GetEncoderTicksPerRotation() const {
-  return _encoderTicksPerRotation;
+  return _encoderTicksPerRotation * _reduction;
 }
 
 void Encoder::ZeroEncoder() {
   _offset = GetEncoderRawTicks();
+}
+
+double Encoder::SetReduction(double reduction) {
+  _reduction = reduction;
 }
 
 units::radian_t Encoder::GetEncoderPosition() {
@@ -33,8 +37,8 @@ double DigitalEncoder::GetEncoderTickVelocity() const {
   return 1.0 / (double)_nativeEncoder.GetPeriod();
 }
 
-CANSparkMaxEncoder::CANSparkMaxEncoder(rev::CANSparkMax *controller)
-  : Encoder(42), _encoder(controller->GetEncoder()) {}
+CANSparkMaxEncoder::CANSparkMaxEncoder(rev::CANSparkMax *controller, double reduction)
+  : Encoder(42, reduction), _encoder(controller->GetEncoder()) {}
 
 double CANSparkMaxEncoder::GetEncoderRawTicks() const {
   return _encoder.GetPosition() * GetEncoderTicksPerRotation();
@@ -42,4 +46,17 @@ double CANSparkMaxEncoder::GetEncoderRawTicks() const {
 
 double CANSparkMaxEncoder::GetEncoderTickVelocity() const {
   return _encoder.GetVelocity() * GetEncoderTicksPerRotation() / 60;
+}
+
+TalonFXEncoder::TalonFXEncoder(ctre::phoenix::motorcontrol::can::TalonFX *controller, double reduction)
+  : Encoder(2048, reduction), _controller(controller) {
+    controller->ConfigSelectedFeedbackSensor(ctre::phoenix::motorcontrol::TalonFXFeedbackDevice::IntegratedSensor);
+  }
+
+double TalonFXEncoder::GetEncoderRawTicks() const {
+  return _controller->GetSelectedSensorPosition();
+}
+
+double TalonFXEncoder::GetEncoderTickVelocity() const {
+  return _controller->GetSelectedSensorVelocity() * 10;
 }

@@ -5,6 +5,8 @@
 #include "Encoder.h"
 #include "Gearbox.h"
 #include "PID.h"
+#include "drivetrain/Drivetrain.h"
+#include "AHRS.h"
 
 struct RobotMap {
 
@@ -39,5 +41,67 @@ struct RobotMap {
 
     units::ampere_t currentLimit{35};
   }; ShooterSystem shooter;
+
+  struct DrivetrainSystem {
+    double GEARBOX_REDUCTION = 1.0 / (14.0 * 14.0 / 32.0 / 36.0);
+
+    WPI_TalonFX leftDriveMotor{6};
+    WPI_TalonFX rightDriveMotor{7};
+
+    wom::TalonFXEncoder leftDriveEncoder{&leftDriveMotor, GEARBOX_REDUCTION};
+    wom::TalonFXEncoder rightDriveEncoder{&rightDriveMotor, GEARBOX_REDUCTION};
+
+    wom::Gearbox leftDrive {
+      new wom::MotorVoltageController(&leftDriveMotor),
+      &leftDriveEncoder,
+      wom::DCMotor::Falcon500(1).WithReduction(GEARBOX_REDUCTION)
+    };
+
+    wom::Gearbox rightDrive {
+      new wom::MotorVoltageController(&rightDriveMotor),
+      &rightDriveEncoder,
+      wom::DCMotor::Falcon500(1).WithReduction(GEARBOX_REDUCTION)
+    };
+
+    AHRS gyro{frc::SPI::Port::kMXP};
+
+    wom::PIDConfig<units::meters_per_second, units::volt> velocityPID {
+      "drivetrain/pid/velocity/config",
+      12_V / 2_mps
+    };
+
+    wom::PIDConfig<units::meter, units::meters_per_second> distancePID {
+      "drivetrain/behaviours/DrivetrainDriveDistance/pid/config",
+      4_mps / 1_m,
+      // 0_mps / 1_s / 1_m,
+      // 0_m / 1_m,
+      // 5_cm,
+      // 0.2_mps
+    };
+
+    wom::PIDConfig<units::degree, units::degrees_per_second> anglePID {
+      "drivetrain/behaviours/DrivetrainTurnAngle/pid/config",
+      (180_deg / 0.5_s) / 45_deg,
+      // 0_deg / 1_s / 1_s / 1_deg,
+      // 0_deg / 1_deg,
+      // 2_deg,
+      // 1_deg / 1_s
+    };
+
+    wom::DrivetrainConfig config{
+      leftDrive,
+      rightDrive,
+
+      &gyro,
+
+      4_in / 2,
+      0.54_m,
+      
+      velocityPID,
+      distancePID,
+      anglePID
+    };
+    
+  }; DrivetrainSystem drivetrain;
 
 };

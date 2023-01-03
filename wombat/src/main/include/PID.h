@@ -101,6 +101,8 @@ namespace wom {
 
       auto out = config.kp * error + config.ki * _integralSum + config.kd * deriv + feedforward;
 
+      _table->GetEntry("pv").SetDouble(pv.value());
+      _table->GetEntry("setpoint").SetDouble(_setpoint.value());
       _table->GetEntry("error").SetDouble(error.value());
       _table->GetEntry("integralSum").SetDouble(_integralSum.value());
       _table->GetEntry("stable").SetBoolean(IsStable());
