@@ -9,9 +9,9 @@ namespace wom {
   class WaspDriveKinematics {
    public:
     WaspDriveKinematics(units::meter_t trackWidth, units::meter_t trackLength) {
-      invKinematics <<  1, -1, -trackWidth / 2,
-                        1,  1, trackWidth / 2,
-                        0, -1, trackLength;
+      invKinematics <<  1, -1, -(trackWidth / 2 + trackLength / 2),
+                        1,  1, (trackWidth / 2 + trackLength / 2),
+                        0, -1, trackLength / 2;
     }
 
     WaspWheelSpeeds ToWheelSpeeds(const frc::ChassisSpeeds &chassis) const {
