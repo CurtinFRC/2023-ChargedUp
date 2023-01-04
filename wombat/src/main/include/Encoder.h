@@ -20,7 +20,7 @@ namespace wom {
     double  GetEncoderTicks() const;
     double  GetEncoderTicksPerRotation() const;
 
-    double SetReduction(double reduction);
+    void SetReduction(double reduction);
 
     units::radian_t GetEncoderPosition();
     units::radians_per_second_t GetEncoderAngularVelocity();   // rad/s

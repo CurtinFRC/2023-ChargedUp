@@ -14,7 +14,7 @@ void Encoder::ZeroEncoder() {
   _offset = GetEncoderRawTicks();
 }
 
-double Encoder::SetReduction(double reduction) {
+void Encoder::SetReduction(double reduction) {
   _reduction = reduction;
 }
 
