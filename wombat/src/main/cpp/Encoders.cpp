@@ -15,7 +15,7 @@ void Encoder::ZeroEncoder() {
 }
 
 double Encoder::SetReduction(double reduction) {
-  _reduction = reduction;
+  return _reduction = reduction;
 }
 
 units::radian_t Encoder::GetEncoderPosition() {

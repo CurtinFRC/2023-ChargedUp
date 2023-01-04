@@ -14,6 +14,9 @@
 
 #include <ctre/Phoenix.h>
 #include <frc/XboxController.h>
+#include "drivetrain/WaspDrive.h"
+
+#include "ControlUtil.h"
 
 // #include <frc/RobotBase.h>
 
@@ -36,4 +39,6 @@ class Robot : public frc::TimedRobot {
   wom::Drivetrain *drivetrain;
 
   frc::XboxController *driver;
+
+  wom::WaspDrive *waspDrive;
 };

@@ -7,6 +7,7 @@
 #include "PID.h"
 #include "drivetrain/Drivetrain.h"
 #include "AHRS.h"
+#include "drivetrain/WaspDrive.h"
 
 struct RobotMap {
 
@@ -105,5 +106,84 @@ struct RobotMap {
     };
     
   }; DrivetrainSystem drivetrain;
+
+  struct WaspDrivetrainSystem {
+    double GEARBOX_REDUCTION = 1.0 / (14.0 * 14.0 / 32.0 / 36.0);
+
+    WPI_TalonFX leftDriveMotor{6};
+    WPI_TalonFX rightDriveMotor{7};
+    WPI_TalonFX dropDriveMotor1{99};
+    WPI_TalonFX dropDriveMotor2{99};
+
+    wom::MotorVoltageController dropDriveMotorGroup = wom::MotorVoltageController::Group(
+      dropDriveMotor1,
+      dropDriveMotor2
+    );
+
+    wom::TalonFXEncoder leftDriveEncoder{&leftDriveMotor, GEARBOX_REDUCTION};
+    wom::TalonFXEncoder rightDriveEncoder{&rightDriveMotor, GEARBOX_REDUCTION};
+
+    wom::TalonFXEncoder dropDriveEncoder{&dropDriveMotor1};
+
+    wom::Gearbox leftDrive {
+      new wom::MotorVoltageController(&leftDriveMotor),
+      &leftDriveEncoder,
+      wom::DCMotor::Falcon500(1).WithReduction(GEARBOX_REDUCTION)
+    };
+
+    wom::Gearbox rightDrive {
+      new wom::MotorVoltageController(&rightDriveMotor),
+      &rightDriveEncoder,
+      wom::DCMotor::Falcon500(1).WithReduction(GEARBOX_REDUCTION)
+    };
+
+    wom::Gearbox dropDrive {
+      new wom::MotorVoltageController(&dropDriveMotor1),
+      &dropDriveEncoder,
+      wom::DCMotor::MiniCIM(2).WithReduction(GEARBOX_REDUCTION)
+    };
+
+    AHRS gyro{frc::SPI::Port::kMXP};
+
+    wom::PIDConfig<units::meters_per_second, units::volt> velocityPID {
+      "drivetrain/pid/velocity/config",
+      12_V / 2_mps
+    };
+
+    // wom::PIDConfig<units::meter, units::meters_per_second> distancePID {
+    //   "drivetrain/behaviours/DrivetrainDriveDistance/pid/config",
+    //   4_mps / 1_m,
+    //   0_mps / 1_s / 1_m,
+    //   0_m / 1_m,
+    //   5_cm,
+    //   0.2_mps
+    // };
+
+    // wom::PIDConfig<units::degree, units::degrees_per_second> anglePID {
+    //   "drivetrain/behaviours/DrivetrainTurnAngle/pid/config",
+    //   (270_deg / 0.5_s) / 45_deg,
+    //   -0.001_deg / 1_s / 1_s / 1_deg,
+    //   0_deg / 1_deg,
+    //   2_deg,
+    //   1_deg / 1_s
+    // };
+
+    wom::WaspDriveConfig config{
+      leftDrive,
+      rightDrive,
+      dropDrive,
+
+      &gyro,
+
+      4_in / 2,
+      0.54_m,
+      
+      70_A,
+
+      velocityPID,
+      // distancePID
+      // anglePID
+    };
+  }; WaspDrivetrainSystem waspDriveSystem;
 
 };
