@@ -30,6 +30,5 @@ pluginManagement {
   }
 }
 
-include 'Wombat'
-include '4788'
+include 'wombat'
 rootProject.name = '2023-ChargedUp'
