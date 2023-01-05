@@ -5,7 +5,7 @@
 namespace wom {
   class FakeEncoder : public Encoder {
    public:
-    FakeEncoder(double ticksPerRev) : Encoder(ticksPerRev) {}
+    FakeEncoder(double ticksPerRev) : Encoder(ticksPerRev, 1) {}
 
     double GetEncoderRawTicks() const override {
       return _rotations.value() * GetEncoderTicksPerRotation();

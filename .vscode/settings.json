@@ -16,6 +16,11 @@
   },
   "C_Cpp.default.configurationProvider": "vscode-wpilib",
   "files.associations": {
+<<<<<<< HEAD
+    "*.ejs": "html",
+    "*.tex": "latex",
+    "*.inc": "cpp"
+=======
     "*.inc": "cpp",
     "iosfwd": "cpp",
     "optional": "cpp",
@@ -96,5 +101,6 @@
     "xtree": "cpp",
     "xutility": "cpp",
     "core": "cpp"
+>>>>>>> 54778fc2a1ff137399a3206c63f373d99f5495aa
   }
 }
