@@ -1,6 +1,7 @@
 #include "Robot.h"
 #include <frc/smartdashboard/SmartDashboard.h>
 
+
 using namespace frc;
 
 double currentTimeStamp;
@@ -14,7 +15,6 @@ void Robot::AutonomousInit() {}
 void Robot::AutonomousPeriodic() {}
 
 void Robot::TeleopInit() {}
-
 void Robot::TeleopPeriodic() {}
 
 void Robot::DisabledInit() {}
