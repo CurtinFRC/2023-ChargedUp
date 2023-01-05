@@ -8,10 +8,6 @@ using namespace frc;
 using namespace wom;
 using namespace behaviour;
 
-double currentTimeStamp;
-double lastTimeStamp;
-double dt;
-
 void Robot::RobotInit() { }
 void Robot::RobotPeriodic() {
   BehaviourScheduler::GetInstance()->Tick();
