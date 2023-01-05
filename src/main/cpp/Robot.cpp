@@ -7,8 +7,14 @@
 using namespace frc;
 using namespace behaviour;
 
-void Robot::RobotInit() { }
+void Robot::RobotInit() {
+  /* Create a new intake */
+  intake = new Intake(map.intake.config);
+}
 void Robot::RobotPeriodic() {
+  /* Update the intake */
+  intake->OnUpdate(20_ms);
+
   BehaviourScheduler::GetInstance()->Tick();
 }
 
@@ -17,7 +23,13 @@ void Robot::AutonomousPeriodic() {}
 
 void Robot::TeleopInit() { }
 
-void Robot::TeleopPeriodic() { }
+void Robot::TeleopPeriodic() {
+  /* Control the intake! */
+  if (map.controllers.driver.GetAButton())
+    intake->SetIntaking();
+  if (map.controllers.driver.GetBButton())
+    intake->SetOuttaking();
+}
 
 void Robot::DisabledInit() {}
 void Robot::DisabledPeriodic() {}
