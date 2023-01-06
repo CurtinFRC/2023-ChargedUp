@@ -1,6 +1,8 @@
-#include "ClimberBehaviour.h"
+#include "behaviours/ClimberBehaviour.h"
 
-ClimberBehaviour::ClimberBehaviour(Climber *climber,frc::XboxController *CoDriver):_climber(climber),_codriver(CoDriver){}
+ClimberBehaviour::ClimberBehaviour(Climber *climber,frc::XboxController *CoDriver):_climber(climber),_codriver(CoDriver){
+    Controls(climber);
+}
 
 void ClimberBehaviour::OnTick(units::second_t dt){
     if (_codriver->GetLeftTriggerAxis()>0.05) {

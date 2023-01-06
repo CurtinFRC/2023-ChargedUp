@@ -33,6 +33,10 @@ void Intake::OnUpdate(units::second_t dt) {
   _config.gearbox.transmission->SetVoltage(voltage);
 }
 
+void Intake::SetIdle() {
+  _state = IntakeState::kIdle;
+}
+
 void Intake::SetIntaking() {
   _state = IntakeState::kIntaking;
 }
