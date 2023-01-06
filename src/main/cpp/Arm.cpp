@@ -42,3 +42,29 @@ void Arm::SetAngle(units::radian_t angle) {
   _state = ArmState::kAngle;
   _pid.SetSetpoint(angle);
 }
+
+/* SIMULATION */
+#include <units/math.h>
+
+sim::ArmSim::ArmSim(wom::DCMotor motor, units::kilogram_t mass, units::meter_t armLength) : motor(motor), nominalTorque(mass * 9.81_m / 1_s / 1_s * armLength) { }
+
+void sim::ArmSim::Update(units::volt_t voltage, units::second_t dt) {
+  angle += motor.Speed(nominalTorque * units::math::cos(angle), voltage) * dt;
+
+  if (angle <= 0_rad) {
+    angle = 0_rad;
+    isLimitTriggered = true;
+  } else {
+    isLimitTriggered = false;
+  }
+
+  if (angle >= 90_deg)
+    angle = 90_deg;
+
+  nt::NetworkTableInstance::GetDefault().GetEntry("arm/sim/angle").SetDouble(angle.convert<units::degree>().value());
+  nt::NetworkTableInstance::GetDefault().GetEntry("arm/sim/limit").SetBoolean(isLimitTriggered);
+}
+
+bool sim::ArmSim::IsLimit() const {
+  return isLimitTriggered;
+}

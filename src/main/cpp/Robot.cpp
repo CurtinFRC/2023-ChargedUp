@@ -56,31 +56,32 @@ void Robot::TestPeriodic() {}
 /* SIMULATION */
 
 #include <frc/simulation/DIOSim.h>
-#include <networktables/NetworkTableInstance.h>
 
-frc::sim::DIOSim *_sim_limit;
+// frc::sim::DIOSim *simArmLimitSwitch;
+struct SimConfig {
+  struct ArmSimConfig {
+    frc::sim::DIOSim limitSwitch;
+    ::sim::ArmSim armSim;
+  };
+  ArmSimConfig armSim;
+};
+SimConfig *simConfig;
 
 void Robot::SimulationInit() {
-  _sim_limit = new frc::sim::DIOSim(map.arm.limitSwitch);
+  // simArmLimitSwitch = new frc::sim::DIOSim(map.arm.limitSwitch);
+  simConfig = new SimConfig {
+    SimConfig::ArmSimConfig {
+      frc::sim::DIOSim(map.arm.limitSwitch),
+      ::sim::ArmSim{
+        map.arm.gearbox.motor,
+        10_kg, 1_m
+      }
+    }
+  };
 }
 
-units::radian_t _sim_arm_angle{0};
-
 void Robot::SimulationPeriodic() {
-  _sim_arm_angle += map.arm.gearbox.motor.Speed(90_N * units::math::cos(_sim_arm_angle) * 1_m, map.arm.controller.GetVoltage()) * 20_ms;
-  
-  if (_sim_arm_angle <= 0_rad) {
-    _sim_arm_angle = 0_rad;
-    _sim_limit->SetValue(true);
-  } else {
-    _sim_limit->SetValue(false);
-  }
-
-  if (_sim_arm_angle >= 90_deg) {
-    _sim_arm_angle = 90_deg;
-  }
-
-  map.arm.encoder.SetTurns(_sim_arm_angle);
-
-  nt::NetworkTableInstance::GetDefault().GetEntry("arm/angle").SetDouble(_sim_arm_angle.convert<units::degree>().value());
+  simConfig->armSim.armSim.Update(map.arm.controller.GetVoltage(), 20_ms);
+  simConfig->armSim.limitSwitch.SetValue(simConfig->armSim.armSim.IsLimit());
+  map.arm.encoder.SetTurns(simConfig->armSim.armSim.angle);
 }

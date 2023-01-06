@@ -27,10 +27,29 @@ class Arm : public behaviour::HasBehaviour {
   void SetIdle();
   void SetAngle(units::radian_t angle);
   void SetZeroing();
-
-  ArmState GetState() const;
  private:
   ArmConfig _config;
   ArmState _state = ArmState::kIdle;
   wom::PIDController<units::radian, units::volt> _pid;
 };
+
+/* SIMULATION */
+#include <units/mass.h>
+#include <units/voltage.h>
+
+namespace sim {
+  class ArmSim {
+   public:
+    ArmSim(wom::DCMotor motor, units::kilogram_t mass, units::meter_t armLength);
+
+    void Update(units::volt_t voltage, units::second_t dt);
+
+    bool IsLimit() const;
+
+    units::radian_t angle{0};
+   private:
+    units::newton_meter_t nominalTorque;
+    bool isLimitTriggered = false;
+    wom::DCMotor motor;
+  };
+}
