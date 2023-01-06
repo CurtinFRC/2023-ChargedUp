@@ -10,5 +10,5 @@
 #include "drivetrain/WaspDrive.h"
 
 struct RobotMap {
-
+  
 };
