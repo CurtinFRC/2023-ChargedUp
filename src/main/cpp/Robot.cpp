@@ -17,7 +17,12 @@ void Robot::AutonomousPeriodic() {}
 
 void Robot::TeleopInit() { }
 
-void Robot::TeleopPeriodic() { }
+void Robot::TeleopPeriodic() { 
+  if(map.controllers.driver.GetAButton())
+    Intake->SetIntaking();
+  if(map.controllers.driver.GetBButton())
+    Intake->SetOuttaking();
+}
 
 void Robot::DisabledInit() {}
 void Robot::DisabledPeriodic() {}
