@@ -3,8 +3,12 @@
 #include "Intake.h"
 #include "VoltageController.h"
 #include "DCMotor.h"
+#include "Arm.h"
 #include <frc/XboxController.h>
 #include <ctre/Phoenix.h>
+
+#include "sim/FakeEncoder.h"
+#include "sim/FakeVoltageController.h"
 
 struct RobotMap {
   struct Controllers {
@@ -36,4 +40,23 @@ struct RobotMap {
   };
   IntakeSystem intake;
   
+
+  struct ArmSystem {
+    wom::FakeVoltageController controller;
+    wom::FakeEncoder encoder{2048};
+
+    wom::Gearbox gearbox{
+      &controller,
+      &encoder,
+      wom::DCMotor::CIM(3).WithReduction(60)
+    };
+
+    frc::DigitalInput limitSwitch{1};
+
+    ArmConfig config{
+      gearbox,
+      &limitSwitch
+    };
+  };
+  ArmSystem arm;
 };

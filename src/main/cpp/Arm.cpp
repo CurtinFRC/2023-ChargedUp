@@ -14,13 +14,13 @@ void Arm::OnUpdate(units::second_t dt) {
     case ArmState::kZeroing:
       voltage = -2_V;
       if (_config.bottomLimitSwitch->Get()) {
-        _config.encoder->ZeroEncoder();
+        _config.gearbox.encoder->ZeroEncoder();
         _state = ArmState::kIdle;
       }
       break;
     case ArmState::kAngle:
       {
-        units::radian_t currentAngle = _config.encoder->GetEncoderPosition();
+        units::radian_t currentAngle = _config.gearbox.encoder->GetEncoderPosition();
         units::radian_t error = _targetAngle - currentAngle;
         voltage = 12_V / 20_deg * error;
       }

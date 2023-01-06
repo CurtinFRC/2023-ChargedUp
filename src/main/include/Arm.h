@@ -8,7 +8,6 @@
 struct ArmConfig {
   wom::Gearbox gearbox;
   frc::DigitalInput *bottomLimitSwitch;
-  wom::Encoder *encoder;
 };
 
 enum class ArmState {
