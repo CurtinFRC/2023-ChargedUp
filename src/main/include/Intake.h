@@ -43,7 +43,6 @@ class Intake : public behaviour::HasBehaviour {
 
   /**
    * The OnUpdate method is called periodically (50 times a second) to perform
-   * the action of the intake. 
    */
   void OnUpdate(units::second_t dt);
 

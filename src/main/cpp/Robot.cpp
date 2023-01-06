@@ -23,11 +23,10 @@ void Robot::AutonomousPeriodic() {}
 
 void Robot::TeleopInit() { }
 
-void Robot::TeleopPeriodic() {
-  /* Control the intake! */
-  if (map.controllers.driver.GetAButton())
+void Robot::TeleopPeriodic() { 
+  if(map.controllers.driver.GetAButton())
     intake->SetIntaking();
-  if (map.controllers.driver.GetBButton())
+  if(map.controllers.driver.GetBButton())
     intake->SetOuttaking();
 }
 
