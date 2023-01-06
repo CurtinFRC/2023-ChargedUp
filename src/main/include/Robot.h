@@ -29,4 +29,5 @@ class Robot : public frc::TimedRobot {
   RobotMap map;
   Intake *intake;
   Arm *arm;
+  MecanumDrivebase *mecanumDrivebase;
 };

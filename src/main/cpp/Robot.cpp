@@ -14,12 +14,15 @@ void Robot::RobotInit() {
 
   arm = new Arm(map.arm.config);
   BehaviourScheduler::GetInstance()->Register(arm);
+  
+  mecanumDrivebase = new MecanumDrivebase(map.mecanumDriveSystem.config);
+  BehaviourScheduler::GetInstance()->Register(mecanumDrivebase);
 }
 void Robot::RobotPeriodic() {
   /* Update the intake */
   intake->OnUpdate(20_ms);
   arm->OnUpdate(20_ms);
-
+  mecanumDrivebase->OnUpdate(20_ms);
   BehaviourScheduler::GetInstance()->Tick();
 }
 
