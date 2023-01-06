@@ -31,7 +31,7 @@ struct RobotMap {
     wom::Gearbox frontRightGearbox{
       &frMotorController,
       nullptr,
-      wom::DCMotor::CIM(2).WithReduction(10.71)
+      wom::DCMotor::CIM(2).WithReduction(8.45)
     };
     wom::Gearbox rearLeftGearbox{
       &rlMotorController,
@@ -41,15 +41,15 @@ struct RobotMap {
     wom::Gearbox rearRightGearbox{
       &rrMotorController,
       nullptr,
-      wom::DCMotor::CIM(2).WithReduction(8.45)
+      wom::DCMotor::CIM(2).WithReduction(10.71)
     };
     
     MecanumDrivebaseConfig config{
       frontLeftGearbox, frontRightGearbox,
       rearLeftGearbox, rearRightGearbox,
       4_in / 2,
-      frc::Translation2d{1_m, 1_m}, frc::Translation2d{1_m, -1_m},
-      frc::Translation2d{-1_m, 1_m}, frc::Translation2d{-1_m, -1_m}
+      frc::Translation2d{281_mm, 305_mm}, frc::Translation2d{281_mm, -305_mm},
+      frc::Translation2d{-281_m, 305_m}, frc::Translation2d{-281_m, -305_m}
     };
   };
   MecanumDriveSystem mecanumDriveSystem;
