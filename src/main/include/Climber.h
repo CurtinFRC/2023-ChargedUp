@@ -1,45 +1,35 @@
 #pragma once
-
+#include "Gearbox.h"
+#include <frc/DigitalInput.h>
 #include "behaviour/HasBehaviour.h"
 
-#include "Gearbox.h"
-
-struct ClimberConfig {
+struct ClimberConfig{
     wom::Gearbox gearbox;
 
-    units::volt_t ascendingVoltage = 12_V;
-    units::volt_t descendingVoltage = -5_V;
-    units::volt_t idleVoltage = 0_V;
-    units::volt_t fixedVoltage = 6_V;
-    units::volt_t climbedVoltage = 12_V;
+    units::volt_t windupVoltage = 7_V;
+    units::volt_t winddownVoltage = -5_V;
 };
-
 enum class ClimberState {
-    kIdle,
-    kAscending,
-    kDescending,
-    kFixed,
-    kClimbed
+  kIdle,
+  kWindUp,
+  kWindDown,
+  kLocked
 };
 
 class Climber : public behaviour::HasBehaviour {
-    public :
-        Climber(ClimberConfig config);
+ public:
+  Climber(ClimberConfig config);
 
-        void OnUpdate(units::second_t dt);
+  void OnUpdate(units::second_t dt);
+  
+  void SetWindUp();
+  void SetWindDown();
+  void SetLocked();
+  void SetIdle();
 
-        void SetAscending();
+  ClimberState GetState() const;
 
-        void SetDescending();
-
-        void SetFixed();
-
-        void SetClimbed();
-
-        ClimberState GetState() const;
-
-    private :
-        ClimberConfig _config;
-        ClimberState _state = ClimberState::kIdle;
-
-};
+ private:
+  ClimberConfig _config;
+  ClimberState _state = ClimberState::kIdle;
+  };
