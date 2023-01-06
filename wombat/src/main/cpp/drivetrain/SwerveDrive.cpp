@@ -86,12 +86,14 @@ void SwerveDrive::OnUpdate(units::second_t dt) {
         _target_fr_speeds.vy = _yPIDController.Calculate(GetPose().Y(), dt);
         _target_fr_speeds.omega = _anglePIDController.Calculate(GetPose().Rotation().Radians(), dt);
       }
+      [[fallthrough]];
     case SwerveDriveState::kFieldRelativeVelocity:
       _target_speed = _target_fr_speeds.ToChassisSpeeds(GetPose().Rotation().Radians());
+      [[fallthrough]];
     case SwerveDriveState::kVelocity:
       {
         auto target_states = _kinematics.ToSwerveModuleStates(_target_speed);
-        for (int i = 0; i < _modules.size(); i++) {
+        for (size_t i = 0; i < _modules.size(); i++) {
           _modules[i].SetPID(target_states[i].angle.Radians(), target_states[i].speed);
         }
       }
