@@ -5,12 +5,6 @@
 
 #include <frc/TimedRobot.h>
 #include <frc/smartdashboard/SendableChooser.h>
-// #include "startup.h"
-// #include "RobotStart.h"
-// #include "RobotStartup.h"
-// #include "Encoder.h"
-#include "Shooter.h"
-#include "drivetrain/Drivetrain.h"
 
 #include <ctre/Phoenix.h>
 #include <frc/XboxController.h>
@@ -35,10 +29,4 @@ class Robot : public frc::TimedRobot {
 
  private:
   RobotMap map;
-  wom::Shooter *shooter;
-  wom::Drivetrain *drivetrain;
-
-  frc::XboxController *driver;
-
-  wom::WaspDrive *waspDrive;
 };

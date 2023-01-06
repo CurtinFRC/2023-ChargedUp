@@ -26,6 +26,7 @@ class DrivetrainTest : public ::testing::Test {
     left, right, &gyro,
     4_in / 2,
     0.5_m,
+    70_A,
     {
       "dt/pid/config",
       12_V / 2_mps,
@@ -124,7 +125,7 @@ TEST_F(DrivetrainTest, Complex) {
   std::ofstream out{"drivetrain_complex.csv"};
   out << "t,x,y,heading,vl,vr,vf" << std::endl;
 
-  auto bhvr = make<DrivetrainDriveDistance>(&dt, 1_m, 2_m)
+  auto bhvr = make<DrivetrainDriveDistance>(&dt, 1_m)
               << make<DrivetrainTurnToAngle>(&dt, 45_deg)
               << make<DrivetrainDriveDistance>(&dt, 0.5_m)
               << make<DrivetrainTurnToAngle>(&dt, -100_deg)

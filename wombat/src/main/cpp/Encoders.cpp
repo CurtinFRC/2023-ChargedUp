@@ -14,8 +14,8 @@ void Encoder::ZeroEncoder() {
   _offset = GetEncoderRawTicks();
 }
 
-double Encoder::SetReduction(double reduction) {
-  return _reduction = reduction;
+void Encoder::SetReduction(double reduction) {
+  _reduction = reduction;
 }
 
 units::radian_t Encoder::GetEncoderPosition() {
