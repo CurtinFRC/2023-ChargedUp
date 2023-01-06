@@ -10,6 +10,7 @@ struct ArmConfig {
   wom::Gearbox gearbox;
   frc::DigitalInput *bottomLimitSwitch;
   wom::PIDConfig<units::radian, units::volt> pidConfig;
+  /*configers pid*/
 };
 
 enum class ArmState {
@@ -26,6 +27,7 @@ class Arm : public behaviour::HasBehaviour {
 
   void SetIdle();
   void SetAngle(units::radian_t angle);
+  /*set up angle*/
   void SetZeroing();
 
   ArmState GetState() const;
@@ -33,4 +35,5 @@ class Arm : public behaviour::HasBehaviour {
   ArmConfig _config;
   ArmState _state = ArmState::kIdle;
   wom::PIDController<units::radian, units::volt> _pid;
+  /*sets the paramiters of the pid: radians and volts*/
 };
