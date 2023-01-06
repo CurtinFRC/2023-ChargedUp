@@ -135,8 +135,8 @@ namespace wom {
       return val;
     }
 
-    sum_t _integralSum;
     in_t _setpoint;
+    sum_t _integralSum{0};
     in_t _last_pv{0};
 
     std::optional<in_t> _wrap_range;

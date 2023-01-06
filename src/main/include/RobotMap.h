@@ -53,9 +53,16 @@ struct RobotMap {
 
     frc::DigitalInput limitSwitch{1};
 
+    wom::PIDConfig<units::radian, units::volt> pidConfig{
+      "arm/pid/config",
+      12_V / 20_deg, 
+      0.2_V / (1_deg * 1_s)
+    }; 
+
     ArmConfig config{
       gearbox,
-      &limitSwitch
+      &limitSwitch,
+      pidConfig
     };
   };
   ArmSystem arm;

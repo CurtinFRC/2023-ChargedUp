@@ -90,6 +90,11 @@
     "Plot <3>": {
       "plots": [
         {
+          "axis": [
+            {
+              "autoFit": true
+            }
+          ],
           "height": 691,
           "series": [
             {

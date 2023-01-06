@@ -4,10 +4,12 @@
 #include "behaviour/HasBehaviour.h"
 #include <frc/DigitalInput.h>
 #include "Encoder.h"
+#include "PID.h"
 
 struct ArmConfig {
   wom::Gearbox gearbox;
   frc::DigitalInput *bottomLimitSwitch;
+  wom::PIDConfig<units::radian, units::volt> pidConfig;
 };
 
 enum class ArmState {
@@ -30,5 +32,5 @@ class Arm : public behaviour::HasBehaviour {
  private:
   ArmConfig _config;
   ArmState _state = ArmState::kIdle;
-  units::radian_t _targetAngle;
+  wom::PIDController<units::radian, units::volt> _pid;
 };

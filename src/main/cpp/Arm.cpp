@@ -3,7 +3,7 @@
 using namespace frc;
 using namespace wom;
 
-Arm::Arm(ArmConfig config) : _config(config) {   
+Arm::Arm(ArmConfig config) : _config(config), _pid("arm/pid", config.pidConfig) {   
 }
 
 void Arm::OnUpdate(units::second_t dt) {
@@ -20,9 +20,10 @@ void Arm::OnUpdate(units::second_t dt) {
       break;
     case ArmState::kAngle:
       {
-        units::radian_t currentAngle = _config.gearbox.encoder->GetEncoderPosition();
-        units::radian_t error = _targetAngle - currentAngle;
-        voltage = 12_V / 20_deg * error;
+        voltage = _pid.Calculate(_config.gearbox.encoder->GetEncoderPosition(), dt);
+        // units::radian_t currentAngle = _config.gearbox.encoder->GetEncoderPosition();
+        // units::radian_t error = _targetAngle - currentAngle;
+        // voltage = 12_V / 20_deg * error;
       }
       break;
   }
@@ -39,5 +40,5 @@ void Arm::SetZeroing() {
 
 void Arm::SetAngle(units::radian_t angle) {
   _state = ArmState::kAngle;
-  _targetAngle = angle;
+  _pid.SetSetpoint(angle);
 }
