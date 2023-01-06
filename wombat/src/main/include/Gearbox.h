@@ -27,6 +27,6 @@ struct Gearbox {
   /**
    * The motor being used. By default, this is a dual CIM.
    */
-  wom::DCMotor motor = wom::DCMotor::CIM(2);
+  wom::DCMotor motor = wom::DCMotor::CIM(1);
 };
 } //ns wom 
