@@ -1,8 +1,9 @@
 #include "Climber.h"
 
+using namespace frc;
 using namespace wom;
 
-Climber::Climber(ClimberConfig config) : _config(config) {}
+Climber::Climber(ClimberConfig config) : _config(config) { }
 
 void Climber::OnUpdate(units::second_t dt) {
     units::volt_t voltage = 0_V;
@@ -11,26 +12,32 @@ void Climber::OnUpdate(units::second_t dt) {
     case ClimberState::kIdle:
         voltage = 0_V;
         break;
-    case ClimberState::kAscending:
-        voltage = _config.ascendingVoltage;
+    case ClimberState::kWindUp:
+        voltage = _config.windupVoltage;
         break;
-    case ClimberState::kClimbed:
-        voltage = _config.climbedVoltage;
+    case ClimberState::kWindDown:
+        voltage = _config.winddownVoltage;
         break;
-    case ClimberState::kDescending:
-        voltage = _config.descendingVoltage;
+    case ClimberState::kLocked:
+        voltage = 1_V;
         break;
     }
 
     _config.gearbox.transmission->SetVoltage(voltage);
 }
 
-void Climber::SetAscending() {
-    _state = ClimberState::kAscending;
+void Climber::SetWindUp() {
+    _state = ClimberState::kWindUp;
 }
 
-void Climber::SetDescending() {
-    _state = ClimberState::kDescending;
+void Climber::SetWindDown() {
+    _state = ClimberState::kWindDown;
+}
+void Climber::SetLocked() {
+    _state = ClimberState::kLocked;
+}
+void Climber::SetIdle() {
+    _state = ClimberState::kIdle;
 }
 
 ClimberState Climber::GetState() const {

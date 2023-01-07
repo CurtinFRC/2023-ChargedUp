@@ -55,6 +55,8 @@ class Intake : public behaviour::HasBehaviour {
    */
   void SetOuttaking();
 
+  void SetIdle();
+
   /**
    * Get the current intake state.
    */
