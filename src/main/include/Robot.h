@@ -1,11 +1,10 @@
 #pragma once
 
-#include <string>
 #include "RobotMap.h"
-#include "Intake.h"
+
+#include <string>
 
 #include <frc/TimedRobot.h>
-#include <frc/smartdashboard/SendableChooser.h>
 
 using namespace frc;
 
@@ -27,7 +26,4 @@ class Robot : public frc::TimedRobot {
 
  private:
   RobotMap map;
-  Intake *intake;
-  Arm *arm;
-  MecanumDrivebase *mecanumDrivebase;
 };
