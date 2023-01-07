@@ -34,7 +34,8 @@ double DigitalEncoder::GetEncoderRawTicks() const {
 }
 
 double DigitalEncoder::GetEncoderTickVelocity() const {
-  return 1.0 / (double)_nativeEncoder.GetPeriod();
+  // return 1.0 / (double)_nativeEncoder.GetPeriod();
+  return _nativeEncoder.GetRate();
 }
 
 CANSparkMaxEncoder::CANSparkMaxEncoder(rev::CANSparkMax *controller, double reduction)

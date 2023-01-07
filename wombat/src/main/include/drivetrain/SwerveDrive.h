@@ -39,9 +39,11 @@ namespace wom {
     void SetIdle();
     void SetPID(units::radian_t angle, units::meters_per_second_t speed);
   
-    frc::SwerveModuleState GetState();
+    // frc::SwerveModuleState GetState();
+    frc::SwerveModulePosition GetPosition() const;
 
     units::meters_per_second_t GetSpeed() const;
+    units::meter_t GetDistance() const;
 
     const SwerveModuleConfig &GetConfig() const;
 
@@ -65,7 +67,6 @@ namespace wom {
     PIDConfig<units::meter, units::meters_per_second> posePositionPID;
 
     wpi::array<double, 3> stateStdDevs{0.0, 0.0, 0.0};
-    wpi::array<double, 1> localMeasurementStdDevs{0.0};
     wpi::array<double, 3> visionMeasurementStdDevs{0.0, 0.0, 0.0};
 
   };

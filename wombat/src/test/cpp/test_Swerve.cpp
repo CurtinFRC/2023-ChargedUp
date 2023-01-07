@@ -92,7 +92,6 @@ class SwerveTest : public ::testing::Test {
       4_mps / 1_m
     },
     { 0.1, 0.1, 0.1 },
-    { 0.05 },
     { 0.0, 0.0, 0.0 }
   };
 
