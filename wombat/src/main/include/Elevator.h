@@ -6,11 +6,13 @@
 #include "behaviour/Behaviour.h"
 #include <units/length.h>
 #include <units/mass.h>
-#include <frc/DigitalInput.h>
 
+#include <frc/DigitalInput.h>
+#include <frc/simulation/DIOSim.h>
+#include <frc/simulation/ElevatorSim.h>
+#include <networktables/NetworkTable.h>
 
 #include <memory>
-#include <networktables/NetworkTable.h>
 
 namespace wom {
   enum class ElevatorState {
@@ -24,6 +26,7 @@ namespace wom {
     Gearbox gearbox;
     units::meter_t radius;
     units::kilogram_t mass;
+    units::meter_t maxHeight;
     frc::DigitalInput *topSensor;
     frc::DigitalInput *bottomSensor;
     PIDConfig<units::meter, units::volt> pid;
@@ -53,4 +56,23 @@ namespace wom {
 
     std::shared_ptr<nt::NetworkTable> _table;
   };
+
+  /* SIMULATION */
+
+  namespace sim {
+    class ElevatorSim {
+     public:
+      ElevatorSim(ElevatorParams params);
+
+      void Update(units::volt_t voltage, units::second_t dt);
+
+      units::meter_t GetHeight() const;
+     private:
+      ElevatorParams params;
+      frc::sim::ElevatorSim sim;
+
+      std::shared_ptr<SimCapableEncoder> encoder;
+      frc::sim::DIOSim *lowerLimit, *upperLimit;
+    };
+  }
 }
