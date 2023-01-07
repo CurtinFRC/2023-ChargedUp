@@ -1,4 +1,4 @@
-#include "NavX.h"
+#include "Gyro.h"
 
 using namespace wom;
 
@@ -50,6 +50,16 @@ using namespace wom;
   };
 #endif
 
+class NavXSimGyro : public sim::SimCapableGyro {
+ public:
+  NavXSimGyro(NavX *navx) : navx(navx) {}
+  void SetAngle(units::radian_t angle) override {
+    navx->SetAngle(angle);
+  }
+ private:
+  NavX *navx;
+};
+
 NavX::NavX() : impl(new NavX::Impl()) { }
 NavX::~NavX() {
   delete impl;
@@ -73,4 +83,8 @@ double NavX::GetRate() const {
 
 void NavX::SetAngle(units::radian_t angle) {
   impl->SetAngle(angle);
+}
+
+std::shared_ptr<sim::SimCapableGyro> NavX::MakeSimGyro() {
+  return std::make_shared<NavXSimGyro>(this);
 }

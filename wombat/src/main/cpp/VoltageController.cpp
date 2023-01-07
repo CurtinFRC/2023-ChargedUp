@@ -1,7 +1,14 @@
 #include "VoltageController.h"
 #include <frc/RobotController.h>
 
+#include <frc/RobotController.h>
+
 using namespace wom;
+
+units::volt_t VoltageController::GetEstimatedRealVoltage() const {
+  units::volt_t vb = frc::RobotController::GetBatteryVoltage();
+  return units::math::min(units::math::max(-vb, GetVoltage()), vb);
+}
 
 MotorVoltageController::MotorVoltageController(frc::MotorController *MotorController) : _MotorController(MotorController) {}
 

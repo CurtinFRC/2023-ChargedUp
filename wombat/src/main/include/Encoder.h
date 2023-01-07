@@ -7,6 +7,7 @@
 #include <rev/CANSparkMax.h>
 #include <ctre/phoenix.h>
 
+#include "sim/SimEncoder.h"
 #include "Util.h"
 
 namespace wom {
@@ -25,6 +26,7 @@ namespace wom {
     units::radian_t GetEncoderPosition();
     units::radians_per_second_t GetEncoderAngularVelocity();   // rad/s
 
+    virtual std::shared_ptr<sim::SimCapableEncoder> MakeSimEncoder() = 0;
    private:
     double _encoderTicksPerRotation;
     double _reduction = 1.0;
@@ -40,11 +42,12 @@ namespace wom {
     double GetEncoderRawTicks() const override;
     double GetEncoderTickVelocity() const override;
 
-    frc::Encoder *GetEncoder();
+    std::shared_ptr<sim::SimCapableEncoder> MakeSimEncoder() override;
    private:
     frc::Encoder _nativeEncoder;
   };
 
+  class SimCANSparkMaxEncoder;
   class CANSparkMaxEncoder : public Encoder {
    public:
     CANSparkMaxEncoder(rev::CANSparkMax *controller, double reduction = 1);
@@ -52,9 +55,14 @@ namespace wom {
     double GetEncoderRawTicks() const override;
     double GetEncoderTickVelocity() const override;
 
-    rev::SparkMaxRelativeEncoder *GetSparkMax();
-   private:
+    std::shared_ptr<sim::SimCapableEncoder> MakeSimEncoder() override;
+   protected:
     rev::SparkMaxRelativeEncoder _encoder;
+    friend class SimCANSparkMaxEncoder;
+
+    // For simulation
+    double _simTicks{0};
+    double _simVelocity{0};
   };
 
   class TalonFXEncoder : public Encoder {
@@ -64,7 +72,7 @@ namespace wom {
     double GetEncoderRawTicks() const override;
     double GetEncoderTickVelocity() const override;
 
-    TalonFX *GetTalonFX();
+    std::shared_ptr<sim::SimCapableEncoder> MakeSimEncoder() override;
    private:
     ctre::phoenix::motorcontrol::can::TalonFX *_controller;
   };

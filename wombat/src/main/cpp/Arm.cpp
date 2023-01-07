@@ -47,12 +47,12 @@ void Arm::SetAngle(units::radian_t angle) {
 /* SIMULATION */
 #include <units/math.h>
 
-sim::ArmSim::ArmSim(wom::DCMotor motor, units::kilogram_t mass, units::meter_t armLength,
+::wom::sim::ArmSim::ArmSim(wom::DCMotor motor, units::kilogram_t mass, units::meter_t armLength,
                     units::radian_t minAngle, units::radian_t maxAngle) 
   : motor(motor), nominalTorque(mass * 9.81_m / 1_s / 1_s * armLength),
     minAngle(minAngle), maxAngle(maxAngle) { }
 
-void sim::ArmSim::Update(units::volt_t voltage, units::second_t dt) {
+void ::wom::sim::ArmSim::Update(units::volt_t voltage, units::second_t dt) {
   angle += motor.Speed(nominalTorque * units::math::cos(angle), voltage) * dt;
 
   if (angle <= minAngle) {
@@ -74,10 +74,10 @@ void sim::ArmSim::Update(units::volt_t voltage, units::second_t dt) {
   nt::NetworkTableInstance::GetDefault().GetEntry("arm/sim/upperLimit").SetBoolean(upperLimit);
 }
 
-bool sim::ArmSim::IsLowerLimit() const {
+bool ::wom::sim::ArmSim::IsLowerLimit() const {
   return lowerLimit;
 }
 
-bool sim::ArmSim::IsUpperLimit() const {
+bool ::wom::sim::ArmSim::IsUpperLimit() const {
   return upperLimit;
 }
