@@ -2,9 +2,9 @@
 
 #include "drivetrain/SwerveDrive.h"
 
-#include "FakeVoltageController.h"
-#include "FakeEncoder.h"
-#include "FakeGyro.h"
+#include "sim/FakeVoltageController.h"
+#include "sim/FakeEncoder.h"
+#include "sim/FakeGyro.h"
 #include "sim/SwerveSim.h"
 
 #include <frc/simulation/DCMotorSim.h>

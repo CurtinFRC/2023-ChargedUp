@@ -51,9 +51,9 @@ namespace wom {
 
       units::radian_t angle{0};
     private:
+      wom::DCMotor motor;
       units::newton_meter_t nominalTorque;
       bool lowerLimit = false, upperLimit = false;
-      wom::DCMotor motor;
       units::radian_t minAngle, maxAngle;
     };
   }
