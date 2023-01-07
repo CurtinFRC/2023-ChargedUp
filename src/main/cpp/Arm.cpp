@@ -16,11 +16,13 @@ void Arm::OnUpdate(units::second_t dt) {
       if (_config.bottomLimitSwitch->Get()) {
         _config.gearbox.encoder->ZeroEncoder();
         _state = ArmState::kIdle;
+        /*when bottom limit switch is triggered, the encoder is zeroed and returns to the idle state*/
       }
       break;
     case ArmState::kAngle:
       {
         voltage = _pid.Calculate(_config.gearbox.encoder->GetEncoderPosition(), dt);
+        /*creates a pid controller*/
         // units::radian_t currentAngle = _config.gearbox.encoder->GetEncoderPosition();
         // units::radian_t error = _targetAngle - currentAngle;
         // voltage = 12_V / 20_deg * error;
@@ -42,7 +44,6 @@ void Arm::SetAngle(units::radian_t angle) {
   _state = ArmState::kAngle;
   _pid.SetSetpoint(angle);
 }
-
 /* SIMULATION */
 #include <units/math.h>
 
