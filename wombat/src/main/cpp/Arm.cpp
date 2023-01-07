@@ -48,36 +48,30 @@ void Arm::SetAngle(units::radian_t angle) {
 #include <units/math.h>
 
 ::wom::sim::ArmSim::ArmSim(wom::DCMotor motor, units::kilogram_t mass, units::meter_t armLength,
-                    units::radian_t minAngle, units::radian_t maxAngle) 
+                    units::radian_t minAngle, units::radian_t maxAngle, ::wom::sim::SimCapableEncoder *encoderSim,
+                    frc::sim::DIOSim *lowerLimit, frc::sim::DIOSim *upperLimit) 
   : motor(motor), nominalTorque(mass * 9.81_m / 1_s / 1_s * armLength),
-    minAngle(minAngle), maxAngle(maxAngle) { }
+    minAngle(minAngle), maxAngle(maxAngle), encoder(encoderSim),
+    lowerLimit(lowerLimit), upperLimit(upperLimit) { }
 
 void ::wom::sim::ArmSim::Update(units::volt_t voltage, units::second_t dt) {
   angle += motor.Speed(nominalTorque * units::math::cos(angle), voltage) * dt;
 
   if (angle <= minAngle) {
     angle = minAngle;
-    lowerLimit = true;
+    if (lowerLimit) lowerLimit->SetValue(true);
   } else {
-    lowerLimit = false;
+    if (lowerLimit) lowerLimit->SetValue(false);
   }
 
   if (angle >= maxAngle) {
     angle = maxAngle;
-    upperLimit = true;
+    if (upperLimit) upperLimit->SetValue(true);
   } else {
-    upperLimit = false;
+    if (upperLimit) upperLimit->SetValue(false);
   }
 
+  if (encoder) encoder->SetEncoderTurns(angle);
+
   nt::NetworkTableInstance::GetDefault().GetEntry("arm/sim/angle").SetDouble(angle.convert<units::degree>().value());
-  nt::NetworkTableInstance::GetDefault().GetEntry("arm/sim/lowerLimit").SetBoolean(lowerLimit);
-  nt::NetworkTableInstance::GetDefault().GetEntry("arm/sim/upperLimit").SetBoolean(upperLimit);
-}
-
-bool ::wom::sim::ArmSim::IsLowerLimit() const {
-  return lowerLimit;
-}
-
-bool ::wom::sim::ArmSim::IsUpperLimit() const {
-  return upperLimit;
 }

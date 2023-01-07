@@ -93,20 +93,22 @@ std::shared_ptr<sim::SimCapableEncoder> DigitalEncoder::MakeSimEncoder() {
   return std::make_shared<SimDigitalEncoder>(this, &_nativeEncoder);
 }
 
-class ::wom::SimCANSparkMaxEncoder : public sim::SimCapableEncoder {
- public:
-  SimCANSparkMaxEncoder(wom::CANSparkMaxEncoder *encoder) : encoder(encoder) {}
+namespace wom {
+  class SimCANSparkMaxEncoder : public sim::SimCapableEncoder {
+  public:
+    SimCANSparkMaxEncoder(wom::CANSparkMaxEncoder *encoder) : encoder(encoder) {}
 
-  void SetEncoderTurns(units::turn_t turns) override {
-    encoder->_simTicks = turns.value() * encoder->GetEncoderTicksPerRotation();
-  }
+    void SetEncoderTurns(units::turn_t turns) override {
+      encoder->_simTicks = turns.value() * encoder->GetEncoderTicksPerRotation();
+    }
 
-  void SetEncoderTurnVelocity(units::turns_per_second_t speed) override {
-    encoder->_simVelocity = speed.value() * encoder->GetEncoderTicksPerRotation();
-  }
- private:
-  wom::CANSparkMaxEncoder *encoder;
-};
+    void SetEncoderTurnVelocity(units::turns_per_second_t speed) override {
+      encoder->_simVelocity = speed.value() * encoder->GetEncoderTicksPerRotation();
+    }
+  private:
+    wom::CANSparkMaxEncoder *encoder;
+  };
+}
 
 std::shared_ptr<sim::SimCapableEncoder> CANSparkMaxEncoder::MakeSimEncoder() {
   return std::make_shared<SimCANSparkMaxEncoder>(this);
