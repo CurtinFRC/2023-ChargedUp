@@ -40,6 +40,7 @@ namespace wom {
     double GetEncoderRawTicks() const override;
     double GetEncoderTickVelocity() const override;
 
+    frc::Encoder *GetEncoder();
    private:
     frc::Encoder _nativeEncoder;
   };
@@ -50,6 +51,8 @@ namespace wom {
 
     double GetEncoderRawTicks() const override;
     double GetEncoderTickVelocity() const override;
+
+    rev::SparkMaxRelativeEncoder *GetSparkMax();
    private:
     rev::SparkMaxRelativeEncoder _encoder;
   };
@@ -60,6 +63,8 @@ namespace wom {
 
     double GetEncoderRawTicks() const override;
     double GetEncoderTickVelocity() const override;
+
+    TalonFX *GetTalonFX();
    private:
     ctre::phoenix::motorcontrol::can::TalonFX *_controller;
   };
