@@ -2,16 +2,16 @@
 
 #include "drivetrain/Drivetrain.h"
 
-#include "FakeVoltageController.h"
-#include "FakeEncoder.h"
-#include "FakeGyro.h"
+#include "sim/FakeVoltageController.h"
+#include "sim/FakeEncoder.h"
+#include "sim/FakeGyro.h"
 
 #include <frc/simulation/DifferentialDrivetrainSim.h>
 
 #include <fstream>
 
 using namespace wom;
-using namespace behaviour;
+// using namespace behaviour;
 
 class DrivetrainTest : public ::testing::Test {
 //  public:
