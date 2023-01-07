@@ -13,8 +13,12 @@
 namespace wom {
   struct ArmConfig {
     wom::Gearbox gearbox;
-    frc::DigitalInput *bottomLimitSwitch;
+    frc::DigitalInput *lowerLimitSwitch;
     wom::PIDConfig<units::radian, units::volt> pidConfig;
+
+    units::kilogram_t mass;
+    units::meter_t armLength;
+    units::radian_t maxAngle = 180_deg;
   };
 
   enum class ArmState {
@@ -43,12 +47,7 @@ namespace wom {
   namespace sim {
     class ArmSim {
     public:
-      ArmSim(
-        frc::DCMotor motor, units::kilogram_t mass, units::meter_t armLength,
-        units::radian_t minAngle = 0_rad, units::radian_t maxAngle = 180_deg,
-        SimCapableEncoder *encoderSim = nullptr, frc::sim::DIOSim *lowerLimitSim = nullptr,
-        frc::sim::DIOSim *upperLimitSim = nullptr
-      );
+      ArmSim(ArmConfig config);
 
       void Update(units::volt_t voltage, units::second_t dt);
 
@@ -58,8 +57,8 @@ namespace wom {
       units::newton_meter_t nominalTorque;
       units::radian_t minAngle, maxAngle;
 
-      SimCapableEncoder *encoder;
-      frc::sim::DIOSim *lowerLimit, *upperLimit;
+      std::shared_ptr<SimCapableEncoder> encoder;
+      frc::sim::DIOSim *lowerLimit;
     };
   }
 }
