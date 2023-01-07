@@ -1,7 +1,6 @@
 #pragma once
 
 #include "VoltageController.h"
-#include "DCMotor.h"
 
 #include <frc/XboxController.h>
 #include <ctre/Phoenix.h>

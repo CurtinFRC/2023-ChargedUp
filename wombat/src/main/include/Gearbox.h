@@ -2,10 +2,10 @@
 
 #include "Encoder.h"
 #include "VoltageController.h"
-// #include <frc/system/plant/DCMotor.h>
-#include "DCMotor.h"
+#include <frc/system/plant/DCMotor.h>
 
 namespace wom {
+  using DCMotor = frc::DCMotor;
 /**
  * Struct for motor and encoder pairs.
  *
@@ -27,6 +27,6 @@ struct Gearbox {
   /**
    * The motor being used. By default, this is a dual CIM.
    */
-  wom::DCMotor motor = wom::DCMotor::CIM(2);
+  frc::DCMotor motor = frc::DCMotor::CIM(2);
 };
 } //ns wom 

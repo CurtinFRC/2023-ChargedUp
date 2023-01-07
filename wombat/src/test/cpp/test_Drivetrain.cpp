@@ -52,7 +52,7 @@ public:
   Drivetrain dt{"dt", config};
 
   frc::sim::DifferentialDrivetrainSim sim{
-    left.motor.ToWPI(), 1.0, units::kilogram_square_meter_t{5}, 50_kg, config.wheelRadius, config.trackWidth
+    left.motor, 1.0, units::kilogram_square_meter_t{5}, 50_kg, config.wheelRadius, config.trackWidth
   };
 };
 

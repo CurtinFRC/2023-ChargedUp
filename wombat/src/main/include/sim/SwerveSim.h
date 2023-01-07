@@ -1,4 +1,5 @@
-#include "DCMotor.h"
+#include "Gearbox.h"
+
 #include <units/mass.h>
 #include <units/moment_of_inertia.h>
 #include <units/velocity.h>

@@ -42,7 +42,7 @@ namespace wom {
   namespace sim {
     class ArmSim {
     public:
-      ArmSim(wom::DCMotor motor, units::kilogram_t mass, units::meter_t armLength, units::radian_t minAngle = 0_rad, units::radian_t maxAngle = 180_deg);
+      ArmSim(frc::DCMotor motor, units::kilogram_t mass, units::meter_t armLength, units::radian_t minAngle = 0_rad, units::radian_t maxAngle = 180_deg);
 
       void Update(units::volt_t voltage, units::second_t dt);
 
