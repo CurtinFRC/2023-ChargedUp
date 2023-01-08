@@ -1,14 +1,13 @@
 #pragma once
+#include "VoltageController.h"
 
-#include <rev/CANSparkMax.h>
-#include <frc/system/plant/DCMotor.h>
-#include "Encoder.h"
-#include "Gearbox.h"
-#include "PID.h"
-#include "drivetrain/Drivetrain.h"
-#include "AHRS.h"
-#include "drivetrain/WaspDrive.h"
+#include <frc/XboxController.h>
+#include <ctre/Phoenix.h>
 
 struct RobotMap {
-  
+  struct Controllers {
+    frc::XboxController driver{0};
+    frc::XboxController codriver{1};
+  };
+  Controllers controllers;
 };

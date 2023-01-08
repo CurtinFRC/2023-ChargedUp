@@ -30,6 +30,11 @@ namespace wom {
      * Get whether the output is inverted
      */
     virtual bool GetInverted() const = 0;
+
+    /**
+     * Get the estimated real voltage of the output, based on the controller voltage. 
+     */
+    units::volt_t GetEstimatedRealVoltage() const;
   };
 
   /**

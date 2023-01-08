@@ -1,6 +1,6 @@
 #pragma once
 
-#include "DCMotor.h"
+#include "Gearbox.h"
 
 #include <Eigen/Core>
 #include <units/angular_acceleration.h>

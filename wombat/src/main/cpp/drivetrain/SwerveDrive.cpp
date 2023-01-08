@@ -43,9 +43,20 @@ units::meters_per_second_t SwerveModule::GetSpeed() const {
   return units::meters_per_second_t{_config.driveMotor.encoder->GetEncoderAngularVelocity().value() * _config.wheelRadius.value()};
 }
 
-frc::SwerveModuleState SwerveModule::GetState() {
-  return frc::SwerveModuleState {
-    GetSpeed(),
+units::meter_t SwerveModule::GetDistance() const {
+  return units::meter_t{ _config.driveMotor.encoder->GetEncoderPosition().value() * _config.wheelRadius.value() };
+}
+
+// frc::SwerveModuleState SwerveModule::GetState() {
+//   return frc::SwerveModuleState {
+//     GetSpeed(),
+//     _config.turnMotor.encoder->GetEncoderPosition()
+//   };
+// }
+
+frc::SwerveModulePosition SwerveModule::GetPosition() const {
+  return frc::SwerveModulePosition {
+    GetDistance(),
     _config.turnMotor.encoder->GetEncoderPosition()
   };
 }
@@ -57,7 +68,17 @@ const SwerveModuleConfig &SwerveModule::GetConfig() const {
 SwerveDrive::SwerveDrive(std::string path, SwerveDriveConfig config, frc::Pose2d initialPose) :
   _config(config),
   _kinematics( _config.modules[0].position, _config.modules[1].position, _config.modules[2].position, _config.modules[3].position),
-  _poseEstimator(_config.gyro->GetRotation2d(), initialPose, _kinematics, _config.stateStdDevs, _config.localMeasurementStdDevs, _config.visionMeasurementStdDevs),
+  _poseEstimator(
+    _kinematics, _config.gyro->GetRotation2d(),
+    wpi::array<frc::SwerveModulePosition, 4> { 
+      frc::SwerveModulePosition { 0_m, frc::Rotation2d{0_deg} },
+      frc::SwerveModulePosition { 0_m, frc::Rotation2d{0_deg} },
+      frc::SwerveModulePosition { 0_m, frc::Rotation2d{0_deg} },
+      frc::SwerveModulePosition { 0_m, frc::Rotation2d{0_deg} }
+    },
+    initialPose,
+    _config.stateStdDevs, _config.visionMeasurementStdDevs
+  ),
   _anglePIDController(path + "/pid/heading", _config.poseAnglePID), _xPIDController(path + "/pid/x", _config.posePositionPID), _yPIDController(path + "/pid/y", _config.posePositionPID) {
 
   _anglePIDController.SetWrap(360_deg);
@@ -67,6 +88,8 @@ SwerveDrive::SwerveDrive(std::string path, SwerveDriveConfig config, frc::Pose2d
     _modules.emplace_back(path + "/modules/" + std::to_string(i), cfg, config.anglePID, config.velocityPID);
     i++;
   }
+
+  ResetPose(initialPose);
 }
 
 frc::ChassisSpeeds FieldRelativeSpeeds::ToChassisSpeeds(const units::radian_t robotHeading) {
@@ -86,12 +109,14 @@ void SwerveDrive::OnUpdate(units::second_t dt) {
         _target_fr_speeds.vy = _yPIDController.Calculate(GetPose().Y(), dt);
         _target_fr_speeds.omega = _anglePIDController.Calculate(GetPose().Rotation().Radians(), dt);
       }
+      [[fallthrough]];
     case SwerveDriveState::kFieldRelativeVelocity:
       _target_speed = _target_fr_speeds.ToChassisSpeeds(GetPose().Rotation().Radians());
+      [[fallthrough]];
     case SwerveDriveState::kVelocity:
       {
         auto target_states = _kinematics.ToSwerveModuleStates(_target_speed);
-        for (int i = 0; i < _modules.size(); i++) {
+        for (size_t i = 0; i < _modules.size(); i++) {
           _modules[i].SetPID(target_states[i].angle.Radians(), target_states[i].speed);
         }
       }
@@ -103,7 +128,15 @@ void SwerveDrive::OnUpdate(units::second_t dt) {
     mod->OnUpdate(dt);
   }
 
-  _poseEstimator.Update(_config.gyro->GetRotation2d(), _modules[0].GetState(), _modules[1].GetState(), _modules[2].GetState(), _modules[3].GetState());
+  _poseEstimator.Update(
+    _config.gyro->GetRotation2d(),
+    wpi::array<frc::SwerveModulePosition, 4>{
+      _modules[0].GetPosition(),
+      _modules[1].GetPosition(),
+      _modules[2].GetPosition(),
+      _modules[3].GetPosition()
+    }
+  );
 }
 
 void SwerveDrive::SetIdle() {
@@ -132,7 +165,14 @@ bool SwerveDrive::IsAtSetPose() {
 }
 
 void SwerveDrive::ResetPose(frc::Pose2d pose) {
-  _poseEstimator.ResetPosition(pose, _config.gyro->GetRotation2d());
+  _poseEstimator.ResetPosition(_config.gyro->GetRotation2d(),
+    wpi::array<frc::SwerveModulePosition, 4>{
+      _modules[0].GetPosition(),
+      _modules[1].GetPosition(),
+      _modules[2].GetPosition(),
+      _modules[3].GetPosition()
+    }, pose
+  );
 }
 
 frc::Pose2d SwerveDrive::GetPose() {

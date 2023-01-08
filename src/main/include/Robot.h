@@ -1,18 +1,11 @@
 #pragma once
 
-#include <string>
 #include "RobotMap.h"
 
+#include <string>
 #include <frc/TimedRobot.h>
-#include <frc/smartdashboard/SendableChooser.h>
 
-#include <ctre/Phoenix.h>
-#include <frc/XboxController.h>
-#include "drivetrain/WaspDrive.h"
-
-#include "ControlUtil.h"
-
-// #include <frc/RobotBase.h>
+using namespace frc;
 
 class Robot : public frc::TimedRobot {
  public:
@@ -26,6 +19,9 @@ class Robot : public frc::TimedRobot {
   void DisabledPeriodic() override;
   void TestInit() override;
   void TestPeriodic() override;
+
+  void SimulationInit() override;
+  void SimulationPeriodic() override;
 
  private:
   RobotMap map;
