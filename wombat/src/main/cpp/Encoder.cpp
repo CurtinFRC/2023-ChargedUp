@@ -14,6 +14,11 @@ void Encoder::ZeroEncoder() {
   _offset = GetEncoderRawTicks();
 }
 
+void Encoder::SetEncoderPosition(units::radian_t position) {
+  units::turn_t offset_turns = position - GetEncoderPosition();
+  _offset = -offset_turns.value() * GetEncoderTicksPerRotation();
+}
+
 void Encoder::SetReduction(double reduction) {
   _reduction = reduction;
 }

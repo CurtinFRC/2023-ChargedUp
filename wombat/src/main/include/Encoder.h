@@ -18,6 +18,8 @@ namespace wom {
     virtual double    GetEncoderTickVelocity() const = 0;  // ticks/s
     virtual void      ZeroEncoder();
 
+    void SetEncoderPosition(units::radian_t position);
+
     double  GetEncoderTicks() const;
     double  GetEncoderTicksPerRotation() const;
 
