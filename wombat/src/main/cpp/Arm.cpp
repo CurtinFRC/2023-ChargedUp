@@ -13,7 +13,7 @@ void Arm::OnUpdate(units::second_t dt) {
       break;
     case ArmState::kZeroing:
       voltage = -2_V;
-      if (_config.bottomLimitSwitch->Get()) {
+      if (_config.lowerLimitSwitch->Get()) {
         _config.gearbox.encoder->ZeroEncoder();
         _state = ArmState::kIdle;
         /*when bottom limit switch is triggered, the encoder is zeroed and returns to the idle state*/
@@ -47,12 +47,10 @@ void Arm::SetAngle(units::radian_t angle) {
 /* SIMULATION */
 #include <units/math.h>
 
-::wom::sim::ArmSim::ArmSim(wom::DCMotor motor, units::kilogram_t mass, units::meter_t armLength,
-                    units::radian_t minAngle, units::radian_t maxAngle, ::wom::sim::SimCapableEncoder *encoderSim,
-                    frc::sim::DIOSim *lowerLimit, frc::sim::DIOSim *upperLimit) 
-  : motor(motor), nominalTorque(mass * 9.81_m / 1_s / 1_s * armLength),
-    minAngle(minAngle), maxAngle(maxAngle), encoder(encoderSim),
-    lowerLimit(lowerLimit), upperLimit(upperLimit) { }
+::wom::sim::ArmSim::ArmSim(ArmConfig config) 
+  : motor(config.gearbox.motor), nominalTorque(config.mass * 9.81_m / 1_s / 1_s * config.armLength),
+    minAngle(0_rad), maxAngle(config.maxAngle), encoder(config.gearbox.encoder->MakeSimEncoder()),
+    lowerLimit(config.lowerLimitSwitch ? new frc::sim::DIOSim(*config.lowerLimitSwitch) : nullptr) { }
 
 void ::wom::sim::ArmSim::Update(units::volt_t voltage, units::second_t dt) {
   angle += motor.Speed(nominalTorque * units::math::cos(angle), voltage) * dt;
@@ -66,9 +64,6 @@ void ::wom::sim::ArmSim::Update(units::volt_t voltage, units::second_t dt) {
 
   if (angle >= maxAngle) {
     angle = maxAngle;
-    if (upperLimit) upperLimit->SetValue(true);
-  } else {
-    if (upperLimit) upperLimit->SetValue(false);
   }
 
   if (encoder) encoder->SetEncoderTurns(angle);

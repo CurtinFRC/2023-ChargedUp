@@ -4,7 +4,7 @@
 
 using namespace wom;
 
-TEST(DigitalEncoder, Sim) {
+TEST(EncoderSim, DigitalEncoder) {
   DigitalEncoder encoder{1, 2, 2048};
   auto sim = encoder.MakeSimEncoder();
   sim->SetEncoderTurns(12_rad);
@@ -12,9 +12,14 @@ TEST(DigitalEncoder, Sim) {
 
   EXPECT_NEAR(encoder.GetEncoderPosition().value(), 12, 0.01);
   EXPECT_NEAR(encoder.GetEncoderAngularVelocity().value(), 24, 0.01);
+
+  encoder.SetEncoderPosition(4_rad);
+
+  EXPECT_NEAR(encoder.GetEncoderPosition().value(), 4, 0.01);
+  EXPECT_NEAR(encoder.GetEncoderAngularVelocity().value(), 24, 0.01);
 }
 
-TEST(SparkMaxEncoder, Sim) {
+TEST(EncoderSim, SparkMax) {
   rev::CANSparkMax sparkMax{99, rev::CANSparkMax::MotorType::kBrushless};
   CANSparkMaxEncoder encoder{&sparkMax};
   auto sim = encoder.MakeSimEncoder();
@@ -27,7 +32,7 @@ TEST(SparkMaxEncoder, Sim) {
   EXPECT_NEAR(encoder.GetEncoderAngularVelocity().value(), 24, 0.01);
 }
 
-TEST(TalonFXEncoder, Sim) {
+TEST(EncoderSim, TalonFX) {
   WPI_TalonFX talonFX{99};
   TalonFXEncoder encoder{&talonFX};
   auto sim = encoder.MakeSimEncoder();
