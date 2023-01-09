@@ -22,19 +22,20 @@ namespace wom {
     kManual
   };
 
-  struct ElevatorParams {
+  struct ElevatorConfig {
+    std::string path;
     Gearbox gearbox;
+    frc::DigitalInput *topSensor;
+    frc::DigitalInput *bottomSensor;
     units::meter_t radius;
     units::kilogram_t mass;
     units::meter_t maxHeight;
-    frc::DigitalInput *topSensor;
-    frc::DigitalInput *bottomSensor;
     PIDConfig<units::meter, units::volt> pid;
   };
 
   class Elevator : public behaviour::HasBehaviour {
    public: 
-    Elevator(std::string path, ElevatorParams params);
+    Elevator(ElevatorConfig params);
 
     void OnUpdate(units::second_t dt);
 
@@ -49,7 +50,7 @@ namespace wom {
    private:
     units::volt_t _setpointManual{0};
 
-    ElevatorParams _params;
+    ElevatorConfig _config;
     ElevatorState _state;
 
     PIDController<units::meter, units::volt> _pid;
@@ -62,17 +63,19 @@ namespace wom {
   namespace sim {
     class ElevatorSim {
      public:
-      ElevatorSim(ElevatorParams params);
+      ElevatorSim(ElevatorConfig config);
 
-      void Update(units::volt_t voltage, units::second_t dt);
+      void Update(units::second_t dt);
 
       units::meter_t GetHeight() const;
      private:
-      ElevatorParams params;
+      ElevatorConfig config;
       frc::sim::ElevatorSim sim;
 
       std::shared_ptr<SimCapableEncoder> encoder;
       frc::sim::DIOSim *lowerLimit, *upperLimit;
+      
+      std::shared_ptr<nt::NetworkTable> table;
     };
   }
 }

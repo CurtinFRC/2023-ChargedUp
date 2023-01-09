@@ -3,7 +3,7 @@
 #include <cmath>
 
 namespace wom {
-  double deadzone(double val, double deadzone) {
+  double deadzone(double val, double deadzone = 0.05) {
     return std::fabs(val) > deadzone ? val : 0;
   }
 

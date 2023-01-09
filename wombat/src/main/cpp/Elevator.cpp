@@ -6,16 +6,16 @@
 
 using namespace wom;
 
-Elevator::Elevator(std::string path, ElevatorParams params)
-  : _params(params), _state(ElevatorState::kIdle),
-  _pid{path + "/pid", params.pid},
+Elevator::Elevator(ElevatorConfig config)
+  : _config(config), _state(ElevatorState::kIdle),
+  _pid{config.path + "/pid", config.pid},
   _table(nt::NetworkTableInstance::GetDefault().GetTable("elevator")) {}
 
 
 void Elevator::OnUpdate(units::second_t dt) {
   units::volt_t voltage{0};
 
-  units::meter_t height = _params.gearbox.encoder->GetEncoderPosition().value() * _params.radius;
+  units::meter_t height = _config.gearbox.encoder->GetEncoderPosition().value() * _config.radius;
 
   switch(_state) {
     case ElevatorState::kIdle:
@@ -26,31 +26,31 @@ void Elevator::OnUpdate(units::second_t dt) {
       break;
     case ElevatorState::kPID:
       {
-        auto feedforward = _params.gearbox.motor.Voltage((_params.mass * 9.81_mps_sq) * _params.radius, 0_rad_per_s);
+        auto feedforward = _config.gearbox.motor.Voltage((_config.mass * 9.81_mps_sq) * _config.radius, 0_rad_per_s);
         voltage = _pid.Calculate(height, dt, feedforward);
       }
       break;
     case ElevatorState::kZeroing:
-      if (!_params.bottomSensor) {
+      if (!_config.bottomSensor) {
         std::cout << "No bottom sensor found, can't zero" << std::endl;
         _state = ElevatorState::kIdle;
       } else {
         voltage = -3_V;
-        if (_params.bottomSensor->Get()) {
-          _params.gearbox.encoder->ZeroEncoder();
+        if (_config.bottomSensor->Get()) {
+          _config.gearbox.encoder->ZeroEncoder();
           _state = ElevatorState::kIdle;
         }
       }
       break;
   }
 
-  if (_params.bottomSensor && voltage < 0_V && _params.bottomSensor->Get()) {
+  if (_config.bottomSensor && voltage < 0_V && _config.bottomSensor->Get()) {
     voltage = 0_V;
   } 
-  if (_params.topSensor && voltage > 0_V && _params.topSensor->Get()) {
+  if (_config.topSensor && voltage > 0_V && _config.topSensor->Get()) {
     voltage = 0_V;
   }
-  _params.gearbox.transmission->SetVoltage(voltage);
+  _config.gearbox.transmission->SetVoltage(voltage);
 }
 
 void Elevator::SetManual(units::volt_t voltage) {
@@ -71,24 +71,27 @@ void Elevator::SetIdle() {
 }
 
 /* SIMULATION */
-wom::sim::ElevatorSim::ElevatorSim(ElevatorParams params)
-  : params(params),
-    sim(params.gearbox.motor, 1.0, params.mass, params.radius,
-        0_m, params.maxHeight, true),
-    encoder(params.gearbox.encoder->MakeSimEncoder()),
-    lowerLimit(params.bottomSensor ? new frc::sim::DIOSim(*params.bottomSensor) : nullptr),
-    upperLimit(params.topSensor ? new frc::sim::DIOSim(*params.topSensor) : nullptr)
+wom::sim::ElevatorSim::ElevatorSim(ElevatorConfig config)
+  : config(config),
+    sim(config.gearbox.motor, 1.0, config.mass, config.radius,
+        0_m, config.maxHeight, true),
+    encoder(config.gearbox.encoder->MakeSimEncoder()),
+    lowerLimit(config.bottomSensor ? new frc::sim::DIOSim(*config.bottomSensor) : nullptr),
+    upperLimit(config.topSensor ? new frc::sim::DIOSim(*config.topSensor) : nullptr),
+    table(nt::NetworkTableInstance::GetDefault().GetTable(config.path + "/sim"))
   {}
 
-void wom::sim::ElevatorSim::Update(units::volt_t voltage, units::second_t dt) {
-  sim.SetInputVoltage(voltage);
+void wom::sim::ElevatorSim::Update(units::second_t dt) {
+  sim.SetInputVoltage(config.gearbox.transmission->GetVoltage());
   sim.Update(dt);
 
-  encoder->SetEncoderTurns(1_rad * sim.GetPosition() / params.radius);
+  encoder->SetEncoderTurns(1_rad * sim.GetPosition() / config.radius);
   if (lowerLimit) lowerLimit->SetValue(sim.HasHitLowerLimit());
   if (upperLimit) upperLimit->SetValue(sim.HasHitUpperLimit());
 
-  nt::NetworkTableInstance::GetDefault().GetEntry("elevator/sim/height").SetDouble(sim.GetPosition().value());
+  table->GetEntry("height").SetDouble(sim.GetPosition().value());
+  table->GetEntry("current").SetDouble(sim.GetCurrentDraw().value());
+  table->GetEntry("velocity").SetDouble(sim.GetVelocity().value());
 }
 
 units::meter_t wom::sim::ElevatorSim::GetHeight() const {
