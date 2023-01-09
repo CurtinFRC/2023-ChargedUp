@@ -23,7 +23,7 @@
     },
     "###NetworkTables": {
       "Collapsed": "0",
-      "Pos": "365,969",
+      "Pos": "401,969",
       "Size": "750,394"
     },
     "###Other Devices": {
@@ -59,6 +59,16 @@
     "###Plot <5>": {
       "Collapsed": "0",
       "Pos": "1169,135",
+      "Size": "700,400"
+    },
+    "###Plot <6>": {
+      "Collapsed": "0",
+      "Pos": "435,545",
+      "Size": "700,400"
+    },
+    "###Plot <7>": {
+      "Collapsed": "0",
+      "Pos": "1174,543",
       "Size": "700,400"
     },
     "###RoboRIO": {

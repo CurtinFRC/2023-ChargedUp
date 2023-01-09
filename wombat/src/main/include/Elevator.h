@@ -68,13 +68,14 @@ namespace wom {
       void Update(units::second_t dt);
 
       units::meter_t GetHeight() const;
+      units::ampere_t GetCurrent() const;
      private:
       ElevatorConfig config;
       frc::sim::ElevatorSim sim;
 
       std::shared_ptr<SimCapableEncoder> encoder;
       frc::sim::DIOSim *lowerLimit, *upperLimit;
-      
+
       std::shared_ptr<nt::NetworkTable> table;
     };
   }

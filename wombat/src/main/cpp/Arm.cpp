@@ -54,12 +54,18 @@ void Arm::SetAngle(units::radian_t angle) {
     table(nt::NetworkTableInstance::GetDefault().GetTable(config.path + "/sim"))
   {}
 
+units::ampere_t wom::sim::ArmSim::GetCurrent() const {
+  return current;
+}
+
 void ::wom::sim::ArmSim::Update(units::second_t dt) {
   auto torque = config.mass * 9.81_m / 1_s / 1_s * config.armLength * units::math::cos(angle);
-  angle += config.gearbox.motor.Speed(torque, config.gearbox.transmission->GetVoltage()) * dt;
+  velocity = config.gearbox.motor.Speed(torque, config.gearbox.transmission->GetEstimatedRealVoltage());
+  angle += velocity * dt;
 
   if (angle <= config.minAngle) {
     angle = config.minAngle;
+    velocity = 0_rad / 1_s;
     if (lowerLimit) lowerLimit->SetValue(true);
   } else {
     if (lowerLimit) lowerLimit->SetValue(false);
@@ -67,12 +73,16 @@ void ::wom::sim::ArmSim::Update(units::second_t dt) {
 
   if (angle >= config.maxAngle) {
     angle = config.maxAngle;
+    velocity = 0_rad / 1_s;
     if (upperLimit) upperLimit->SetValue(true);
   } else {
     if (upperLimit) upperLimit->SetValue(false);
   }
 
+  current = config.gearbox.motor.Current(velocity, config.gearbox.transmission->GetVoltage());
+
   if (encoder) encoder->SetEncoderTurns(angle);
 
   table->GetEntry("angle").SetDouble(angle.convert<units::degree>().value());
+  table->GetEntry("current").SetDouble(current.value());
 }

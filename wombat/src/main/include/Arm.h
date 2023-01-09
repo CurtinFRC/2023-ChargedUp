@@ -9,6 +9,7 @@
 #include <frc/simulation/DIOSim.h>
 #include <units/mass.h>
 #include <units/voltage.h>
+#include <units/current.h>
 
 namespace wom {
   struct ArmConfig {
@@ -55,9 +56,13 @@ namespace wom {
 
       void Update(units::second_t dt);
 
-      units::radian_t angle{0};
+      units::ampere_t GetCurrent() const;
     private:
       ArmConfig config;
+
+      units::radians_per_second_t velocity{0};
+      units::radian_t angle{0};
+      units::ampere_t current{0};
 
       std::shared_ptr<SimCapableEncoder> encoder;
       frc::sim::DIOSim *lowerLimit, *upperLimit;
