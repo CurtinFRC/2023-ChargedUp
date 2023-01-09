@@ -12,12 +12,16 @@
 
 namespace wom {
   struct ArmConfig {
+    std::string path;
+
     wom::Gearbox gearbox;
     frc::DigitalInput *lowerLimitSwitch;
+    frc::DigitalInput *upperLimitSwitch;
     wom::PIDConfig<units::radian, units::volt> pidConfig;
 
     units::kilogram_t mass;
     units::meter_t armLength;
+    units::radian_t minAngle = 0_deg;
     units::radian_t maxAngle = 180_deg;
   };
 
@@ -53,12 +57,10 @@ namespace wom {
 
       units::radian_t angle{0};
     private:
-      wom::DCMotor motor;
-      units::newton_meter_t nominalTorque;
-      units::radian_t minAngle, maxAngle;
+      ArmConfig config;
 
       std::shared_ptr<SimCapableEncoder> encoder;
-      frc::sim::DIOSim *lowerLimit;
+      frc::sim::DIOSim *lowerLimit, *upperLimit;
     };
   }
 }

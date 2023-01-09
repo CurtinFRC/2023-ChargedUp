@@ -3,8 +3,7 @@
 using namespace frc;
 using namespace wom;
 
-Arm::Arm(ArmConfig config) : _config(config), _pid("arm/pid", config.pidConfig) {   
-}
+Arm::Arm(ArmConfig config) : _config(config), _pid(config.path + "/pid", config.pidConfig) { }
 
 void Arm::OnUpdate(units::second_t dt) {
   units::volt_t voltage = 0_V;
@@ -48,25 +47,30 @@ void Arm::SetAngle(units::radian_t angle) {
 #include <units/math.h>
 
 ::wom::sim::ArmSim::ArmSim(ArmConfig config) 
-  : motor(config.gearbox.motor), nominalTorque(config.mass * 9.81_m / 1_s / 1_s * config.armLength),
-    minAngle(0_rad), maxAngle(config.maxAngle), encoder(config.gearbox.encoder->MakeSimEncoder()),
-    lowerLimit(config.lowerLimitSwitch ? new frc::sim::DIOSim(*config.lowerLimitSwitch) : nullptr) { }
+  : config(config),
+    encoder(config.gearbox.encoder->MakeSimEncoder()),
+    lowerLimit(config.lowerLimitSwitch ? new frc::sim::DIOSim(*config.lowerLimitSwitch) : nullptr),
+    upperLimit(config.upperLimitSwitch ? new frc::sim::DIOSim(*config.upperLimitSwitch) : nullptr)
+  {}
 
 void ::wom::sim::ArmSim::Update(units::volt_t voltage, units::second_t dt) {
-  angle += motor.Speed(nominalTorque * units::math::cos(angle), voltage) * dt;
+  angle += config.gearbox.motor.Speed(config.mass * 9.81_m / 1_s / 1_s * config.armLength * units::math::cos(angle), voltage) * dt;
 
-  if (angle <= minAngle) {
-    angle = minAngle;
+  if (angle <= config.minAngle) {
+    angle = config.minAngle;
     if (lowerLimit) lowerLimit->SetValue(true);
   } else {
     if (lowerLimit) lowerLimit->SetValue(false);
   }
 
-  if (angle >= maxAngle) {
-    angle = maxAngle;
+  if (angle >= config.maxAngle) {
+    angle = config.maxAngle;
+    if (upperLimit) upperLimit->SetValue(true);
+  } else {
+    if (upperLimit) upperLimit->SetValue(false);
   }
 
   if (encoder) encoder->SetEncoderTurns(angle);
 
-  nt::NetworkTableInstance::GetDefault().GetEntry("arm/sim/angle").SetDouble(angle.convert<units::degree>().value());
+  nt::NetworkTableInstance::GetDefault().GetEntry(config.path + "/sim/angle").SetDouble(angle.convert<units::degree>().value());
 }
