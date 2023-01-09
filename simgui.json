@@ -22,6 +22,28 @@
         "open": true
       }
     },
+    "transitory": {
+      "armavator": {
+        "arm": {
+          "open": true,
+          "pid": {
+            "config": {
+              "open": true
+            }
+          },
+          "sim": {
+            "open": true
+          }
+        },
+        "elevator": {
+          "open": true,
+          "sim": {
+            "open": true
+          }
+        },
+        "open": true
+      }
+    },
     "wasp": {
       "open": true
     }
@@ -72,7 +94,7 @@
     "Plot <2>": {
       "plots": [
         {
-          "height": 332,
+          "height": 338,
           "series": [
             {
               "color": [
@@ -98,7 +120,7 @@
               "autoFit": true
             }
           ],
-          "height": 691,
+          "height": 697,
           "series": [
             {
               "color": [
@@ -117,6 +139,50 @@
                 1.0
               ],
               "id": "NT:arm/sim/angle"
+            }
+          ]
+        }
+      ],
+      "window": {
+        "visible": false
+      }
+    },
+    "Plot <4>": {
+      "plots": [
+        {
+          "axis": [
+            {
+              "autoFit": true
+            }
+          ],
+          "height": 338,
+          "series": [
+            {
+              "color": [
+                0.2980392277240753,
+                0.44705885648727417,
+                0.6901960968971252,
+                1.0
+              ],
+              "id": "NT:armavator/arm/sim/angle"
+            }
+          ]
+        }
+      ]
+    },
+    "Plot <5>": {
+      "plots": [
+        {
+          "height": 338,
+          "series": [
+            {
+              "color": [
+                0.2980392277240753,
+                0.44705885648727417,
+                0.6901960968971252,
+                1.0
+              ],
+              "id": "NT:armavator/elevator/sim/height"
             }
           ]
         }

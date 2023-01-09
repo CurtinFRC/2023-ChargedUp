@@ -50,11 +50,13 @@ void Arm::SetAngle(units::radian_t angle) {
   : config(config),
     encoder(config.gearbox.encoder->MakeSimEncoder()),
     lowerLimit(config.lowerLimitSwitch ? new frc::sim::DIOSim(*config.lowerLimitSwitch) : nullptr),
-    upperLimit(config.upperLimitSwitch ? new frc::sim::DIOSim(*config.upperLimitSwitch) : nullptr)
+    upperLimit(config.upperLimitSwitch ? new frc::sim::DIOSim(*config.upperLimitSwitch) : nullptr),
+    table(nt::NetworkTableInstance::GetDefault().GetTable(config.path + "/sim"))
   {}
 
-void ::wom::sim::ArmSim::Update(units::volt_t voltage, units::second_t dt) {
-  angle += config.gearbox.motor.Speed(config.mass * 9.81_m / 1_s / 1_s * config.armLength * units::math::cos(angle), voltage) * dt;
+void ::wom::sim::ArmSim::Update(units::second_t dt) {
+  auto torque = config.mass * 9.81_m / 1_s / 1_s * config.armLength * units::math::cos(angle);
+  angle += config.gearbox.motor.Speed(torque, config.gearbox.transmission->GetVoltage()) * dt;
 
   if (angle <= config.minAngle) {
     angle = config.minAngle;
@@ -72,5 +74,5 @@ void ::wom::sim::ArmSim::Update(units::volt_t voltage, units::second_t dt) {
 
   if (encoder) encoder->SetEncoderTurns(angle);
 
-  nt::NetworkTableInstance::GetDefault().GetEntry(config.path + "/sim/angle").SetDouble(angle.convert<units::degree>().value());
+  table->GetEntry("angle").SetDouble(angle.convert<units::degree>().value());
 }

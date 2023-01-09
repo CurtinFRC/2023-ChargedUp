@@ -77,18 +77,21 @@ wom::sim::ElevatorSim::ElevatorSim(ElevatorConfig config)
         0_m, config.maxHeight, true),
     encoder(config.gearbox.encoder->MakeSimEncoder()),
     lowerLimit(config.bottomSensor ? new frc::sim::DIOSim(*config.bottomSensor) : nullptr),
-    upperLimit(config.topSensor ? new frc::sim::DIOSim(*config.topSensor) : nullptr)
+    upperLimit(config.topSensor ? new frc::sim::DIOSim(*config.topSensor) : nullptr),
+    table(nt::NetworkTableInstance::GetDefault().GetTable(config.path + "/sim"))
   {}
 
-void wom::sim::ElevatorSim::Update(units::volt_t voltage, units::second_t dt) {
-  sim.SetInputVoltage(voltage);
+void wom::sim::ElevatorSim::Update(units::second_t dt) {
+  sim.SetInputVoltage(config.gearbox.transmission->GetVoltage());
   sim.Update(dt);
 
   encoder->SetEncoderTurns(1_rad * sim.GetPosition() / config.radius);
   if (lowerLimit) lowerLimit->SetValue(sim.HasHitLowerLimit());
   if (upperLimit) upperLimit->SetValue(sim.HasHitUpperLimit());
 
-  nt::NetworkTableInstance::GetDefault().GetEntry(config.path + "/sim/height").SetDouble(sim.GetPosition().value());
+  table->GetEntry("height").SetDouble(sim.GetPosition().value());
+  table->GetEntry("current").SetDouble(sim.GetCurrentDraw().value());
+  table->GetEntry("velocity").SetDouble(sim.GetVelocity().value());
 }
 
 units::meter_t wom::sim::ElevatorSim::GetHeight() const {

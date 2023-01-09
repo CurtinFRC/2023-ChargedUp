@@ -53,7 +53,7 @@ namespace wom {
     public:
       ArmSim(ArmConfig config);
 
-      void Update(units::volt_t voltage, units::second_t dt);
+      void Update(units::second_t dt);
 
       units::radian_t angle{0};
     private:
@@ -61,6 +61,8 @@ namespace wom {
 
       std::shared_ptr<SimCapableEncoder> encoder;
       frc::sim::DIOSim *lowerLimit, *upperLimit;
+
+      std::shared_ptr<nt::NetworkTable> table;
     };
   }
 }

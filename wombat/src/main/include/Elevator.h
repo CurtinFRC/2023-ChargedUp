@@ -25,11 +25,11 @@ namespace wom {
   struct ElevatorConfig {
     std::string path;
     Gearbox gearbox;
+    frc::DigitalInput *topSensor;
+    frc::DigitalInput *bottomSensor;
     units::meter_t radius;
     units::kilogram_t mass;
     units::meter_t maxHeight;
-    frc::DigitalInput *topSensor;
-    frc::DigitalInput *bottomSensor;
     PIDConfig<units::meter, units::volt> pid;
   };
 
@@ -65,7 +65,7 @@ namespace wom {
      public:
       ElevatorSim(ElevatorConfig config);
 
-      void Update(units::volt_t voltage, units::second_t dt);
+      void Update(units::second_t dt);
 
       units::meter_t GetHeight() const;
      private:
@@ -74,6 +74,8 @@ namespace wom {
 
       std::shared_ptr<SimCapableEncoder> encoder;
       frc::sim::DIOSim *lowerLimit, *upperLimit;
+      
+      std::shared_ptr<nt::NetworkTable> table;
     };
   }
 }

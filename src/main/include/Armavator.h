@@ -23,7 +23,7 @@ namespace sim {
    public:
     ArmavatorSim(ArmavatorConfig config);
 
-    void Update(units::volt_t elevatorVoltage, units::volt_t armVoltage, units::second_t dt);
+    void Update(units::second_t dt);
 
    private:
     ArmavatorConfig config;
