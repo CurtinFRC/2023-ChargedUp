@@ -8,7 +8,7 @@
 using namespace frc;
 using namespace behaviour;
 
-units::second_t lastPeriodic;
+static units::second_t lastPeriodic;
 
 void Robot::RobotInit() {
   lastPeriodic = wom::now();
@@ -16,6 +16,8 @@ void Robot::RobotInit() {
 
 void Robot::RobotPeriodic() {
   auto dt = wom::now() - lastPeriodic;
+  lastPeriodic = wom::now();
+
   BehaviourScheduler::GetInstance()->Tick();
 }
 
@@ -39,13 +41,12 @@ void Robot::TestPeriodic() { }
 #include "Armavator.h"
 #include "ControlUtil.h"
 
-auto simTable = nt::NetworkTableInstance::GetDefault().GetTable("/sim");
+static units::second_t lastSimPeriodic{0};
+static auto simTable = nt::NetworkTableInstance::GetDefault().GetTable("/sim");
 
 struct SimConfig {
 };
 SimConfig *simConfig;
-
-units::second_t lastSimPeriodic{0};
 
 void Robot::SimulationInit() {
   simConfig = new SimConfig{
