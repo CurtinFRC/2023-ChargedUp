@@ -1,6 +1,7 @@
 #pragma once 
 
 #include "Gearbox.h"
+#include "Gyro.h"
 #include "behaviour/HasBehaviour.h"
 #include "behaviour/Behaviour.h"
 #include "VoltageController.h"
@@ -9,6 +10,7 @@
 
 #include <units/angular_velocity.h>
 #include <units/charge.h>
+#include <units/moment_of_inertia.h>
 
 #include <frc/kinematics/SwerveDriveKinematics.h>
 #include <frc/estimator/SwerveDrivePoseEstimator.h>
@@ -53,18 +55,23 @@ namespace wom {
 
     PIDController<units::radians, units::volt> _anglePIDController;
     PIDController<units::meters_per_second, units::volt> _velocityPIDController;
+
+    std::shared_ptr<nt::NetworkTable> _table;
   };
 
   struct SwerveDriveConfig {
+    std::string path;
     SwerveModule::angle_pid_conf_t anglePID;
     SwerveModule::velocity_pid_conf_t velocityPID;
 
     wpi::array<SwerveModuleConfig, 4> modules;
 
-    frc::Gyro *gyro;
+    wom::Gyro *gyro;
 
     PIDConfig<units::radian, units::radians_per_second> poseAnglePID;
     PIDConfig<units::meter, units::meters_per_second> posePositionPID;
+
+    units::kilogram_t mass;
 
     wpi::array<double, 3> stateStdDevs{0.0, 0.0, 0.0};
     wpi::array<double, 3> visionMeasurementStdDevs{0.0, 0.0, 0.0};
@@ -97,7 +104,7 @@ namespace wom {
 
   class SwerveDrive : public behaviour::HasBehaviour {
    public:
-    SwerveDrive(std::string path, SwerveDriveConfig config, frc::Pose2d initialPose);
+    SwerveDrive(SwerveDriveConfig config, frc::Pose2d initialPose);
 
     void OnUpdate(units::second_t dt);
 
@@ -130,6 +137,40 @@ namespace wom {
     PIDController<units::radian, units::radians_per_second> _anglePIDController;
     PIDController<units::meter, units::meters_per_second> _xPIDController;
     PIDController<units::meter, units::meters_per_second> _yPIDController;
+
+    std::shared_ptr<nt::NetworkTable> _table;
   };
+
+  namespace sim {
+    class SwerveDriveSim {
+     public:
+      SwerveDriveSim(SwerveDriveConfig config, units::kilogram_square_meter_t moduleJ);
+
+      void Update(units::second_t dt);
+
+      SwerveDriveConfig config;
+      frc::SwerveDriveKinematics<4> kinematics;
+      units::kilogram_square_meter_t moduleJ;
+      std::shared_ptr<nt::NetworkTable> table;
+
+      std::vector<std::shared_ptr<SimCapableEncoder>> driveEncoders;
+      std::vector<std::shared_ptr<SimCapableEncoder>> turnEncoders;
+      std::shared_ptr<SimCapableGyro> gyro;
+
+      units::ampere_t totalCurrent = 0_A;
+      wpi::array<units::ampere_t, 4> driveCurrents { 0_A, 0_A, 0_A, 0_A };
+      wpi::array<units::ampere_t, 4> turnCurrents { 0_A, 0_A, 0_A, 0_A };
+      wpi::array<units::radians_per_second_t, 4> turnSpeeds { 0_rad / 1_s, 0_rad / 1_s, 0_rad / 1_s, 0_rad / 1_s };
+      wpi::array<units::radians_per_second_t, 4> driveSpeeds { 0_rad / 1_s, 0_rad / 1_s, 0_rad / 1_s, 0_rad / 1_s };
+      wpi::array<units::meters_per_second_t, 4> driveVelocity { 0_mps, 0_mps, 0_mps, 0_mps };
+      wpi::array<units::radian_t, 4> turnAngles { 0_rad, 0_rad, 0_rad, 0_rad };
+      wpi::array<units::radian_t, 4> driveEncoderAngles { 0_rad, 0_rad, 0_rad, 0_rad };
+
+      units::radian_t angle{0};
+      units::radians_per_second_t angularVelocity{0};
+      units::meter_t x{0}, y{0};
+      units::meters_per_second_t vx{0}, vy{0};
+    };
+  }
 }
 

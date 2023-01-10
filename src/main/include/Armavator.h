@@ -25,7 +25,8 @@ namespace sim {
 
     void Update(units::second_t dt);
 
-   private:
+    units::ampere_t GetCurrent() const;
+
     ArmavatorConfig config;
 
     wom::sim::ArmSim armSim;

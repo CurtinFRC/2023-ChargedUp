@@ -9,6 +9,7 @@
 #include <frc/simulation/DIOSim.h>
 #include <units/mass.h>
 #include <units/voltage.h>
+#include <units/current.h>
 
 namespace wom {
   struct ArmConfig {
@@ -19,10 +20,13 @@ namespace wom {
     frc::DigitalInput *upperLimitSwitch;
     wom::PIDConfig<units::radian, units::volt> pidConfig;
 
-    units::kilogram_t mass;
+    units::kilogram_t armMass;
+    units::kilogram_t loadMass;
     units::meter_t armLength;
     units::radian_t minAngle = 0_deg;
     units::radian_t maxAngle = 180_deg;
+    units::radian_t initialAngle = 0_deg;
+    units::radian_t angleOffset = 0_deg;
   };
 
   enum class ArmState {
@@ -40,6 +44,8 @@ namespace wom {
     void SetIdle();
     void SetAngle(units::radian_t angle);
     void SetZeroing();
+
+    ArmConfig &GetConfig();
   private:
     ArmConfig _config;
     ArmState _state = ArmState::kIdle;
@@ -55,9 +61,15 @@ namespace wom {
 
       void Update(units::second_t dt);
 
-      units::radian_t angle{0};
-    private:
+      units::ampere_t GetCurrent() const;
+
       ArmConfig config;
+
+      units::newton_meter_t torque{0};
+      units::newton_meter_t additionalTorque{0};
+      units::radians_per_second_t velocity{0};
+      units::radian_t angle{0};
+      units::ampere_t current{0};
 
       std::shared_ptr<SimCapableEncoder> encoder;
       frc::sim::DIOSim *lowerLimit, *upperLimit;

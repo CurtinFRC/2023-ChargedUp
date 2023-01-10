@@ -1,11 +1,17 @@
 #include "drivetrain/SwerveDrive.h"
 
+#include <networktables/NetworkTableInstance.h>
+
 using namespace wom;
 
 SwerveModule::SwerveModule(std::string path, SwerveModuleConfig config, SwerveModule::angle_pid_conf_t anglePID, SwerveModule::velocity_pid_conf_t velocityPID) 
-  : _config(config), _anglePIDController(path + "/pid/angle", anglePID), _velocityPIDController(path + "/pid/velocity", velocityPID) {
-    _anglePIDController.SetWrap(360_deg);
-  }
+  : _config(config),
+    _anglePIDController(path + "/pid/angle", anglePID),
+    _velocityPIDController(path + "/pid/velocity", velocityPID),
+    _table(nt::NetworkTableInstance::GetDefault().GetTable(path))
+{
+  _anglePIDController.SetWrap(360_deg);
+}
 
 void SwerveModule::OnUpdate(units::second_t dt) {
   units::volt_t driveVoltage{0};
@@ -24,6 +30,11 @@ void SwerveModule::OnUpdate(units::second_t dt) {
       }
       break;
   }
+
+  _table->GetEntry("speed").SetDouble(GetSpeed().value());
+  _table->GetEntry("angle").SetDouble(_config.turnMotor.encoder->GetEncoderPosition().convert<units::degree>().value());
+  _table->GetEntry("posX").SetDouble(_config.position.X().value());
+  _table->GetEntry("posY").SetDouble(_config.position.Y().value());
 
   _config.driveMotor.transmission->SetVoltage(driveVoltage);
   _config.turnMotor.transmission->SetVoltage(turnVoltage);
@@ -65,7 +76,7 @@ const SwerveModuleConfig &SwerveModule::GetConfig() const {
   return _config;
 }
 
-SwerveDrive::SwerveDrive(std::string path, SwerveDriveConfig config, frc::Pose2d initialPose) :
+SwerveDrive::SwerveDrive(SwerveDriveConfig config, frc::Pose2d initialPose) :
   _config(config),
   _kinematics( _config.modules[0].position, _config.modules[1].position, _config.modules[2].position, _config.modules[3].position),
   _poseEstimator(
@@ -79,13 +90,17 @@ SwerveDrive::SwerveDrive(std::string path, SwerveDriveConfig config, frc::Pose2d
     initialPose,
     _config.stateStdDevs, _config.visionMeasurementStdDevs
   ),
-  _anglePIDController(path + "/pid/heading", _config.poseAnglePID), _xPIDController(path + "/pid/x", _config.posePositionPID), _yPIDController(path + "/pid/y", _config.posePositionPID) {
+  _anglePIDController(config.path + "/pid/heading", _config.poseAnglePID),
+  _xPIDController(config.path + "/pid/x", _config.posePositionPID),
+  _yPIDController(config.path + "/pid/y", _config.posePositionPID),
+  _table(nt::NetworkTableInstance::GetDefault().GetTable(_config.path))
+{
 
   _anglePIDController.SetWrap(360_deg);
   
   int i = 1;
   for (auto cfg : _config.modules) {
-    _modules.emplace_back(path + "/modules/" + std::to_string(i), cfg, config.anglePID, config.velocityPID);
+    _modules.emplace_back(config.path + "/modules/" + std::to_string(i), cfg, config.anglePID, config.velocityPID);
     i++;
   }
 
@@ -137,6 +152,11 @@ void SwerveDrive::OnUpdate(units::second_t dt) {
       _modules[3].GetPosition()
     }
   );
+
+  auto est = _table->GetSubTable("estimated");
+  est->GetEntry("angle").SetDouble(_poseEstimator.GetEstimatedPosition().Rotation().Degrees().value());
+  est->GetEntry("x").SetDouble(_poseEstimator.GetEstimatedPosition().X().value());
+  est->GetEntry("y").SetDouble(_poseEstimator.GetEstimatedPosition().Y().value());
 }
 
 void SwerveDrive::SetIdle() {
@@ -181,4 +201,86 @@ frc::Pose2d SwerveDrive::GetPose() {
 
 void SwerveDrive::AddVisionMeasurement(frc::Pose2d pose, units::second_t timestamp) {
   _poseEstimator.AddVisionMeasurement(pose, timestamp);
+}
+
+/* SIMULATION */
+
+wom::sim::SwerveDriveSim::SwerveDriveSim(SwerveDriveConfig config, units::kilogram_square_meter_t moduleJ)
+  : config(config), kinematics(config.modules[0].position, config.modules[1].position, config.modules[2].position, config.modules[3].position),
+    moduleJ(moduleJ),
+    table(nt::NetworkTableInstance::GetDefault().GetTable(config.path + "/sim")),
+    gyro(config.gyro->MakeSimGyro())
+  {
+    for (size_t i = 0; i < config.modules.size(); i++) {
+      driveEncoders.push_back(config.modules[i].driveMotor.encoder->MakeSimEncoder());
+      turnEncoders.push_back(config.modules[i].turnMotor.encoder->MakeSimEncoder());
+    }
+  }
+
+void wom::sim::SwerveDriveSim::Update(units::second_t dt) {
+
+  Eigen::Vector2d resultantForceVector{0, 0};
+
+  totalCurrent = 0_A;
+
+  for (size_t i = 0; i < config.modules.size(); i++) {
+    /* Calculate drive motor forces */
+    driveCurrents[i] = config.modules[i].driveMotor.motor.Current(
+      driveSpeeds[i],
+      config.modules[i].driveMotor.transmission->GetEstimatedRealVoltage()
+    );
+    auto drive_torque = config.modules[i].driveMotor.motor.Torque(driveCurrents[i]);
+    units::newton_t force_magnitude = drive_torque / config.modules[i].wheelRadius;
+    totalCurrent += driveCurrents[i];
+
+    driveVelocity[i] += force_magnitude / (config.mass / 4) * dt;
+    driveSpeeds[i] = 1_rad * driveVelocity[i] / config.modules[i].wheelRadius;
+    driveEncoderAngles[i] += driveSpeeds[i] * dt;
+    driveEncoders[i]->SetEncoderTurnVelocity(driveSpeeds[i]);
+    driveEncoders[i]->SetEncoderTurns(driveEncoderAngles[i]);
+
+    /* Reconcile turning motor - assuming no losses or wheel slip */
+    turnCurrents[i] = config.modules[i].turnMotor.motor.Current(
+      turnSpeeds[i],
+      config.modules[i].turnMotor.transmission->GetEstimatedRealVoltage()
+    );
+    totalCurrent += turnCurrents[i];
+
+    auto turn_torque = config.modules[i].turnMotor.motor.Torque(turnCurrents[i]);
+    turnSpeeds[i] += 1_rad * turn_torque / moduleJ * dt;
+    turnAngles[i] += turnSpeeds[i] * dt;
+    turnEncoders[i]->SetEncoderTurnVelocity(turnSpeeds[i]);
+    turnEncoders[i]->SetEncoderTurns(turnAngles[i]);
+
+    auto mtable = table->GetSubTable("modules/" + std::to_string(i));
+    mtable->GetEntry("turnTorque").SetDouble(turn_torque.value());
+  }
+
+  auto chassis_state = kinematics.ToChassisSpeeds(
+    frc::SwerveModuleState { driveVelocity[0], frc::Rotation2d{turnAngles[0]} },
+    frc::SwerveModuleState { driveVelocity[1], frc::Rotation2d{turnAngles[1]} },
+    frc::SwerveModuleState { driveVelocity[2], frc::Rotation2d{turnAngles[2]} },
+    frc::SwerveModuleState { driveVelocity[3], frc::Rotation2d{turnAngles[3]} }
+  );
+
+  /* Get body angular velocity and angle */
+  angularVelocity = chassis_state.omega;
+  angle += angularVelocity * dt;
+
+  vx = chassis_state.vx;
+  vy = chassis_state.vy;
+
+  x += (vx * units::math::cos(-angle) - vy * units::math::sin(-angle)) * dt;
+  y += (vx * units::math::sin(-angle) + vy * units::math::cos(-angle)) * dt;
+
+  // Note vx, vy are in robot frame whilst x, y are in world frame
+  table->GetEntry("vx").SetDouble(vx.value());
+  table->GetEntry("vy").SetDouble(vy.value());
+  table->GetEntry("angle").SetDouble(angle.convert<units::degree>().value());
+  table->GetEntry("angularVelocity").SetDouble(angularVelocity.convert<units::degrees_per_second>().value());
+  table->GetEntry("x").SetDouble(x.value());
+  table->GetEntry("y").SetDouble(y.value());
+  table->GetEntry("totalCurrent").SetDouble(totalCurrent.value());
+
+  gyro->SetAngle(angle);
 }

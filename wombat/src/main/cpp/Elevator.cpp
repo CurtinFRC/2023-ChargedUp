@@ -82,7 +82,7 @@ wom::sim::ElevatorSim::ElevatorSim(ElevatorConfig config)
   {}
 
 void wom::sim::ElevatorSim::Update(units::second_t dt) {
-  sim.SetInputVoltage(config.gearbox.transmission->GetVoltage());
+  sim.SetInputVoltage(config.gearbox.transmission->GetEstimatedRealVoltage());
   sim.Update(dt);
 
   encoder->SetEncoderTurns(1_rad * sim.GetPosition() / config.radius);
@@ -96,4 +96,8 @@ void wom::sim::ElevatorSim::Update(units::second_t dt) {
 
 units::meter_t wom::sim::ElevatorSim::GetHeight() const {
   return sim.GetPosition();
+}
+
+units::ampere_t wom::sim::ElevatorSim::GetCurrent() const {
+  return sim.GetCurrentDraw();
 }

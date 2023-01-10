@@ -12,3 +12,7 @@ void ::sim::ArmavatorSim::Update(units::second_t dt) {
   armSim.Update(dt);
   elevatorSim.Update(dt);
 }
+
+units::ampere_t sim::ArmavatorSim::GetCurrent() const {
+  return armSim.GetCurrent() + elevatorSim.GetCurrent();
+}

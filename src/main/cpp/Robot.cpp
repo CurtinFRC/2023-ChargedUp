@@ -8,11 +8,16 @@
 using namespace frc;
 using namespace behaviour;
 
-void Robot::RobotInit() {
+static units::second_t lastPeriodic;
 
+void Robot::RobotInit() {
+  lastPeriodic = wom::now();
 }
 
 void Robot::RobotPeriodic() {
+  auto dt = wom::now() - lastPeriodic;
+  lastPeriodic = wom::now();
+
   BehaviourScheduler::GetInstance()->Tick();
 }
 
@@ -30,15 +35,32 @@ void Robot::TestPeriodic() { }
 
 /* SIMULATION */
 
+#include <frc/simulation/BatterySim.h>
+#include <frc/simulation/RoboRioSim.h>
+#include <networktables/NetworkTableInstance.h>
+#include "ControlUtil.h"
+
+static units::second_t lastSimPeriodic{0};
+static auto simTable = nt::NetworkTableInstance::GetDefault().GetTable("/sim");
+
 struct SimConfig {
 };
 SimConfig *simConfig;
 
 void Robot::SimulationInit() {
-  // simArmLimitSwitch = new frc::sim::DIOSim(map.arm.limitSwitch);
-  simConfig = new SimConfig {
+  simConfig = new SimConfig{
   };
+
+  lastSimPeriodic = wom::now();
 }
 
 void Robot::SimulationPeriodic() {
+  auto dt = wom::now() - lastSimPeriodic;
+
+  auto batteryVoltage = units::math::min(units::math::max(frc::sim::BatterySim::Calculate({
+  }), 0_V), 12_V);
+  frc::sim::RoboRioSim::SetVInVoltage(batteryVoltage);
+  simTable->GetEntry("batteryVoltage").SetDouble(batteryVoltage.value()); 
+
+  lastSimPeriodic = wom::now();
 }

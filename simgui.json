@@ -42,6 +42,61 @@
           }
         },
         "open": true
+      },
+      "doubleArm": {
+        "arm1": {
+          "open": true,
+          "sim": {
+            "open": true
+          }
+        },
+        "open": true
+      },
+      "sim": {
+        "open": true
+      },
+      "swerve": {
+        "modules": {
+          "1": {
+            "open": true,
+            "pid": {
+              "angle": {
+                "open": true
+              }
+            }
+          },
+          "2": {
+            "open": true,
+            "pid": {
+              "angle": {
+                "open": true
+              },
+              "open": true,
+              "velocity": {
+                "open": true
+              }
+            }
+          }
+        },
+        "open": true,
+        "sim": {
+          "modules": {
+            "0": {
+              "open": true
+            },
+            "1": {
+              "open": true
+            },
+            "2": {
+              "open": true
+            },
+            "3": {
+              "open": true
+            },
+            "open": true
+          },
+          "open": true
+        }
       }
     },
     "wasp": {
@@ -52,7 +107,7 @@
     "Plot <0>": {
       "plots": [
         {
-          "height": 332,
+          "height": 338,
           "series": [
             {
               "color": [
@@ -61,14 +116,11 @@
                 0.6901960968971252,
                 1.0
               ],
-              "id": "NT:/wasp/x"
+              "id": "NT:/sim/batteryVoltage"
             }
           ]
         }
-      ],
-      "window": {
-        "visible": false
-      }
+      ]
     },
     "Plot <1>": {
       "plots": [
@@ -94,6 +146,11 @@
     "Plot <2>": {
       "plots": [
         {
+          "axis": [
+            {
+              "autoFit": true
+            }
+          ],
           "height": 338,
           "series": [
             {
@@ -103,14 +160,11 @@
                 0.6901960968971252,
                 1.0
               ],
-              "id": "NT:/wasp/theta"
+              "id": "NT:/swerve/sim/totalCurrent"
             }
           ]
         }
-      ],
-      "window": {
-        "visible": false
-      }
+      ]
     },
     "Plot <3>": {
       "plots": [
@@ -164,7 +218,7 @@
                 0.6901960968971252,
                 1.0
               ],
-              "id": "NT:armavator/arm/sim/angle"
+              "id": "NT:/swerve/sim/modules/2/turnTorque"
             }
           ]
         }
@@ -173,6 +227,11 @@
     "Plot <5>": {
       "plots": [
         {
+          "axis": [
+            {
+              "autoFit": true
+            }
+          ],
           "height": 338,
           "series": [
             {
@@ -182,11 +241,80 @@
                 0.6901960968971252,
                 1.0
               ],
-              "id": "NT:armavator/elevator/sim/height"
+              "id": "NT:/swerve/sim/modules/0/turnTorque"
+            },
+            {
+              "color": [
+                0.8666667342185974,
+                0.5176470875740051,
+                0.32156863808631897,
+                1.0
+              ],
+              "id": "NT:/swerve/sim/modules/1/turnTorque"
+            },
+            {
+              "color": [
+                0.3333333432674408,
+                0.658823549747467,
+                0.4078431725502014,
+                1.0
+              ],
+              "id": "NT:/swerve/sim/modules/2/turnTorque"
+            },
+            {
+              "color": [
+                0.7686275243759155,
+                0.30588236451148987,
+                0.32156863808631897,
+                1.0
+              ],
+              "id": "NT:/swerve/sim/modules/3/turnTorque"
             }
           ]
         }
       ]
+    },
+    "Plot <6>": {
+      "plots": [
+        {
+          "height": 377,
+          "series": [
+            {
+              "color": [
+                0.2980392277240753,
+                0.44705885648727417,
+                0.6901960968971252,
+                1.0
+              ],
+              "id": "NT:/armavator/arm/sim/current"
+            }
+          ]
+        }
+      ],
+      "window": {
+        "visible": false
+      }
+    },
+    "Plot <7>": {
+      "plots": [
+        {
+          "height": 332,
+          "series": [
+            {
+              "color": [
+                0.2980392277240753,
+                0.44705885648727417,
+                0.6901960968971252,
+                1.0
+              ],
+              "id": "NT:/sim/batteryVoltage"
+            }
+          ]
+        }
+      ],
+      "window": {
+        "visible": false
+      }
     }
   }
 }
