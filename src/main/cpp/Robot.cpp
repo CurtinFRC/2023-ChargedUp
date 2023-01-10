@@ -38,7 +38,6 @@ void Robot::TestPeriodic() { }
 #include <frc/simulation/BatterySim.h>
 #include <frc/simulation/RoboRioSim.h>
 #include <networktables/NetworkTableInstance.h>
-#include "Armavator.h"
 #include "ControlUtil.h"
 
 static units::second_t lastSimPeriodic{0};
@@ -50,7 +49,6 @@ SimConfig *simConfig;
 
 void Robot::SimulationInit() {
   simConfig = new SimConfig{
-
   };
 
   lastSimPeriodic = wom::now();
@@ -59,10 +57,10 @@ void Robot::SimulationInit() {
 void Robot::SimulationPeriodic() {
   auto dt = wom::now() - lastSimPeriodic;
 
-  auto batteryVoltage = frc::sim::BatterySim::Calculate({
-  });
+  auto batteryVoltage = units::math::min(units::math::max(frc::sim::BatterySim::Calculate({
+  }), 0_V), 12_V);
   frc::sim::RoboRioSim::SetVInVoltage(batteryVoltage);
-  simTable->GetEntry("batteryVoltage").SetDouble(batteryVoltage.value());
+  simTable->GetEntry("batteryVoltage").SetDouble(batteryVoltage.value()); 
 
   lastSimPeriodic = wom::now();
 }

@@ -5,6 +5,7 @@
 
 namespace wom {
   class Gyro : public frc::Gyro {
+   public:
     virtual std::shared_ptr<sim::SimCapableGyro> MakeSimGyro() = 0;
   };
 
