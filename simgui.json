@@ -43,6 +43,15 @@
         },
         "open": true
       },
+      "doubleArm": {
+        "arm1": {
+          "open": true,
+          "sim": {
+            "open": true
+          }
+        },
+        "open": true
+      },
       "sim": {
         "open": true
       },
@@ -98,7 +107,7 @@
     "Plot <0>": {
       "plots": [
         {
-          "height": 332,
+          "height": 338,
           "series": [
             {
               "color": [
@@ -107,14 +116,11 @@
                 0.6901960968971252,
                 1.0
               ],
-              "id": "NT:/wasp/x"
+              "id": "NT:/sim/batteryVoltage"
             }
           ]
         }
-      ],
-      "window": {
-        "visible": false
-      }
+      ]
     },
     "Plot <1>": {
       "plots": [
@@ -145,7 +151,7 @@
               "autoFit": true
             }
           ],
-          "height": 332,
+          "height": 338,
           "series": [
             {
               "color": [
@@ -203,7 +209,7 @@
               "autoFit": true
             }
           ],
-          "height": 332,
+          "height": 338,
           "series": [
             {
               "color": [
@@ -226,7 +232,7 @@
               "autoFit": true
             }
           ],
-          "height": 332,
+          "height": 338,
           "series": [
             {
               "color": [
