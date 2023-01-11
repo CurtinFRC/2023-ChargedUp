@@ -1,5 +1,7 @@
 #include "Arm.h"
 
+#include <units/math.h>
+
 using namespace frc;
 using namespace wom;
 
@@ -22,8 +24,8 @@ void Arm::OnUpdate(units::second_t dt) {
       break;
     case ArmState::kAngle:
       {
-        auto torque = (_config.loadMass * _config.armLength + _config.armMass * _config.armLength / 2.0) * 9.81_m / 1_s / 1_s * units::math::cos(_config.angleOffset + angle);
-        auto feedforward = _config.gearbox.motor.Voltage(torque, 0_rad / 1_s) + _config.gearbox.motor.Voltage(0_Nm, _velocityFeedforward);
+        units::newton_meter_t torque = (_config.loadMass * _config.armLength + _config.armMass * _config.armLength / 2.0) * 9.81_m / 1_s / 1_s * units::math::cos(_config.angleOffset + angle);
+        units::volt_t feedforward = _config.gearbox.motor.Voltage(torque, 0_rad / 1_s) + _config.gearbox.motor.Voltage(0_Nm, _velocityFeedforward);
         voltage = _pid.Calculate(angle, dt, feedforward);
       }
       break;
