@@ -14,7 +14,17 @@ struct ArmavatorConfig {
   wom::ElevatorConfig elevator;
 };
 
-// Your code here
+enum class ArmavatorState {
+  kIdle,
+  kPose
+};
+
+class Armavator : public behaviour::HasBehaviour {
+ public:
+  Armavator(ArmavatorConfig config);
+
+
+};
 
 /* SIMULATION */
 

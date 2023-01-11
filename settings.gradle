@@ -31,4 +31,5 @@ pluginManagement {
 }
 
 include 'wombat'
+include 'sleipnir'
 rootProject.name = '2023-ChargedUp'
