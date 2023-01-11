@@ -42,7 +42,7 @@ namespace wom {
     void OnUpdate(units::second_t dt);
 
     void SetIdle();
-    void SetAngle(units::radian_t angle);
+    void SetAngle(units::radian_t angle, units::radians_per_second_t velocityFeedforward = 0_rad / 1_s);
     void SetZeroing();
 
     ArmConfig &GetConfig();
@@ -50,6 +50,8 @@ namespace wom {
     ArmConfig _config;
     ArmState _state = ArmState::kIdle;
     wom::PIDController<units::radian, units::volt> _pid;
+    
+    units::radians_per_second_t _velocityFeedforward{0};
   };
 
   /* SIMULATION */

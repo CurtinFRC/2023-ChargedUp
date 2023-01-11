@@ -7,6 +7,8 @@ Arm::Arm(ArmConfig config) : _config(config), _pid(config.path + "/pid", config.
 
 void Arm::OnUpdate(units::second_t dt) {
   units::volt_t voltage = 0_V;
+  auto angle = _config.gearbox.encoder->GetEncoderPosition();
+
   switch (_state) {
     case ArmState::kIdle:
       break;
@@ -20,11 +22,9 @@ void Arm::OnUpdate(units::second_t dt) {
       break;
     case ArmState::kAngle:
       {
-        voltage = _pid.Calculate(_config.gearbox.encoder->GetEncoderPosition(),  dt);
-        /*creates a pid controller*/
-        // units::radian_t currentAngle = _config.gearbox.encoder->GetEncoderPosition();
-        // units::radian_t error = _targetAngle - currentAngle;
-        // voltage = 12_V / 20_deg * error;
+        auto torque = (_config.loadMass * _config.armLength + _config.armMass * _config.armLength / 2.0) * 9.81_m / 1_s / 1_s * units::math::cos(_config.angleOffset + angle);
+        auto feedforward = _config.gearbox.motor.Voltage(torque, 0_rad / 1_s) + _config.gearbox.motor.Voltage(0_Nm, _velocityFeedforward);
+        voltage = _pid.Calculate(angle, dt, feedforward);
       }
       break;
   }
@@ -39,9 +39,10 @@ void Arm::SetZeroing() {
   _state = ArmState::kZeroing;
 }
 
-void Arm::SetAngle(units::radian_t angle) {
+void Arm::SetAngle(units::radian_t angle, units::radians_per_second_t velFf) {
   _state = ArmState::kAngle;
   _pid.SetSetpoint(angle);
+  _velocityFeedforward = velFf;
 }
 
 ArmConfig &Arm::GetConfig() {
