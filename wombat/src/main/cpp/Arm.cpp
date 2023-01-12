@@ -38,9 +38,7 @@ void Arm::OnUpdate(units::second_t dt) {
       break;
     case ArmState::kAngle:
       {
-        units::newton_meter_t torque = (_config.loadMass * _config.armLength + _config.armMass * _config.armLength / 2.0) * 9.81_m / 1_s / 1_s * units::math::cos(_config.angleOffset + angle);
-        units::volt_t feedforward = _config.gearbox.motor.Voltage(torque, 0_rad / 1_s) + _config.gearbox.motor.Voltage(0_Nm, _velocityFeedforward);
-        voltage = _pid.Calculate(angle, dt, feedforward);
+        voltage = _pid.Calculate(angle, dt);
       }
       break;
   }
@@ -58,10 +56,9 @@ void Arm::SetZeroing() {
   _state = ArmState::kZeroing;
 }
 
-void Arm::SetAngle(units::radian_t angle, units::radians_per_second_t velFf) {
+void Arm::SetAngle(units::radian_t angle) {
   _state = ArmState::kAngle;
   _pid.SetSetpoint(angle);
-  _velocityFeedforward = velFf;
 }
 
 ArmConfig &Arm::GetConfig() {
