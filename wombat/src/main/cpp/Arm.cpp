@@ -5,7 +5,21 @@
 using namespace frc;
 using namespace wom;
 
-Arm::Arm(ArmConfig config) : _config(config), _pid(config.path + "/pid", config.pidConfig) { }
+void ArmConfig::WriteNT(std::shared_ptr<nt::NetworkTable> table) {
+  table->GetEntry("armMass").SetDouble(armMass.value());
+  table->GetEntry("loadMass").SetDouble(loadMass.value());
+  table->GetEntry("armLength").SetDouble(armLength.value());
+  table->GetEntry("minAngle").SetDouble(minAngle.convert<units::degree>().value());
+  table->GetEntry("maxAngle").SetDouble(maxAngle.convert<units::degree>().value());
+  table->GetEntry("initialAngle").SetDouble(initialAngle.convert<units::degree>().value());
+  table->GetEntry("angleOffset").SetDouble(initialAngle.convert<units::degree>().value());
+}
+
+Arm::Arm(ArmConfig config)
+  : _config(config),
+    _pid(config.path + "/pid", config.pidConfig),
+    _table(nt::NetworkTableInstance::GetDefault().GetTable(config.path))
+{ }
 
 void Arm::OnUpdate(units::second_t dt) {
   units::volt_t voltage = 0_V;
@@ -31,6 +45,9 @@ void Arm::OnUpdate(units::second_t dt) {
       break;
   }
   _config.gearbox.transmission->SetVoltage(voltage);
+
+  _table->GetEntry("angle").SetDouble(angle.convert<units::degree>().value());
+  _config.WriteNT(_table->GetSubTable("config"));
 }
 
 void Arm::SetIdle() {

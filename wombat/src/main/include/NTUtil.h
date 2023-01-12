@@ -2,6 +2,8 @@
 
 #include <networktables/NetworkTable.h>
 
+#include <frc/geometry/Pose2d.h>
+
 #include <functional>
 
 namespace wom {
@@ -40,4 +42,6 @@ namespace wom {
     NTBoundUnit(std::shared_ptr<nt::NetworkTable> table, std::string name, units::unit_t<T> &val)
       : NTBound(table, name, nt::Value::MakeDouble(val.value()), [&val](const nt::Value &v) { val = units::unit_t<T> { v.GetDouble() }; }) {}
   };
+
+  void WritePose2NT(std::shared_ptr<nt::NetworkTable> table, frc::Pose2d pose);
 }

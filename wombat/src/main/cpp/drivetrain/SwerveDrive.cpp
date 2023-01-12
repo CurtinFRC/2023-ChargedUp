@@ -1,8 +1,15 @@
 #include "drivetrain/SwerveDrive.h"
+#include "NTUtil.h"
 
 #include <networktables/NetworkTableInstance.h>
 
 using namespace wom;
+
+void SwerveModuleConfig::WriteNT(std::shared_ptr<nt::NetworkTable> table) const {
+  std::array<double, 2> pos{ position.X().value(), position.Y().value() };
+  table->GetEntry("position").SetDoubleArray(std::span(pos));
+  table->GetEntry("wheelRadius").SetDouble(wheelRadius.value());
+}
 
 SwerveModule::SwerveModule(std::string path, SwerveModuleConfig config, SwerveModule::angle_pid_conf_t anglePID, SwerveModule::velocity_pid_conf_t velocityPID) 
   : _config(config),
@@ -31,13 +38,12 @@ void SwerveModule::OnUpdate(units::second_t dt) {
       break;
   }
 
-  _table->GetEntry("speed").SetDouble(GetSpeed().value());
-  _table->GetEntry("angle").SetDouble(_config.turnMotor.encoder->GetEncoderPosition().convert<units::degree>().value());
-  _table->GetEntry("posX").SetDouble(_config.position.X().value());
-  _table->GetEntry("posY").SetDouble(_config.position.Y().value());
-
   _config.driveMotor.transmission->SetVoltage(driveVoltage);
   _config.turnMotor.transmission->SetVoltage(turnVoltage);
+
+  _table->GetEntry("speed").SetDouble(GetSpeed().value());
+  _table->GetEntry("angle").SetDouble(_config.turnMotor.encoder->GetEncoderPosition().convert<units::degree>().value());
+  _config.WriteNT(_table->GetSubTable("config"));
 }
 
 void SwerveModule::SetIdle() {
@@ -74,6 +80,10 @@ frc::SwerveModulePosition SwerveModule::GetPosition() const {
 
 const SwerveModuleConfig &SwerveModule::GetConfig() const {
   return _config;
+}
+
+void SwerveDriveConfig::WriteNT(std::shared_ptr<nt::NetworkTable> table) {
+  table->GetEntry("mass").SetDouble(mass.value());
 }
 
 SwerveDrive::SwerveDrive(SwerveDriveConfig config, frc::Pose2d initialPose) :
@@ -153,10 +163,8 @@ void SwerveDrive::OnUpdate(units::second_t dt) {
     }
   );
 
-  auto est = _table->GetSubTable("estimated");
-  est->GetEntry("angle").SetDouble(_poseEstimator.GetEstimatedPosition().Rotation().Degrees().value());
-  est->GetEntry("x").SetDouble(_poseEstimator.GetEstimatedPosition().X().value());
-  est->GetEntry("y").SetDouble(_poseEstimator.GetEstimatedPosition().Y().value());
+  WritePose2NT(_table->GetSubTable("estimatedPose"), _poseEstimator.GetEstimatedPosition());
+  _config.WriteNT(_table->GetSubTable("config"));
 }
 
 void SwerveDrive::SetIdle() {
