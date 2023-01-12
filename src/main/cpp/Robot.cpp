@@ -12,6 +12,9 @@ static units::second_t lastPeriodic;
 
 void Robot::RobotInit() {
   lastPeriodic = wom::now();
+
+  arm = new wom::Arm(map.arm.config);
+  BehaviourScheduler::GetInstance()->Register(arm);
 }
 
 void Robot::RobotPeriodic() {
@@ -19,13 +22,24 @@ void Robot::RobotPeriodic() {
   lastPeriodic = wom::now();
 
   BehaviourScheduler::GetInstance()->Tick();
+
+  arm->OnUpdate(dt);
 }
 
 void Robot::AutonomousInit() { }
 void Robot::AutonomousPeriodic() { }
 
 void Robot::TeleopInit() { }
-void Robot::TeleopPeriodic() { }
+void Robot::TeleopPeriodic() {
+  if (map.controllers.driver.GetAButton())
+    arm->SetAngle(45_deg);
+  if (map.controllers.driver.GetBButton())
+    arm->SetAngle(90_deg);
+  if (map.controllers.driver.GetXButton())
+    arm->SetAngle(135_deg);
+  if (map.controllers.driver.GetYButton())
+    arm->SetAngle(0_deg);
+}
 
 void Robot::DisabledInit() { }
 void Robot::DisabledPeriodic() { }
@@ -44,11 +58,13 @@ static units::second_t lastSimPeriodic{0};
 static auto simTable = nt::NetworkTableInstance::GetDefault().GetTable("/sim");
 
 struct SimConfig {
+  wom::sim::ArmSim arm;
 };
 SimConfig *simConfig;
 
 void Robot::SimulationInit() {
   simConfig = new SimConfig{
+    wom::sim::ArmSim(map.arm.config)
   };
 
   lastSimPeriodic = wom::now();
@@ -57,7 +73,10 @@ void Robot::SimulationInit() {
 void Robot::SimulationPeriodic() {
   auto dt = wom::now() - lastSimPeriodic;
 
+  simConfig->arm.Update(dt);
+
   auto batteryVoltage = units::math::min(units::math::max(frc::sim::BatterySim::Calculate({
+    // simConfig->arm.GetCurrent()
   }), 0_V), 12_V);
   frc::sim::RoboRioSim::SetVInVoltage(batteryVoltage);
   simTable->GetEntry("batteryVoltage").SetDouble(batteryVoltage.value()); 
