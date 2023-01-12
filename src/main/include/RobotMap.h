@@ -25,7 +25,7 @@ struct RobotMap {
     wom::Gearbox gearbox {
       &motor,
       &encoder,
-      wom::DCMotor::CIM(2).WithReduction(50)
+      wom::DCMotor::CIM(2).WithReduction(100)
     };
     wom::ArmConfig config {
       "/arm",
