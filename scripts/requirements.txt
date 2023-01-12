@@ -1,4 +1,3 @@
 pynetworktables
 numpy
 matplotlib
-pygame
