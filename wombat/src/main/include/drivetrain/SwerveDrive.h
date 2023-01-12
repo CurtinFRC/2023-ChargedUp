@@ -28,6 +28,8 @@ namespace wom {
     Gearbox turnMotor;
 
     units::meter_t wheelRadius;
+
+    void WriteNT(std::shared_ptr<nt::NetworkTable> table) const;
   };
 
   class SwerveModule {
@@ -76,6 +78,7 @@ namespace wom {
     wpi::array<double, 3> stateStdDevs{0.0, 0.0, 0.0};
     wpi::array<double, 3> visionMeasurementStdDevs{0.0, 0.0, 0.0};
 
+    void WriteNT(std::shared_ptr<nt::NetworkTable> table);
   };
 
   enum class SwerveDriveState {

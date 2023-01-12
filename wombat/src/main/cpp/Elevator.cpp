@@ -6,6 +6,12 @@
 
 using namespace wom;
 
+void ElevatorConfig::WriteNT(std::shared_ptr<nt::NetworkTable> table) {
+  table->GetEntry("radius").SetDouble(radius.value());
+  table->GetEntry("mass").SetDouble(mass.value());
+  table->GetEntry("maxHeight").SetDouble(maxHeight.value());
+}
+
 Elevator::Elevator(ElevatorConfig config)
   : _config(config), _state(ElevatorState::kIdle),
   _pid{config.path + "/pid", config.pid},
@@ -51,6 +57,9 @@ void Elevator::OnUpdate(units::second_t dt) {
     voltage = 0_V;
   }
   _config.gearbox.transmission->SetVoltage(voltage);
+
+  _table->GetEntry("height").SetDouble(height.value());
+  _config.WriteNT(_table->GetSubTable("config"));
 }
 
 void Elevator::SetManual(units::volt_t voltage) {

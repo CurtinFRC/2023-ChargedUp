@@ -31,6 +31,8 @@ namespace wom {
     units::kilogram_t mass;
     units::meter_t maxHeight;
     PIDConfig<units::meter, units::volt> pid;
+
+    void WriteNT(std::shared_ptr<nt::NetworkTable> table);
   };
 
   class Elevator : public behaviour::HasBehaviour {

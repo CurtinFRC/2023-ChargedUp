@@ -27,6 +27,8 @@ namespace wom {
     units::radian_t maxAngle = 180_deg;
     units::radian_t initialAngle = 0_deg;
     units::radian_t angleOffset = 0_deg;
+
+    void WriteNT(std::shared_ptr<nt::NetworkTable> table);
   };
 
   enum class ArmState {
@@ -50,6 +52,8 @@ namespace wom {
     ArmConfig _config;
     ArmState _state = ArmState::kIdle;
     wom::PIDController<units::radian, units::volt> _pid;
+    
+    std::shared_ptr<nt::NetworkTable> _table;
   };
 
   /* SIMULATION */
