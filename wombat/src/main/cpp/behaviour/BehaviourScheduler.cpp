@@ -64,6 +64,8 @@ void BehaviourScheduler::Tick() {
           Schedule(sys->_default_behaviour_producer());
         }
       }
+    } else if (sys->_default_behaviour_producer != nullptr) {
+      Schedule(sys->_default_behaviour_producer());
     }
   }
 }
