@@ -24,7 +24,6 @@
     },
     "transitory": {
       "arm": {
-        "open": true,
         "pid": {
           "open": true
         },
@@ -60,6 +59,29 @@
           }
         },
         "open": true
+      },
+      "drivetrain": {
+        "estimatedPose": {
+          "open": true
+        },
+        "modules": {
+          "1": {
+            "config": {
+              "open": true
+            }
+          },
+          "open": true
+        },
+        "open": true,
+        "pid": {
+          "open": true
+        },
+        "sim": {
+          "modules": {
+            "open": true
+          },
+          "open": true
+        }
       },
       "sim": {
         "open": true

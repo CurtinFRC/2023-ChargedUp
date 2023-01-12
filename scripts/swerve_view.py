@@ -37,7 +37,7 @@ while True:
     return [p[0] + robot_pos[0], p[1] + robot_pos[1]]
 
   module_pos = [
-    tform(rotate([table.getEntry("modules/" + str(i) + "/posX").getDouble(0.0), table.getEntry("modules/" + str(i) + "/posY").getDouble(0.0)], angle)) for i in range(1, 5)
+    tform(rotate(table.getEntry("modules/" + str(i) + "/config/position").getDoubleArray([0.0, 0.0]), angle)) for i in range(1, 5)
   ]
   module_angle = [
     angle + table.getEntry("modules/" + str(i) + "/angle").getDouble(0.0) / 180 * 3.14 for i in range(1, 5)

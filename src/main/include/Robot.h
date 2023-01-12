@@ -27,4 +27,5 @@ class Robot : public frc::TimedRobot {
  private:
   RobotMap map;
   wom::Arm *arm;
+  wom::SwerveDrive *swerve;
 };
