@@ -38,9 +38,19 @@ void Arm::OnUpdate(units::second_t dt) {
       break;
     case ArmState::kAngle:
       {
-        voltage = _pid.Calculate(angle, dt);
+        units::newton_meter_t torque = 9.81_m / 1_s / 1_s * _config.armLength * units::math::cos(angle + _config.angleOffset) * (0.5 * _config.armMass + _config.loadMass);
+        units::volt_t feedforward = _config.gearbox.motor.Voltage(torque, 0_rad/ 1_s);
+        voltage = _pid.Calculate(angle, dt, feedforward);
       }
       break;
+  }
+
+  if (
+    ((_config.minAngle < 75_deg && units::math::abs(_pid.GetSetpoint() - _config.minAngle) <= 1_deg)
+     || (_config.maxAngle > 105_deg && units::math::abs(_pid.GetSetpoint() - _config.maxAngle) <= 1_deg)) && 
+    units::math::abs(_pid.GetError()) <= 1_deg
+  ) {
+    voltage = 0_V;
   }
   _config.gearbox.transmission->SetVoltage(voltage);
 
