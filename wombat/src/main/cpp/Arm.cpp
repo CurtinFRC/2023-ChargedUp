@@ -46,8 +46,8 @@ void Arm::OnUpdate(units::second_t dt) {
   }
 
   if (
-    ((_config.minAngle < 75_deg && units::math::abs(_pid.GetSetpoint() - _config.minAngle) <= 1_deg)
-     || (_config.maxAngle > 105_deg && units::math::abs(_pid.GetSetpoint() - _config.maxAngle) <= 1_deg)) && 
+    (((_config.minAngle + _config.angleOffset) < 75_deg && units::math::abs(_pid.GetSetpoint() - _config.minAngle) <= 1_deg)
+     || ((_config.maxAngle + _config.angleOffset) > 105_deg && units::math::abs(_pid.GetSetpoint() - _config.maxAngle) <= 1_deg)) && 
     units::math::abs(_pid.GetError()) <= 1_deg
   ) {
     voltage = 0_V;

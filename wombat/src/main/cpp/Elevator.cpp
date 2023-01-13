@@ -15,7 +15,7 @@ void ElevatorConfig::WriteNT(std::shared_ptr<nt::NetworkTable> table) {
 Elevator::Elevator(ElevatorConfig config)
   : _config(config), _state(ElevatorState::kIdle),
   _pid{config.path + "/pid", config.pid},
-  _table(nt::NetworkTableInstance::GetDefault().GetTable("elevator")) {}
+  _table(nt::NetworkTableInstance::GetDefault().GetTable(config.path)) {}
 
 
 void Elevator::OnUpdate(units::second_t dt) {
@@ -67,8 +67,9 @@ void Elevator::SetManual(units::volt_t voltage) {
   _setpointManual = voltage;
 }
 
-void Elevator::SetPID() {
+void Elevator::SetPID(units::meter_t height) {
   _state = ElevatorState::kPID;
+  _pid.SetSetpoint(height);
 }
 
 void Elevator::SetZeroing() {
