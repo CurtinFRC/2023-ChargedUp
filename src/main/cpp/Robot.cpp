@@ -2,6 +2,7 @@
 
 #include "behaviour/BehaviourScheduler.h"
 #include "behaviour/Behaviour.h"
+#include "behaviour/SwerveBaseBehaviour.h"
 
 #include <frc/smartdashboard/SmartDashboard.h>
 
@@ -15,15 +16,22 @@ void Robot::RobotInit() {
 
   armavator = new Armavator(map.armavator.config);
   BehaviourScheduler::GetInstance()->Register(armavator);
+
+  swerve = new wom::SwerveDrive(map.swerveBase.config, frc::Pose2d());
+  BehaviourScheduler::GetInstance()->Register(swerve);
+  swerve->SetDefaultBehaviour([this]() {
+    return make<ManualDrivebase>(swerve, &map.controllers.driver);
+  });
 }
 
 void Robot::RobotPeriodic() {
   auto dt = wom::now() - lastPeriodic;
   lastPeriodic = wom::now();
-
+  
   BehaviourScheduler::GetInstance()->Tick();
 
   armavator->OnUpdate(dt);
+  swerve->OnUpdate(dt);
 }
 
 void Robot::AutonomousInit() { }
@@ -59,12 +67,14 @@ static auto simTable = nt::NetworkTableInstance::GetDefault().GetTable("/sim");
 
 struct SimConfig {
   ::sim::ArmavatorSim arm;
+  wom::sim::SwerveDriveSim swerveSim; 
 };
 SimConfig *simConfig;
 
 void Robot::SimulationInit() {
   simConfig = new SimConfig{
-    ::sim::ArmavatorSim(map.armavator.config)
+    ::sim::ArmavatorSim(map.armavator.config),
+    wom::sim::SwerveDriveSim(map.swerveBase.config, 0.5 * 6_lb * 7.5_in * 7.5_in)
   };
 
   lastSimPeriodic = wom::now();
@@ -74,6 +84,7 @@ void Robot::SimulationPeriodic() {
   auto dt = wom::now() - lastSimPeriodic;
 
   simConfig->arm.OnUpdate(dt);
+  simConfig->swerveSim.Update(dt);
 
   auto batteryVoltage = units::math::min(units::math::max(frc::sim::BatterySim::Calculate({
     // simConfig->arm.GetCurrent()
