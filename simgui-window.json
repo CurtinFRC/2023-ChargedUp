@@ -1,11 +1,11 @@
 {
   "MainWindow": {
     "GLOBAL": {
-      "height": "1009",
+      "height": "705",
       "maximized": "1",
       "style": "0",
       "userScale": "2",
-      "width": "1920",
+      "width": "1366",
       "xpos": "0",
       "ypos": "23"
     }
@@ -18,17 +18,17 @@
     },
     "###Joysticks": {
       "Collapsed": "0",
-      "Pos": "882,643",
+      "Pos": "447,397",
       "Size": "796,240"
     },
     "###NetworkTables": {
       "Collapsed": "0",
-      "Pos": "247,50",
-      "Size": "750,1233"
+      "Pos": "125,110",
+      "Size": "750,531"
     },
     "###Other Devices": {
       "Collapsed": "0",
-      "Pos": "1901,62",
+      "Pos": "1347,62",
       "Size": "253,686"
     },
     "###Plot <0>": {
