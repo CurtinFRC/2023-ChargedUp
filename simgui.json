@@ -34,11 +34,11 @@
       },
       "armavator": {
         "arm": {
-          "open": true,
           "pid": {
             "config": {
               "open": true
-            }
+            },
+            "open": true
           },
           "sim": {
             "open": true

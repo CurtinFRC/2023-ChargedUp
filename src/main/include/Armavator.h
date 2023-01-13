@@ -12,8 +12,7 @@
 struct ArmavatorConfig {
   wom::ArmConfig arm;
   wom::ElevatorConfig elevator;
-
-  void WriteNT(std::shared_ptr<nt::NetworkTable> table);
+  
 };
 
 // Your code here
@@ -32,17 +31,17 @@ class Armavator : public behaviour::HasBehaviour {
 
   void SetIdle();
   void SetZeroing();
-  void SetPosition();
+  void SetPosition(units::meter_t elevatorHeight, units::radian_t armAngle);
 
  private:
   ArmavatorConfig _config;
-  ArmavatorState _state;
-
-  wom::PIDController<units::radian, units::volt> _pid;
-  std::shared_ptr<nt::NetworkTable> _table;
+  ArmavatorState _state = ArmavatorState::kIdle;
 
   wom::Arm arm;
   wom::Elevator elevator;
+
+  units::meter_t _elevatorSetpoint{0};
+  units::radian_t _armSetpoint{0};
 };
 
 /* SIMULATION */
