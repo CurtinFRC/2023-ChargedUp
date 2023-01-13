@@ -40,6 +40,9 @@ class Armavator : public behaviour::HasBehaviour {
 
   wom::PIDController<units::radian, units::volt> _pid;
   std::shared_ptr<nt::NetworkTable> _table;
+
+  wom::Arm arm;
+  wom::Elevator elevator;
 };
 
 /* SIMULATION */

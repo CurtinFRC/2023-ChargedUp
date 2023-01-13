@@ -11,7 +11,16 @@ void Armavator::OnUpdate(units::second_t dt) {
   units::volt_t voltage{0};
 
   switch(_state) {
-    
+    case ArmavatorState::kIdle:
+      break;
+    case ArmavatorState::kZeroing:
+      // ElevatorState::kZeroing || ArmState::kZeroing;
+      //ChangeWhenMechanicsInfoArrives
+      arm.SetZeroing();
+      elevator.SetZeroing();
+      break;
+    case ArmavatorState::kPosition:
+      break;
   }
 }
 
