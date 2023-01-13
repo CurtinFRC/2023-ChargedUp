@@ -19,7 +19,6 @@ struct ArmavatorConfig {
 enum class ArmavatorState {
   kIdle,
   kPosition,
-  kZeroing
   //ManualPositioning
 };
 
@@ -30,7 +29,6 @@ class Armavator : public behaviour::HasBehaviour {
   void OnUpdate(units::second_t dt);
 
   void SetIdle();
-  void SetZeroing();
   void SetPosition(units::meter_t elevatorHeight, units::radian_t armAngle);
 
  private:

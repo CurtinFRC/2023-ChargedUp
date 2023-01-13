@@ -11,12 +11,6 @@ void Armavator::OnUpdate(units::second_t dt) {
   switch(_state) {
     case ArmavatorState::kIdle:
       break;
-    case ArmavatorState::kZeroing:
-      // ElevatorState::kZeroing || ArmState::kZeroing;
-      //ChangeWhenMechanicsInfoArrives
-      arm.SetZeroing();
-      elevator.SetZeroing();
-      break;
     case ArmavatorState::kPosition:
       arm.SetAngle(_armSetpoint);
       elevator.SetPID(_elevatorSetpoint);
@@ -37,9 +31,6 @@ void Armavator::SetPosition(units::meter_t elevatorHeight, units::radian_t armAn
   _elevatorSetpoint = elevatorHeight;
 }
 
-void Armavator::SetZeroing() {
-  _state = ArmavatorState::kZeroing;
-}
 
 /* SIMULATION */
 
