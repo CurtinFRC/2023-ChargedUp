@@ -76,6 +76,16 @@ namespace wom {
       };
     }
 
+    ContinuousIdxT CenterOf(Idx_t idx) {
+      auto x_per_grid = _xsize / (float)_grid.cols();
+      auto y_per_grid = _ysize / (float)_grid.rows();
+
+      return ContinuousIdxT {
+        x_per_grid * idx.x() + x_per_grid / 2,
+        y_per_grid * idx.y() + y_per_grid / 2
+      };
+    }
+
     /* SEARCH */
 
     template<typename From, typename To>
