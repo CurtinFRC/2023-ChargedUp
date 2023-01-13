@@ -8,7 +8,11 @@ void ArmavatorConfig::WriteNT(std::shared_ptr<nt::NetworkTable> table) {
 }
 
 void Armavator::OnUpdate(units::second_t dt) {
-  
+  units::volt_t voltage{0};
+
+  switch(_state) {
+    
+  }
 }
 
 void Armavator::SetIdle() {
