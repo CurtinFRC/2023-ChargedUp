@@ -19,7 +19,9 @@ Arm::Arm(ArmConfig config)
   : _config(config),
     _pid(config.path + "/pid", config.pidConfig),
     _table(nt::NetworkTableInstance::GetDefault().GetTable(config.path))
-{ }
+{
+  _config.gearbox.encoder->SetEncoderPosition(_config.initialAngle);
+}
 
 void Arm::OnUpdate(units::second_t dt) {
   units::volt_t voltage = 0_V;
@@ -113,7 +115,7 @@ void ::wom::sim::ArmSim::Update(units::second_t dt) {
 
   current = config.gearbox.motor.Current(velocity, config.gearbox.transmission->GetVoltage());
 
-  if (encoder) encoder->SetEncoderTurns(angle);
+  if (encoder) encoder->SetEncoderTurns(angle - config.initialAngle);
 
   table->GetEntry("angle").SetDouble(angle.convert<units::degree>().value());
   table->GetEntry("current").SetDouble(current.value());

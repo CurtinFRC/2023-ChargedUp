@@ -74,6 +74,7 @@ struct RobotMap {
         2_in,
         armMass + loadMass + carriageMass,
         1.5_m,
+        1_m,
         {
           "/armavator/elevator/pid/config",
           12_V / 1_m

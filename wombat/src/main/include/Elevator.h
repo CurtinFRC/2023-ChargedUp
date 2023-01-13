@@ -30,6 +30,7 @@ namespace wom {
     units::meter_t radius;
     units::kilogram_t mass;
     units::meter_t maxHeight;
+    units::meter_t initialHeight;
     PIDConfig<units::meter, units::volt> pid;
 
     void WriteNT(std::shared_ptr<nt::NetworkTable> table);

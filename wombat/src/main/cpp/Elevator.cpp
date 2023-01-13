@@ -15,7 +15,9 @@ void ElevatorConfig::WriteNT(std::shared_ptr<nt::NetworkTable> table) {
 Elevator::Elevator(ElevatorConfig config)
   : _config(config), _state(ElevatorState::kIdle),
   _pid{config.path + "/pid", config.pid},
-  _table(nt::NetworkTableInstance::GetDefault().GetTable(config.path)) {}
+  _table(nt::NetworkTableInstance::GetDefault().GetTable(config.path)) {
+  _config.gearbox.encoder->SetEncoderPosition(_config.initialHeight / _config.radius * 1_rad);
+}
 
 
 void Elevator::OnUpdate(units::second_t dt) {
@@ -89,13 +91,15 @@ wom::sim::ElevatorSim::ElevatorSim(ElevatorConfig config)
     lowerLimit(config.bottomSensor ? new frc::sim::DIOSim(*config.bottomSensor) : nullptr),
     upperLimit(config.topSensor ? new frc::sim::DIOSim(*config.topSensor) : nullptr),
     table(nt::NetworkTableInstance::GetDefault().GetTable(config.path + "/sim"))
-  {}
+  {
+    sim.SetState(Eigen::Vector2d{ config.initialHeight.value(), 0 });
+  }
 
 void wom::sim::ElevatorSim::Update(units::second_t dt) {
   sim.SetInputVoltage(config.gearbox.transmission->GetEstimatedRealVoltage());
   sim.Update(dt);
 
-  encoder->SetEncoderTurns(1_rad * sim.GetPosition() / config.radius);
+  encoder->SetEncoderTurns(1_rad * (sim.GetPosition() - config.initialHeight) / config.radius);
   if (lowerLimit) lowerLimit->SetValue(sim.HasHitLowerLimit());
   if (upperLimit) upperLimit->SetValue(sim.HasHitUpperLimit());
 
