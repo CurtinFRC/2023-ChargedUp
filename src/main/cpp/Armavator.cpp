@@ -1,14 +1,34 @@
 #include "Armavator.h"
+#include <units/math.h>
 
 // Your code here
 
+void ArmavatorConfig::WriteNT(std::shared_ptr<nt::NetworkTable> table) {
+  //possibleStuff
+}
+
+void Armavator::OnUpdate(units::second_t dt) {
+  
+}
+
+void Armavator::SetIdle() {
+  _state = ArmavatorState::kIdle;
+}
+
+void Armavator::SetPosition() {
+  _state = ArmavatorState::kPosition;
+}
+
+void Armavator::SetZeroing() {
+  _state = ArmavatorState::kZeroing;
+}
+
 /* SIMULATION */
-#include <units/math.h>
 
 ::sim::ArmavatorSim::ArmavatorSim(ArmavatorConfig config)
   : config(config), armSim(config.arm), elevatorSim(config.elevator) {}
 
-void ::sim::ArmavatorSim::Update(units::second_t dt) {
+void ::sim::ArmavatorSim::OnUpdate(units::second_t dt) {
   armSim.Update(dt);
   elevatorSim.Update(dt);
 }

@@ -12,9 +12,35 @@
 struct ArmavatorConfig {
   wom::ArmConfig arm;
   wom::ElevatorConfig elevator;
+
+  void WriteNT(std::shared_ptr<nt::NetworkTable> table);
 };
 
 // Your code here
+enum class ArmavatorState {
+  kIdle,
+  kPosition,
+  kZeroing
+  //ManualPositioning
+};
+
+class Armavator : public behaviour::HasBehaviour {
+ public:
+  Armavator(ArmavatorConfig config);
+
+  void OnUpdate(units::second_t dt);
+
+  void SetIdle();
+  void SetZeroing();
+  void SetPosition();
+
+ private:
+  ArmavatorConfig _config;
+  ArmavatorState _state;
+
+  wom::PIDController<units::radian, units::volt> _pid;
+  std::shared_ptr<nt::NetworkTable> _table;
+};
 
 /* SIMULATION */
 
@@ -23,7 +49,7 @@ namespace sim {
    public:
     ArmavatorSim(ArmavatorConfig config);
 
-    void Update(units::second_t dt);
+    void OnUpdate(units::second_t dt);
 
     units::ampere_t GetCurrent() const;
 
