@@ -5,6 +5,7 @@
 #include <string>
 
 #include <frc/TimedRobot.h>
+#include <frc/event/EventLoop.h>
 
 using namespace frc;
 
@@ -25,6 +26,8 @@ class Robot : public frc::TimedRobot {
   void SimulationPeriodic() override;
 
  private:
+  frc::EventLoop loop;
+  
   RobotMap map;
   Armavator *armavator;
   wom::SwerveDrive *swerve;

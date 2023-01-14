@@ -3,7 +3,7 @@
 
 // Your code here
 Armavator::Armavator(ArmavatorConfig config)
-: _config(config), arm(config.arm), elevator(config.elevator) {}
+: config(config), arm(config.arm), elevator(config.elevator) {}
 
 void Armavator::OnUpdate(units::second_t dt) {
   units::volt_t voltage{0};

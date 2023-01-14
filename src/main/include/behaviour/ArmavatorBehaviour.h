@@ -9,16 +9,15 @@
 
 class ArmavatorGoToPositionBehaviour : public behaviour::Behaviour {
  public:
-    using grid_t = wom::DiscretisedOccupancyGrid<units::radian, units::meter>;
+    using grid_t = ArmavatorConfig::grid_t;
 
-    ArmavatorGoToPositionBehaviour(Armavator *armavator, grid_t grid, ArmavatorPosition setpoint);
+    ArmavatorGoToPositionBehaviour(Armavator *armavator, ArmavatorPosition setpoint);
 
     void OnStart() override;
     void OnTick(units::second_t dt) override;
 
  private:
     Armavator *armavator;
-    grid_t grid;
     ArmavatorPosition setpoint;
     std::deque<grid_t::Idx_t> waypoints;
 };

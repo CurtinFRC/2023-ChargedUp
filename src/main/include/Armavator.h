@@ -3,6 +3,7 @@
 #include "Arm.h"
 #include "Elevator.h"
 #include "Gearbox.h"
+#include "Grid.h"
 
 #include <frc/DigitalInput.h>
 #include <frc/simulation/DIOSim.h>
@@ -10,9 +11,11 @@
 #include <units/velocity.h>
 
 struct ArmavatorConfig {
+  using grid_t = wom::DiscretisedOccupancyGrid<units::radian, units::meter>;
+
   wom::ArmConfig arm;
   wom::ElevatorConfig elevator;
-  
+  grid_t grid;
 };
 
 struct ArmavatorPosition {
@@ -39,14 +42,12 @@ class Armavator : public behaviour::HasBehaviour {
   ArmavatorPosition GetCurrentPosition() const;
   bool IsStable() const;
 
+  ArmavatorConfig config;
   wom::Arm arm;
   wom::Elevator elevator;
 
  private: 
-  ArmavatorConfig _config;
   ArmavatorState _state = ArmavatorState::kIdle;
-
-  
 
   ArmavatorPosition _setpoint;
 };
