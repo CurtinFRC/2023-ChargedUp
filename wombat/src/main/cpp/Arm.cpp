@@ -25,7 +25,7 @@ Arm::Arm(ArmConfig config)
 
 void Arm::OnUpdate(units::second_t dt) {
   units::volt_t voltage = 0_V;
-  auto angle = _config.gearbox.encoder->GetEncoderPosition();
+  auto angle = GetAngle();
 
   switch (_state) {
     case ArmState::kIdle:
@@ -76,6 +76,19 @@ void Arm::SetAngle(units::radian_t angle) {
 ArmConfig &Arm::GetConfig() {
   return _config;
 }
+
+units::radian_t Arm::GetAngle() const {
+  return _config.gearbox.encoder->GetEncoderPosition();
+}
+
+units::radians_per_second_t Arm::MaxSpeed() const {
+  return _config.gearbox.motor.Speed(0_Nm, 12_V);
+}
+
+bool Arm::IsStable() const {
+  return _pid.IsStable();
+}
+
 /* SIMULATION */
 #include <units/math.h>
 

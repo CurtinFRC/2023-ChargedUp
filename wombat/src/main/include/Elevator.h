@@ -49,6 +49,9 @@ namespace wom {
 
     bool IsStable() const;
     ElevatorState GetState() const;
+
+    units::meter_t GetHeight() const;
+    units::meters_per_second_t MaxSpeed() const;
   
    private:
     units::volt_t _setpointManual{0};

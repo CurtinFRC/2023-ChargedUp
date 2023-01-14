@@ -15,7 +15,12 @@ struct ArmavatorConfig {
   
 };
 
-// Your code here
+struct ArmavatorPosition {
+  units::meter_t height;
+  units::radian_t angle;
+};
+
+
 enum class ArmavatorState {
   kIdle,
   kPosition,
@@ -29,17 +34,21 @@ class Armavator : public behaviour::HasBehaviour {
   void OnUpdate(units::second_t dt);
 
   void SetIdle();
-  void SetPosition(units::meter_t elevatorHeight, units::radian_t armAngle);
+  void SetPosition(ArmavatorPosition pos);
 
- private:
-  ArmavatorConfig _config;
-  ArmavatorState _state = ArmavatorState::kIdle;
+  ArmavatorPosition GetCurrentPosition() const;
+  bool IsStable() const;
 
   wom::Arm arm;
   wom::Elevator elevator;
 
-  units::meter_t _elevatorSetpoint{0};
-  units::radian_t _armSetpoint{0};
+ private: 
+  ArmavatorConfig _config;
+  ArmavatorState _state = ArmavatorState::kIdle;
+
+  
+
+  ArmavatorPosition _setpoint;
 };
 
 /* SIMULATION */

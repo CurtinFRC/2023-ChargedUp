@@ -40,13 +40,13 @@ void Robot::AutonomousPeriodic() { }
 void Robot::TeleopInit() { }
 void Robot::TeleopPeriodic() {
   if (map.controllers.driver.GetAButton())
-    armavator->SetPosition(0.5_m, 45_deg);
+    armavator->SetPosition({0.5_m, 45_deg});
   if (map.controllers.driver.GetBButton())
-    armavator->SetPosition(1_m, 90_deg);
+    armavator->SetPosition({1_m, 90_deg});
   if (map.controllers.driver.GetXButton())
-    armavator->SetPosition(1.0_m, -90_deg);
+    armavator->SetPosition({1.0_m, -90_deg});
   if (map.controllers.driver.GetYButton())
-    armavator->SetPosition(0_m, 0_deg);
+    armavator->SetPosition({0_m, 0_deg});
 }
 
 void Robot::DisabledInit() { }

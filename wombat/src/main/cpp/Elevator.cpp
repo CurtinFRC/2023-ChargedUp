@@ -23,7 +23,7 @@ Elevator::Elevator(ElevatorConfig config)
 void Elevator::OnUpdate(units::second_t dt) {
   units::volt_t voltage{0};
 
-  units::meter_t height = _config.gearbox.encoder->GetEncoderPosition().value() * _config.radius;
+  units::meter_t height = GetHeight();
 
   switch(_state) {
     case ElevatorState::kIdle:
@@ -80,6 +80,22 @@ void Elevator::SetZeroing() {
 
 void Elevator::SetIdle() {
   _state = ElevatorState::kIdle;
+}
+
+bool Elevator::IsStable() const {
+  return _pid.IsStable();
+}
+
+ElevatorState Elevator::GetState() const {
+  return _state;
+}
+
+units::meter_t Elevator::GetHeight() const {
+  return _config.gearbox.encoder->GetEncoderPosition().value() * _config.radius;
+}
+
+units::meters_per_second_t Elevator::MaxSpeed() const {
+  return _config.gearbox.motor.Speed((_config.mass * 9.81_mps_sq) * _config.radius, 12_V) / 1_rad * _config.radius;
 }
 
 /* SIMULATION */
