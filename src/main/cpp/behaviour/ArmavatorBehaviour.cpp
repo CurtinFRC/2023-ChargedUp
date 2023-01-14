@@ -27,9 +27,6 @@ void ArmavatorGoToPositionBehaviour::OnTick(units::second_t dt) {
                 waypoint = waypoints.front();
         }
 
-        ArmavatorPosition currentPosition = armavator->GetCurrentPosition();
-        grid_t::Idx_t current = armavator->config.grid.Discretise({currentPosition.angle, currentPosition.height});
-        
         armavator->SetPosition({waypoint.position.y, waypoint.position.x});
     } else {
         armavator->SetPosition(setpoint);
