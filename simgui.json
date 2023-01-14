@@ -66,15 +66,25 @@
               "open": true
             },
             "open": true
-          },
-          "open": true
+          }
         },
         "open": true,
+        "pid": {
+          "open": true,
+          "pose": {
+            "angle": {
+              "config": {
+                "open": true
+              },
+              "open": true
+            },
+            "open": true
+          }
+        },
         "sim": {
           "modules": {
             "open": true
-          },
-          "open": true
+          }
         }
       },
       "sim": {
@@ -361,7 +371,7 @@
               "autoFit": true
             }
           ],
-          "height": 338,
+          "height": 332,
           "series": [
             {
               "color": [
@@ -379,7 +389,7 @@
     "Plot <9>": {
       "plots": [
         {
-          "height": 338,
+          "height": 332,
           "series": [
             {
               "color": [
