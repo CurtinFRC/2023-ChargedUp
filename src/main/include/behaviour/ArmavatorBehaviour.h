@@ -19,5 +19,5 @@ class ArmavatorGoToPositionBehaviour : public behaviour::Behaviour {
  private:
     Armavator *armavator;
     ArmavatorPosition setpoint;
-    std::deque<grid_t::Idx_t> waypoints;
+    std::deque<grid_t::GridPathNode<units::second>> waypoints;
 };

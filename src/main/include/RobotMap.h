@@ -93,7 +93,7 @@ struct RobotMap {
     ).FillF([this](units::radian_t angle, units::meter_t height) {
       units::meter_t x = arm.config.armLength * units::math::cos(angle);
       units::meter_t y = height + arm.config.armLength * units::math::sin(angle);
-      return y <= 0_m;
+      return !(y >= 0.1_m && y <= 6_ft);
     });
 
     ArmavatorConfig config {

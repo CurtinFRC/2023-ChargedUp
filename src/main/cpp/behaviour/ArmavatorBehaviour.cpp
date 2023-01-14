@@ -13,29 +13,24 @@ void ArmavatorGoToPositionBehaviour::OnStart() {
     grid_t::Idx_t end = armavator->config.grid.Discretise({setpoint.angle, setpoint.height});
     waypoints = armavator->config.grid.AStar<units::second>(
         start, end,
-        1 / armavator->arm.MaxSpeed(),
-        1 / armavator->elevator.MaxSpeed()
+        1 / (armavator->arm.MaxSpeed() * 0.8),
+        1 / (armavator->elevator.MaxSpeed() * 0.8)
     );
-
-    std::cout << armavator->config.grid._grid << std::endl;
-
-    for (auto wp : waypoints) {
-        std::cout << wp.transpose() << std::endl;
-    }
 }
 
 void ArmavatorGoToPositionBehaviour::OnTick(units::second_t dt) {
     if (!waypoints.empty()) {
-        grid_t::Idx_t waypoint = waypoints.front();
+        grid_t::GridPathNode<units::second> waypoint = waypoints.front();
+        while (!waypoints.empty() && waypoint.cost <= GetRunTime()) {
+            waypoints.pop_front();
+            if (!waypoints.empty())
+                waypoint = waypoints.front();
+        }
+
         ArmavatorPosition currentPosition = armavator->GetCurrentPosition();
         grid_t::Idx_t current = armavator->config.grid.Discretise({currentPosition.angle, currentPosition.height});
         
-        grid_t::ContinuousIdxT target = armavator->config.grid.CenterOf(waypoint);
-        armavator->SetPosition({target.y, target.x});
-
-        if (waypoint == current) {
-            waypoints.pop_front();
-        }
+        armavator->SetPosition({waypoint.position.y, waypoint.position.x});
     } else {
         armavator->SetPosition(setpoint);
 

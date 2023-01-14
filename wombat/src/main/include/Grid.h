@@ -35,6 +35,12 @@ namespace wom {
       Y_t y;
     };
 
+    template<typename CostT>
+    struct GridPathNode {
+      ContinuousIdxT position;
+      units::unit_t<CostT> cost;
+    };
+
     DiscretisedOccupancyGrid(X_t xmin, X_t xmax, Y_t ymin, Y_t ymax, size_t ux, size_t uy)
       : _xmin(xmin), _xmax(xmax), _ymin(ymin), _ymax(ymax)
     {
@@ -104,7 +110,7 @@ namespace wom {
     using converting_unit = typename units::unit_t<units::compound_unit<To, units::inverse<From>>>;
 
     template<typename CostT>
-    std::deque<Idx_t> AStar(Idx_t start, Idx_t end, converting_unit<T_X, CostT> dxCost, converting_unit<T_Y, CostT> dyCost) {
+    std::deque<GridPathNode<CostT>> AStar(Idx_t start, Idx_t end, converting_unit<T_X, CostT> dxCost, converting_unit<T_Y, CostT> dyCost) {
       using cost_t = units::unit_t<CostT>;
       using node_t = std::shared_ptr<AStarNode<CostT>>;
 
@@ -121,11 +127,17 @@ namespace wom {
         node_t current = *currentIt;
         openSet.erase(currentIt);
         if (current->position == end) {
-          std::deque<Idx_t> queue;
-          queue.push_front(current->position);
+          std::deque<GridPathNode<CostT>> queue;
+          queue.push_front(GridPathNode<CostT> {
+            CenterOf(current->position),
+            current->gScore
+          });
 
           while (current->parent) {
-            queue.push_front(current->parent->position);
+            queue.push_front(GridPathNode<CostT> {
+              CenterOf(current->parent->position),
+              current->gScore
+            });
             current = current->parent;
           }
 
@@ -161,7 +173,7 @@ namespace wom {
         }
       }
 
-      return std::deque<Idx_t>{};
+      return std::deque<GridPathNode<CostT>>{};
     }
 
     template<typename CostT>
