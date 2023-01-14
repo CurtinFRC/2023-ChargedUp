@@ -3,6 +3,7 @@
 #include "Arm.h"
 #include "Elevator.h"
 #include "Gearbox.h"
+#include "Grid.h"
 
 #include <frc/DigitalInput.h>
 #include <frc/simulation/DIOSim.h>
@@ -10,12 +11,19 @@
 #include <units/velocity.h>
 
 struct ArmavatorConfig {
+  using grid_t = wom::DiscretisedOccupancyGrid<units::radian, units::meter>;
+
   wom::ArmConfig arm;
   wom::ElevatorConfig elevator;
-  
+  grid_t grid;
 };
 
-// Your code here
+struct ArmavatorPosition {
+  units::meter_t height;
+  units::radian_t angle;
+};
+
+
 enum class ArmavatorState {
   kIdle,
   kPosition,
@@ -29,17 +37,19 @@ class Armavator : public behaviour::HasBehaviour {
   void OnUpdate(units::second_t dt);
 
   void SetIdle();
-  void SetPosition(units::meter_t elevatorHeight, units::radian_t armAngle);
+  void SetPosition(ArmavatorPosition pos);
 
- private:
-  ArmavatorConfig _config;
-  ArmavatorState _state = ArmavatorState::kIdle;
+  ArmavatorPosition GetCurrentPosition() const;
+  bool IsStable() const;
 
+  ArmavatorConfig config;
   wom::Arm arm;
   wom::Elevator elevator;
 
-  units::meter_t _elevatorSetpoint{0};
-  units::radian_t _armSetpoint{0};
+ private: 
+  ArmavatorState _state = ArmavatorState::kIdle;
+
+  ArmavatorPosition _setpoint;
 };
 
 /* SIMULATION */

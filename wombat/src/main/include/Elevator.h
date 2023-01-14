@@ -30,6 +30,7 @@ namespace wom {
     units::meter_t radius;
     units::kilogram_t mass;
     units::meter_t maxHeight;
+    units::meter_t initialHeight;
     PIDConfig<units::meter, units::volt> pid;
 
     void WriteNT(std::shared_ptr<nt::NetworkTable> table);
@@ -48,6 +49,9 @@ namespace wom {
 
     bool IsStable() const;
     ElevatorState GetState() const;
+
+    units::meter_t GetHeight() const;
+    units::meters_per_second_t MaxSpeed() const;
   
    private:
     units::volt_t _setpointManual{0};

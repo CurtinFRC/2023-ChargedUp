@@ -5,6 +5,7 @@
 #include "Elevator.h"
 #include "Armavator.h"
 #include "Gyro.h"
+#include "behaviour/ArmavatorBehaviour.h"
 
 #include <frc/XboxController.h>
 #include <ctre/Phoenix.h>
@@ -74,6 +75,7 @@ struct RobotMap {
         2_in,
         armMass + loadMass + carriageMass,
         1.5_m,
+        1_m,
         {
           "/armavator/elevator/pid/config",
           12_V / 1_m
@@ -82,8 +84,22 @@ struct RobotMap {
     };
     Elevator elevator;
 
+    ArmavatorConfig::grid_t occupancyGrid{
+      arm.config.maxAngle - arm.config.minAngle,
+      elevator.config.maxHeight,
+      Eigen::MatrixXi{
+        {0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 0},
+        {1, 1, 0, 0, 0, 0, 0},
+        {1, 1, 1, 1, 0, 0, 0},
+        {1, 1, 1, 1, 1, 0, 0},
+        {1, 1, 1, 1, 1, 1, 0},
+        {1, 1, 1, 1, 1, 1, 1},
+      }
+    };
+
     ArmavatorConfig config {
-      arm.config, elevator.config
+      arm.config, elevator.config, occupancyGrid
     };
   };
   Armavator armavator;

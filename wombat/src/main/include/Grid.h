@@ -37,6 +37,9 @@ namespace wom {
       Reset();
     }
 
+    DiscretisedOccupancyGrid(X_t xsize, Y_t ysize, Eigen::MatrixXi matrix)
+      : _xsize(xsize), _ysize(ysize), _grid(matrix) { }
+
     void Reset() {
       _grid.fill(0);
     }

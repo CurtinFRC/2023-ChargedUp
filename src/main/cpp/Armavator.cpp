@@ -3,7 +3,7 @@
 
 // Your code here
 Armavator::Armavator(ArmavatorConfig config)
-: _config(config), arm(config.arm), elevator(config.elevator) {}
+: config(config), arm(config.arm), elevator(config.elevator) {}
 
 void Armavator::OnUpdate(units::second_t dt) {
   units::volt_t voltage{0};
@@ -12,8 +12,8 @@ void Armavator::OnUpdate(units::second_t dt) {
     case ArmavatorState::kIdle:
       break;
     case ArmavatorState::kPosition:
-      arm.SetAngle(_armSetpoint);
-      elevator.SetPID(_elevatorSetpoint);
+      arm.SetAngle(_setpoint.angle);
+      elevator.SetPID(_setpoint.height);
       break;
   }
 
@@ -25,12 +25,21 @@ void Armavator::SetIdle() {
   _state = ArmavatorState::kIdle;
 }
 
-void Armavator::SetPosition(units::meter_t elevatorHeight, units::radian_t armAngle) {
+void Armavator::SetPosition(ArmavatorPosition pos) {
   _state = ArmavatorState::kPosition;
-  _armSetpoint = armAngle;
-  _elevatorSetpoint = elevatorHeight;
+  _setpoint = pos;
 }
 
+ArmavatorPosition Armavator::GetCurrentPosition() const {
+  return ArmavatorPosition {
+    elevator.GetHeight(),
+    arm.GetAngle()
+  };
+}
+
+bool Armavator::IsStable() const {
+  return elevator.IsStable() && arm.IsStable();
+}
 
 /* SIMULATION */
 
