@@ -12,9 +12,35 @@
 struct ArmavatorConfig {
   wom::ArmConfig arm;
   wom::ElevatorConfig elevator;
+  
 };
 
 // Your code here
+enum class ArmavatorState {
+  kIdle,
+  kPosition,
+  //ManualPositioning
+};
+
+class Armavator : public behaviour::HasBehaviour {
+ public:
+  Armavator(ArmavatorConfig config);
+
+  void OnUpdate(units::second_t dt);
+
+  void SetIdle();
+  void SetPosition(units::meter_t elevatorHeight, units::radian_t armAngle);
+
+ private:
+  ArmavatorConfig _config;
+  ArmavatorState _state = ArmavatorState::kIdle;
+
+  wom::Arm arm;
+  wom::Elevator elevator;
+
+  units::meter_t _elevatorSetpoint{0};
+  units::radian_t _armSetpoint{0};
+};
 
 /* SIMULATION */
 
@@ -23,7 +49,7 @@ namespace sim {
    public:
     ArmavatorSim(ArmavatorConfig config);
 
-    void Update(units::second_t dt);
+    void OnUpdate(units::second_t dt);
 
     units::ampere_t GetCurrent() const;
 

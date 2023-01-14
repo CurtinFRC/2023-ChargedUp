@@ -42,7 +42,7 @@ namespace wom {
     void OnUpdate(units::second_t dt);
 
     void SetManual(units::volt_t voltage);
-    void SetPID();
+    void SetPID(units::meter_t height);
     void SetZeroing();
     void SetIdle();
 
