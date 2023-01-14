@@ -58,6 +58,12 @@ void Robot::TeleopInit() {
   map.controllers.driver.Y(&loop).Rising().IfHigh([sched, this]() {
     sched->Schedule(make<ArmavatorGoToPositionBehaviour>(armavator, ArmavatorPosition{0_m, 0_deg}));
   });
+
+  map.controllers.driver.POV(0, &loop).Rising().IfHigh([sched, this]() { // up dpad
+    sched->Schedule(make<DrivebasePoseBehaviour>(swerve, frc::Pose2d(1_m, 1_m, 0_rad)));
+  });
+
+
 }
 
 void Robot::TeleopPeriodic() { }
