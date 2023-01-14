@@ -48,6 +48,11 @@ namespace wom {
     void SetZeroing();
 
     ArmConfig &GetConfig();
+
+    units::radian_t GetAngle() const;
+    units::radians_per_second_t MaxSpeed() const;
+    
+    bool IsStable() const;
   private:
     ArmConfig _config;
     ArmState _state = ArmState::kIdle;

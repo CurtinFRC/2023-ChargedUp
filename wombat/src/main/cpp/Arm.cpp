@@ -19,11 +19,13 @@ Arm::Arm(ArmConfig config)
   : _config(config),
     _pid(config.path + "/pid", config.pidConfig),
     _table(nt::NetworkTableInstance::GetDefault().GetTable(config.path))
-{ }
+{
+  _config.gearbox.encoder->SetEncoderPosition(_config.initialAngle);
+}
 
 void Arm::OnUpdate(units::second_t dt) {
   units::volt_t voltage = 0_V;
-  auto angle = _config.gearbox.encoder->GetEncoderPosition();
+  auto angle = GetAngle();
 
   switch (_state) {
     case ArmState::kIdle:
@@ -74,6 +76,19 @@ void Arm::SetAngle(units::radian_t angle) {
 ArmConfig &Arm::GetConfig() {
   return _config;
 }
+
+units::radian_t Arm::GetAngle() const {
+  return _config.gearbox.encoder->GetEncoderPosition();
+}
+
+units::radians_per_second_t Arm::MaxSpeed() const {
+  return _config.gearbox.motor.Speed(0_Nm, 12_V);
+}
+
+bool Arm::IsStable() const {
+  return _pid.IsStable();
+}
+
 /* SIMULATION */
 #include <units/math.h>
 
@@ -113,7 +128,7 @@ void ::wom::sim::ArmSim::Update(units::second_t dt) {
 
   current = config.gearbox.motor.Current(velocity, config.gearbox.transmission->GetVoltage());
 
-  if (encoder) encoder->SetEncoderTurns(angle);
+  if (encoder) encoder->SetEncoderTurns(angle - config.initialAngle);
 
   table->GetEntry("angle").SetDouble(angle.convert<units::degree>().value());
   table->GetEntry("current").SetDouble(current.value());

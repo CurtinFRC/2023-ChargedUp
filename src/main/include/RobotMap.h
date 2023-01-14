@@ -5,11 +5,14 @@
 #include "Elevator.h"
 #include "Armavator.h"
 #include "Gyro.h"
+#include "behaviour/ArmavatorBehaviour.h"
 
 #include <frc/XboxController.h>
 #include <ctre/Phoenix.h>
 
 #include "drivetrain/SwerveDrive.h"
+
+#include <iostream>
 
 struct RobotMap {
   struct Controllers {
@@ -74,6 +77,7 @@ struct RobotMap {
         2_in,
         armMass + loadMass + carriageMass,
         1.5_m,
+        1_m,
         {
           "/armavator/elevator/pid/config",
           12_V / 1_m
@@ -82,8 +86,18 @@ struct RobotMap {
     };
     Elevator elevator;
 
+    ArmavatorConfig::grid_t occupancyGrid = ArmavatorConfig::grid_t(
+      arm.config.minAngle, arm.config.maxAngle,
+      0_m, elevator.config.maxHeight,
+      50, 50
+    ).FillF([this](units::radian_t angle, units::meter_t height) {
+      units::meter_t x = arm.config.armLength * units::math::cos(angle);
+      units::meter_t y = height + arm.config.armLength * units::math::sin(angle);
+      return !(y >= 0.1_m && y <= 6_ft);
+    });
+
     ArmavatorConfig config {
-      arm.config, elevator.config
+      arm.config, elevator.config, occupancyGrid
     };
   };
   Armavator armavator;

@@ -5,6 +5,7 @@
 #include "behaviour/SwerveBaseBehaviour.h"
 
 #include <frc/smartdashboard/SmartDashboard.h>
+#include <frc/event/BooleanEvent.h>
 
 using namespace frc;
 using namespace behaviour;
@@ -28,6 +29,7 @@ void Robot::RobotPeriodic() {
   auto dt = wom::now() - lastPeriodic;
   lastPeriodic = wom::now();
   
+  loop.Poll();
   BehaviourScheduler::GetInstance()->Tick();
 
   armavator->OnUpdate(dt);
@@ -37,17 +39,28 @@ void Robot::RobotPeriodic() {
 void Robot::AutonomousInit() { }
 void Robot::AutonomousPeriodic() { }
 
-void Robot::TeleopInit() { }
-void Robot::TeleopPeriodic() {
-  if (map.controllers.driver.GetAButton())
-    armavator->SetPosition(0.5_m, 45_deg);
-  if (map.controllers.driver.GetBButton())
-    armavator->SetPosition(1_m, 90_deg);
-  if (map.controllers.driver.GetXButton())
-    armavator->SetPosition(1.0_m, -90_deg);
-  if (map.controllers.driver.GetYButton())
-    armavator->SetPosition(0_m, 0_deg);
+void Robot::TeleopInit() {
+  loop.Clear();
+  BehaviourScheduler *sched = BehaviourScheduler::GetInstance();
+  
+  map.controllers.driver.A(&loop).Rising().IfHigh([sched, this]() {
+    sched->Schedule(make<ArmavatorGoToPositionBehaviour>(armavator, ArmavatorPosition{0.2_m, 0_deg}));
+  });
+
+  map.controllers.driver.B(&loop).Rising().IfHigh([sched, this]() {
+    sched->Schedule(make<ArmavatorGoToPositionBehaviour>(armavator, ArmavatorPosition{1.2_m, -75_deg}));
+  });
+
+  map.controllers.driver.X(&loop).Rising().IfHigh([sched, this]() {
+    sched->Schedule(make<ArmavatorGoToPositionBehaviour>(armavator, ArmavatorPosition{1.0_m, 240_deg}));
+  });
+
+  map.controllers.driver.Y(&loop).Rising().IfHigh([sched, this]() {
+    sched->Schedule(make<ArmavatorGoToPositionBehaviour>(armavator, ArmavatorPosition{0_m, 0_deg}));
+  });
 }
+
+void Robot::TeleopPeriodic() { }
 
 void Robot::DisabledInit() { }
 void Robot::DisabledPeriodic() { }
