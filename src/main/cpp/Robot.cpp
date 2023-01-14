@@ -106,7 +106,7 @@ void Robot::SimulationPeriodic() {
   simConfig->swerveSim.Update(dt);
 
   auto batteryVoltage = units::math::min(units::math::max(frc::sim::BatterySim::Calculate({
-    // simConfig->arm.GetCurrent()
+    simConfig->arm.GetCurrent(),
   }), 0_V), 12_V);
   frc::sim::RoboRioSim::SetVInVoltage(batteryVoltage);
   simTable->GetEntry("batteryVoltage").SetDouble(batteryVoltage.value()); 
