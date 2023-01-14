@@ -1,10 +1,11 @@
 #include "Armavator.h"
 #include <units/math.h>
 
-// Your code here
+//Armavator configeration
 Armavator::Armavator(ArmavatorConfig config)
 : config(config), arm(config.arm), elevator(config.elevator) {}
 
+//Instructions for when the program updates (seconds delta time)
 void Armavator::OnUpdate(units::second_t dt) {
   units::volt_t voltage{0};
 
@@ -21,6 +22,7 @@ void Armavator::OnUpdate(units::second_t dt) {
   elevator.OnUpdate(dt);
 }
 
+//Sets the states names
 void Armavator::SetIdle() {
   _state = ArmavatorState::kIdle;
 }
