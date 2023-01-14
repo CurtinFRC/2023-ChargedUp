@@ -12,6 +12,8 @@
 
 #include "drivetrain/SwerveDrive.h"
 
+#include <iostream>
+
 struct RobotMap {
   struct Controllers {
     frc::XboxController driver{0};
@@ -84,19 +86,15 @@ struct RobotMap {
     };
     Elevator elevator;
 
-    ArmavatorConfig::grid_t occupancyGrid{
-      arm.config.maxAngle - arm.config.minAngle,
-      elevator.config.maxHeight,
-      Eigen::MatrixXi{
-        {0, 0, 0, 0, 0, 0, 0},
-        {0, 0, 0, 0, 0, 0, 0},
-        {1, 1, 0, 0, 0, 0, 0},
-        {1, 1, 1, 1, 0, 0, 0},
-        {1, 1, 1, 1, 1, 0, 0},
-        {1, 1, 1, 1, 1, 1, 0},
-        {1, 1, 1, 1, 1, 1, 1},
-      }
-    };
+    ArmavatorConfig::grid_t occupancyGrid = ArmavatorConfig::grid_t(
+      arm.config.minAngle, arm.config.maxAngle,
+      0_m, elevator.config.maxHeight,
+      50, 50
+    ).FillF([this](units::radian_t angle, units::meter_t height) {
+      units::meter_t x = arm.config.armLength * units::math::cos(angle);
+      units::meter_t y = height + arm.config.armLength * units::math::sin(angle);
+      return y <= 0_m;
+    });
 
     ArmavatorConfig config {
       arm.config, elevator.config, occupancyGrid

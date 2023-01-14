@@ -1,5 +1,7 @@
 #include "behaviour/ArmavatorBehaviour.h"
 
+#include <iostream>
+
 ArmavatorGoToPositionBehaviour::ArmavatorGoToPositionBehaviour(Armavator *armavator, ArmavatorPosition setpoint)
 : armavator(armavator), setpoint(setpoint) {
     Controls(armavator);
@@ -14,6 +16,12 @@ void ArmavatorGoToPositionBehaviour::OnStart() {
         1 / armavator->arm.MaxSpeed(),
         1 / armavator->elevator.MaxSpeed()
     );
+
+    std::cout << armavator->config.grid._grid << std::endl;
+
+    for (auto wp : waypoints) {
+        std::cout << wp.transpose() << std::endl;
+    }
 }
 
 void ArmavatorGoToPositionBehaviour::OnTick(units::second_t dt) {
