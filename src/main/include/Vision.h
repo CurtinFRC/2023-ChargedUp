@@ -13,5 +13,4 @@ struct VisionConfig {
   std::shared_ptr<frc::AprilTagFieldLayout> layout;
 };
 
-// WPILib 2023.2.1 isn't out yet... sigh...
 std::shared_ptr<frc::AprilTagFieldLayout> Get2023Layout();
