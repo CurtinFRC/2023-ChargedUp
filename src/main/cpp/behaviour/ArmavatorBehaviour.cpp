@@ -16,7 +16,7 @@ void ArmavatorGoToPositionBehaviour::OnStart() {
     //Sets positions information for the start and the end of the instructions
     grid_t::Idx_t start = armavator->config.grid.Discretise({current.angle, current.height});
     grid_t::Idx_t end = armavator->config.grid.Discretise({setpoint.angle, setpoint.height});
-    //Sets the arm and elevator speeds for start and end
+    //Sets arm and elevator speeds for start and end
     waypoints = armavator->config.grid.AStar<units::second>(
         start, end,
         1 / (armavator->arm.MaxSpeed() * 0.8),
