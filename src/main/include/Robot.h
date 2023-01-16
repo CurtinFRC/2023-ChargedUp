@@ -4,8 +4,17 @@
 
 #include <string>
 
+#include <ctre/Phoenix.h>
 #include <frc/TimedRobot.h>
 #include <frc/event/EventLoop.h>
+
+
+#include "behaviour/BehaviourScheduler.h"
+#include "behaviour/Behaviour.h"
+#include "behaviour/SwerveBaseBehaviour.h"
+
+#include <frc/smartdashboard/SmartDashboard.h>
+#include <frc/event/BooleanEvent.h>
 
 using namespace frc;
 
@@ -22,8 +31,8 @@ class Robot : public frc::TimedRobot {
   void TestInit() override;
   void TestPeriodic() override;
 
-  void SimulationInit() override;
-  void SimulationPeriodic() override;
+  // void SimulationInit() override;
+  // void SimulationPeriodic() override;
 
  private:
   frc::EventLoop loop;

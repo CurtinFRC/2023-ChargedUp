@@ -18,7 +18,6 @@ namespace wom {
   enum class ElevatorState {
     kIdle, 
     kPID,
-    kZeroing,
     kManual
   };
 
@@ -44,7 +43,6 @@ namespace wom {
 
     void SetManual(units::volt_t voltage);
     void SetPID(units::meter_t height);
-    void SetZeroing();
     void SetIdle();
 
     bool IsStable() const;
@@ -63,26 +61,4 @@ namespace wom {
 
     std::shared_ptr<nt::NetworkTable> _table;
   };
-
-  /* SIMULATION */
-
-  namespace sim {
-    class ElevatorSim {
-     public:
-      ElevatorSim(ElevatorConfig config);
-
-      void Update(units::second_t dt);
-
-      units::meter_t GetHeight() const;
-      units::ampere_t GetCurrent() const;
-     private:
-      ElevatorConfig config;
-      frc::sim::ElevatorSim sim;
-
-      std::shared_ptr<SimCapableEncoder> encoder;
-      frc::sim::DIOSim *lowerLimit, *upperLimit;
-
-      std::shared_ptr<nt::NetworkTable> table;
-    };
-  }
-}
+};

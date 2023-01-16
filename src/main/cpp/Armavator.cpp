@@ -1,9 +1,8 @@
 #include "Armavator.h"
-#include <units/math.h>
 
 //Armavator configeration
-Armavator::Armavator(ArmavatorConfig config)
-: config(config), arm(config.arm), elevator(config.elevator) {}
+Armavator::Armavator(WPI_TalonSRX &motor1, WPI_TalonSRX &motor2)
+: _motor1(motor1), _motor2(motor2) {}
 
 //Instructions for when the program updates (seconds delta time)
 void Armavator::OnUpdate(units::second_t dt) {
@@ -13,13 +12,13 @@ void Armavator::OnUpdate(units::second_t dt) {
     case ArmavatorState::kIdle:
       break;
     case ArmavatorState::kPosition:
-      arm.SetAngle(_setpoint.angle);
-      elevator.SetPID(_setpoint.height);
+      // arm.SetAngle(_setpoint.angle);
+      // elevator.SetPID(_setpoint.height);
       break;
   }
 
-  arm.OnUpdate(dt);
-  elevator.OnUpdate(dt);
+  // arm.OnUpdate(dt);
+  // elevator.OnUpdate(dt);
 }
 
 //Sets the states names
@@ -27,32 +26,18 @@ void Armavator::SetIdle() {
   _state = ArmavatorState::kIdle;
 }
 
-void Armavator::SetPosition(ArmavatorPosition pos) {
-  _state = ArmavatorState::kPosition;
-  _setpoint = pos;
-}
+// void Armavator::SetPosition(ArmavatorPosition pos) {
+//   _state = ArmavatorState::kPosition;
+//   _setpoint = pos;
+// }
 
-ArmavatorPosition Armavator::GetCurrentPosition() const {
-  return ArmavatorPosition {
-    elevator.GetHeight(),
-    arm.GetAngle()
-  };
-}
+// ArmavatorPosition Armavator::GetCurrentPosition() const {
+//   return ArmavatorPosition {
+//     elevator.GetHeight(),
+//     arm.GetAngle()
+//   };
+// }
 
-bool Armavator::IsStable() const {
-  return elevator.IsStable() && arm.IsStable();
-}
-
-/* SIMULATION */
-
-::sim::ArmavatorSim::ArmavatorSim(ArmavatorConfig config)
-  : config(config), armSim(config.arm), elevatorSim(config.elevator) {}
-
-void ::sim::ArmavatorSim::OnUpdate(units::second_t dt) {
-  armSim.Update(dt);
-  elevatorSim.Update(dt);
-}
-
-units::ampere_t sim::ArmavatorSim::GetCurrent() const {
-  return armSim.GetCurrent() + elevatorSim.GetCurrent();
-}
+// bool Armavator::IsStable() const {
+//   return elevator.IsStable() && arm.IsStable();
+// }
