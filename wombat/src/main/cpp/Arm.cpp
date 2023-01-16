@@ -126,7 +126,7 @@ void ::wom::sim::ArmSim::Update(units::second_t dt) {
     if (upperLimit) upperLimit->SetValue(false);
   }
 
-  current = config.gearbox.motor.Current(velocity, config.gearbox.transmission->GetVoltage());
+  current = config.gearbox.motor.Current(velocity, config.gearbox.transmission->GetEstimatedRealVoltage());
 
   if (encoder) encoder->SetEncoderTurns(angle - config.initialAngle);
 

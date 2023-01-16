@@ -62,6 +62,9 @@ namespace wom {
   };
 
   struct SwerveDriveConfig {
+    using pose_angle_conf_t = PIDConfig<units::radian, units::radians_per_second>;
+    using pose_position_conf_t = PIDConfig<units::meter, units::meters_per_second>;
+
     std::string path;
     SwerveModule::angle_pid_conf_t anglePID;
     SwerveModule::velocity_pid_conf_t velocityPID;
@@ -70,8 +73,8 @@ namespace wom {
 
     wom::Gyro *gyro;
 
-    PIDConfig<units::radian, units::radians_per_second> poseAnglePID;
-    PIDConfig<units::meter, units::meters_per_second> posePositionPID;
+    pose_angle_conf_t poseAnglePID;
+    pose_position_conf_t posePositionPID;
 
     units::kilogram_t mass;
 

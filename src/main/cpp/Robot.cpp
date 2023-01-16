@@ -62,6 +62,12 @@ void Robot::TeleopInit() {
   map.controllers.codriver.Y(&loop).Rising().IfHigh([sched, this]() {
     sched->Schedule(make<ArmavatorGoToPositionBehaviour>(armavator, ArmavatorPosition{0_m, 0_deg}));
   });
+
+  map.controllers.driver.POV(0, &loop).Rising().IfHigh([sched, this]() { // up dpad
+    sched->Schedule(make<DrivebasePoseBehaviour>(swerve, frc::Pose2d(1_m, 1_m, 0_rad)));
+  });
+
+
 }
 
 void Robot::TeleopPeriodic() { }
@@ -104,7 +110,7 @@ void Robot::SimulationPeriodic() {
   simConfig->swerveSim.Update(dt);
 
   auto batteryVoltage = units::math::min(units::math::max(frc::sim::BatterySim::Calculate({
-    // simConfig->arm.GetCurrent()
+    simConfig->arm.GetCurrent(),
   }), 0_V), 12_V);
   frc::sim::RoboRioSim::SetVInVoltage(batteryVoltage);
   simTable->GetEntry("batteryVoltage").SetDouble(batteryVoltage.value()); 
