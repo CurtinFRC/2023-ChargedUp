@@ -8,6 +8,10 @@ struct RobotMap {
   struct Controllers {
     frc::XboxController driver{0};
     frc::XboxController codriver{1};
-  };
-  Controllers controllers;
+  }; Controllers controllers;
+
+  struct Vision {
+    // units::meter_t offset_x = 0.3_m;
+    // units::meter_t offset_y = 0.3_m;
+  }; Vision vision;
 };

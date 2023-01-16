@@ -1,6 +1,7 @@
 #pragma once
 
 #include "RobotMap.h"
+#include "Vision.h"
 
 #include <string>
 #include <frc/TimedRobot.h>
@@ -25,4 +26,5 @@ class Robot : public frc::TimedRobot {
 
  private:
   RobotMap map;
+  Vision *vision;
 };

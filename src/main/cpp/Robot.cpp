@@ -12,6 +12,9 @@ static units::second_t lastPeriodic;
 
 void Robot::RobotInit() {
   lastPeriodic = wom::now();
+
+  vision = new Vision();
+
 }
 
 void Robot::RobotPeriodic() {
@@ -25,7 +28,9 @@ void Robot::AutonomousInit() { }
 void Robot::AutonomousPeriodic() { }
 
 void Robot::TeleopInit() { }
-void Robot::TeleopPeriodic() { }
+void Robot::TeleopPeriodic() {
+  vision->Update(20_ms);
+}
 
 void Robot::DisabledInit() { }
 void Robot::DisabledPeriodic() { }
