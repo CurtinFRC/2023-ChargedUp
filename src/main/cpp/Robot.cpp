@@ -40,21 +40,21 @@ void Robot::TeleopInit() {
 }
 
 void Robot::TeleopPeriodic() {
-  // if(!map.controllers.codriver.GetAButton() && !map.controllers.codriver.GetBButton() && !map.controllers.codriver.GetXButton() && !map.controllers.codriver.GetYButton()) {
-  //   map.armavator.arm.motor1.SetVoltage(0_V);
-  //   map.armavator.elevator.motor2.SetVoltage(0_V);
-  // } else{
-  //   if(map.controllers.codriver.GetAButton()) {
-  //     map.armavator.arm.motor1.SetVoltage(5_V);
-  //   } else if (map.controllers.codriver.GetBButton()) {
-  //     map.armavator.arm.motor1.SetVoltage(-5_V);
-  //   }
-  //   if(map.controllers.codriver.GetXButton()) {
-  //     map.armavator.elevator.motor2.SetVoltage(5_V);
-  //   } else if (map.controllers.codriver.GetYButton()) {
-  //     map.armavator.elevator.motor2.SetVoltage(-5_V);
-  //   }
-  // }
+  if(!map.controllers.codriver.GetAButton() && !map.controllers.codriver.GetBButton() && !map.controllers.codriver.GetXButton() && !map.controllers.codriver.GetYButton()) {
+    map.armavator.arm.motor1.SetVoltage(0_V);
+    map.armavator.elevator.motor2.SetVoltage(0_V);
+  } else{
+    if(map.controllers.codriver.GetAButton()) {
+      map.armavator.arm.motor1.SetVoltage(5_V);
+    } else if (map.controllers.codriver.GetBButton()) {
+      map.armavator.arm.motor1.SetVoltage(-5_V);
+    }
+    if(map.controllers.codriver.GetXButton()) {
+      map.armavator.elevator.motor2.SetVoltage(5_V);
+    } else if (map.controllers.codriver.GetYButton()) {
+      map.armavator.elevator.motor2.SetVoltage(-5_V);
+    }
+  }
  }
 
 void Robot::DisabledInit() { }
