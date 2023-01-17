@@ -36,7 +36,10 @@ void Robot::TeleopInit() {
   loop.Clear();
 
   //Creates an instance of a behavior scheduler
-  // BehaviourScheduler *sched = BehaviourScheduler::GetInstance();
+  BehaviourScheduler *sched = BehaviourScheduler::GetInstance();
+  map.controllers.codriver.X(&loop).Rising().IfHigh([sched, this]() {
+    sched->Schedule(make<ArmavatorGoToPositionBehaviour>(armavator, ArmavatorPosition{0.2_m, 0_deg}));
+  });
 }
 
 void Robot::TeleopPeriodic() {

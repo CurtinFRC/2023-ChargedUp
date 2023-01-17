@@ -41,9 +41,9 @@ class Armavator : public behaviour::HasBehaviour {
   void OnUpdate(units::second_t dt);
 
   void SetIdle();
-  // void SetPosition(ArmavatorPosition pos);
+  void SetPosition(ArmavatorPosition pos);
 
-  // ArmavatorPosition GetCurrentPosition() const;
+  ArmavatorPosition GetCurrentPosition() const;
   // bool IsStable() const;
 
   // ArmavatorConfig config;
