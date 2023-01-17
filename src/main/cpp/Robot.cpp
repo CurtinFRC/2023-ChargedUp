@@ -15,7 +15,7 @@ static units::second_t lastPeriodic;
 void Robot::RobotInit() {
   lastPeriodic = wom::now();
 
-  armavator = new Armavator(map.armavator.config);
+  armavator = new Armavator(map.armavator.config, armavator->swervedrive);
   BehaviourScheduler::GetInstance()->Register(armavator);
 
   swerve = new wom::SwerveDrive(map.swerveBase.config, frc::Pose2d());
