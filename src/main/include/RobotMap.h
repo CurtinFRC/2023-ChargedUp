@@ -100,6 +100,7 @@ struct RobotMap {
     ArmavatorConfig config {
       arm.config, elevator.config, occupancyGrid
     };
+    
   };
   Armavator armavator;
 
