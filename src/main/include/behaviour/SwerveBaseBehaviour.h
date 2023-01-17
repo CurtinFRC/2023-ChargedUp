@@ -28,3 +28,16 @@ class DrivebasePoseBehaviour : public behaviour::Behaviour{
   wom::SwerveDrive *_swerveDrivebase;
   frc::Pose2d _pose; // storing it directly, so not a pointer
 };
+
+class DrivebaseBalance : public behaviour::Behaviour{
+ public:
+  DrivebaseBalance(wom::SwerveDrive *swerveDrivebase);
+
+  void OnTick(units::second_t deltaTime) override;
+
+
+ private:
+  wom::SwerveDrive *_swerveDrivebase;
+  double *_gyroAngle;
+
+};

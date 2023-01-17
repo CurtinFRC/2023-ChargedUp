@@ -5,6 +5,7 @@
 #include "Elevator.h"
 #include "Armavator.h"
 #include "Gyro.h"
+#include "behaviour/SingleSwerveBehaviour.h"
 #include "behaviour/ArmavatorBehaviour.h"
 
 #include <frc/XboxController.h>
@@ -15,7 +16,7 @@
 #include <iostream>
 
 struct RobotMap {
-  struct Controllers {
+  struct Controllers {  
     frc::XboxController driver{0};
     frc::XboxController codriver{1};
   };
@@ -207,4 +208,10 @@ struct RobotMap {
   };
   SwerveBase swerveBase;
 
+
+  struct SwerveSingleModule{
+    TalonFX driveMotor{1};
+    TalonFX turnMotor{2};
+  };
+  SwerveSingleModule swerveSingleModuleMotors;
 };
