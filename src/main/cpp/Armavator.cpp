@@ -3,6 +3,8 @@
 #include "drivetrain/SwerveDrive.h"
 #include "Robot.cpp"
 
+using namespace frc;
+
 //Armavator configeration
 Armavator::Armavator(ArmavatorConfig config, wom::SwerveDrive swervedrive)
 : config(config), arm(config.arm), elevator(config.elevator), swervedrive(swervedrive) {}
@@ -16,18 +18,19 @@ void Armavator::OnUpdate(units::second_t dt) {
       break;
     case ArmavatorState::kPosition:
       //frc::Pose2d SwerveDrive::GetPose()
-      swervedrive.GetPose();
+      frc::Pose2d pose = swervedrive.GetPose();
+      pose.X();
+      pose.Y();
+      pose.Rotation();
 
-      if ((x <= 2.51 && y >= 8.53) || (x >= 2.52 && y >= 10.33)){
+      if ((pose.X() <= 2.51_m && pose.Y() >= 8.53_m) || (pose.X() >= 2.52_m && pose.Y() >= 10.33_m)){
         ArmavatorPosition{0_m, 90_deg};
-        
+
       } else{
         arm.SetAngle(_setpoint.angle);
         elevator.SetPID(_setpoint.height);
       }
       break;
-
-
 
   arm.OnUpdate(dt);
   elevator.OnUpdate(dt);
