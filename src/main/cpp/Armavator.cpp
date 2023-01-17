@@ -1,5 +1,7 @@
 #include "Armavator.h"
 #include <units/math.h>
+#include "drivetrain/SwerveDrive.h"
+#include "Robot.cpp"
 
 //Armavator configeration
 Armavator::Armavator(ArmavatorConfig config)
@@ -13,10 +15,19 @@ void Armavator::OnUpdate(units::second_t dt) {
     case ArmavatorState::kIdle:
       break;
     case ArmavatorState::kPosition:
-      arm.SetAngle(_setpoint.angle);
-      elevator.SetPID(_setpoint.height);
+      frc::Pose2d.SwerveDrive.GetPose();
+
+      if (/*pose == a || b*/){
+        //set arm to 90_deg
+      } else{
+        arm.SetAngle(_setpoint.angle);
+        elevator.SetPID(_setpoint.height);
+      }
       break;
   }
+
+  //frc::Pose2d SwerveDrive::GetPose()
+
 
   arm.OnUpdate(dt);
   elevator.OnUpdate(dt);
