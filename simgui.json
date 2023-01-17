@@ -23,13 +23,21 @@
       }
     },
     "transitory": {
+      "arm": {
+        "pid": {
+          "open": true
+        },
+        "sim": {
+          "open": true
+        }
+      },
       "armavator": {
         "arm": {
-          "open": true,
           "pid": {
             "config": {
               "open": true
-            }
+            },
+            "open": true
           },
           "sim": {
             "open": true
@@ -40,8 +48,7 @@
           "sim": {
             "open": true
           }
-        },
-        "open": true
+        }
       },
       "doubleArm": {
         "arm1": {
@@ -51,6 +58,34 @@
           }
         },
         "open": true
+      },
+      "drivetrain": {
+        "modules": {
+          "1": {
+            "config": {
+              "open": true
+            },
+            "open": true
+          }
+        },
+        "open": true,
+        "pid": {
+          "open": true,
+          "pose": {
+            "angle": {
+              "config": {
+                "open": true
+              },
+              "open": true
+            },
+            "open": true
+          }
+        },
+        "sim": {
+          "modules": {
+            "open": true
+          }
+        }
       },
       "sim": {
         "open": true
@@ -120,7 +155,10 @@
             }
           ]
         }
-      ]
+      ],
+      "window": {
+        "visible": false
+      }
     },
     "Plot <1>": {
       "plots": [
@@ -164,7 +202,10 @@
             }
           ]
         }
-      ]
+      ],
+      "window": {
+        "visible": false
+      }
     },
     "Plot <3>": {
       "plots": [
@@ -222,7 +263,10 @@
             }
           ]
         }
-      ]
+      ],
+      "window": {
+        "visible": false
+      }
     },
     "Plot <5>": {
       "plots": [
@@ -272,7 +316,10 @@
             }
           ]
         }
-      ]
+      ],
+      "window": {
+        "visible": false
+      }
     },
     "Plot <6>": {
       "plots": [
@@ -315,6 +362,47 @@
       "window": {
         "visible": false
       }
+    },
+    "Plot <8>": {
+      "plots": [
+        {
+          "axis": [
+            {
+              "autoFit": true
+            }
+          ],
+          "height": 332,
+          "series": [
+            {
+              "color": [
+                0.2980392277240753,
+                0.44705885648727417,
+                0.6901960968971252,
+                1.0
+              ],
+              "id": "NT:/arm/angle"
+            }
+          ]
+        }
+      ]
+    },
+    "Plot <9>": {
+      "plots": [
+        {
+          "height": 332,
+          "series": [
+            {
+              "color": [
+                0.2980392277240753,
+                0.44705885648727417,
+                0.6901960968971252,
+                1.0
+              ],
+              "id": "NT:/arm/pid/demand"
+            }
+          ]
+        }
+      ]
     }
   }
 }

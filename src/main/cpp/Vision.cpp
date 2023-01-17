@@ -1,11 +1,10 @@
-#include "Vision.h"
-#include <networktables/NetworkTableInstance.h>
+// #include "Vision.h"
 
 
-Vision::Vision() {}
+// #include <wpi/json.h>
 
-void Vision::Update(units::second_t dt) {
-  // photonlib::PhotonPipelineResult result = camera.GetLatestResult();
-  double distance = _visionTable->GetEntry("TargetYaw").GetDouble(0);
-  std::cout << distance << std::endl;
-}
+// #include <frc/apriltag/AprilTagFields.h>
+
+// std::shared_ptr<frc::AprilTagFieldLayout> Get2023Layout() {
+//   return std::make_shared<frc::AprilTagFieldLayout>(frc::LoadAprilTagLayoutField(frc::AprilTagField::k2023ChargedUp));
+// }

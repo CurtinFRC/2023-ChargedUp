@@ -15,13 +15,15 @@ void ElevatorConfig::WriteNT(std::shared_ptr<nt::NetworkTable> table) {
 Elevator::Elevator(ElevatorConfig config)
   : _config(config), _state(ElevatorState::kIdle),
   _pid{config.path + "/pid", config.pid},
-  _table(nt::NetworkTableInstance::GetDefault().GetTable("elevator")) {}
+  _table(nt::NetworkTableInstance::GetDefault().GetTable(config.path)) {
+  _config.gearbox.encoder->SetEncoderPosition(_config.initialHeight / _config.radius * 1_rad);
+}
 
 
 void Elevator::OnUpdate(units::second_t dt) {
   units::volt_t voltage{0};
 
-  units::meter_t height = _config.gearbox.encoder->GetEncoderPosition().value() * _config.radius;
+  units::meter_t height = GetHeight();
 
   switch(_state) {
     case ElevatorState::kIdle:
@@ -67,8 +69,9 @@ void Elevator::SetManual(units::volt_t voltage) {
   _setpointManual = voltage;
 }
 
-void Elevator::SetPID() {
+void Elevator::SetPID(units::meter_t height) {
   _state = ElevatorState::kPID;
+  _pid.SetSetpoint(height);
 }
 
 void Elevator::SetZeroing() {
@@ -77,6 +80,22 @@ void Elevator::SetZeroing() {
 
 void Elevator::SetIdle() {
   _state = ElevatorState::kIdle;
+}
+
+bool Elevator::IsStable() const {
+  return _pid.IsStable();
+}
+
+ElevatorState Elevator::GetState() const {
+  return _state;
+}
+
+units::meter_t Elevator::GetHeight() const {
+  return _config.gearbox.encoder->GetEncoderPosition().value() * _config.radius;
+}
+
+units::meters_per_second_t Elevator::MaxSpeed() const {
+  return _config.gearbox.motor.Speed((_config.mass * 9.81_mps_sq) * _config.radius, 12_V) / 1_rad * _config.radius;
 }
 
 /* SIMULATION */
@@ -88,13 +107,15 @@ wom::sim::ElevatorSim::ElevatorSim(ElevatorConfig config)
     lowerLimit(config.bottomSensor ? new frc::sim::DIOSim(*config.bottomSensor) : nullptr),
     upperLimit(config.topSensor ? new frc::sim::DIOSim(*config.topSensor) : nullptr),
     table(nt::NetworkTableInstance::GetDefault().GetTable(config.path + "/sim"))
-  {}
+  {
+    sim.SetState(Eigen::Vector2d{ config.initialHeight.value(), 0 });
+  }
 
 void wom::sim::ElevatorSim::Update(units::second_t dt) {
   sim.SetInputVoltage(config.gearbox.transmission->GetEstimatedRealVoltage());
   sim.Update(dt);
 
-  encoder->SetEncoderTurns(1_rad * sim.GetPosition() / config.radius);
+  encoder->SetEncoderTurns(1_rad * (sim.GetPosition() - config.initialHeight) / config.radius);
   if (lowerLimit) lowerLimit->SetValue(sim.HasHitLowerLimit());
   if (upperLimit) upperLimit->SetValue(sim.HasHitUpperLimit());
 

@@ -18,6 +18,8 @@ while True:
   ax.cla()
   ax.set_xlim(-1, 2)
   ax.set_ylim(-1, 2)
+  ax.axhline(0)
+  ax.axhline(1.981)
   ax.plot([0, 0], [0, 1.5], 'ko-')
   ax.plot([0, 1 * math.cos(angle / 180 * 3.14)], [height, height + 1 * math.sin(angle / 180 * 3.14)], 'bo-')
   # ax.axvline( (0, 0), (0, 1.5), color="black")

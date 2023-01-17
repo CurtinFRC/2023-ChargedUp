@@ -1,10 +1,11 @@
 #pragma once
 
 #include "RobotMap.h"
-#include "Vision.h"
+// #include "Vision.h"
 
 #include <string>
 #include <frc/TimedRobot.h>
+#include <frc/event/EventLoop.h>
 
 using namespace frc;
 
@@ -21,10 +22,13 @@ class Robot : public frc::TimedRobot {
   void TestInit() override;
   void TestPeriodic() override;
 
-  void SimulationInit() override;
-  void SimulationPeriodic() override;
+  // void SimulationInit() override;
+  // void SimulationPeriodic() override;
 
  private:
+  frc::EventLoop loop;
+  
   RobotMap map;
-  Vision *vision;
+  // Armavator *armavator;
+  wom::SwerveDrive *swerve;
 };

@@ -10,6 +10,11 @@
 #include <algorithm>
 
 namespace wom {
+  template<typename I, typename O>
+  O remap(I x, I in_min, I in_max, O out_min, O out_max) {
+    return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+  }
+
   template<typename CostT>
   struct AStarNode {
     Eigen::Vector2i position;
@@ -30,12 +35,21 @@ namespace wom {
       Y_t y;
     };
 
-    DiscretisedOccupancyGrid(X_t xsize, Y_t ysize, size_t ux, size_t uy)
-      : _xsize(xsize), _ysize(ysize)
+    template<typename CostT>
+    struct GridPathNode {
+      ContinuousIdxT position;
+      units::unit_t<CostT> cost;
+    };
+
+    DiscretisedOccupancyGrid(X_t xmin, X_t xmax, Y_t ymin, Y_t ymax, size_t ux, size_t uy)
+      : _xmin(xmin), _xmax(xmax), _ymin(ymin), _ymax(ymax)
     {
       _grid.resize(uy, ux);
       Reset();
     }
+
+    DiscretisedOccupancyGrid(X_t xmin, X_t xmax, Y_t ymin, Y_t ymax, Eigen::MatrixXi matrix)
+      : _xmin(xmin), _xmax(xmax), _ymin(ymin), _ymax(ymax), _grid(matrix) { }
 
     void Reset() {
       _grid.fill(0);
@@ -43,6 +57,16 @@ namespace wom {
 
     void Fill(bool value) {
       _grid.fill(value ? 1 : 0);
+    }
+
+    DiscretisedOccupancyGrid FillF(std::function<bool(X_t, Y_t)> f) {
+      for (int x = 0; x < _grid.cols(); x++) {
+        for (int y = 0; y < _grid.rows(); y++) {
+          ContinuousIdxT ci = CenterOf(Eigen::Vector2i{x, y});
+          _grid(y, x) = f(ci.x, ci.y);
+        }
+      }
+      return *this;
     }
 
     void Load(const Eigen::MatrixXi &matrix) {
@@ -67,12 +91,16 @@ namespace wom {
     }
 
     Idx_t Discretise(ContinuousIdxT i) {
-      auto x_per_grid = _xsize / (float)_grid.cols();
-      auto y_per_grid = _ysize / (float)_grid.rows();
-
       return Eigen::Vector2i{
-        (int)(i.x / x_per_grid),
-        (int)(i.y / y_per_grid),
+        (int)remap(i.x, _xmin, _xmax, 0.0, (double)_grid.cols()),
+        (int)remap(i.y, _ymin, _ymax, 0.0, (double)_grid.rows())
+      };
+    }
+
+    ContinuousIdxT CenterOf(Idx_t idx) {
+      return ContinuousIdxT {
+        (remap((double)idx.x(), 0.0, (double)_grid.cols(), _xmin, _xmax) + remap((double)idx.x() + 1, 0.0, (double)_grid.cols(), _xmin, _xmax)) / 2.0,
+        (remap((double)idx.y(), 0.0, (double)_grid.rows(), _ymin, _ymax) + remap((double)idx.y() + 1, 0.0, (double)_grid.rows(), _ymin, _ymax)) / 2.0
       };
     }
 
@@ -82,7 +110,7 @@ namespace wom {
     using converting_unit = typename units::unit_t<units::compound_unit<To, units::inverse<From>>>;
 
     template<typename CostT>
-    std::deque<Idx_t> AStar(Idx_t start, Idx_t end, converting_unit<T_X, CostT> dxCost, converting_unit<T_Y, CostT> dyCost) {
+    std::deque<GridPathNode<CostT>> AStar(Idx_t start, Idx_t end, converting_unit<T_X, CostT> dxCost, converting_unit<T_Y, CostT> dyCost) {
       using cost_t = units::unit_t<CostT>;
       using node_t = std::shared_ptr<AStarNode<CostT>>;
 
@@ -99,11 +127,17 @@ namespace wom {
         node_t current = *currentIt;
         openSet.erase(currentIt);
         if (current->position == end) {
-          std::deque<Idx_t> queue;
-          queue.push_front(current->position);
+          std::deque<GridPathNode<CostT>> queue;
+          queue.push_front(GridPathNode<CostT> {
+            CenterOf(current->position),
+            current->gScore
+          });
 
           while (current->parent) {
-            queue.push_front(current->parent->position);
+            queue.push_front(GridPathNode<CostT> {
+              CenterOf(current->parent->position),
+              current->gScore
+            });
             current = current->parent;
           }
 
@@ -139,14 +173,13 @@ namespace wom {
         }
       }
 
-      return std::deque<Idx_t>{};
+      return std::deque<GridPathNode<CostT>>{};
     }
 
-   protected:
     template<typename CostT>
     units::unit_t<CostT> Cost(Idx_t start, Idx_t end, converting_unit<T_X, CostT> dxCost, converting_unit<T_Y, CostT> dyCost) {
-      auto x_per_grid = _xsize / (float)_grid.cols();
-      auto y_per_grid = _ysize / (float)_grid.rows();
+      auto x_per_grid = (_xmax - _xmin) / (float)_grid.cols();
+      auto y_per_grid = (_ymax - _ymin) / (float)_grid.rows();
 
       Idx_t rel = end - start;
       auto xcost = rel.x() * x_per_grid * dxCost;
@@ -155,9 +188,8 @@ namespace wom {
       return units::math::sqrt(xcost * xcost + ycost * ycost);
     }
 
-   private:
-    X_t _xsize;
-    Y_t _ysize;
+    X_t _xmin, _xmax;
+    Y_t _ymin, _ymax;
     Eigen::MatrixXi _grid;
   };
 }

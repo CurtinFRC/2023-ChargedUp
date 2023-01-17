@@ -278,8 +278,8 @@ void wom::sim::SwerveDriveSim::Update(units::second_t dt) {
   vx = chassis_state.vx;
   vy = chassis_state.vy;
 
-  x += (vx * units::math::cos(-angle) - vy * units::math::sin(-angle)) * dt;
-  y += (vx * units::math::sin(-angle) + vy * units::math::cos(-angle)) * dt;
+  x += (vx * units::math::cos(angle) - vy * units::math::sin(angle)) * dt;
+  y += (vx * units::math::sin(angle) + vy * units::math::cos(angle)) * dt;
 
   // Note vx, vy are in robot frame whilst x, y are in world frame
   table->GetEntry("vx").SetDouble(vx.value());
@@ -290,5 +290,5 @@ void wom::sim::SwerveDriveSim::Update(units::second_t dt) {
   table->GetEntry("y").SetDouble(y.value());
   table->GetEntry("totalCurrent").SetDouble(totalCurrent.value());
 
-  gyro->SetAngle(angle);
+  gyro->SetAngle(-angle);
 }

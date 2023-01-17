@@ -1,23 +1,18 @@
-#pragma once 
-#include <networktables/NetworkTableInstance.h>
-#include <iostream>
-#include <units/length.h>
-#include <units/time.h>
 
+// #pragma once
+
+// #include <frc/geometry/Pose3d.h>
+// #include <photonlib/PhotonCamera.h>
+// #include <photonlib/SimPhotonCamera.h>
+
+// #include <frc/apriltag/AprilTagFieldLayout.h>
 
 // struct VisionConfig {
-//   units::meter_t offset_x;
-//   units::meter_t offset_y;
+//   std::shared_ptr<photonlib::PhotonCamera> camera;
+//   units::radian_t fov;
+//   frc::Pose3d robotToCamera;
+//   std::shared_ptr<frc::AprilTagFieldLayout> layout;
 // };
 
-class Vision {
- public: 
-  Vision();
-  void Update(units::second_t dt);
+// std::shared_ptr<frc::AprilTagFieldLayout> Get2023Layout();
 
- private: 
-  // photonlib::PhotonCamera camera{"photonvision"};
-  std::shared_ptr<nt::NetworkTable> _visionTable = nt::NetworkTableInstance::GetDefault().GetTable("photonvision/visionCam");
-
-  // VisionConfig _config;
-};

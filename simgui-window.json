@@ -1,11 +1,19 @@
 {
   "MainWindow": {
     "GLOBAL": {
+<<<<<<< HEAD
       "height": "2004",
       "maximized": "1",
       "style": "0",
       "userScale": "2",
       "width": "3840",
+=======
+      "height": "1425",
+      "maximized": "1",
+      "style": "0",
+      "userScale": "2",
+      "width": "2256",
+>>>>>>> 7158d4fd37d96bfdc07021786d7539eb020bd7ff
       "xpos": "0",
       "ypos": "23"
     }
@@ -14,6 +22,7 @@
     "###FMS": {
       "Collapsed": "0",
       "Pos": "5,540",
+<<<<<<< HEAD
       "Size": "600,254"
     },
     "###Joysticks": {
@@ -25,10 +34,23 @@
       "Collapsed": "0",
       "Pos": "217,672",
       "Size": "750,1233"
+=======
+      "Size": "336,164"
+    },
+    "###Joysticks": {
+      "Collapsed": "0",
+      "Pos": "447,397",
+      "Size": "976,278"
+    },
+    "###NetworkTables": {
+      "Collapsed": "0",
+      "Pos": "290,185",
+      "Size": "750,531"
+>>>>>>> 7158d4fd37d96bfdc07021786d7539eb020bd7ff
     },
     "###Other Devices": {
       "Collapsed": "0",
-      "Pos": "1957,62",
+      "Pos": "1347,62",
       "Size": "253,686"
     },
     "###Plot <0>": {
@@ -43,7 +65,7 @@
     },
     "###Plot <2>": {
       "Collapsed": "0",
-      "Pos": "1363,602",
+      "Pos": "801,323",
       "Size": "700,400"
     },
     "###Plot <3>": {
@@ -58,7 +80,11 @@
     },
     "###Plot <5>": {
       "Collapsed": "0",
+<<<<<<< HEAD
       "Pos": "2377,316",
+=======
+      "Pos": "481,464",
+>>>>>>> 7158d4fd37d96bfdc07021786d7539eb020bd7ff
       "Size": "700,400"
     },
     "###Plot <6>": {
@@ -71,6 +97,16 @@
       "Pos": "1174,543",
       "Size": "700,400"
     },
+    "###Plot <8>": {
+      "Collapsed": "0",
+      "Pos": "1059,118",
+      "Size": "700,400"
+    },
+    "###Plot <9>": {
+      "Collapsed": "0",
+      "Pos": "1087,385",
+      "Size": "700,400"
+    },
     "###RoboRIO": {
       "Collapsed": "0",
       "Pos": "121,173",
@@ -79,12 +115,20 @@
     "###System Joysticks": {
       "Collapsed": "0",
       "Pos": "5,350",
+<<<<<<< HEAD
       "Size": "435,434"
+=======
+      "Size": "232,254"
+>>>>>>> 7158d4fd37d96bfdc07021786d7539eb020bd7ff
     },
     "###Timing": {
       "Collapsed": "0",
       "Pos": "5,150",
+<<<<<<< HEAD
       "Size": "294,217"
+=======
+      "Size": "162,142"
+>>>>>>> 7158d4fd37d96bfdc07021786d7539eb020bd7ff
     },
     "Debug##Default": {
       "Collapsed": "0",
@@ -94,7 +138,11 @@
     "Robot State": {
       "Collapsed": "0",
       "Pos": "5,20",
+<<<<<<< HEAD
       "Size": "196,189"
+=======
+      "Size": "109,114"
+>>>>>>> 7158d4fd37d96bfdc07021786d7539eb020bd7ff
     }
   }
 }
