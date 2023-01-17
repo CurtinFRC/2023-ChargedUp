@@ -28,7 +28,7 @@ struct RobotMap {
     static constexpr units::kilogram_t carriageMass = 5_kg;
 
     struct Arm {
-      WPI_TalonSRX motor1{7};
+      WPI_TalonSRX motor2{7};
 
       // wom::MotorVoltageController motor = wom::MotorVoltageController::Group(motor1);
       
@@ -43,7 +43,7 @@ struct RobotMap {
     Arm arm;
 
     struct Elevator {
-      WPI_TalonSRX motor2{1};
+      WPI_TalonSRX motor1{1};
 
       // wom::MotorVoltageController motor = wom::MotorVoltageController::Group(motor2);
 
