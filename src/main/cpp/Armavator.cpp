@@ -4,8 +4,8 @@
 #include "Robot.cpp"
 
 //Armavator configeration
-Armavator::Armavator(ArmavatorConfig config)
-: config(config), arm(config.arm), elevator(config.elevator) {}
+Armavator::Armavator(ArmavatorConfig config, wom::SwerveDrive swervedrive)
+: config(config), arm(config.arm), elevator(config.elevator), swervedrive(swervedrive) {}
 
 //Instructions for when the program updates (seconds delta time)
 void Armavator::OnUpdate(units::second_t dt) {
@@ -15,22 +15,23 @@ void Armavator::OnUpdate(units::second_t dt) {
     case ArmavatorState::kIdle:
       break;
     case ArmavatorState::kPosition:
-      frc::Pose2d.SwerveDrive.GetPose();
+      //frc::Pose2d SwerveDrive::GetPose()
+      swervedrive.GetPose();
 
-      if (/*pose == a || b*/){
-        //set arm to 90_deg
+      if ((x <= 2.51 && y >= 8.53) || (x >= 2.52 && y >= 10.33)){
+        ArmavatorPosition{0_m, 90_deg};
+        
       } else{
         arm.SetAngle(_setpoint.angle);
         elevator.SetPID(_setpoint.height);
       }
       break;
-  }
 
-  //frc::Pose2d SwerveDrive::GetPose()
 
 
   arm.OnUpdate(dt);
   elevator.OnUpdate(dt);
+}
 }
 
 //Sets the states names
@@ -56,14 +57,14 @@ bool Armavator::IsStable() const {
 
 /* SIMULATION */
 
-::sim::ArmavatorSim::ArmavatorSim(ArmavatorConfig config)
-  : config(config), armSim(config.arm), elevatorSim(config.elevator) {}
+// ::sim::ArmavatorSim::ArmavatorSim(ArmavatorConfig config)
+//   : config(config), armSim(config.arm), elevatorSim(config.elevator) {}
 
-void ::sim::ArmavatorSim::OnUpdate(units::second_t dt) {
-  armSim.Update(dt);
-  elevatorSim.Update(dt);
-}
+// void ::sim::ArmavatorSim::OnUpdate(units::second_t dt) {
+//   armSim.Update(dt);
+//   elevatorSim.Update(dt);
+// }
 
-units::ampere_t sim::ArmavatorSim::GetCurrent() const {
-  return armSim.GetCurrent() + elevatorSim.GetCurrent();
-}
+// units::ampere_t sim::ArmavatorSim::GetCurrent() const {
+//   return armSim.GetCurrent() + elevatorSim.GetCurrent();
+// }

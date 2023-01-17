@@ -2,8 +2,8 @@
 
 
 //Constructs class
-ArmavatorGoToPositionBehaviour::ArmavatorGoToPositionBehaviour(Armavator *armavator, ArmavatorPosition setpoint)
-: armavator(armavator), setpoint(setpoint) {
+ArmavatorGoToPositionBehaviour::ArmavatorGoToPositionBehaviour(Armavator *armavator, ArmavatorPosition setpoint, wom::SwerveDrive swervedrive)
+: armavator(armavator), setpoint(setpoint), swervedrive(swervedrive) {
     //tells code that the points are controlled (one point at a time) 
     Controls(armavator);
 }

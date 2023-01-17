@@ -4,6 +4,7 @@
 #include "Elevator.h"
 #include "Gearbox.h"
 #include "Grid.h"
+#include "drivetrain/SwerveDrive.h"
 
 #include <frc/DigitalInput.h>
 #include <frc/simulation/DIOSim.h>
@@ -32,7 +33,7 @@ enum class ArmavatorState {
 
 class Armavator : public behaviour::HasBehaviour {
  public:
-  Armavator(ArmavatorConfig config);
+  Armavator(ArmavatorConfig config, wom::SwerveDrive swervedrive);
 
   void OnUpdate(units::second_t dt);
 
@@ -45,6 +46,7 @@ class Armavator : public behaviour::HasBehaviour {
   ArmavatorConfig config;
   wom::Arm arm;
   wom::Elevator elevator;
+  wom::SwerveDrive swervedrive;
 
  private: 
   ArmavatorState _state = ArmavatorState::kIdle;
