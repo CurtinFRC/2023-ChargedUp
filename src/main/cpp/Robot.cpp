@@ -19,10 +19,14 @@ void Robot::RobotInit() {
   // BehaviourScheduler::GetInstance()->Register(armavator);
 
   swerve = new wom::SwerveDrive(map.swerveBase.config, frc::Pose2d());
+  // map.swerveBase.moduleConfigs[0].turnMotor.transmission->SetInverted(true);
+  // map.swerveBase.moduleConfigs[2].turnMotor.transmission->SetInverted(true);
   BehaviourScheduler::GetInstance()->Register(swerve);
   swerve->SetDefaultBehaviour([this]() {
     return make<ManualDrivebase>(swerve, &map.controllers.driver);
   });
+
+  
 }
 
 void Robot::RobotPeriodic() {
@@ -62,11 +66,14 @@ void Robot::TeleopInit() {
   // map.controllers.driver.POV(0, &loop).Rising().IfHigh([sched, this]() { // up dpad
   //   sched->Schedule(make<DrivebasePoseBehaviour>(swerve, frc::Pose2d(1_m, 1_m, 0_rad)));
   // });
+  swerve->OnStart();
 
 
 }
 
-void Robot::TeleopPeriodic() { }
+void Robot::TeleopPeriodic() {
+  // map.swerveBase.turnMotors[0]->Set(0.5);
+ }
 
 void Robot::DisabledInit() { }
 void Robot::DisabledPeriodic() { }

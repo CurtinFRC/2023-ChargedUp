@@ -1,6 +1,11 @@
 #include "behaviour/SwerveBaseBehaviour.h"
 #include "ControlUtil.h"
 
+#include <units/angular_velocity.h>
+#include <units/charge.h>
+#include <units/moment_of_inertia.h>
+// #include <units/units.h>
+
 using namespace wom;
 
 ManualDrivebase::ManualDrivebase(wom::SwerveDrive *swerveDrivebase, frc::XboxController *driverController):  _swerveDrivebase(swerveDrivebase), _driverController(driverController){
@@ -84,15 +89,26 @@ void ManualDrivebase::OnTick(units::second_t deltaTime){
   // }
 
   // END OF NEW STUFF
-  std::cout << "Drive" << std::endl;
+// std::cout << _swerveDrivebase->GetConfig().gyro->GetAngle() << std::endl;
 
- 
+
+  // _swerveDrivebase->SetTuning(0, 90_deg, 0_mps);
+  // _swerveDrivebase->SetTuning(1, 90_deg, 0_mps);
+  // _swerveDrivebase->SetTuning(2, 90_deg, 0_mps);
+  // _swerveDrivebase->SetTuning(3, 90_deg, 0_mps);
+  // _swerveDrivebase->SetTuning(90_deg, 0_mps);
+
 
   _swerveDrivebase->SetVelocity(frc::ChassisSpeeds {
     l_x * maxMovementMagnitude,
     l_y * maxMovementMagnitude,
-    r_x * 180_deg / 0.25_s
+    r_x * 90_deg / 1_s
   });
+  // _swerveDrivebase->SetVelocity(frc::ChassisSpeeds {
+  //   0.5_mps,
+  //   0_mps,
+  //   0_rad_per_s
+  // });
 }
 
 

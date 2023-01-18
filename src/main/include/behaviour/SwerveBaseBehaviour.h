@@ -16,7 +16,7 @@ class ManualDrivebase : public behaviour::Behaviour{
   frc::XboxController *_driverController;
   const double driverDeadzone = 0.05;
   const double turningDeadzone = 0.1;
-  const units::meters_per_second_t maxMovementMagnitude = 10_ft / 1000_s;
+  const units::meters_per_second_t maxMovementMagnitude = 3.5_ft / 1_s;
 };
 
 class DrivebasePoseBehaviour : public behaviour::Behaviour{

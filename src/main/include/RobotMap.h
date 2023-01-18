@@ -104,10 +104,10 @@ struct RobotMap {
   struct SwerveBase{
     wom::NavX gyro;
     wpi::array<WPI_TalonFX*, 4> turnMotors{
-      new WPI_TalonFX(5), new WPI_TalonFX(3), new WPI_TalonFX(2), new WPI_TalonFX(6)
+      new WPI_TalonFX(1), new WPI_TalonFX(3), new WPI_TalonFX(4), new WPI_TalonFX(6)
     };
     wpi::array<WPI_TalonFX*, 4> driveMotors{
-      new WPI_TalonFX(1), new WPI_TalonFX(8), new WPI_TalonFX(4), new WPI_TalonFX(7)
+      new WPI_TalonFX(5), new WPI_TalonFX(8), new WPI_TalonFX(2), new WPI_TalonFX(7)
     };
     
     wpi::array<wom::SwerveModuleConfig, 4> moduleConfigs{
@@ -115,12 +115,12 @@ struct RobotMap {
         frc::Translation2d(0.5_m, 0.5_m),
         wom::Gearbox{
           new wom::MotorVoltageController(driveMotors[0]),
-          new wom::TalonFXEncoder(driveMotors[0]),
+          new wom::TalonFXEncoder(driveMotors[0], 6.75),
           wom::DCMotor::Falcon500(1).WithReduction(6.75)
         },
         wom::Gearbox{
           new wom::MotorVoltageController(turnMotors[0]),
-          new wom::TalonFXEncoder(turnMotors[0]),
+          new wom::TalonFXEncoder(turnMotors[0], 12.8),
           wom::DCMotor::Falcon500(1).WithReduction(12.8)
         },
         4_in / 2
@@ -129,12 +129,12 @@ struct RobotMap {
         frc::Translation2d(0.5_m, -0.5_m),
         wom::Gearbox{
           new wom::MotorVoltageController(driveMotors[1]),
-          new wom::TalonFXEncoder(driveMotors[1]),
+          new wom::TalonFXEncoder(driveMotors[1], 6.75),
           wom::DCMotor::Falcon500(1).WithReduction(6.75)
         },
         wom::Gearbox{
           new wom::MotorVoltageController(turnMotors[1]),
-          new wom::TalonFXEncoder(turnMotors[1]),
+          new wom::TalonFXEncoder(turnMotors[1], 12.8),
           wom::DCMotor::Falcon500(1).WithReduction(12.8)
         },
         4_in / 2
@@ -143,12 +143,12 @@ struct RobotMap {
         frc::Translation2d(-0.5_m, 0.5_m),
         wom::Gearbox{
           new wom::MotorVoltageController(driveMotors[2]),
-          new wom::TalonFXEncoder(driveMotors[2]),
+          new wom::TalonFXEncoder(driveMotors[2], 6.75),
           wom::DCMotor::Falcon500(1).WithReduction(6.75)
         },
         wom::Gearbox{
           new wom::MotorVoltageController(turnMotors[2]),
-          new wom::TalonFXEncoder(turnMotors[2]),
+          new wom::TalonFXEncoder(turnMotors[2], 12.8),
           wom::DCMotor::Falcon500(1).WithReduction(12.8)
         },
         4_in / 2
@@ -157,12 +157,12 @@ struct RobotMap {
         frc::Translation2d(-0.5_m, -0.5_m),
         wom::Gearbox{
           new wom::MotorVoltageController(driveMotors[3]),
-          new wom::TalonFXEncoder(driveMotors[3]),
+          new wom::TalonFXEncoder(driveMotors[3], 6.75),
           wom::DCMotor::Falcon500(1).WithReduction(6.75)
         },
         wom::Gearbox{
           new wom::MotorVoltageController(turnMotors[3]),
-          new wom::TalonFXEncoder(turnMotors[3]),
+          new wom::TalonFXEncoder(turnMotors[3], 12.8),
           wom::DCMotor::Falcon500(1).WithReduction(12.8)
         },
         4_in / 2
@@ -171,11 +171,17 @@ struct RobotMap {
 
     wom::SwerveModule::angle_pid_conf_t anglePID {
       "/drivetrain/pid/angle/config",
-      12_V / 90_deg
+      10.5_V / 180_deg,
+      0.75_V / (100_deg * 1_s),
+      0_V / (100_deg / 1_s),
+      1_deg,
+      0.5_deg / 1_s
+
+      // 1_rad
     };
     wom::SwerveModule::velocity_pid_conf_t velocityPID{
       "/drivetrain/pid/velocity/config",
-      12_V / 2_mps
+      // -1_V / 8_mps
     };
     wom::SwerveDriveConfig::pose_angle_conf_t poseAnglePID {
       "/drivetrain/pid/pose/angle/config",
@@ -203,6 +209,12 @@ struct RobotMap {
       posePositionPID,
       10_kg // robot mass (estimate rn)
     };  
+
+    SwerveBase() {
+      for (size_t i = 0; i < 4; i++) {
+        turnMotors[i]->ConfigSupplyCurrentLimit(SupplyCurrentLimitConfiguration(true, 15, 15, 0));
+      }
+    }
   };
   SwerveBase swerveBase;
 };
