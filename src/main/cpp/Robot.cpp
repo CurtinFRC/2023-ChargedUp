@@ -24,8 +24,9 @@ void Robot::RobotInit() {
   swerve->SetDefaultBehaviour([this]() {
     return make<ManualDrivebase>(swerve, &map.controllers.driver);
   });
-  
-  // swerveModule = new SwerveModuleTest();
+
+  //swerveModule = new SwerveModuleTest(map.swerveSingleModuleMotors.config);
+  //BehaviourScheduler::GetInstance()->Register(swerveModule);
 
 }
 
@@ -35,6 +36,16 @@ void Robot::RobotPeriodic() {
   
   loop.Poll();
   BehaviourScheduler::GetInstance()->Tick();
+
+  map.swerveBase.turnMotors[0]->Set(map.controllers.driver.GetRightX());
+  map.swerveBase.driveMotors[0]->Set(map.controllers.driver.GetLeftY());
+
+  std::shared_ptr<nt::NetworkTable> _table = nt::NetworkTableInstance::GetDefault().GetTable("encoderValues");
+  _table->GetEntry("speed").SetDouble(map.swerveBase.moduleConfigs[0].driveMotor.encoder->GetEncoderPosition().convert<units::degree>().value());
+  _table->GetEntry("angle").SetDouble(map.swerveBase.moduleConfigs[0].turnMotor.encoder->GetEncoderPosition().convert<units::degree>().value());
+  map.swerveBase.moduleConfigs[0].WriteNT(_table->GetSubTable("encoderValues"));
+
+
 
   armavator->OnUpdate(dt);
   swerve->OnUpdate(dt);

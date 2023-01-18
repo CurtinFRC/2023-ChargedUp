@@ -8,10 +8,13 @@
 #include "behaviour/SingleSwerveBehaviour.h"
 #include "behaviour/ArmavatorBehaviour.h"
 
+#include <ctre/phoenix/motorcontrol/can/WPI_TalonFX.h>
+
 #include <frc/XboxController.h>
 #include <ctre/Phoenix.h>
 
 #include "drivetrain/SwerveDrive.h"
+#include "SwerveMod.h"
 
 #include <iostream>
 #include <string>
@@ -118,12 +121,12 @@ struct RobotMap {
         frc::Translation2d(0.5_m, 0.5_m),
         wom::Gearbox{
           new wom::MotorVoltageController(driveMotors[0]),
-          new wom::TalonFXEncoder(driveMotors[0]),
+          new wom::TalonFXEncoder(driveMotors[0], 6.75),
           wom::DCMotor::Falcon500(1).WithReduction(6.75)
         },
         wom::Gearbox{
           new wom::MotorVoltageController(turnMotors[0]),
-          new wom::TalonFXEncoder(turnMotors[0]),
+          new wom::TalonFXEncoder(turnMotors[0], 12.8),
           wom::DCMotor::Falcon500(1).WithReduction(12.8)
         },
         4_in / 2
@@ -132,12 +135,12 @@ struct RobotMap {
         frc::Translation2d(0.5_m, -0.5_m),
         wom::Gearbox{
           new wom::MotorVoltageController(driveMotors[1]),
-          new wom::TalonFXEncoder(driveMotors[1]),
+          new wom::TalonFXEncoder(driveMotors[1], 6.75),
           wom::DCMotor::Falcon500(1).WithReduction(6.75)
         },
         wom::Gearbox{
           new wom::MotorVoltageController(turnMotors[1]),
-          new wom::TalonFXEncoder(turnMotors[1]),
+          new wom::TalonFXEncoder(turnMotors[1], 12.8),
           wom::DCMotor::Falcon500(1).WithReduction(12.8)
         },
         4_in / 2
@@ -220,14 +223,16 @@ struct RobotMap {
     frc::Pose2d outerGrid3 = frc::Pose2d(1_m, 9_m, 0_deg); // Closest grid position to enemy Loading Zone
   };
 
-  struct SwerveSingleModule{
-    TalonFX driveMotor{1};
-    TalonFX turnMotor{2};
-  };
+  // struct SwerveSingleModule{
+  //   SwerveSingleModuleConfig config{
+  //     WPI_TalonFX(1),
+  //     WPI_TalonFX(2)
+  //   };
+  // };
 
 
   
   SwerveBase swerveBase;
   SwerveGridPoses swerveGridPoses;
-  SwerveSingleModule swerveSingleModuleMotors;
+  //SwerveSingleModule swerveSingleModuleMotors;
 };
