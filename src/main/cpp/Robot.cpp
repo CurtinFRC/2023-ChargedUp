@@ -71,29 +71,34 @@ void Robot::TeleopInit() {
   map.controllers.driver.POV(0, &loop).Rising().IfHigh([sched, this]() { // up dpad
     if (map.controllers.driver.GetAButton()) {
       if (map.controllers.driver.GetXButton()){
-        sched->Schedule(make<DrivebasePoseBehaviour>(swerve, frc::Pose2d(1_m, 9_m, 0_rad))); // central grid
+        sched->Schedule(make<DrivebasePoseBehaviour>(swerve, map.swerveGridPoses.centreGrid2)); // central grid
+      } else {
+        sched->Schedule(make<DrivebasePoseBehaviour>(swerve, map.swerveGridPoses.outerGrid3)); // Outer Grid 3 (furthest from centre)
       }
-      sched->Schedule(make<DrivebasePoseBehaviour>(swerve, frc::Pose2d(1_m, 2_m, 0_rad))); // Outer Grid 3 (furthest from centre)
+    } else {
+      sched->Schedule(make<DrivebasePoseBehaviour>(swerve,map.swerveGridPoses.innerGrid1)); // Inner Grid 1 (furthest from centre)
     }
-    sched->Schedule(make<DrivebasePoseBehaviour>(swerve, frc::Pose2d(1_m, 1_m, 0_rad))); // Inner Grid 1 (furthest from centre)
   });
   map.controllers.driver.POV(90, &loop).Rising().IfHigh([sched, this]() { // right dpad
     if (map.controllers.driver.GetAButton()) {
-      sched->Schedule(make<DrivebasePoseBehaviour>(swerve, frc::Pose2d(1_m, 3_m, 0_rad))); // Outer Grid 2
+      sched->Schedule(make<DrivebasePoseBehaviour>(swerve, map.swerveGridPoses.outerGrid2)); // Outer Grid 2
+    } else {
+      sched->Schedule(make<DrivebasePoseBehaviour>(swerve, map.swerveGridPoses.innerGrid2)); // Inner Grid 2
     }
-    sched->Schedule(make<DrivebasePoseBehaviour>(swerve, frc::Pose2d(1_m, 4_m, 0_rad))); // Inner Grid 2
   });
   map.controllers.driver.POV(180, &loop).Rising().IfHigh([sched, this]() { // down dpad
     if (map.controllers.driver.GetAButton()) {
-      sched->Schedule(make<DrivebasePoseBehaviour>(swerve, frc::Pose2d(1_m, 5_m, 0_rad))); // Outer Grid 1 (closest to centre)
+      sched->Schedule(make<DrivebasePoseBehaviour>(swerve, map.swerveGridPoses.outerGrid1)); // Outer Grid 1 (closest to centre)
+    } else{
+      sched->Schedule(make<DrivebasePoseBehaviour>(swerve, map.swerveGridPoses.innerGrid3)); // Inner Grid 3 (closest to centre)
     }
-    sched->Schedule(make<DrivebasePoseBehaviour>(swerve, frc::Pose2d(1_m, 6_m, 0_rad))); // Inner Grid 3 (closest to centre)
   });
   map.controllers.driver.POV(270, &loop).Rising().IfHigh([sched, this]() { // left dpad
     if (map.controllers.driver.GetAButton()) {
-      sched->Schedule(make<DrivebasePoseBehaviour>(swerve, frc::Pose2d(1_m, 7_m, 0_rad))); // Community Grid 3 (outer grid side)
+      sched->Schedule(make<DrivebasePoseBehaviour>(swerve, map.swerveGridPoses.centreGrid3)); // Community Grid 3 (outer grid side)
+    } else {
+      sched->Schedule(make<DrivebasePoseBehaviour>(swerve, map.swerveGridPoses.centreGrid1)); // Community Grid 1 (inner grid side)
     }
-    sched->Schedule(make<DrivebasePoseBehaviour>(swerve, frc::Pose2d(1_m, 8_m, 0_rad))); // Community Grid 1 (inner grid side)
   });
 
   
