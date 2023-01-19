@@ -102,7 +102,7 @@ void ManualDrivebase::OnTick(units::second_t deltaTime){
   _swerveDrivebase->SetVelocity(frc::ChassisSpeeds {
     l_x * maxMovementMagnitude,
     l_y * maxMovementMagnitude,
-    r_x * 90_deg / 1_s
+    r_x * 360_deg / 0.01_s
   });
   // _swerveDrivebase->SetVelocity(frc::ChassisSpeeds {
   //   0.5_mps,
