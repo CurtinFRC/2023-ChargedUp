@@ -17,7 +17,6 @@ void ManualDrivebase::OnTick(units::second_t deltaTime){
   double l_y = wom::deadzone(_driverController->GetLeftY(), driverDeadzone);
   double r_x = wom::deadzone(_driverController->GetRightX(), turningDeadzone);
 
-
   // ALL NEW STUFF
 
   // currently using an Xbox controller for testing, but a button bar like thing would be ideal
@@ -111,17 +110,22 @@ void ManualDrivebase::OnTick(units::second_t deltaTime){
   // });
 }
 
-
-DrivebasePoseBehaviour::DrivebasePoseBehaviour(wom::SwerveDrive *swerveDrivebase, frc::Pose2d pose)
-  : _swerveDrivebase(swerveDrivebase), _pose(pose)
-{
+DrivebasePoseBehaviour::DrivebasePoseBehaviour(wom::SwerveDrive *swerveDrivebase, frc::Pose2d pose) : _swerveDrivebase(swerveDrivebase), _pose(pose){
   Controls(swerveDrivebase);
 }
-
 void DrivebasePoseBehaviour::OnTick(units::second_t deltaTime){
   _swerveDrivebase->SetPose(_pose);
 
   if (_swerveDrivebase->IsAtSetPose()){
     SetDone();
   }
+}
+
+DrivebaseBalance::DrivebaseBalance(wom::SwerveDrive *swerveDrivebase) : _swerveDrivebase(swerveDrivebase) {
+  Controls(swerveDrivebase);
+}
+void DrivebaseBalance::OnTick(units::second_t deltaTime){
+  // determine if it's moving, speed based off of roll back speed
+
+  // get a feel for the wheel before doing this
 }
