@@ -31,4 +31,5 @@ class Robot : public frc::TimedRobot {
   RobotMap map;
   Armavator *armavator;
   wom::SwerveDrive *swerve;
+  SideIntake *sideIntake;
 };

@@ -4,11 +4,13 @@
 #include "Arm.h"
 #include "Elevator.h"
 #include "Armavator.h"
+#include "SideIntake.h"
 #include "Gyro.h"
 #include "behaviour/ArmavatorBehaviour.h"
 
 #include <frc/XboxController.h>
 #include <ctre/Phoenix.h>
+#include <frc/DoubleSolenoid.h>
 
 #include "drivetrain/SwerveDrive.h"
 
@@ -206,5 +208,29 @@ struct RobotMap {
     };  
   };
   SwerveBase swerveBase;
+
+  struct SideIntakeSystem {
+    // wom::MotorVoltageController motor1{new WPI_TalonSRX(999)};
+    // wom::MotorVoltageController motor2{new WPI_TalonSRX(999)};
+    WPI_TalonSRX motor1{999};
+    WPI_TalonSRX motor2{999};
+    wom::MotorVoltageController motor = wom::MotorVoltageController::Group(motor1, motor2);
+
+    frc::DoubleSolenoid solenoid1{1, frc::PneumaticsModuleType::CTREPCM, 999, 999};  // change chanel values // grab pistons
+    frc::DoubleSolenoid solenoid2{1, frc::PneumaticsModuleType::CTREPCM, 999, 999};  // change chanel values // move pistons
+    
+    wom::Gearbox gearbox{
+      &motor, // change
+      nullptr,  
+      wom::DCMotor::Bag(2).WithReduction(10) 
+    };
+
+    SideIntakeConfig config{
+      gearbox,
+      &solenoid1,
+      &solenoid2
+    };
+  }; 
+  SideIntakeSystem sideIntake;
 
 };
