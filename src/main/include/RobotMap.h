@@ -1,9 +1,8 @@
 #pragma once
-
 #include "VoltageController.h"
-#include "Arm.h"
-#include "Elevator.h"
-#include "Armavator.h"
+// #include "Arm.h"
+// #include "Elevator.h"
+// #include "Armavator.h"
 #include "Gyro.h"
 #include "behaviour/SingleSwerveBehaviour.h"
 #include "behaviour/ArmavatorBehaviour.h"
@@ -26,94 +25,94 @@ struct RobotMap {
   };
   Controllers controllers;
 
-  struct Armavator {
-    static constexpr units::kilogram_t loadMass = 10_kg;
-    static constexpr units::kilogram_t armMass = 5_kg;
-    static constexpr units::kilogram_t carriageMass = 5_kg;
+  // struct Armavator {
+  //   static constexpr units::kilogram_t loadMass = 10_kg;
+  //   static constexpr units::kilogram_t armMass = 5_kg;
+  //   static constexpr units::kilogram_t carriageMass = 5_kg;
 
-    struct Arm {
-      WPI_TalonSRX motor1{1};
-      WPI_TalonSRX motor2{2};
+  //   struct Arm {
+  //     WPI_TalonSRX motor1{1};
+  //     WPI_TalonSRX motor2{2};
 
-      wom::MotorVoltageController motor = wom::MotorVoltageController::Group(motor1, motor2);
+  //     wom::MotorVoltageController motor = wom::MotorVoltageController::Group(motor1, motor2);
 
-      wom::DigitalEncoder encoder{0, 1, 2048};
+  //     wom::DigitalEncoder encoder{0, 1, 2048};
 
-      wom::Gearbox gearbox {
-        &motor,
-        &encoder,
-        wom::DCMotor::CIM(2).WithReduction(100)
-      };
-      wom::ArmConfig config {
-        "/armavator/arm",
-        gearbox,
-        nullptr,
-        nullptr,
-        {
-          "/armavator/arm/pid/config",
-          12_V / 45_deg
-        },
-        armMass, loadMass, 1_m,
-        -90_deg, 270_deg,
-        -90_deg
-      };
-    };
-    Arm arm;
+  //     wom::Gearbox gearbox {
+  //       &motor,
+  //       &encoder,
+  //       wom::DCMotor::CIM(2).WithReduction(100)
+  //     };
+  //     wom::ArmConfig config {
+  //       "/armavator/arm",
+  //       gearbox,
+  //       nullptr,
+  //       nullptr,
+  //       {
+  //         "/armavator/arm/pid/config",
+  //         12_V / 45_deg
+  //       },
+  //       armMass, loadMass, 1_m,
+  //       -90_deg, 270_deg,
+  //       -90_deg
+  //     };
+  //   };
+  //   Arm arm;
 
-    struct Elevator {
-      WPI_TalonSRX motor1{3};
-      WPI_TalonSRX motor2{4};
+  //   struct Elevator {
+  //     WPI_TalonSRX motor1{3};
+  //     WPI_TalonSRX motor2{4};
 
-      wom::MotorVoltageController motor = wom::MotorVoltageController::Group(motor1, motor2);
+  //     wom::MotorVoltageController motor = wom::MotorVoltageController::Group(motor1, motor2);
 
-      wom::DigitalEncoder encoder{2, 3, 2048};
+  //     wom::DigitalEncoder encoder{2, 3, 2048};
 
-      wom::Gearbox gearbox {
-        &motor,
-        &encoder,
-        wom::DCMotor::CIM(2).WithReduction(10)
-      };
+  //     wom::Gearbox gearbox {
+  //       &motor,
+  //       &encoder,
+  //       wom::DCMotor::CIM(2).WithReduction(10)
+  //     };
 
-      wom::ElevatorConfig config {
-        "/armavator/elevator",
-        gearbox,
-        nullptr,
-        nullptr,
-        2_in,
-        armMass + loadMass + carriageMass,
-        1.5_m,
-        1_m,
-        {
-          "/armavator/elevator/pid/config",
-          12_V / 1_m
-        }
-      };
-    };
-    Elevator elevator;
+  //     wom::ElevatorConfig config {
+  //       "/armavator/elevator",
+  //       gearbox,
+  //       nullptr,
+  //       nullptr,
+  //       2_in,
+  //       armMass + loadMass + carriageMass,
+  //       1.5_m,
+  //       1_m,
+  //       {
+  //         "/armavator/elevator/pid/config",
+  //         12_V / 1_m
+  //       }
+  //     };
+  //   };
+  //   Elevator elevator;
 
-    ArmavatorConfig::grid_t occupancyGrid = ArmavatorConfig::grid_t(
-      arm.config.minAngle, arm.config.maxAngle,
-      0_m, elevator.config.maxHeight,
-      50, 50
-    ).FillF([this](units::radian_t angle, units::meter_t height) {
-      units::meter_t x = arm.config.armLength * units::math::cos(angle);
-      units::meter_t y = height + arm.config.armLength * units::math::sin(angle);
-      return !(y >= 0.1_m && y <= 6_ft);
-    });
+  //   ArmavatorConfig::grid_t occupancyGrid = ArmavatorConfig::grid_t(
+  //     arm.config.minAngle, arm.config.maxAngle,
+  //     0_m, elevator.config.maxHeight,
+  //     50, 50
+  //   ).FillF([this](units::radian_t angle, units::meter_t height) {
+  //     units::meter_t x = arm.config.armLength * units::math::cos(angle);
+  //     units::meter_t y = height + arm.config.armLength * units::math::sin(angle);
+  //     return !(y >= 0.1_m && y <= 6_ft);
+  //   });
 
-    ArmavatorConfig config {
-      arm.config, elevator.config, occupancyGrid
-    };
-  };
-  Armavator armavator;
+  //   ArmavatorConfig config {
+  //     arm.config, elevator.config, occupancyGrid
+  //   };
+  // };
+  // Armavator armavator;
 
   struct SwerveBase{
     wom::NavX gyro;
     wpi::array<WPI_TalonFX*, 4> turnMotors{
-      new WPI_TalonFX(1), new WPI_TalonFX(2), new WPI_TalonFX(3), new WPI_TalonFX(4)
+      new WPI_TalonFX(1), new WPI_TalonFX(3), new WPI_TalonFX(4), new WPI_TalonFX(6)
     };
     wpi::array<WPI_TalonFX*, 4> driveMotors{
-      new WPI_TalonFX(5), new WPI_TalonFX(6), new WPI_TalonFX(7), new WPI_TalonFX(8)
+      new WPI_TalonFX(5), new WPI_TalonFX(8), new WPI_TalonFX(2), new WPI_TalonFX(7)
     };
     
     wpi::array<wom::SwerveModuleConfig, 4> moduleConfigs{
@@ -149,12 +148,12 @@ struct RobotMap {
         frc::Translation2d(-0.5_m, 0.5_m),
         wom::Gearbox{
           new wom::MotorVoltageController(driveMotors[2]),
-          new wom::TalonFXEncoder(driveMotors[2]),
+          new wom::TalonFXEncoder(driveMotors[2], 6.75),
           wom::DCMotor::Falcon500(1).WithReduction(6.75)
         },
         wom::Gearbox{
           new wom::MotorVoltageController(turnMotors[2]),
-          new wom::TalonFXEncoder(turnMotors[2]),
+          new wom::TalonFXEncoder(turnMotors[2], 12.8),
           wom::DCMotor::Falcon500(1).WithReduction(12.8)
         },
         4_in / 2
@@ -163,12 +162,12 @@ struct RobotMap {
         frc::Translation2d(-0.5_m, -0.5_m),
         wom::Gearbox{
           new wom::MotorVoltageController(driveMotors[3]),
-          new wom::TalonFXEncoder(driveMotors[3]),
+          new wom::TalonFXEncoder(driveMotors[3], 6.75),
           wom::DCMotor::Falcon500(1).WithReduction(6.75)
         },
         wom::Gearbox{
           new wom::MotorVoltageController(turnMotors[3]),
-          new wom::TalonFXEncoder(turnMotors[3]),
+          new wom::TalonFXEncoder(turnMotors[3], 12.8),
           wom::DCMotor::Falcon500(1).WithReduction(12.8)
         },
         4_in / 2
@@ -177,11 +176,17 @@ struct RobotMap {
 
     wom::SwerveModule::angle_pid_conf_t anglePID {
       "/drivetrain/pid/angle/config",
-      12_V / 90_deg
+      10.5_V / 180_deg,
+      0.75_V / (100_deg * 1_s),
+      0_V / (100_deg / 1_s),
+      1_deg,
+      0.5_deg / 1_s
+
+      // 1_rad
     };
     wom::SwerveModule::velocity_pid_conf_t velocityPID{
       "/drivetrain/pid/velocity/config",
-      12_V / 2_mps
+      // -1_V / 8_mps
     };
     wom::SwerveDriveConfig::pose_angle_conf_t poseAnglePID {
       "/drivetrain/pid/pose/angle/config",
@@ -207,8 +212,14 @@ struct RobotMap {
       &gyro,
       poseAnglePID, 
       posePositionPID,
-      70_kg // robot mass (estimate rn)
+      10_kg // robot mass (estimate rn)
     };  
+
+    SwerveBase() {
+      for (size_t i = 0; i < 4; i++) {
+        turnMotors[i]->ConfigSupplyCurrentLimit(SupplyCurrentLimitConfiguration(true, 15, 15, 0));
+      }
+    }
   };
 
   struct SwerveGridPoses { // positions to place the items

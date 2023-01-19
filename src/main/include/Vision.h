@@ -1,24 +1,18 @@
-#pragma once
 
-#include <frc/geometry/Pose3d.h>
-#include <photonlib/PhotonCamera.h>
+// #pragma once
 
-#include <frc/apriltag/AprilTagFieldLayout.h>
+// #include <frc/geometry/Pose3d.h>
+// #include <photonlib/PhotonCamera.h>
+// #include <photonlib/SimPhotonCamera.h>
 
-struct VisionConfig {
-  photonlib::PhotonCamera *camera;
-  units::radian_t fov;
-  frc::Pose3d robotToCamera;
-  frc::AprilTagFieldLayout layout;
-};
+// #include <frc/apriltag/AprilTagFieldLayout.h>
 
-/* SIMULATION */
+// struct VisionConfig {
+//   std::shared_ptr<photonlib::PhotonCamera> camera;
+//   units::radian_t fov;
+//   frc::Pose3d robotToCamera;
+//   std::shared_ptr<frc::AprilTagFieldLayout> layout;
+// };
 
-class VisionSim {
- public:
-  VisionSim(VisionConfig config);
+// std::shared_ptr<frc::AprilTagFieldLayout> Get2023Layout();
 
-  void Update(units::second_t dt, frc::Pose2d realPose);
- private:
-  VisionConfig config;
-};
