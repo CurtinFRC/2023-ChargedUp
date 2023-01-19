@@ -7,6 +7,9 @@
 
 #include <frc/apriltag/AprilTagFieldLayout.h>
 
+#include <math.h>
+#include <iostream>
+
 struct VisionConfig {
   std::shared_ptr<photonlib::PhotonCamera> camera;
   frc::Transform3d robotToCamera;
