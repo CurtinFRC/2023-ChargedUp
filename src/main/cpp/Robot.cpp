@@ -17,6 +17,8 @@ void Robot::RobotInit() {
 
   armavator = new Armavator(map.armavator.config);
   BehaviourScheduler::GetInstance()->Register(armavator);
+  
+  vision = new Vision(map.vision.config);
 
   swerve = new wom::SwerveDrive(map.swerveBase.config, frc::Pose2d());
   BehaviourScheduler::GetInstance()->Register(swerve);
@@ -34,6 +36,7 @@ void Robot::RobotPeriodic() {
 
   armavator->OnUpdate(dt);
   swerve->OnUpdate(dt);
+  vision->OnUpdate(dt);
 }
 
 void Robot::AutonomousInit() { }

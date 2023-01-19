@@ -6,6 +6,7 @@
 #include "Armavator.h"
 #include "Gyro.h"
 #include "behaviour/ArmavatorBehaviour.h"
+#include "Vision.h"
 
 #include <frc/XboxController.h>
 #include <ctre/Phoenix.h>
@@ -20,6 +21,15 @@ struct RobotMap {
     frc::XboxController codriver{1};
   };
   Controllers controllers;
+
+  struct Vision {
+    VisionConfig config{
+      std::make_shared<photonlib::PhotonCamera>("camera"), 
+      frc::Transform3d{ frc::Translation3d{ 0_m, 0_m, 0_m }, frc::Rotation3d{ 0_rad, 0_rad, 0_rad } },
+      Get2023Layout()
+    };
+  };
+  Vision vision;
 
   struct Armavator {
     static constexpr units::kilogram_t loadMass = 10_kg;
