@@ -95,6 +95,19 @@
     "xtr1common": "cpp",
     "xtree": "cpp",
     "xutility": "cpp",
-    "core": "cpp"
+    "core": "cpp",
+    "any": "cpp",
+    "cfenv": "cpp",
+    "codecvt": "cpp",
+    "coroutine": "cpp",
+    "filesystem": "cpp",
+    "future": "cpp",
+    "numbers": "cpp",
+    "queue": "cpp",
+    "ranges": "cpp",
+    "regex": "cpp",
+    "stack": "cpp",
+    "typeindex": "cpp",
+    "unordered_set": "cpp"
   }
 }

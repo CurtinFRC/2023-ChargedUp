@@ -4,7 +4,6 @@
 // #include "Elevator.h"
 // #include "Armavator.h"
 #include "Gyro.h"
-#include "behaviour/SingleSwerveBehaviour.h"
 #include "behaviour/ArmavatorBehaviour.h"
 
 #include <ctre/phoenix/motorcontrol/can/WPI_TalonFX.h>
@@ -13,7 +12,6 @@
 #include <ctre/Phoenix.h>
 
 #include "drivetrain/SwerveDrive.h"
-#include "SwerveMod.h"
 
 #include <iostream>
 #include <string>
@@ -176,8 +174,8 @@ struct RobotMap {
 
     wom::SwerveModule::angle_pid_conf_t anglePID {
       "/drivetrain/pid/angle/config",
-      10.5_V / 180_deg,
-      0.75_V / (100_deg * 1_s),
+      12_V / 135_deg,
+      1_V / (100_deg * 1_s),
       0_V / (100_deg / 1_s),
       1_deg,
       0.5_deg / 1_s
@@ -218,6 +216,8 @@ struct RobotMap {
     SwerveBase() {
       for (size_t i = 0; i < 4; i++) {
         turnMotors[i]->ConfigSupplyCurrentLimit(SupplyCurrentLimitConfiguration(true, 15, 15, 0));
+        driveMotors[i]->SetNeutralMode(NeutralMode::Brake);
+        turnMotors[i]->SetNeutralMode(NeutralMode::Brake);
       }
     }
   };
@@ -233,17 +233,7 @@ struct RobotMap {
     frc::Pose2d outerGrid2 = frc::Pose2d(1_m, 8_m, 0_deg); // Middle of Outer Grid
     frc::Pose2d outerGrid3 = frc::Pose2d(1_m, 9_m, 0_deg); // Closest grid position to enemy Loading Zone
   };
-
-  // struct SwerveSingleModule{
-  //   SwerveSingleModuleConfig config{
-  //     WPI_TalonFX(1),
-  //     WPI_TalonFX(2)
-  //   };
-  // };
-
-
   
   SwerveBase swerveBase;
   SwerveGridPoses swerveGridPoses;
-  //SwerveSingleModule swerveSingleModuleMotors;
 };

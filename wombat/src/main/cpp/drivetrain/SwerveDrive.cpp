@@ -47,13 +47,15 @@ void SwerveModule::OnUpdate(units::second_t dt) {
       break;
   }
 
-  units::newton_meter_t max_torque_at_current_limit = _config.turnMotor.motor.Torque(30_A);
-  units::volt_t max_voltage_for_current_limit = _config.turnMotor.motor.Voltage(max_torque_at_current_limit, _config.turnMotor.encoder->GetEncoderAngularVelocity());
-  turnVoltage = units::math::max(units::math::min(turnVoltage, max_voltage_for_current_limit), -max_voltage_for_current_limit);
+  // units::newton_meter_t max_torque_at_current_limit = _config.turnMotor.motor.Torque(30_A);
+  // units::volt_t max_voltage_for_current_limit = _config.turnMotor.motor.Voltage(max_torque_at_current_limit, _config.turnMotor.encoder->GetEncoderAngularVelocity());
+  // turnVoltage = units::math::max(units::math::min(turnVoltage, max_voltage_for_current_limit), -max_voltage_for_current_limit);
+  turnVoltage = units::math::max(units::math::min(turnVoltage, 5_V), -5_V);
+  driveVoltage = units::math::max(units::math::min(driveVoltage, 10_V), -10_V);
 
-  units::newton_meter_t max_torque_at_current_limit_d = _config.driveMotor.motor.Torque(30_A);
-  units::volt_t max_voltage_for_current_limit_d = _config.driveMotor.motor.Voltage(max_torque_at_current_limit_d, _config.driveMotor.encoder->GetEncoderAngularVelocity());
-  driveVoltage = units::math::max(units::math::min(driveVoltage, max_voltage_for_current_limit_d), -max_voltage_for_current_limit_d);
+  // units::newton_meter_t max_torque_at_current_limit_d = _config.driveMotor.motor.Torque(100_A);
+  // units::volt_t max_voltage_for_current_limit_d = _config.driveMotor.motor.Voltage(max_torque_at_current_limit_d, _config.driveMotor.encoder->GetEncoderAngularVelocity() * 6.75);
+  // driveVoltage = units::math::max(units::math::min(driveVoltage, max_voltage_for_current_limit_d), -max_voltage_for_current_limit_d);
 
   _config.driveMotor.transmission->SetVoltage(driveVoltage);
   _config.turnMotor.transmission->SetVoltage(turnVoltage);
@@ -69,10 +71,29 @@ void SwerveModule::SetIdle() {
 
 void SwerveModule::SetPID(units::radian_t angle, units::meters_per_second_t speed) {
   _state = SwerveModuleState::kPID;
+
+
+  // @liam start added
+  double diff = std::fmod((_anglePIDController.GetSetpoint() - angle).convert<units::degree>().value(), 360);
+  if (std::abs(diff) >= 90) {
+    speed *= -1;
+    angle += 180_deg;
+  }
+  
+  
+  // if (fmod((float)(units::deg)(_anglePIDController.GetSetpoint()-angle),360) <= 90){
+  //   speed *= -1;
+  //   if (angle < 180_deg){
+  //     angle += 180;
+  //   } else {
+  //     angle -= 180;
+  //   }
+  // }
+
   _anglePIDController.SetSetpoint(angle);
   _velocityPIDController.SetSetpoint(speed);
 }
-
+ 
 units::meters_per_second_t SwerveModule::GetSpeed() const {
   return units::meters_per_second_t{_config.driveMotor.encoder->GetEncoderAngularVelocity().value() * _config.wheelRadius.value()};
 }
