@@ -38,28 +38,27 @@ void Elevator::OnUpdate(units::second_t dt) {
         voltage = _pid.Calculate(height, dt, feedforward);
       }
       break;
-      } 
-      // else {
+    case ElevatorState::
+      // } else {
       //   voltage = -3_V;
-      //   if (_config.bottomSensor->Get()) {
-      //     _config.gearbox.encoder->ZeroEncoder();
+      //   if (_config->bottomSensor->Get()) {
+      //     _config->gearbox.encoder->ZeroEncoder();
       //     _state = ElevatorState::kIdle;
       //   }
       // }
-      // break;
+      break;
   }
 
-  // if (_config.bottomSensor && voltage < 0_V && _config.bottomSensor->Get()) {
-  //   voltage = 0_V;
-  // } 
-  // if (_config.topSensor && voltage > 0_V && _config.topSensor->Get()) {
-  //   voltage = 0_V;
-  // }
-  // _config.gearbox.transmission->SetVoltage(voltage);
+  if (_config.bottomSensor && voltage < 0_V && _config.bottomSensor->Get()) {
+    voltage = 0_V;
+  } 
+  if (_config.topSensor && voltage > 0_V && _config.topSensor->Get()) {
+    voltage = 0_V;
+  }
+  _config.gearbox.transmission->SetVoltage(voltage);
 
-//   _table->GetEntry("height").SetDouble(height.value());
-//   _config.WriteNT(_table->GetSubTable("config"));
-// }
+  _table->GetEntry("height").SetDouble(height.value());
+  _config.WriteNT(_table->GetSubTable("config"));
 
 void Elevator::SetManual(units::volt_t voltage) {
   _state = ElevatorState::kManual;
@@ -74,6 +73,11 @@ void Elevator::SetPID(units::meter_t height) {
 void Elevator::SetIdle() {
   _state = ElevatorState::kIdle;
 }
+
+void Elevator::SetZeroing() {
+  
+}
+
 
 bool Elevator::IsStable() const {
   return _pid.IsStable();
