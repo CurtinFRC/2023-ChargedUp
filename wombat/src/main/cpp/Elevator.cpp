@@ -28,37 +28,35 @@ void Elevator::OnUpdate(units::second_t dt) {
   switch(_state) {
     case ElevatorState::kIdle:
       voltage = 0_V;
-      break;
+    break;
     case ElevatorState::kManual:
       voltage = _setpointManual;
-      break;
+    break;
     case ElevatorState::kPID:
       {
         auto feedforward = _config.gearbox.motor.Voltage((_config.mass * 9.81_mps_sq) * _config.radius, 0_rad_per_s);
         voltage = _pid.Calculate(height, dt, feedforward);
       }
-      break;
-    case ElevatorState::
-      // } else {
-      //   voltage = -3_V;
-      //   if (_config->bottomSensor->Get()) {
-      //     _config->gearbox.encoder->ZeroEncoder();
-      //     _state = ElevatorState::kIdle;
-      //   }
-      // }
-      break;
-  }
+    break;
+    case ElevatorState::kZeroing:
+        voltage = -3_V;
+        if (_config.bottomSensor->Get()) {
+          _config.gearbox.encoder->ZeroEncoder();
+          _state = ElevatorState::kIdle;
+        }
+        if (_config.bottomSensor && voltage < 0_V && _config.bottomSensor->Get()) {
+        voltage = 0_V;
+        } 
+        if (_config.topSensor && voltage > 0_V && _config.topSensor->Get()) {
+          voltage = 0_V;
+        }
+        _config.gearbox.transmission->SetVoltage(voltage);
 
-  if (_config.bottomSensor && voltage < 0_V && _config.bottomSensor->Get()) {
-    voltage = 0_V;
-  } 
-  if (_config.topSensor && voltage > 0_V && _config.topSensor->Get()) {
-    voltage = 0_V;
+        _table->GetEntry("height").SetDouble(height.value());
+        _config.WriteNT(_table->GetSubTable("config"));
+      break;
+      }
   }
-  _config.gearbox.transmission->SetVoltage(voltage);
-
-  _table->GetEntry("height").SetDouble(height.value());
-  _config.WriteNT(_table->GetSubTable("config"));
 
 void Elevator::SetManual(units::volt_t voltage) {
   _state = ElevatorState::kManual;
@@ -75,7 +73,7 @@ void Elevator::SetIdle() {
 }
 
 void Elevator::SetZeroing() {
-  
+  _state =ElevatorState::kZeroing;
 }
 
 

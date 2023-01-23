@@ -16,6 +16,7 @@
 
 namespace wom {
   enum class ElevatorState {
+    kZeroing,
     kIdle, 
     kPID,
     kManual
@@ -44,6 +45,7 @@ namespace wom {
     void SetManual(units::volt_t voltage);
     void SetPID(units::meter_t height);
     void SetIdle();
+    void SetZeroing();
 
     bool IsStable() const;
     ElevatorState GetState() const;
