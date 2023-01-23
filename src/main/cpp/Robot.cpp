@@ -26,32 +26,32 @@ void Robot::RobotPeriodic() {
   BehaviourScheduler::GetInstance()->Tick();
 
   armavator->OnUpdate(dt);
-  swerve->OnUpdate(dt);
+  // swerve->OnUpdate(dt);
 }
 
 void Robot::AutonomousInit() { }
 void Robot::AutonomousPeriodic() { }
 
 void Robot::TeleopInit() {
-  loop.Clear();
+  // loop.Clear();
 
-  //Creates an instance of a behavior scheduler
-  BehaviourScheduler *sched = BehaviourScheduler::GetInstance();
-  map.controllers.codriver.A(&loop).Rising().IfHigh([sched, this]() {
-    sched->Schedule(make<ArmavatorGoToPositionBehaviour>(armavator, ArmavatorPosition{0.2_m, 0_deg}, map.controllers.codriver));
-  });
+  // //Creates an instance of a behavior scheduler
+  // BehaviourScheduler *sched = BehaviourScheduler::GetInstance();
+  // map.controllers.codriver.A(&loop).Rising().IfHigh([sched, this]() {
+  //   sched->Schedule(make<ArmavatorGoToPositionBehaviour>(armavator, ArmavatorPosition{0.2_m, 0_deg}, map.controllers.codriver));
+  // });
 
-  map.controllers.codriver.B(&loop).Rising().IfHigh([sched, this]() {
-    sched->Schedule(make<ArmavatorGoToPositionBehaviour>(armavator, ArmavatorPosition{1.2_m, 75_deg}, map.controllers.codriver));
-  });
+  // map.controllers.codriver.B(&loop).Rising().IfHigh([sched, this]() {
+  //   sched->Schedule(make<ArmavatorGoToPositionBehaviour>(armavator, ArmavatorPosition{1.2_m, 75_deg}, map.controllers.codriver));
+  // });
 
-  map.controllers.codriver.X(&loop).Rising().IfHigh([sched, this]() {
-    sched->Schedule(make<ArmavatorGoToPositionBehaviour>(armavator, ArmavatorPosition{1.0_m, 240_deg}, map.controllers.codriver));
-  });
+  // map.controllers.codriver.X(&loop).Rising().IfHigh([sched, this]() {
+  //   sched->Schedule(make<ArmavatorGoToPositionBehaviour>(armavator, ArmavatorPosition{1.0_m, 240_deg}, map.controllers.codriver));
+  // });
 
-  map.controllers.codriver.Y(&loop).Rising().IfHigh([sched, this]() {
-    sched->Schedule(make<ArmavatorGoToPositionBehaviour>(armavator, ArmavatorPosition{0_m, 0_deg}, map.controllers.codriver));
-  });
+  // map.controllers.codriver.Y(&loop).Rising().IfHigh([sched, this]() {
+  //   sched->Schedule(make<ArmavatorGoToPositionBehaviour>(armavator, ArmavatorPosition{0_m, 0_deg}, map.controllers.codriver));
+  // });
 }
 
 void Robot::TeleopPeriodic() {
