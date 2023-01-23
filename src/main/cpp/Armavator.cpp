@@ -41,6 +41,10 @@ bool Armavator::IsStable() const {
   return elevator.IsStable() && arm.IsStable();
 }
 
+
+
+
+
 /* SIMULATION */
 
 ::sim::ArmavatorSim::ArmavatorSim(ArmavatorConfig config)

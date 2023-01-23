@@ -18,8 +18,8 @@ void Robot::RobotInit() {
   armavator = new Armavator(map.armavator.config);
   BehaviourScheduler::GetInstance()->Register(armavator);
 
-  sideIntake = new SideIntake(map.sideIntake.config);
-  BehaviourScheduler::GetInstance()->Register(sideIntake);
+  pistonIntake = new PistonIntake(map.pistonIntake.config);
+  BehaviourScheduler::GetInstance()->Register(pistonIntake);
   
   swerve = new wom::SwerveDrive(map.swerveBase.config, frc::Pose2d());
   BehaviourScheduler::GetInstance()->Register(swerve);
@@ -37,7 +37,7 @@ void Robot::RobotPeriodic() {
 
   armavator->OnUpdate(dt);
   swerve->OnUpdate(dt);
-  sideIntake->OnUpdate(dt);
+  pistonIntake->OnUpdate(dt);
 }
 
 void Robot::AutonomousInit() { }
@@ -69,15 +69,7 @@ void Robot::TeleopInit() {
 
 }
 
-void Robot::TeleopPeriodic() {
-  if (map.controllers.codriver.GetAButton()) {
-    sideIntake->SetIntaking();
-  } if (map.controllers.codriver.GetBButton()) {
-    sideIntake->SetOuttaking();
-  } if (map.controllers.codriver.GetXButton())  {
-    sideIntake->SetPistons();
-  }
- }
+void Robot::TeleopPeriodic() {}
 
 void Robot::DisabledInit() { }
 void Robot::DisabledPeriodic() { }
