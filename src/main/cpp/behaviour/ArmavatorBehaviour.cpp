@@ -2,17 +2,17 @@
 
 
 //Constructs class
-// ArmavatorGoToPositionBehaviour::ArmavatorGoToPositionBehaviour(Armavator *armavator, ArmavatorPosition setpoint)
-// : armavator(armavator), setpoint(setpoint) {
-//     //tells code that the points are controlled (one point at a time) 
-//     Controls(armavator);
-// }
+ArmavatorGoToPositionBehaviour::ArmavatorGoToPositionBehaviour(Armavator *armavator, ArmavatorPosition setpoint)
+: armavator(armavator), setpoint(setpoint) {
+    //tells code that the points are controlled (one point at a time) 
+    Controls(armavator);
+};
 
 
 //Function for OnStart
 // void ArmavatorGoToPositionBehaviour::OnStart() {
 //     //Sets current position
-//     ArmavatorPosition current = armavator->GetCurrentPosition();
+    // ArmavatorPosition current = armavator->GetCurrentPosition();
 //     //Sets positions information for the start and the end of the instructions
 //     grid_t::Idx_t start = armavator->config.grid.Discretise({current.angle, current.height});
 //     grid_t::Idx_t end = armavator->config.grid.Discretise({setpoint.angle, setpoint.height});
