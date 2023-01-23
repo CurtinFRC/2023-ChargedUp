@@ -164,19 +164,30 @@ struct RobotMap {
       "/drivetrain/pid/velocity/config",
       12_V / 2_mps
     };
+    wom::SwerveDriveConfig::pose_angle_conf_t poseAnglePID {
+      "/drivetrain/pid/pose/angle/config",
+      180_deg / 1_s / 45_deg,
+      wom::SwerveDriveConfig::pose_angle_conf_t::ki_t{0},
+      0_deg / 1_deg,
+      1_deg,
+      10_deg / 1_s
+    };
+    wom::SwerveDriveConfig::pose_position_conf_t posePositionPID{
+      "/drivetrain/pid/pose/position/config",
+      3_mps / 1_m,
+      wom::SwerveDriveConfig::pose_position_conf_t::ki_t{0},
+      0_m / 1_m,
+      5_cm, 
+      10_cm / 1_s
+    };
+
     wom::SwerveDriveConfig config{
       "/drivetrain",
       anglePID, velocityPID,
       moduleConfigs,// each module
       &gyro,
-      {
-        "/drivetrain/pid/pose/angle/config",
-        180_deg / 1_s / 45_deg
-      },
-      {
-        "/drivetrain/pid/pose/position/config",
-        3_mps / 1_m
-      },
+      poseAnglePID, 
+      posePositionPID,
       70_kg // robot mass (estimate rn)
     };  
   };

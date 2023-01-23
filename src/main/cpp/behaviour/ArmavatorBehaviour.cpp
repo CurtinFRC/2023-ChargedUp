@@ -35,10 +35,20 @@ void ArmavatorGoToPositionBehaviour::OnStart() {
 //                 waypoint = waypoints.front();
 //         }
 
+<<<<<<< HEAD
 //         ArmavatorPosition currentPosition = armavator->GetCurrentPosition();
 //         grid_t::Idx_t current = armavator->config.grid.Discretise({currentPosition.angle, currentPosition.height});
         
 //         armavator->SetPosition({waypoint.position.y, waypoint.position.x});
+=======
+        armavator->SetPosition({waypoint.position.y, waypoint.position.x});
+    } else {
+        armavator->SetPosition(setpoint);
+
+        if (armavator->IsStable())
+            SetDone();
+    }
+>>>>>>> 63e12985c63a8208935f41e7c343cc262314deb1
     
 //     //If waypoint is full, set next position
 //     } else {

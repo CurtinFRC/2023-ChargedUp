@@ -1,14 +1,9 @@
 #include "Vision.h"
 
-/* SIMULATION */
+#include <wpi/json.h>
 
-VisionSim::VisionSim(VisionConfig config) : config(config) {}
+#include <frc/apriltag/AprilTagFields.h>
 
-void VisionSim::Update(units::second_t dt, frc::Pose2d realPose) {
-  frc::Pose3d realPose3d{
-    frc::Translation3d{ realPose.X(), realPose.Y(), 0_m },
-    frc::Rotation3d{ 0_rad, 0_rad, realPose.Rotation().Radians() }
-  };
-
-  
+std::shared_ptr<frc::AprilTagFieldLayout> Get2023Layout() {
+  return std::make_shared<frc::AprilTagFieldLayout>(frc::LoadAprilTagLayoutField(frc::AprilTagField::k2023ChargedUp));
 }
