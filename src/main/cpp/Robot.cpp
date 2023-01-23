@@ -8,14 +8,14 @@ static units::second_t lastPeriodic;
 void Robot::RobotInit() {
   lastPeriodic = wom::now();
 
-  armavator = new Armavator(map.armavator.arm.motor2, map.armavator.elevator.motor1);
+  armavator = new Armavator(map.armavator.arm.gearbox, map.armavator.elevator.gearbox, map.armavator.config);
   BehaviourScheduler::GetInstance()->Register(armavator);
 
-  swerve = new wom::SwerveDrive(map.swerveBase.config, frc::Pose2d());
-  BehaviourScheduler::GetInstance()->Register(swerve);
-  swerve->SetDefaultBehaviour([this]() {
-    return make<ManualDrivebase>(swerve, &map.controllers.driver);
-  });
+  // swerve = new wom::SwerveDrive(map.SwerveBase.config, frc::Pose2d());
+  // BehaviourScheduler::GetInstance()->Register(swerve);
+  // swerve->SetDefaultBehaviour([this]() {
+  //   return make<ManualDrivebase>(swerve, &map.controllers.driver);
+  // });
 }
 
 void Robot::RobotPeriodic() {
@@ -39,7 +39,7 @@ void Robot::TeleopInit() {
   BehaviourScheduler *sched = BehaviourScheduler::GetInstance();
   map.controllers.codriver.X(&loop).Rising().IfHigh([sched, this]() {
   //   sched->Schedule(make<ArmavatorGoToPositionBehaviour>(armavator, ArmavatorPosition{0.2_m, 0_deg}));
-  // });
+   });
 
   // map.controllers.driver.B(&loop).Rising().IfHigh([sched, this]() {
   //   sched->Schedule(make<ArmavatorGoToPositionBehaviour>(armavator, ArmavatorPosition{1.2_m, -75_deg}));
@@ -56,17 +56,17 @@ void Robot::TeleopInit() {
 
 void Robot::TeleopPeriodic() {
   if(!map.controllers.codriver.GetAButton() && !map.controllers.codriver.GetBButton() && map.controllers.codriver.GetRightTriggerAxis() <= 0.05 && map.controllers.codriver.GetLeftTriggerAxis() <= 0.05) {
-    map.armavator.arm.motor2.SetVoltage(0_V);
-    map.armavator.elevator.motor1.SetVoltage(0_V);
+    map.armavator.arm.gearbox.transmission->SetVoltage(0_V);
+    map.armavator.elevator.gearbox.transmission->SetVoltage(0_V);
   } else{
     if(map.controllers.codriver.GetAButton()) {
-      map.armavator.arm.motor2.SetVoltage(13_V);
+      map.armavator.arm.gearbox.transmission->SetVoltage(13_V);
     } else if (map.controllers.codriver.GetBButton()) {
-      map.armavator.arm.motor2.SetVoltage(-13_V);
+      map.armavator.arm.gearbox.transmission->SetVoltage(-13_V);
     }else if(map.controllers.codriver.GetRightTriggerAxis() > 0.05) {
-      map.armavator.elevator.motor1.SetVoltage(13_V * map.controllers.codriver.GetRightTriggerAxis());
+      map.armavator.elevator.gearbox.transmission->SetVoltage(13_V * map.controllers.codriver.GetRightTriggerAxis());
     } else if (map.controllers.codriver.GetLeftTriggerAxis() > 0.05) {
-      map.armavator.elevator.motor1.SetVoltage(-13_V * map.controllers.codriver.GetLeftTriggerAxis() );
+      map.armavator.elevator.gearbox.transmission->SetVoltage(-13_V * map.controllers.codriver.GetLeftTriggerAxis() );
     }
   }
  }
@@ -79,40 +79,40 @@ void Robot::TestPeriodic() { }
 
 /* SIMULATION */
 
-#include <frc/simulation/BatterySim.h>
-#include <frc/simulation/RoboRioSim.h>
-#include <networktables/NetworkTableInstance.h>
-#include "ControlUtil.h"
+// #include <frc/simulation/BatterySim.h>
+// #include <frc/simulation/RoboRioSim.h>
+// #include <networktables/NetworkTableInstance.h>
+// #include "ControlUtil.h"
 
-static units::second_t lastSimPeriodic{0};
-static auto simTable = nt::NetworkTableInstance::GetDefault().GetTable("/sim");
+// static units::second_t lastSimPeriodic{0};
+// static auto simTable = nt::NetworkTableInstance::GetDefault().GetTable("/sim");
 
-struct SimConfig {
-  ::sim::ArmavatorSim arm;
-  wom::sim::SwerveDriveSim swerveSim; 
-};
-SimConfig *simConfig;
+// struct SimConfig {
+//   ::sim::ArmavatorSim arm;
+//   wom::sim::SwerveDriveSim swerveSim; 
+// };
+// SimConfig *simConfig;
 
-void Robot::SimulationInit() {
-  simConfig = new SimConfig{
-    ::sim::ArmavatorSim(map.armavator.config),
-    wom::sim::SwerveDriveSim(map.swerveBase.config, 0.5 * 6_lb * 7.5_in * 7.5_in)
-  };
+// void Robot::SimulationInit() {
+//   simConfig = new SimConfig{
+//     ::sim::ArmavatorSim(map.armavator.config),
+//     wom::sim::SwerveDriveSim(map.swerveBase.config, 0.5 * 6_lb * 7.5_in * 7.5_in)
+//   };
 
-  lastSimPeriodic = wom::now();
-}
+//   lastSimPeriodic = wom::now();
+// }
 
-void Robot::SimulationPeriodic() {
-  auto dt = wom::now() - lastSimPeriodic;
+// void Robot::SimulationPeriodic() {
+//   auto dt = wom::now() - lastSimPeriodic;
 
-  simConfig->arm.OnUpdate(dt);
-  simConfig->swerveSim.Update(dt);
+//   simConfig->arm.OnUpdate(dt);
+//   simConfig->swerveSim.Update(dt);
 
-  auto batteryVoltage = units::math::min(units::math::max(frc::sim::BatterySim::Calculate({
-    // simConfig->arm.GetCurrent()
-  }), 0_V), 12_V);
-  frc::sim::RoboRioSim::SetVInVoltage(batteryVoltage);
-  simTable->GetEntry("batteryVoltage").SetDouble(batteryVoltage.value()); 
+//   auto batteryVoltage = units::math::min(units::math::max(frc::sim::BatterySim::Calculate({
+//     // simConfig->arm.GetCurrent()
+//   }), 0_V), 12_V);
+//   frc::sim::RoboRioSim::SetVInVoltage(batteryVoltage);
+//   simTable->GetEntry("batteryVoltage").SetDouble(batteryVoltage.value()); 
 
-  lastSimPeriodic = wom::now();
-}
+//   lastSimPeriodic = wom::now();
+// };

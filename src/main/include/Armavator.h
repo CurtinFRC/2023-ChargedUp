@@ -1,9 +1,9 @@
 #pragma once
 
-// #include "Arm.h"
-// #include "Elevator.h"
-// #include "Gearbox.h"
-// #include "Grid.h"
+#include "Arm.h"
+#include "Elevator.h"
+#include "Gearbox.h"
+#include "Grid.h"
 
 #include <frc/DigitalInput.h>
 #include <frc/simulation/DIOSim.h>
@@ -14,13 +14,15 @@
 #include "behaviour/HasBehaviour.h"
 
 
-// struct ArmavatorConfig {
-//   using grid_t = wom::DiscretisedOccupancyGrid<units::radian, units::meter>;
+struct ArmavatorConfig {
+  using grid_t = wom::DiscretisedOccupancyGrid<units::radian, units::meter>;
 
-//   wom::ArmConfig arm;
-//   wom::ElevatorConfig elevator;
-//   grid_t grid;
-// };
+  wom::ArmConfig arm;
+  wom::ElevatorConfig elevator;
+  grid_t grid;
+
+
+};
 
 struct ArmavatorPosition {
   units::meter_t height;
@@ -36,7 +38,8 @@ enum class ArmavatorState {
 
 class Armavator : public behaviour::HasBehaviour {
  public:
-  Armavator(WPI_TalonSRX &motor1, WPI_TalonSRX &motor2);
+  Armavator(wom::Gearbox &armGearbox, wom::Gearbox &elevatorGearbox, ArmavatorConfig &config);
+  ~Armavator();
 
   void OnUpdate(units::second_t dt);
 
@@ -44,17 +47,17 @@ class Armavator : public behaviour::HasBehaviour {
   void SetPosition(ArmavatorPosition pos);
 
   ArmavatorPosition GetCurrentPosition() const;
-  // bool IsStable() const;
+  bool IsStable() const;
 
-  // ArmavatorConfig config;
-  // wom::Arm arm;
-  // wom::Elevator elevator;
+  wom::Arm *arm;
+  wom::Elevator *elevator;
 
  private: 
   ArmavatorState _state = ArmavatorState::kIdle;
 
   ArmavatorPosition _setpoint;
 
-  WPI_TalonSRX &_motor1;
-  WPI_TalonSRX &_motor2;
+  wom::Gearbox &_armGearbox;
+  wom::Gearbox &_elevatorGearbox;
+  ArmavatorConfig &_config;
 };

@@ -1,8 +1,16 @@
 #include "Armavator.h"
 
 //Armavator configeration
-Armavator::Armavator(WPI_TalonSRX &motor1, WPI_TalonSRX &motor2)
-: _motor1(motor1), _motor2(motor2) {}
+Armavator::Armavator(wom::Gearbox &armGearbox, wom::Gearbox &elevatorGearbox, ArmavatorConfig &config)
+: _armGearbox(armGearbox), _elevatorGearbox(elevatorGearbox), _config(config) {
+  arm = new wom::Arm(config.arm);
+  elevator = new wom::Elevator(config.elevator);
+}
+
+Armavator::~Armavator() {
+  free(arm);
+  free(elevator);
+}
 
 //Instructions for when the program updates (seconds delta time)
 void Armavator::OnUpdate(units::second_t dt) {
@@ -12,13 +20,13 @@ void Armavator::OnUpdate(units::second_t dt) {
     case ArmavatorState::kIdle:
       break;
     case ArmavatorState::kPosition:
-      // arm.SetAngle(_setpoint.angle);
-      // elevator.SetPID(_setpoint.height);
+      arm->SetAngle(_setpoint.angle);
+      elevator->SetPID(_setpoint.height);
       break;
   }
 
-  // arm.OnUpdate(dt);
-  // elevator.OnUpdate(dt);
+  arm->OnUpdate(dt);
+  elevator->OnUpdate(dt);
 }
 
 //Sets the states names
@@ -26,18 +34,18 @@ void Armavator::SetIdle() {
   _state = ArmavatorState::kIdle;
 }
 
-// void Armavator::SetPosition(ArmavatorPosition pos) {
-//   _state = ArmavatorState::kPosition;
-//   _setpoint = pos;
-// }
+void Armavator::SetPosition(ArmavatorPosition pos) {
+  _state = ArmavatorState::kPosition;
+  _setpoint = pos;
+}
 
-// ArmavatorPosition Armavator::GetCurrentPosition() const {
-//   return ArmavatorPosition {
-//     elevator.GetHeight(),
-//     arm.GetAngle()
-//   };
-// }
+ArmavatorPosition Armavator::GetCurrentPosition() const {
+  return ArmavatorPosition {
+    elevator->GetHeight(),
+    arm->GetAngle()
+  };
+}
 
-// bool Armavator::IsStable() const {
-//   return elevator.IsStable() && arm.IsStable();
-// }
+bool Armavator::IsStable() const {
+  return elevator->IsStable() && arm->IsStable();
+}
