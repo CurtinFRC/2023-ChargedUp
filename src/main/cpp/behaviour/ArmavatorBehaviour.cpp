@@ -13,7 +13,7 @@ ArmavatorGoToPositionBehaviour::ArmavatorGoToPositionBehaviour(Armavator *armava
 void ArmavatorGoToPositionBehaviour::OnStart() {
 
     // Zero the elevator
-    _armavator->elevator->SetZeroing();
+    // _armavator->elevator->SetZeroing();
     
     //Sets current position
     // ArmavatorPosition Elevator
@@ -32,8 +32,13 @@ void ArmavatorGoToPositionBehaviour::OnStart() {
 //Function for OnTick
 void ArmavatorGoToPositionBehaviour::OnTick(units::second_t dt) {
     //remote control behaviours
-    
-    
+
+    //SET POSITIONS GO HERE
+
+    // if(codriver.GetLeftY()){
+
+    // }
+
     //If statement for targetted waypoint position is empty
     // if (!waypoints.empty()) {
     //     grid_t::GridPathNode<units::second> waypoint = waypoints.front();

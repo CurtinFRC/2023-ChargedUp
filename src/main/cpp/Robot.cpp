@@ -37,20 +37,20 @@ void Robot::TeleopInit() {
 
   //Creates an instance of a behavior scheduler
   BehaviourScheduler *sched = BehaviourScheduler::GetInstance();
+  map.controllers.codriver.A(&loop).Rising().IfHigh([sched, this]() {
+    sched->Schedule(make<ArmavatorGoToPositionBehaviour>(armavator, ArmavatorPosition{0.2_m, 0_deg}, map.controllers.codriver));
+  });
+
+  map.controllers.codriver.B(&loop).Rising().IfHigh([sched, this]() {
+    sched->Schedule(make<ArmavatorGoToPositionBehaviour>(armavator, ArmavatorPosition{1.2_m, 75_deg}, map.controllers.codriver));
+  });
+
   map.controllers.codriver.X(&loop).Rising().IfHigh([sched, this]() {
-    sched->Schedule(make<ArmavatorGoToPositionBehaviour>(armavator, ArmavatorPosition{0.2_m, 0_deg}));
-   });
-
-  map.controllers.driver.B(&loop).Rising().IfHigh([sched, this]() {
-    sched->Schedule(make<ArmavatorGoToPositionBehaviour>(armavator, ArmavatorPosition{1.2_m, 75_deg}));
+    sched->Schedule(make<ArmavatorGoToPositionBehaviour>(armavator, ArmavatorPosition{1.0_m, 240_deg}, map.controllers.codriver));
   });
 
-  map.controllers.driver.X(&loop).Rising().IfHigh([sched, this]() {
-    sched->Schedule(make<ArmavatorGoToPositionBehaviour>(armavator, ArmavatorPosition{1.0_m, 240_deg}));
-  });
-
-  map.controllers.driver.Y(&loop).Rising().IfHigh([sched, this]() {
-    sched->Schedule(make<ArmavatorGoToPositionBehaviour>(armavator, ArmavatorPosition{0_m, 0_deg}));
+  map.controllers.codriver.Y(&loop).Rising().IfHigh([sched, this]() {
+    sched->Schedule(make<ArmavatorGoToPositionBehaviour>(armavator, ArmavatorPosition{0_m, 0_deg}, map.controllers.codriver));
   });
 }
 

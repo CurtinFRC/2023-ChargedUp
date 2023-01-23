@@ -39,21 +39,21 @@ void Elevator::OnUpdate(units::second_t dt) {
       }
     break;
     case ElevatorState::kZeroing:
-        voltage = -3_V;
-        if (_config.bottomSensor->Get()) {
-          _config.gearbox.encoder->ZeroEncoder();
-          _state = ElevatorState::kIdle;
-        }
-        if (_config.bottomSensor && voltage < 0_V && _config.bottomSensor->Get()) {
-        voltage = 0_V;
-        } 
-        if (_config.topSensor && voltage > 0_V && _config.topSensor->Get()) {
-          voltage = 0_V;
-        }
-        _config.gearbox.transmission->SetVoltage(voltage);
+        // voltage = -3_V;
+        // if (_config.bottomSensor->Get()) {
+        //   _config.gearbox.encoder->ZeroEncoder();
+        //   _state = ElevatorState::kIdle;
+        // }
+        // if (_config.bottomSensor && voltage < 0_V && _config.bottomSensor->Get()) {
+        // voltage = 0_V;
+        // } 
+        // if (_config.topSensor && voltage > 0_V && _config.topSensor->Get()) {
+        //   voltage = 0_V;
+        // }
+        // _config.gearbox.transmission->SetVoltage(voltage);
 
-        _table->GetEntry("height").SetDouble(height.value());
-        _config.WriteNT(_table->GetSubTable("config"));
+        // _table->GetEntry("height").SetDouble(height.value());
+        // _config.WriteNT(_table->GetSubTable("config"));
       break;
       }
   }
