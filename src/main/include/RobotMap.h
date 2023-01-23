@@ -4,7 +4,7 @@
 #include "Arm.h"
 #include "Elevator.h"
 #include "Armavator.h"
-#include "PistonIntake.h"
+#include "SideIntake.h"
 #include "Gyro.h"
 #include "behaviour/ArmavatorBehaviour.h"
 
@@ -209,14 +209,21 @@ struct RobotMap {
   };
   SwerveBase swerveBase;
 
-  struct PistonIntakeSystem {
+  struct SideIntakeSystem {
 
-    frc::DoubleSolenoid solenoid{1, frc::PneumaticsModuleType::CTREPCM, 999, 999};  // change chanel values // grab pistons
+    TalonSRX motor1{999};
+    TalonSRX motor2{999};
 
-    PistonIntakeConfig config{
-      &solenoid
+    frc::DoubleSolenoid solenoid1{1, frc::PneumaticsModuleType::CTREPCM, 999, 999};  // change chanel values // grab pistons
+    frc::DoubleSolenoid solenoid2{1, frc::PneumaticsModuleType::CTREPCM, 999, 999};  // change chanel values // move pistons
+
+    SideIntakeConfig config{
+      &motor1, 
+      &motor2,
+      &solenoid1,
+      &solenoid2
     };
   }; 
-  PistonIntakeSystem pistonIntake;
+  SideIntakeSystem sideIntake;
 
 };

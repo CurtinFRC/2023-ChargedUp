@@ -18,8 +18,8 @@ void Robot::RobotInit() {
   armavator = new Armavator(map.armavator.config);
   BehaviourScheduler::GetInstance()->Register(armavator);
 
-  pistonIntake = new PistonIntake(map.pistonIntake.config);
-  BehaviourScheduler::GetInstance()->Register(pistonIntake);
+  sideIntake = new SideIntake(map.sideIntake.config);
+  BehaviourScheduler::GetInstance()->Register(sideIntake);
   
   swerve = new wom::SwerveDrive(map.swerveBase.config, frc::Pose2d());
   BehaviourScheduler::GetInstance()->Register(swerve);
@@ -37,7 +37,7 @@ void Robot::RobotPeriodic() {
 
   armavator->OnUpdate(dt);
   swerve->OnUpdate(dt);
-  pistonIntake->OnUpdate(dt);
+  sideIntake->OnUpdate(dt);
 }
 
 void Robot::AutonomousInit() { }
