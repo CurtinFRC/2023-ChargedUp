@@ -3,6 +3,7 @@
 #include "behaviour/BehaviourScheduler.h"
 #include "behaviour/Behaviour.h"
 #include "behaviour/SwerveBaseBehaviour.h"
+#include "behaviour/SideIntakeBehaviour.h"
 
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <frc/event/BooleanEvent.h>
@@ -20,6 +21,9 @@ void Robot::RobotInit() {
 
   sideIntake = new SideIntake(map.sideIntake.config);
   BehaviourScheduler::GetInstance()->Register(sideIntake);
+  sideIntake->SetDefaultBehaviour([this]() {
+    return make<SideIntakeBehaviour>(sideIntake, map.controllers.codriver);
+  });
   
   swerve = new wom::SwerveDrive(map.swerveBase.config, frc::Pose2d());
   BehaviourScheduler::GetInstance()->Register(swerve);

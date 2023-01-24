@@ -7,10 +7,10 @@
 
 
 struct SideIntakeConfig {
-  frc::DoubleSolenoid *solenoid1;
-  frc::DoubleSolenoid *solenoid2;
-  wom::MotorVoltageController *motor1;
-  wom::MotorVoltageController *motor2;
+  frc::DoubleSolenoid *claspSolenoid;
+  frc::DoubleSolenoid *deploySolenoid;
+  wom::MotorVoltageController *rightIntakeMotor;
+  wom::MotorVoltageController *leftIntakeMotor;
 };
 
 enum class SideIntakeState {

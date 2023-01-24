@@ -16,27 +16,27 @@ void SideIntake::OnUpdate(units::second_t dt) {
     case SideIntakeState::kIntaking:
       if (voltage == intakeVoltage) {
         voltage = intakeVoltage;
-        _config.solenoid1->Set(frc::DoubleSolenoid::kForward);
+        _config.claspSolenoid->Set(frc::DoubleSolenoid::kForward);
       } else {
         voltage = intakeVoltage;
       }
       break;
     
     case SideIntakeState::kMovePiston:
-      _config.solenoid2->Toggle();
+      _config.deploySolenoid->Toggle();
       break;
 
     case SideIntakeState::kOuttaking:
       if (voltage == outtakeVoltage) {
         voltage = outtakeVoltage;
-        _config.solenoid1->Set(frc::DoubleSolenoid::kReverse);
+        _config.claspSolenoid->Set(frc::DoubleSolenoid::kReverse);
       } else {
         voltage = outtakeVoltage;
       }
       break;
   }
-    _config.motor1->SetVoltage(voltage);
-    _config.motor2->SetVoltage(voltage);
+    _config.leftIntakeMotor->SetVoltage(voltage);
+    _config.rightIntakeMotor->SetVoltage(voltage);
 };
 
 void SideIntake::SetIdle() {
