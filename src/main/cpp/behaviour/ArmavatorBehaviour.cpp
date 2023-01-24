@@ -8,13 +8,11 @@ ArmavatorGoToPositionBehaviour::ArmavatorGoToPositionBehaviour(Armavator *armava
   Controls(armavator);
 };
 
-
 // Function for OnStart
 void ArmavatorGoToPositionBehaviour::OnStart() {
   std::cout << "On Start" << std::endl;
-
   // Zero the elevator
-  // _armavator->elevator->SetZeroing();
+  _armavator->elevator->SetZeroing();
   
   //Sets current position
   // ArmavatorPosition Elevator
@@ -33,13 +31,6 @@ void ArmavatorGoToPositionBehaviour::OnStart() {
 //Function for OnTick
 void ArmavatorGoToPositionBehaviour::OnTick(units::second_t dt) {
   std::cout << "Running" << std::endl;
-  //remote control behaviours
-
-  //SET POSITIONS GO HERE
-
-  // if(codriver.GetLeftY()){
-    
-  // }
 
   //If statement for targetted waypoint position is empty
   // if (!waypoints.empty()) {
@@ -62,6 +53,50 @@ void ArmavatorGoToPositionBehaviour::OnTick(units::second_t dt) {
   //     //If the arm elevator is in correct final position, stop moving
   if (_armavator->IsStable())
     SetDone();
-  // }
-    
+  // }  
+}
+
+ArmavatorManualBehaviour::ArmavatorManualBehaviour(Armavator *armavator, ArmavatorPosition setpoint, frc::XboxController &codriver)
+: _armavator(armavator), _setpoint(setpoint), _codriver(codriver) {
+  //tells code that the points are controlled (one point at a time) 
+  Controls(armavator);
+};
+
+void ArmavatorManualBehaviour::OnStart() {
+  std::cout << "On Start" << std::endl;
+
+  // Zero the elevator
+  _armavator->elevator->SetZeroing();
+}
+
+void ArmavatorManualBehaviour::OnTick(units::second_t dt) {
+  std::cout << "Running" << std::endl;
+  //SET POSITIONS
+if(!_codriver.GetAButton() && !_codriver.GetBButton() && !_codriver.GetXButton() && !_codriver.GetYButton()) {
+  units::volt_t voltage{0};
+} else {
+  if(_codriver.GetAButton()) {
+    _armavator->SetPosition({0.2_m, 0_deg});
+  }
+  if(_codriver.GetBButton()) {
+    _armavator->SetPosition({1.2_m, 75_deg});
+  }
+  if(_codriver.GetXButton()) {
+    _armavator->SetPosition({1.0_m, 240_deg});
+  }
+  if(_codriver.GetYButton()) {
+    _armavator->SetPosition({0_m, 0_deg});
+  }
+}
+
+  //MANUAL CONTROL
+  if(_codriver.GetLeftY() > 0.5){
+    _setpoint.angle = _setpoint.angle + (_codriver.GetLeftY() * 1.0_deg);
+    _armavator->SetPosition(_setpoint);
+  };
+
+  if(_codriver.GetRightY() > 0.5){
+    _setpoint.height = _setpoint.height + (_codriver.GetRightY() * 1.0_m);
+    _armavator->SetPosition(_setpoint);
+  };
 }
