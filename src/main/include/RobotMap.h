@@ -268,6 +268,7 @@ struct RobotMap {
     frc::Compressor compressor{1, frc::PneumaticsModuleType::CTREPCM};
     frc::DoubleSolenoid leftSolenoid{1, frc::PneumaticsModuleType::CTREPCM, 0, 1};
     // frc::DoubleSolenoid rightSolenoid{PneumaticsModuleType::CTREPCM, 2};
+    frc::DoubleSolenoid gripSolenoid{1, frc::PneumaticsModuleType::CTREPCM, 6, 7};
 
   }; IntakeSystem intake;
 };

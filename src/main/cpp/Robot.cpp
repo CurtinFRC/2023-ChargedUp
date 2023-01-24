@@ -100,6 +100,21 @@ void Robot::TeleopPeriodic() {
     map.intake.leftSolenoid.Set(frc::DoubleSolenoid::Value::kReverse);
     // rightSolenoid.Set(Value::kReverse);
   }
+
+  if (map.controllers.codriver.GetBButtonReleased()) {
+    if (gripperSol) {
+      gripperSol = false;
+    } else {
+      gripperSol = true;
+    }
+  }
+
+  if (gripperSol) {
+    map.intake.gripSolenoid.Set(frc::DoubleSolenoid::Value::kForward);
+  } else {
+    map.intake.gripSolenoid.Set(frc::DoubleSolenoid::Value::kReverse);
+    
+  }
   map.intake.compressor.EnableDigital();
  }
 

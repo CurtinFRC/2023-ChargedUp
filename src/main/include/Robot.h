@@ -34,4 +34,5 @@ class Robot : public frc::TimedRobot {
   wom::SwerveDrive *swerve;
 
   bool intakeSol = false;
+  bool gripperSol = false;
 };
