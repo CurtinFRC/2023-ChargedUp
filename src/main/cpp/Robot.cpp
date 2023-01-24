@@ -33,13 +33,13 @@ void Robot::AutonomousInit() { }
 void Robot::AutonomousPeriodic() { }
 
 void Robot::TeleopInit() {
-  loop.Clear();
+  // loop.Clear();
 
   //Creates an instance of a behavior scheduler
-  BehaviourScheduler *sched = BehaviourScheduler::GetInstance();
-  map.controllers.codriver.A(&loop).Rising().IfHigh([sched, this]() {
-    sched->Schedule(make<ArmavatorGoToPositionBehaviour>(armavator, ArmavatorPosition{0.2_m, 0_deg}, map.controllers.codriver));
-  });
+  // BehaviourScheduler *sched = BehaviourScheduler::GetInstance();
+  // map.controllers.codriver.A(&loop).Rising().IfHigh([sched, this]() {
+  //   sched->Schedule(make<ArmavatorGoToPositionBehaviour>(armavator, ArmavatorPosition{0.2_m, 0_deg}, map.controllers.codriver));
+  // });
 
   // map.controllers.codriver.B(&loop).Rising().IfHigh([sched, this]() {
   //   sched->Schedule(make<ArmavatorGoToPositionBehaviour>(armavator, ArmavatorPosition{1.2_m, 75_deg}, map.controllers.codriver));
