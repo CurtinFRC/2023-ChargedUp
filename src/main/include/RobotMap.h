@@ -4,17 +4,23 @@
 // #include "Elevator.h"
 // #include "Armavator.h"
 #include "Gyro.h"
-// #include "behaviour/ArmavatorBehaviour.h"
+// #include "behaviour/SingleSwerveBehaviour.h"
+#include "behaviour/ArmavatorBehaviour.h"
 
+#include <ctre/phoenix/motorcontrol/can/WPI_TalonFX.h>
+#include <frc/Compressor.h>
 #include <frc/XboxController.h>
 #include <ctre/Phoenix.h>
 
 #include "drivetrain/SwerveDrive.h"
+#include <frc/DoubleSolenoid.h>
+// #include "SwerveMod.h"
 
 #include <iostream>
+#include <string>
 
 struct RobotMap {
-  struct Controllers {
+  struct Controllers {  
     frc::XboxController driver{0};
     frc::XboxController codriver{1};
   };
@@ -104,11 +110,17 @@ struct RobotMap {
   struct SwerveBase{
     wom::NavX gyro;
     wpi::array<WPI_TalonFX*, 4> turnMotors{
-      new WPI_TalonFX(1), new WPI_TalonFX(3), new WPI_TalonFX(4), new WPI_TalonFX(6)
+      new WPI_TalonFX(90), new WPI_TalonFX(91), new WPI_TalonFX(92), new WPI_TalonFX(93)
     };
     wpi::array<WPI_TalonFX*, 4> driveMotors{
-      new WPI_TalonFX(5), new WPI_TalonFX(8), new WPI_TalonFX(2), new WPI_TalonFX(7)
+      new WPI_TalonFX(94), new WPI_TalonFX(95), new WPI_TalonFX(96), new WPI_TalonFX(97)
     };
+    //   wpi::array<WPI_TalonFX*, 4> turnMotors{
+    //   new WPI_TalonFX(1), new WPI_TalonFX(3), new WPI_TalonFX(4), new WPI_TalonFX(6)
+    // };
+    // wpi::array<WPI_TalonFX*, 4> driveMotors{
+    //   new WPI_TalonFX(5), new WPI_TalonFX(8), new WPI_TalonFX(2), new WPI_TalonFX(7)
+    // };
     
     wpi::array<wom::SwerveModuleConfig, 4> moduleConfigs{
       wom::SwerveModuleConfig{ // dimensions are assuming perfect square robot 1m^2 area
@@ -216,5 +228,46 @@ struct RobotMap {
       }
     }
   };
+
+  struct SwerveGridPoses { // positions to place the items
+    frc::Pose2d innerGrid1 = frc::Pose2d(1_m, 1_m, 0_deg); // Closest grid position to the Wall
+    frc::Pose2d innerGrid2 = frc::Pose2d(1_m, 2_m, 0_deg); // Middle of Inner Grid
+    frc::Pose2d innerGrid3 = frc::Pose2d(1_m, 3_m, 0_deg); // Centremost Inner Grid position
+    frc::Pose2d centreGrid1 = frc::Pose2d(1_m, 4_m, 0_deg); // The non central grid on the Inner Grid side
+    frc::Pose2d centreGrid2 = frc::Pose2d(1_m, 5_m, 0_deg); // The middle most grid 
+    frc::Pose2d centreGrid3 = frc::Pose2d(1_m, 6_m, 0_deg); // The non central grid on the Outer Grid side
+    frc::Pose2d outerGrid1 = frc::Pose2d(1_m, 7_m, 0_deg); // Centremost outer grid position
+    frc::Pose2d outerGrid2 = frc::Pose2d(1_m, 8_m, 0_deg); // Middle of Outer Grid
+    frc::Pose2d outerGrid3 = frc::Pose2d(1_m, 9_m, 0_deg); // Closest grid position to enemy Loading Zone
+  };
+
+  // struct SwerveSingleModule{
+  //   SwerveSingleModuleConfig config{
+  //     WPI_TalonFX(1),
+  //     WPI_TalonFX(2)
+  //   };
+  // };
+  
   SwerveBase swerveBase;
+  SwerveGridPoses swerveGridPoses;
+  //SwerveSingleModule swerveSingleModuleMotors;
+
+  struct IntakeSystem {
+    WPI_TalonSRX rightMotor{4};
+    WPI_VictorSPX leftMotor{6};
+
+    // wom::MotorVoltageController rightIntake = wom::MotorVoltageController::Group(rightMotor);
+    // wom::TalonSr
+
+    // wom::Gearbox intakeGearbox  {
+    //   &rightIntake,
+    //   &
+    // };
+
+
+    frc::Compressor compressor{1, frc::PneumaticsModuleType::CTREPCM};
+    frc::DoubleSolenoid leftSolenoid{1, frc::PneumaticsModuleType::CTREPCM, 0, 1};
+    // frc::DoubleSolenoid rightSolenoid{PneumaticsModuleType::CTREPCM, 2};
+
+  }; IntakeSystem intake;
 };

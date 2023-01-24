@@ -6,6 +6,7 @@
 #include <string>
 #include <frc/TimedRobot.h>
 #include <frc/event/EventLoop.h>
+#include "ControlUtil.h"
 
 using namespace frc;
 
@@ -31,4 +32,6 @@ class Robot : public frc::TimedRobot {
   RobotMap map;
   // Armavator *armavator;
   wom::SwerveDrive *swerve;
+
+  bool intakeSol = false;
 };

@@ -6,6 +6,8 @@
 
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <frc/event/BooleanEvent.h>
+#include <units/math.h>
+
 
 using namespace frc;
 using namespace behaviour;
@@ -73,6 +75,32 @@ void Robot::TeleopInit() {
 
 void Robot::TeleopPeriodic() {
   // map.swerveBase.turnMotors[0]->Set(0.5);
+  double intakeSpeed = wom::deadzone(map.controllers.codriver.GetLeftY());
+
+  // units::newton_meter_t max_torque_at_current_limit_i = map.intake.rightMotor.Torque(20_A);
+  // units::volt_t max_voltage_for_current_limit_i = map.intake.rightMotor.Voltage(max_torque_at_current_limit_i, map.intake.rightMotor.encoder->GetEncoderAngularVelocity());
+  // intakeSpeed = units::math::max(units::math::min(intakeSpeed * 11_V, max_voltage_for_current_limit_d), -max_voltage_for_current_limit_i);
+
+  map.intake.rightMotor.Set(intakeSpeed);
+  map.intake.leftMotor.Set(-intakeSpeed);
+
+  if (map.controllers.codriver.GetAButtonReleased()) {
+    if (intakeSol) {
+      intakeSol = false;
+    } else {
+      intakeSol = true;
+    }
+  }
+
+  if (intakeSol) {
+    map.intake.leftSolenoid.Set(frc::DoubleSolenoid::Value::kForward);
+    // leftSolenoid.Set(Value::kForward);
+    std::cout << "out" << std::endl;
+  } else {
+    map.intake.leftSolenoid.Set(frc::DoubleSolenoid::Value::kReverse);
+    // rightSolenoid.Set(Value::kReverse);
+  }
+  map.intake.compressor.EnableDigital();
  }
 
 void Robot::DisabledInit() { }
