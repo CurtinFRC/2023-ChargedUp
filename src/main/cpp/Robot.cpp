@@ -29,6 +29,11 @@ void Robot::RobotPeriodic() {
   loop.Poll();
   BehaviourScheduler::GetInstance()->Tick();
 
+  map.armTable.armManualTable->GetEntry("arm").SetDouble(map.armavator.arm.motor.GetSupplyCurrent());
+  map.armTable.armManualTable->GetEntry("elv").SetDouble(map.armavator.elevator.motor.GetSupplyCurrent());
+
+  // NOTE FOR LIAM: joystick != motor current
+
   armavator->OnUpdate(dt);
   // swerve->OnUpdate(dt);
 }
@@ -39,7 +44,7 @@ void Robot::AutonomousPeriodic() { }
 void Robot::TeleopInit() {
   // loop.Clear();
 
-  //Creates an instance of a behavior scheduler
+  // // Creates an instance of a behavior scheduler
   // BehaviourScheduler *sched = BehaviourScheduler::GetInstance();
   // map.controllers.codriver.A(&loop).Rising().IfHigh([sched, this]() {
   //   sched->Schedule(make<ArmavatorGoToPositionBehaviour>(armavator, ArmavatorPosition{0.2_m, 0_deg}, map.controllers.codriver));

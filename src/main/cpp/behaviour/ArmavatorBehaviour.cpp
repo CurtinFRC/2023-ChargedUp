@@ -77,6 +77,7 @@ void ArmavatorManualBehaviour::OnTick(units::second_t dt) {
   // Elevator
   if (std::abs(_codriver.GetRightY()) > 0.15) {
     _setpoint.height = _setpoint.height + (_codriver.GetRightY() * 1.0_m);
+
   }
 
   // Angle

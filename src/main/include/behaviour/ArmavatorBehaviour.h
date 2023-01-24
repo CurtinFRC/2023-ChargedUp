@@ -38,7 +38,7 @@ class ArmavatorManualBehaviour : public behaviour::Behaviour {
  private:
   Armavator *_armavator;
 
-   ArmavatorPosition _setpoint;
-   std::deque<grid_t::GridPathNode<units::second>> _waypoints;
-   frc::XboxController &_codriver;
+  ArmavatorPosition _setpoint;
+  std::deque<grid_t::GridPathNode<units::second>> _waypoints;
+  frc::XboxController &_codriver;
 };

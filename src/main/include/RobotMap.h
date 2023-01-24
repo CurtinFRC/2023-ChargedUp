@@ -93,6 +93,11 @@ struct RobotMap {
     };
   }; Armavator armavator;
 
+  struct ArmTable {
+    
+  std::shared_ptr<nt::NetworkTable> armManualTable = nt::NetworkTableInstance::GetDefault().GetTable("armManual");
+  }; ArmTable armTable;
+
   // struct SwerveBase{
   //   wom::NavX gyro;
   //   wpi::array<WPI_TalonFX*, 4> turnMotors{
