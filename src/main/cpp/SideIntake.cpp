@@ -8,16 +8,18 @@ SideIntake::SideIntake(SideIntakeConfig config) : _config(config) {}
 void SideIntake::OnUpdate(units::second_t dt) {
   units::volt_t voltage = 0_V;
 
-
   switch (_state) {
     case SideIntakeState::kIdle:
       voltage = 0_V;
       break;
 
     case SideIntakeState::kIntaking:
-      voltage = intakeVoltage;
-      _config.gearbox.transmission->SetVoltage(voltage);
-      _config.solenoid1->Set(frc::DoubleSolenoid::kForward);
+      if (voltage == intakeVoltage) {
+        voltage = intakeVoltage;
+        _config.solenoid1->Set(frc::DoubleSolenoid::kForward);
+      } else {
+        voltage = intakeVoltage;
+      }
       break;
     
     case SideIntakeState::kMovePiston:
@@ -25,12 +27,16 @@ void SideIntake::OnUpdate(units::second_t dt) {
       break;
 
     case SideIntakeState::kOuttaking:
-      voltage = outtakeVoltage;
-      _config.solenoid1->Set(frc::DoubleSolenoid::kReverse);
+      if (voltage == outtakeVoltage) {
+        voltage = outtakeVoltage;
+        _config.solenoid1->Set(frc::DoubleSolenoid::kReverse);
+      } else {
+        voltage = outtakeVoltage;
+      }
       break;
-
   }
-    _config.gearbox.transmission->SetVoltage(voltage);
+    _config.motor1->SetVoltage(voltage);
+    _config.motor2->SetVoltage(voltage);
 };
 
 void SideIntake::SetIdle() {

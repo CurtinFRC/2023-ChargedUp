@@ -9,8 +9,8 @@
 struct SideIntakeConfig {
   frc::DoubleSolenoid *solenoid1;
   frc::DoubleSolenoid *solenoid2;
-  TalonSRX *motor1;
-  TalonSRX *motor2;
+  wom::MotorVoltageController *motor1;
+  wom::MotorVoltageController *motor2;
 };
 
 enum class SideIntakeState {
