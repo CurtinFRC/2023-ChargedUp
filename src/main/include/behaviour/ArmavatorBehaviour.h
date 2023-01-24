@@ -31,7 +31,7 @@ class ArmavatorManualBehaviour : public behaviour::Behaviour {
  public:
   using grid_t = ArmavatorConfig::grid_t;
 
-  ArmavatorManualBehaviour(Armavator *armavator, ArmavatorPosition setpoint, frc::XboxController &codriver);
+  ArmavatorManualBehaviour(Armavator *armavator, frc::XboxController &codriver);
 
   void OnStart() override;
   void OnTick(units::second_t dt) override;

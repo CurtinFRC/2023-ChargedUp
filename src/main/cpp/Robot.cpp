@@ -11,6 +11,10 @@ void Robot::RobotInit() {
   armavator = new Armavator(map.armavator.arm.gearbox, map.armavator.elevator.gearbox, map.armavator.config);
   BehaviourScheduler::GetInstance()->Register(armavator);
 
+  armavator->SetDefaultBehaviour([this]() {
+    return make<ArmavatorManualBehaviour>(armavator, map.controllers.codriver);
+  });
+
   // swerve = new wom::SwerveDrive(map.SwerveBase.config, frc::Pose2d());
   // BehaviourScheduler::GetInstance()->Register(swerve);
   // swerve->SetDefaultBehaviour([this]() {
@@ -55,7 +59,7 @@ void Robot::TeleopInit() {
 }
 
 void Robot::TeleopPeriodic() {
-  
+
   // if(!map.controllers.codriver.GetAButton() && !map.controllers.codriver.GetBButton() && map.controllers.codriver.GetRightTriggerAxis() <= 0.05 && map.controllers.codriver.GetLeftTriggerAxis() <= 0.05) {
   //   map.armavator.arm.gearbox.transmission->SetVoltage(0_V);
   //   map.armavator.elevator.gearbox.transmission->SetVoltage(0_V);

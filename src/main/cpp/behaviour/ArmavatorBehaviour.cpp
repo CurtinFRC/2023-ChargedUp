@@ -12,7 +12,7 @@ ArmavatorGoToPositionBehaviour::ArmavatorGoToPositionBehaviour(Armavator *armava
 void ArmavatorGoToPositionBehaviour::OnStart() {
   std::cout << "On Start" << std::endl;
   // Zero the elevator
-  _armavator->elevator->SetZeroing();
+  // _armavator->elevator->SetZeroing();
   
   //Sets current position
   // ArmavatorPosition Elevator
@@ -56,9 +56,11 @@ void ArmavatorGoToPositionBehaviour::OnTick(units::second_t dt) {
   // }  
 }
 
-ArmavatorManualBehaviour::ArmavatorManualBehaviour(Armavator *armavator, ArmavatorPosition setpoint, frc::XboxController &codriver)
-: _armavator(armavator), _setpoint(setpoint), _codriver(codriver) {
+ArmavatorManualBehaviour::ArmavatorManualBehaviour(Armavator *armavator, frc::XboxController &codriver)
+: _armavator(armavator), _codriver(codriver) {
   //tells code that the points are controlled (one point at a time) 
+  _setpoint.height = 0.0_m;
+  _setpoint.angle = 0.0_deg;
   Controls(armavator);
 };
 
@@ -66,37 +68,39 @@ void ArmavatorManualBehaviour::OnStart() {
   std::cout << "On Start" << std::endl;
 
   // Zero the elevator
-  _armavator->elevator->SetZeroing();
+  // _armavator->elevator->SetZeroing();
 }
 
 void ArmavatorManualBehaviour::OnTick(units::second_t dt) {
-  std::cout << "Running" << std::endl;
-  //SET POSITIONS
-if(!_codriver.GetAButton() && !_codriver.GetBButton() && !_codriver.GetXButton() && !_codriver.GetYButton()) {
-  units::volt_t voltage{0};
-} else {
-  if(_codriver.GetAButton()) {
-    _armavator->SetPosition({0.2_m, 0_deg});
-  }
-  if(_codriver.GetBButton()) {
-    _armavator->SetPosition({1.2_m, 75_deg});
-  }
-  if(_codriver.GetXButton()) {
-    _armavator->SetPosition({1.0_m, 240_deg});
-  }
-  if(_codriver.GetYButton()) {
-    _armavator->SetPosition({0_m, 0_deg});
-  }
-}
+  // Manual Positioning
 
-  //MANUAL CONTROL
-  if(_codriver.GetLeftY() > 0.5){
-    _setpoint.angle = _setpoint.angle + (_codriver.GetLeftY() * 1.0_deg);
-    _armavator->SetPosition(_setpoint);
-  };
-
-  if(_codriver.GetRightY() > 0.5){
+  // Elevator
+  if (std::abs(_codriver.GetRightY()) > 0.15) {
     _setpoint.height = _setpoint.height + (_codriver.GetRightY() * 1.0_m);
-    _armavator->SetPosition(_setpoint);
-  };
+  }
+
+  // Angle
+  if(std::abs(_codriver.GetLeftY()) > 0.15) {
+    _setpoint.angle = _setpoint.angle + (_codriver.GetLeftY() * 1.0_deg);
+  }
+
+  // Position
+  _armavator->SetPosition(_setpoint);
+
+  if(!_codriver.GetAButton() && !_codriver.GetBButton() && !_codriver.GetXButton() && !_codriver.GetYButton()) {
+    units::volt_t voltage{0};
+  } else {
+    if(_codriver.GetAButton()) {
+      _armavator->SetPosition({0.2_m, 0_deg});
+    }
+    if(_codriver.GetBButton()) {
+      _armavator->SetPosition({1.2_m, 75_deg});
+    }
+    if(_codriver.GetXButton()) {
+      _armavator->SetPosition({1.0_m, 240_deg});
+    }
+    if(_codriver.GetYButton()) {
+      _armavator->SetPosition({0_m, 0_deg});
+    }
+  }
 }
