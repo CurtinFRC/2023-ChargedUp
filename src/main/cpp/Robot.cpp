@@ -76,49 +76,51 @@ void Robot::TeleopInit() {
 
 void Robot::TeleopPeriodic() {
   // map.swerveBase.turnMotors[0]->Set(0.5);
-  double intakeSpeed = wom::deadzone(map.controllers.codriver.GetLeftY());
+  // double intakeSpeed = wom::deadzone(map.controllers.codriver.GetLeftY());
 
-  // units::newton_meter_t max_torque_at_current_limit_i = map.intake.rightMotor.Torque(20_A);
-  // units::volt_t max_voltage_for_current_limit_i = map.intake.rightMotor.Voltage(max_torque_at_current_limit_i, map.intake.rightMotor.encoder->GetEncoderAngularVelocity());
-  // intakeSpeed = units::math::max(units::math::min(intakeSpeed * 11_V, max_voltage_for_current_limit_d), -max_voltage_for_current_limit_i);
+  // // units::newton_meter_t max_torque_at_current_limit_i = map.intake.rightMotor.Torque(20_A);
+  // // units::volt_t max_voltage_for_current_limit_i = map.intake.rightMotor.Voltage(max_torque_at_current_limit_i, map.intake.rightMotor.encoder->GetEncoderAngularVelocity());
+  // // intakeSpeed = units::math::max(units::math::min(intakeSpeed * 11_V, max_voltage_for_current_limit_d), -max_voltage_for_current_limit_i);
 
-  map.intake.rightMotor.Set(intakeSpeed);
-  map.intake.leftMotor.Set(-intakeSpeed);
+  // map.intake.rightMotor.Set(intakeSpeed);
+  // map.intake.leftMotor.Set(-intakeSpeed);
 
-  if (map.controllers.codriver.GetAButtonReleased()) {
-    if (intakeSol) {
-      intakeSol = false;
-    } else {
-      intakeSol = true;
-    }
-  }
+  // if (map.controllers.codriver.GetAButtonReleased()) {
+  //   if (intakeSol) {
+  //     intakeSol = false;
+  //   } else {
+  //     intakeSol = true;
+  //   }
+  // }
 
-  if (intakeSol) {
-    map.intake.leftSolenoid.Set(frc::DoubleSolenoid::Value::kForward);
-    // leftSolenoid.Set(Value::kForward);
-    std::cout << "out" << std::endl;
-  } else {
-    map.intake.leftSolenoid.Set(frc::DoubleSolenoid::Value::kReverse);
-    // rightSolenoid.Set(Value::kReverse);
-  }
+  // if (intakeSol) {
+  //   map.intake.leftSolenoid.Set(frc::DoubleSolenoid::Value::kForward);
+  //   // leftSolenoid.Set(Value::kForward);
+  //   std::cout << "out" << std::endl;
+  // } else {
+  //   map.intake.leftSolenoid.Set(frc::DoubleSolenoid::Value::kReverse);
+  //   // rightSolenoid.Set(Value::kReverse);
+  // }
 
-  if (map.controllers.codriver.GetBButtonReleased()) {
-    if (gripperSol) {
-      gripperSol = false;
-    } else {
-      gripperSol = true;
-    }
-  }
+  // if (map.controllers.codriver.GetBButtonReleased()) {
+  //   if (gripperSol) {
+  //     gripperSol = false;
+  //   } else {
+  //     gripperSol = true;
+  //   }
+  // }
 
-  if (gripperSol) {
-    map.intake.gripSolenoid.Set(frc::DoubleSolenoid::Value::kForward);
-  } else {
-    map.intake.gripSolenoid.Set(frc::DoubleSolenoid::Value::kReverse);
+  // if (gripperSol) {
+  //   map.intake.gripSolenoid.Set(frc::DoubleSolenoid::Value::kForward);
+  // } else {
+  //   map.intake.gripSolenoid.Set(frc::DoubleSolenoid::Value::kReverse);
     
-  }
-  map.intake.compressor.EnableDigital();
+  // }
+  // map.intake.compressor.EnableDigital();
 
   double gripperSpeed = wom::deadzone(map.controllers.codriver.GetRightY(), 0.2);
+  gripperSpeed *= 0.6;
+  std::cout << gripperSpeed << std::endl;
   map.gripper.leftGrip.Set(gripperSpeed);
   map.gripper.rightGrip.Set(gripperSpeed);
 
