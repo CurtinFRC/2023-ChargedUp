@@ -44,6 +44,8 @@ namespace wom {
     void SetIdle();
     void SetPID(units::radian_t angle, units::meters_per_second_t speed);
   
+    void SetAccelerationLimit(units::meters_per_second_squared_t limit);
+
     // frc::SwerveModuleState GetState();
     frc::SwerveModulePosition GetPosition() const;
 
@@ -60,6 +62,8 @@ namespace wom {
     PIDController<units::meters_per_second, units::volt> _velocityPIDController;
 
     std::shared_ptr<nt::NetworkTable> _table;
+
+    units::meters_per_second_squared_t _currentAccelerationLimit = 6_mps / 1_s;
   };
 
   struct SwerveDriveConfig {
@@ -125,6 +129,8 @@ namespace wom {
     bool IsAtSetPose();
     void SetIndividualTuning(int mod, units::radian_t angle, units::meters_per_second_t speed);
     void SetTuning(units::radian_t angle, units::meters_per_second_t speed);
+
+    void SetAccelerationLimit(units::meters_per_second_squared_t limit);
 
     void ResetPose(frc::Pose2d pose);
 

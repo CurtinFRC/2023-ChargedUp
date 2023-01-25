@@ -18,6 +18,7 @@ void Robot::RobotInit() {
   // armavator = new Armavator(map.armavator.config);
   // BehaviourScheduler::GetInstance()->Register(armavator);
 
+  
   swerve = new wom::SwerveDrive(map.swerveBase.config, frc::Pose2d());
   // map.swerveBase.moduleConfigs[0].turnMotor.transmission->SetInverted(true);
   // map.swerveBase.moduleConfigs[2].turnMotor.transmission->SetInverted(true);
@@ -25,6 +26,8 @@ void Robot::RobotInit() {
   swerve->SetDefaultBehaviour([this]() {
     return make<ManualDrivebase>(swerve, &map.controllers.driver);
   });
+
+  
 }
 
 void Robot::RobotPeriodic() {
@@ -37,11 +40,19 @@ void Robot::RobotPeriodic() {
   // map.swerveBase.turnMotors[0]->Set(map.controllers.driver.GetRightX());
   // map.swerveBase.driveMotors[0]->Set(map.controllers.driver.GetLeftY());
 
-  std::shared_ptr<nt::NetworkTable> _table = nt::NetworkTableInstance::GetDefault().GetTable("encoderValues");
-  _table->GetEntry("speed").SetDouble(map.swerveBase.moduleConfigs[0].driveMotor.encoder->GetEncoderPosition().convert<units::degree>().value());
-  _table->GetEntry("angle").SetDouble(map.swerveBase.moduleConfigs[0].turnMotor.encoder->GetEncoderPosition().convert<units::degree>().value());
-  map.swerveBase.moduleConfigs[0].WriteNT(_table->GetSubTable("encoderValues"));
 
+  
+  
+  // Gets each module's supply and output currents and outputs them onto networktables
+  map.swerveTable.swerveDriveTable->GetEntry("Module1SupplyCurrent").SetDoubleArray(std::vector<double>({map.swerveBase.driveMotors[0]->GetSupplyCurrent(), map.swerveBase.turnMotors[0]->GetSupplyCurrent()}));
+  map.swerveTable.swerveDriveTable->GetEntry("Module1OutputCurrent").SetDoubleArray(std::vector<double>({map.swerveBase.driveMotors[0]->GetOutputCurrent(), map.swerveBase.turnMotors[0]->GetOutputCurrent()}));
+  map.swerveTable.swerveDriveTable->GetEntry("Module2SupplyCurrent").SetDoubleArray(std::vector<double>({map.swerveBase.driveMotors[1]->GetSupplyCurrent(), map.swerveBase.turnMotors[1]->GetSupplyCurrent()}));
+  map.swerveTable.swerveDriveTable->GetEntry("Module2OutputCurrent").SetDoubleArray(std::vector<double>({map.swerveBase.driveMotors[1]->GetOutputCurrent(), map.swerveBase.turnMotors[1]->GetOutputCurrent()}));
+  map.swerveTable.swerveDriveTable->GetEntry("Module3SupplyCurrent").SetDoubleArray(std::vector<double>({map.swerveBase.driveMotors[2]->GetSupplyCurrent(), map.swerveBase.turnMotors[2]->GetSupplyCurrent()}));
+  map.swerveTable.swerveDriveTable->GetEntry("Module3OutputCurrent").SetDoubleArray(std::vector<double>({map.swerveBase.driveMotors[2]->GetOutputCurrent(), map.swerveBase.turnMotors[2]->GetOutputCurrent()}));
+  map.swerveTable.swerveDriveTable->GetEntry("Module4SupplyCurrent").SetDoubleArray(std::vector<double>({map.swerveBase.driveMotors[3]->GetSupplyCurrent(), map.swerveBase.turnMotors[3]->GetSupplyCurrent()}));
+  map.swerveTable.swerveDriveTable->GetEntry("Module4OutputCurrent").SetDoubleArray(std::vector<double>({map.swerveBase.driveMotors[3]->GetOutputCurrent(), map.swerveBase.turnMotors[3]->GetOutputCurrent()}));
+  
 
 
   // armavator->OnUpdate(dt);
@@ -73,14 +84,7 @@ void Robot::TeleopInit() {
 
 
 
-  //map.controllers.driver.POV(0, &loop).Rising().IfHigh([sched, this]() { // up dpad
-  //  sched->Schedule(make<DrivebasePoseBehaviour>(swerve, frc::Pose2d(1_m, 1_m, 0_rad)));
-  //});
-  //swerve->OnStart();
-
-
-  // Swervedrivebase poses
-  
+  // Swervedrivebase grid poses
 
   map.controllers.driver.POV(0, &loop).Rising().IfHigh([sched, this]() { // up dpad
     if (map.controllers.driver.GetAButton()) {

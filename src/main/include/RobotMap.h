@@ -174,8 +174,8 @@ struct RobotMap {
 
     wom::SwerveModule::angle_pid_conf_t anglePID {
       "/drivetrain/pid/angle/config",
-      12_V / 135_deg,
-      1_V / (100_deg * 1_s),
+      10.5_V / 180_deg,
+      0.75_V / (100_deg * 1_s),
       0_V / (100_deg / 1_s),
       1_deg,
       0.5_deg / 1_s
@@ -184,7 +184,8 @@ struct RobotMap {
     };
     wom::SwerveModule::velocity_pid_conf_t velocityPID{
       "/drivetrain/pid/velocity/config",
-      // -1_V / 8_mps
+      //  12_V / 4_mps // webers per metre
+
     };
     wom::SwerveDriveConfig::pose_angle_conf_t poseAnglePID {
       "/drivetrain/pid/pose/angle/config",
@@ -216,8 +217,8 @@ struct RobotMap {
     SwerveBase() {
       for (size_t i = 0; i < 4; i++) {
         turnMotors[i]->ConfigSupplyCurrentLimit(SupplyCurrentLimitConfiguration(true, 15, 15, 0));
-        driveMotors[i]->SetNeutralMode(NeutralMode::Brake);
-        turnMotors[i]->SetNeutralMode(NeutralMode::Brake);
+        driveMotors[i]->SetNeutralMode(NeutralMode::Brake); // [Potential Issue]
+        turnMotors[i]->SetNeutralMode(NeutralMode::Brake); // [Potential Issue]
       }
     }
   };
@@ -236,4 +237,10 @@ struct RobotMap {
   
   SwerveBase swerveBase;
   SwerveGridPoses swerveGridPoses;
+
+
+  struct SwerveTable {
+    std::shared_ptr<nt::NetworkTable> swerveDriveTable = nt::NetworkTableInstance::GetDefault().GetTable("swerve");
+  };
+  SwerveTable swerveTable;
 };

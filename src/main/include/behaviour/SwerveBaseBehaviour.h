@@ -6,6 +6,7 @@
 #include <frc/XboxController.h>
 #include <networktables/NetworkTableInstance.h>
 
+#include <vector>
 
 // ArmavatorPosition Armavator::GetCurrentPosition()
 
@@ -24,6 +25,9 @@ class ManualDrivebase : public behaviour::Behaviour{
 
   nt::NetworkTableInstance _defaultTable = nt::NetworkTableInstance::GetDefault();
   std::shared_ptr<nt::NetworkTable> _swerveDriveTable = _defaultTable.GetTable("swerve");
+
+  
+  
 
   //std::shared_ptr<nt::NetworkTable> _swerveDriveTable;
 };
@@ -50,3 +54,15 @@ class DrivebaseBalance : public behaviour::Behaviour{
   double *_gyroAngle;
 
 };
+
+// class DrivebaseAccelerationLimiting : public behaviour::Behaviour{
+//  public:
+//   DrivebaseAccelerationLimiting(wom::SwerveDrive *swerveDrivebase);
+  
+//   void OnTick(units::second_t deltaTime) override;
+
+//   double CalculateTiltAngle(units::meters_per_second_squared acceleration);
+
+//  private:
+//   wom::SwerveDrive *_swerveDrivebase;
+// };

@@ -17,25 +17,28 @@ void ManualDrivebase::OnTick(units::second_t deltaTime){
   double l_y = wom::deadzone(_driverController->GetLeftX(), driverDeadzone);
   double r_x = wom::deadzone(_driverController->GetRightX(), turningDeadzone);
 
-  _swerveDriveTable->GetEntry("x").SetDouble(0.0);
+  // _swerveDrivebase->GetConfig();
 
+  
+  
   // Robot Relative Controls
   // _swerveDrivebase->SetVelocity(frc::ChassisSpeeds {
   //   l_x * maxMovementMagnitude,
   //   l_y * maxMovementMagnitude,
-  //   r_x * 90_deg / 1_s
+  //   r_x * 360_deg / 0.01_s // were once 90_deg / 1_s
   // });
+
   // Field Relative Controls
   _swerveDrivebase->SetFieldRelativeVelocity(wom::FieldRelativeSpeeds {
-    l_x * maxMovementMagnitude,
-    l_y * maxMovementMagnitude,
-    r_x * 360_deg / 1_s
+   l_x * maxMovementMagnitude,
+   l_y * maxMovementMagnitude,
+   r_x * 360_deg / 0.01_s // were once 360_deg / 1_s
   });
-  // _swerveDrivebase->SetVelocity(frc::ChassisSpeeds {
-  //   0.5_mps,
-  //   0_mps,
-  //   0_rad_per_s
-  // });
+  //  _swerveDrivebase->SetVelocity(frc::ChassisSpeeds {
+  //    0.5_mps,
+  //    0_mps,
+  //    0_rad_per_s
+  //  });
 }
 
 DrivebasePoseBehaviour::DrivebasePoseBehaviour(wom::SwerveDrive *swerveDrivebase, frc::Pose2d pose) : _swerveDrivebase(swerveDrivebase), _pose(pose){
@@ -57,3 +60,12 @@ void DrivebaseBalance::OnTick(units::second_t deltaTime){
 
   // get a feel for the wheel before doing this
 }
+
+
+// double DrivebaseAccelerationLimiting::CalculateTiltAngle(units::meters_per_second_squared acceleration){
+//   _swerveDrivebase->GetConfig().modules[0].position;
+//   _swerveDrivebase->GetConfig().modules[0].position
+//   _swerveDrivebase->GetConfig().modules[0].position
+//   _swerveDrivebase->GetConfig().modules[0].position
+//   double x = asin(acceleration * );
+// }
