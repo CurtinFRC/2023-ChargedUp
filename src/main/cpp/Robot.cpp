@@ -29,6 +29,7 @@ void Robot::RobotInit() {
   });
 
   
+
 }
 
 void Robot::RobotPeriodic() {
@@ -116,6 +117,12 @@ void Robot::TeleopPeriodic() {
     
   }
   map.intake.compressor.EnableDigital();
+
+  double gripperSpeed = wom::deadzone(map.controllers.codriver.GetRightY(), 0.2);
+  map.gripper.leftGrip.Set(gripperSpeed);
+  map.gripper.rightGrip.Set(gripperSpeed);
+
+  
  }
 
 void Robot::DisabledInit() { }

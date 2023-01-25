@@ -110,10 +110,10 @@ struct RobotMap {
   struct SwerveBase{
     wom::NavX gyro;
     wpi::array<WPI_TalonFX*, 4> turnMotors{
-      new WPI_TalonFX(90), new WPI_TalonFX(91), new WPI_TalonFX(92), new WPI_TalonFX(93)
+      new WPI_TalonFX(1), new WPI_TalonFX(3), new WPI_TalonFX(4), new WPI_TalonFX(6)
     };
     wpi::array<WPI_TalonFX*, 4> driveMotors{
-      new WPI_TalonFX(94), new WPI_TalonFX(95), new WPI_TalonFX(96), new WPI_TalonFX(97)
+      new WPI_TalonFX(5), new WPI_TalonFX(8), new WPI_TalonFX(2), new WPI_TalonFX(7)
     };
     //   wpi::array<WPI_TalonFX*, 4> turnMotors{
     //   new WPI_TalonFX(1), new WPI_TalonFX(3), new WPI_TalonFX(4), new WPI_TalonFX(6)
@@ -253,8 +253,8 @@ struct RobotMap {
   //SwerveSingleModule swerveSingleModuleMotors;
 
   struct IntakeSystem {
-    WPI_TalonSRX rightMotor{4};
-    WPI_VictorSPX leftMotor{6};
+    WPI_TalonSRX rightMotor{99};
+    WPI_VictorSPX leftMotor{98};
 
     // wom::MotorVoltageController rightIntake = wom::MotorVoltageController::Group(rightMotor);
     // wom::TalonSr
@@ -271,4 +271,9 @@ struct RobotMap {
     frc::DoubleSolenoid gripSolenoid{1, frc::PneumaticsModuleType::CTREPCM, 6, 7};
 
   }; IntakeSystem intake;
+
+  struct GripperSystem {
+    WPI_TalonSRX leftGrip{2};
+    WPI_TalonSRX rightGrip{6};
+  }; GripperSystem gripper;
 };

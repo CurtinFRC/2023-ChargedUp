@@ -55,6 +55,9 @@ void SwerveModule::OnUpdate(units::second_t dt) {
   units::volt_t max_voltage_for_current_limit_d = _config.driveMotor.motor.Voltage(max_torque_at_current_limit_d, _config.driveMotor.encoder->GetEncoderAngularVelocity());
   driveVoltage = units::math::max(units::math::min(driveVoltage, max_voltage_for_current_limit_d), -max_voltage_for_current_limit_d);
 
+  driveVoltage = units::math::min(driveVoltage, 10_V);
+  turnVoltage = units::math::min(turnVoltage, 7_V);
+
   _config.driveMotor.transmission->SetVoltage(driveVoltage);
   _config.turnMotor.transmission->SetVoltage(turnVoltage);
 
