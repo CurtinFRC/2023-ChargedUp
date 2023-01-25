@@ -121,7 +121,7 @@ void Robot::TeleopPeriodic() {
   double gripperSpeed = wom::deadzone(map.controllers.codriver.GetRightY(), 0.2);
   gripperSpeed *= 0.6;
   std::cout << gripperSpeed << std::endl;
-  map.gripper.leftGrip.Set(gripperSpeed);
+  map.gripper.leftGrip.Set(-gripperSpeed);
   map.gripper.rightGrip.Set(gripperSpeed);
 
   

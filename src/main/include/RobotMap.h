@@ -109,18 +109,18 @@ struct RobotMap {
 
   struct SwerveBase{
     wom::NavX gyro;
-    // wpi::array<WPI_TalonFX*, 4> turnMotors{
-    //   new WPI_TalonFX(90), new WPI_TalonFX(92), new WPI_TalonFX(94), new WPI_TalonFX(97)
-    // };
-    // wpi::array<WPI_TalonFX*, 4> driveMotors{
-    //   new WPI_TalonFX(91), new WPI_TalonFX(93), new WPI_TalonFX(95), new WPI_TalonFX(96)
-    // };
-      wpi::array<WPI_TalonFX*, 4> turnMotors{
-      new WPI_TalonFX(1), new WPI_TalonFX(3), new WPI_TalonFX(4), new WPI_TalonFX(6)
+    wpi::array<WPI_TalonFX*, 4> turnMotors{
+      new WPI_TalonFX(90), new WPI_TalonFX(92), new WPI_TalonFX(94), new WPI_TalonFX(97)
     };
     wpi::array<WPI_TalonFX*, 4> driveMotors{
-      new WPI_TalonFX(5), new WPI_TalonFX(8), new WPI_TalonFX(2), new WPI_TalonFX(7)
+      new WPI_TalonFX(91), new WPI_TalonFX(93), new WPI_TalonFX(95), new WPI_TalonFX(96)
     };
+    //   wpi::array<WPI_TalonFX*, 4> turnMotors{
+    //   new WPI_TalonFX(1), new WPI_TalonFX(3), new WPI_TalonFX(4), new WPI_TalonFX(6)
+    // };
+    // wpi::array<WPI_TalonFX*, 4> driveMotors{
+    //   new WPI_TalonFX(5), new WPI_TalonFX(8), new WPI_TalonFX(2), new WPI_TalonFX(7)
+    // };
     
     wpi::array<wom::SwerveModuleConfig, 4> moduleConfigs{
       wom::SwerveModuleConfig{ // dimensions are assuming perfect square robot 1m^2 area
@@ -273,10 +273,10 @@ struct RobotMap {
   }; IntakeSystem intake;
 
   struct GripperSystem {
-    WPI_TalonSRX leftGrip{89};
-    WPI_TalonSRX rightGrip{88};
+    // WPI_TalonSRX leftGrip{89};
+    // WPI_TalonSRX rightGrip{88};
 
-    // WPI_TalonSRX leftGrip{3};
-    // WPI_TalonSRX rightGrip{4};
+    WPI_TalonSRX leftGrip{3};
+    WPI_TalonSRX rightGrip{4};
   }; GripperSystem gripper;
 };
