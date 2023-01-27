@@ -16,6 +16,8 @@ class ManualDrivebase : public behaviour::Behaviour{
 
   void OnTick(units::second_t deltaTime) override;
 
+
+
  private:
   wom::SwerveDrive *_swerveDrivebase;
   frc::XboxController *_driverController;
@@ -54,15 +56,3 @@ class DrivebaseBalance : public behaviour::Behaviour{
   double *_gyroAngle;
 
 };
-
-// class DrivebaseAccelerationLimiting : public behaviour::Behaviour{
-//  public:
-//   DrivebaseAccelerationLimiting(wom::SwerveDrive *swerveDrivebase);
-  
-//   void OnTick(units::second_t deltaTime) override;
-
-//   double CalculateTiltAngle(units::meters_per_second_squared acceleration);
-
-//  private:
-//   wom::SwerveDrive *_swerveDrivebase;
-// };

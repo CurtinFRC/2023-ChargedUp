@@ -34,6 +34,8 @@ void ManualDrivebase::OnTick(units::second_t deltaTime){
    l_y * maxMovementMagnitude,
    r_x * 360_deg / 0.01_s // were once 360_deg / 1_s
   });
+  
+  // Tests if the Robot Moves
   //  _swerveDrivebase->SetVelocity(frc::ChassisSpeeds {
   //    0.5_mps,
   //    0_mps,
@@ -60,12 +62,3 @@ void DrivebaseBalance::OnTick(units::second_t deltaTime){
 
   // get a feel for the wheel before doing this
 }
-
-
-// double DrivebaseAccelerationLimiting::CalculateTiltAngle(units::meters_per_second_squared acceleration){
-//   _swerveDrivebase->GetConfig().modules[0].position;
-//   _swerveDrivebase->GetConfig().modules[0].position
-//   _swerveDrivebase->GetConfig().modules[0].position
-//   _swerveDrivebase->GetConfig().modules[0].position
-//   double x = asin(acceleration * );
-// }
