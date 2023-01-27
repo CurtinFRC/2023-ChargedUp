@@ -38,6 +38,11 @@ void Arm::OnUpdate(units::second_t dt) {
       }
       break;
     case ArmState::kZeroing:
+      voltage = -2_V;
+      // if (_config.bottomLimitSwitch->Get()) {
+      //   _config.gearbox.encoder->ZeroEncoder();
+      //   _state = ArmState::kIdle;
+        /*when bottom limit switch is triggered, the encoder is zeroed and returns to the idle state*/
       break;
     case ArmState::kRaw:
       voltage = _setpointRaw;
