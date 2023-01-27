@@ -25,6 +25,7 @@ void Elevator::OnUpdate(units::second_t dt) {
 
   units::meter_t height = GetHeight();
 
+
   switch(_state) {
     case ElevatorState::kIdle:
       voltage = 0_V;
@@ -38,25 +39,27 @@ void Elevator::OnUpdate(units::second_t dt) {
         voltage = _pid.Calculate(height, dt, feedforward);
       }
     break;
-    case ElevatorState::kZeroing:
-        voltage = -3_V;
-        // if (_config.bottomSensor->Get()) {
-        //   _config.gearbox.encoder->ZeroEncoder();
-        //   _state = ElevatorState::kIdle;
-        // }
-        // if (_config.bottomSensor && voltage < 0_V && _config.bottomSensor->Get()) {
-        // voltage = 0_V;
-        // } 
-        // if (_config.topSensor && voltage > 0_V && _config.topSensor->Get()) {
-        //   voltage = 0_V;
-        // }
-        // _config.gearbox.transmission->SetVoltage(voltage);
-
-        // _table->GetEntry("height").SetDouble(height.value());
-        // _config.WriteNT(_table->GetSubTable("config"));
-      break;
-      }
   }
+
+  // Top sensor detector
+  if(_config.topSensor != nullptr) {
+    if(_config.topSensor->Get()) {
+      _config.gearbox.encoder->SetEncoderPosition(_config.maxHeight / _config.radius * 1_rad);
+      //voltage = 0_V;
+    }
+  }
+
+  //Bottom Sensor Detection
+  if (_config.bottomSensor != nullptr) {
+    if (_config.bottomSensor->Get()) {
+      _config.gearbox.encoder->SetEncoderPosition(_config.minHeight / _config.radius * 1_rad);
+      //voltage = 0_V;
+    }
+  }
+
+  // Set voltage to motors...
+  _config.gearbox.transmission->SetVoltage(voltage);
+}
 
 void Elevator::SetManual(units::volt_t voltage) {
   _state = ElevatorState::kManual;
@@ -70,10 +73,6 @@ void Elevator::SetPID(units::meter_t height) {
 
 void Elevator::SetIdle() {
   _state = ElevatorState::kIdle;
-}
-
-void Elevator::SetZeroing() {
-  _state = ElevatorState::kZeroing;
 }
 
 ElevatorConfig &Elevator::GetConfig() {

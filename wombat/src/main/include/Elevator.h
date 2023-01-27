@@ -16,7 +16,6 @@
 
 namespace wom {
   enum class ElevatorState {
-    kZeroing,
     kIdle, 
     kPID,
     kManual,
@@ -30,6 +29,7 @@ namespace wom {
     units::meter_t radius;
     units::kilogram_t mass;
     units::meter_t maxHeight;
+    units::meter_t minHeight;
     units::meter_t initialHeight;
     PIDConfig<units::meter, units::volt> pid;
 
@@ -45,7 +45,6 @@ namespace wom {
     void SetManual(units::volt_t voltage);
     void SetPID(units::meter_t height);
     void SetIdle();
-    void SetZeroing();
     void SetRaw();
 
     units::volt_t GetRaw();

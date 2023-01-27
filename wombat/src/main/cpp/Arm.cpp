@@ -56,10 +56,6 @@ void Arm::SetIdle() {
   _state = ArmState::kIdle;
 }
 
-void Arm::SetZeroing() {
-  _state = ArmState::kZeroing;
-}
-
 void Arm::SetAngle(units::radian_t angle) {
   _state = ArmState::kAngle;
   _pid.SetSetpoint(angle);

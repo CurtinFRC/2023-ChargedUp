@@ -68,23 +68,9 @@ ArmavatorManualBehaviour::ArmavatorManualBehaviour(Armavator *armavator, frc::Xb
 void ArmavatorManualBehaviour::OnStart() {
   std::cout << "On Start" << std::endl;
 
-  // Zero the elevator
-  _armavator->elevator->SetZeroing();
 }
 
 void ArmavatorManualBehaviour::OnTick(units::second_t dt) {
-  //Raw Positioning
-  if(!_codriver.GetRightX() && !_codriver.GetLeftX()) {
-    _armavator->arm->GetConfig().gearbox.transmission->SetVoltage(0_V);
-    _armavator->elevator->SetManual(0_V);
-  } else{
-    if(_codriver.GetRightX()) {
-      _armavator->arm->GetConfig().gearbox.transmission->SetVoltage(12.0_V * _codriver.GetRightX());
-    } else if (_codriver.GetLeftX()) {
-      _armavator->elevator->GetConfig().gearbox.transmission->SetVoltage(12.0_V * _codriver.GetLeftX());
-    }
-  }
-
   // Manual Positioning
   // Elevator
   if (std::abs(_codriver.GetRightY()) > 0.15) {
@@ -125,11 +111,8 @@ ArmavatorRawBehaviour::ArmavatorRawBehaviour(Armavator *armavator, frc::XboxCont
   Controls(armavator);
 };
 
-void ArmavatorManualBehaviour::OnStart() {
+void ArmavatorRawBehaviour::OnStart() {
   std::cout << "On Start" << std::endl;
-
-  // Zero the elevator
-  _armavator->elevator->SetZeroing();
 }
 
 void ArmavatorRawBehaviour::OnTick(units::second_t dt) {
