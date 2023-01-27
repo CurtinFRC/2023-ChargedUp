@@ -20,7 +20,6 @@ namespace wom {
     kIdle, 
     kPID,
     kManual,
-    kRaw
   };
 
   struct ElevatorConfig {
@@ -61,7 +60,6 @@ namespace wom {
   
    private:
     units::volt_t _setpointManual{0};
-    units::volt_t _setpointRaw{12};
 
     ElevatorConfig _config;
     ElevatorState _state;

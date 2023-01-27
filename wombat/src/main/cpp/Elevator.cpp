@@ -40,23 +40,20 @@ void Elevator::OnUpdate(units::second_t dt) {
     break;
     case ElevatorState::kZeroing:
         voltage = -3_V;
-        if (_config.bottomSensor->Get()) {
-          _config.gearbox.encoder->ZeroEncoder();
-          _state = ElevatorState::kIdle;
-        }
-        if (_config.bottomSensor && voltage < 0_V && _config.bottomSensor->Get()) {
-        voltage = 0_V;
-        } 
-        if (_config.topSensor && voltage > 0_V && _config.topSensor->Get()) {
-          voltage = 0_V;
-        }
-        _config.gearbox.transmission->SetVoltage(voltage);
+        // if (_config.bottomSensor->Get()) {
+        //   _config.gearbox.encoder->ZeroEncoder();
+        //   _state = ElevatorState::kIdle;
+        // }
+        // if (_config.bottomSensor && voltage < 0_V && _config.bottomSensor->Get()) {
+        // voltage = 0_V;
+        // } 
+        // if (_config.topSensor && voltage > 0_V && _config.topSensor->Get()) {
+        //   voltage = 0_V;
+        // }
+        // _config.gearbox.transmission->SetVoltage(voltage);
 
-        _table->GetEntry("height").SetDouble(height.value());
-        _config.WriteNT(_table->GetSubTable("config"));
-      break;
-    case ElevatorState::kRaw:
-      voltage = _setpointManual;
+        // _table->GetEntry("height").SetDouble(height.value());
+        // _config.WriteNT(_table->GetSubTable("config"));
       break;
       }
   }
@@ -79,10 +76,6 @@ void Elevator::SetZeroing() {
   _state = ElevatorState::kZeroing;
 }
 
-void Elevator::SetRaw() {
-  _state = ElevatorState::kRaw;
-}
-
 ElevatorConfig &Elevator::GetConfig() {
   return _config;
 }
@@ -101,8 +94,4 @@ units::meter_t Elevator::GetHeight() const {
 
 units::meters_per_second_t Elevator::MaxSpeed() const {
   return _config.gearbox.motor.Speed((_config.mass * 9.81_mps_sq) * _config.radius, 12_V) / 1_rad * _config.radius;
-}
-
-units::volt_t Elevator::GetRaw(){
-  return Elevator::_setpointRaw;
 }

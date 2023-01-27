@@ -56,6 +56,7 @@ void ArmavatorGoToPositionBehaviour::OnTick(units::second_t dt) {
   // }  
 }
 
+
 ArmavatorManualBehaviour::ArmavatorManualBehaviour(Armavator *armavator, frc::XboxController &codriver)
 : _armavator(armavator), _codriver(codriver) {
   //tells code that the points are controlled (one point at a time) 
@@ -78,9 +79,9 @@ void ArmavatorManualBehaviour::OnTick(units::second_t dt) {
     _armavator->elevator->SetManual(0_V);
   } else{
     if(_codriver.GetRightX()) {
-      _armavator->arm->GetConfig().gearbox.transmission->SetVoltage(_armavator->arm->GetRaw() * _codriver.GetRightX());
+      _armavator->arm->GetConfig().gearbox.transmission->SetVoltage(12.0_V * _codriver.GetRightX());
     } else if (_codriver.GetLeftX()) {
-      _armavator->elevator->GetConfig().gearbox.transmission->SetVoltage(_armavator->elevator->GetRaw() * _codriver.GetLeftX());
+      _armavator->elevator->GetConfig().gearbox.transmission->SetVoltage(12.0_V * _codriver.GetLeftX());
     }
   }
 
@@ -115,3 +116,33 @@ void ArmavatorManualBehaviour::OnTick(units::second_t dt) {
     }
   }
 }
+
+ArmavatorRawBehaviour::ArmavatorRawBehaviour(Armavator *armavator, frc::XboxController &codriver)
+: _armavator(armavator), _codriver(codriver) {
+  //tells code that the points are controlled (one point at a time) 
+  _setpoint.height = 0.0_m;
+  _setpoint.angle = 0.0_deg;
+  Controls(armavator);
+};
+
+void ArmavatorManualBehaviour::OnStart() {
+  std::cout << "On Start" << std::endl;
+
+  // Zero the elevator
+  _armavator->elevator->SetZeroing();
+}
+
+void ArmavatorRawBehaviour::OnTick(units::second_t dt) {
+  //Raw Positioning
+  if(!_codriver.GetRightX() && !_codriver.GetLeftX()) {
+    _armavator->arm->GetConfig().gearbox.transmission->SetVoltage(0_V);
+    _armavator->elevator->SetManual(0_V);
+  } else{
+    if(_codriver.GetRightX()) {
+      _armavator->arm->GetConfig().gearbox.transmission->SetVoltage(12.0_V * _codriver.GetRightX());
+    } else if (_codriver.GetLeftX()) {
+      _armavator->elevator->GetConfig().gearbox.transmission->SetVoltage(12.0_V * _codriver.GetLeftX());
+    }
+  }
+}
+

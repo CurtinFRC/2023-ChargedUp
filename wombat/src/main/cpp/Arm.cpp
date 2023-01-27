@@ -37,16 +37,6 @@ void Arm::OnUpdate(units::second_t dt) {
         voltage = _pid.Calculate(angle, dt, feedforward);
       }
       break;
-    case ArmState::kZeroing:
-      voltage = -2_V;
-      // if (_config.bottomLimitSwitch->Get()) {
-      //   _config.gearbox.encoder->ZeroEncoder();
-      //   _state = ArmState::kIdle;
-        /*when bottom limit switch is triggered, the encoder is zeroed and returns to the idle state*/
-      break;
-    case ArmState::kRaw:
-      voltage = _setpointRaw;
-      break;
   }
 
   if (
@@ -75,10 +65,6 @@ void Arm::SetAngle(units::radian_t angle) {
   _pid.SetSetpoint(angle);
 }
 
-void Arm::SetRaw() {
-  _state = ArmState::kRaw;
-}
-
 ArmConfig &Arm::GetConfig() {
   return _config;
 }
@@ -95,9 +81,6 @@ bool Arm::IsStable() const {
   return _pid.IsStable();
 }
 
-units::volt_t Arm::GetRaw(){
-  return Arm::_setpointRaw;
-}
 
 /* SIMULATION */
 // #include <units/math.h>

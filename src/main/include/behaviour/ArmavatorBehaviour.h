@@ -42,3 +42,19 @@ class ArmavatorManualBehaviour : public behaviour::Behaviour {
   std::deque<grid_t::GridPathNode<units::second>> _waypoints;
   frc::XboxController &_codriver;
 };
+
+class ArmavatorRawBehaviour : public behaviour::Behaviour {
+ public:
+  using grid_t = ArmavatorConfig::grid_t;
+
+  ArmavatorRawBehaviour(Armavator *armavator, frc::XboxController &codriver);
+
+  void OnStart() override;
+  void OnTick(units::second_t dt) override;
+ private:
+  Armavator *_armavator;
+
+  ArmavatorPosition _setpoint;
+  std::deque<grid_t::GridPathNode<units::second>> _waypoints;
+  frc::XboxController &_codriver;
+};
