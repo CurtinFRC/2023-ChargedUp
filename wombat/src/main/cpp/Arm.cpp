@@ -37,6 +37,8 @@ void Arm::OnUpdate(units::second_t dt) {
         voltage = _pid.Calculate(angle, dt, feedforward);
       }
       break;
+    case ArmState::kZeroing:
+      break;
     case ArmState::kRaw:
       voltage = _setpointRaw;
       break;
