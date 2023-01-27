@@ -68,16 +68,26 @@ void ArmavatorManualBehaviour::OnStart() {
   std::cout << "On Start" << std::endl;
 
   // Zero the elevator
-  // _armavator->elevator->SetZeroing();
+  _armavator->elevator->SetZeroing();
 }
 
 void ArmavatorManualBehaviour::OnTick(units::second_t dt) {
-  // Manual Positioning
+  //Raw Positioning
+  if(!_codriver.GetRightX() && !_codriver.GetLeftX()) {
+    _armavator->arm->GetConfig().gearbox.transmission->SetVoltage(0_V);
+    _armavator->elevator->SetManual(0_V);
+  } else{
+    if(_codriver.GetRightX()) {
+      _armavator->arm->GetConfig().gearbox.transmission->SetVoltage(_armavator->arm->GetRaw() * _codriver.GetRightX());
+    } else if (_codriver.GetLeftX()) {
+      _armavator->elevator->GetConfig().gearbox.transmission->SetVoltage(_armavator->elevator->GetRaw() * _codriver.GetLeftX());
+    }
+  }
 
+  // Manual Positioning
   // Elevator
   if (std::abs(_codriver.GetRightY()) > 0.15) {
     _setpoint.height = _setpoint.height + (_codriver.GetRightY() * 1.0_m);
-
   }
 
   // Angle
@@ -85,7 +95,7 @@ void ArmavatorManualBehaviour::OnTick(units::second_t dt) {
     _setpoint.angle = _setpoint.angle + (_codriver.GetLeftY() * 1.0_deg);
   }
 
-  // Position
+  // Set Position
   _armavator->SetPosition(_setpoint);
 
   if(!_codriver.GetAButton() && !_codriver.GetBButton() && !_codriver.GetXButton() && !_codriver.GetYButton()) {

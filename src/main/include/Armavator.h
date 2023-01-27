@@ -48,6 +48,8 @@ class Armavator : public behaviour::HasBehaviour {
   void SetZeroing();
   void SetManual(ArmavatorPosition pos);
 
+  
+
   ArmavatorPosition GetCurrentPosition() const;
   bool IsStable() const;
 

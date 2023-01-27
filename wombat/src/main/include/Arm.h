@@ -32,6 +32,8 @@ namespace wom {
   enum class ArmState {
     kIdle,
     kAngle,
+    kZeroing,
+    kRaw
   };
 
   class Arm : public behaviour::HasBehaviour {
@@ -42,6 +44,10 @@ namespace wom {
 
     void SetIdle();
     void SetAngle(units::radian_t angle);
+    void SetZeroing();
+    void SetRaw();
+
+    units::volt_t GetRaw();
 
     ArmConfig &GetConfig();
 
@@ -50,6 +56,7 @@ namespace wom {
     
     bool IsStable() const;
   private:
+  units::volt_t _setpointRaw{12};
     ArmConfig _config;
     ArmState _state = ArmState::kIdle;
     wom::PIDController<units::radian, units::volt> _pid;

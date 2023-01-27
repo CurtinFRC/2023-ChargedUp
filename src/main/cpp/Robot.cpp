@@ -32,8 +32,6 @@ void Robot::RobotPeriodic() {
   map.armTable.armManualTable->GetEntry("arm").SetDouble(map.armavator.arm.motor.GetSupplyCurrent());
   map.armTable.armManualTable->GetEntry("elv").SetDouble(map.armavator.elevator.motor.GetSupplyCurrent());
 
-  // NOTE FOR LIAM: joystick != motor current
-
   armavator->OnUpdate(dt);
   // swerve->OnUpdate(dt);
 }

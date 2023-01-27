@@ -37,6 +37,9 @@ void Arm::OnUpdate(units::second_t dt) {
         voltage = _pid.Calculate(angle, dt, feedforward);
       }
       break;
+    case ArmState::kRaw:
+      voltage = _setpointRaw;
+      break;
   }
 
   if (
@@ -56,9 +59,17 @@ void Arm::SetIdle() {
   _state = ArmState::kIdle;
 }
 
+void Arm::SetZeroing() {
+  _state = ArmState::kZeroing;
+}
+
 void Arm::SetAngle(units::radian_t angle) {
   _state = ArmState::kAngle;
   _pid.SetSetpoint(angle);
+}
+
+void Arm::SetRaw() {
+  _state = ArmState::kRaw;
 }
 
 ArmConfig &Arm::GetConfig() {
@@ -75,6 +86,10 @@ units::radians_per_second_t Arm::MaxSpeed() const {
 
 bool Arm::IsStable() const {
   return _pid.IsStable();
+}
+
+units::volt_t Arm::GetRaw(){
+  return Arm::_setpointRaw;
 }
 
 /* SIMULATION */

@@ -19,12 +19,13 @@ namespace wom {
     kZeroing,
     kIdle, 
     kPID,
-    kManual
+    kManual,
+    kRaw
   };
 
   struct ElevatorConfig {
     std::string path;
-    Gearbox gearbox;
+    wom::Gearbox gearbox;
     frc::DigitalInput *topSensor;
     frc::DigitalInput *bottomSensor;
     units::meter_t radius;
@@ -46,7 +47,12 @@ namespace wom {
     void SetPID(units::meter_t height);
     void SetIdle();
     void SetZeroing();
+    void SetRaw();
 
+    units::volt_t GetRaw();
+
+    ElevatorConfig &GetConfig();
+    
     bool IsStable() const;
     ElevatorState GetState() const;
 
@@ -55,6 +61,7 @@ namespace wom {
   
    private:
     units::volt_t _setpointManual{0};
+    units::volt_t _setpointRaw{12};
 
     ElevatorConfig _config;
     ElevatorState _state;
