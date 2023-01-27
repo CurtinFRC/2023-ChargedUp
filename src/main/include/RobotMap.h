@@ -70,6 +70,7 @@ struct RobotMap {
         armMass + loadMass + carriageMass,
         1.5_m,
         1_m,
+        000000000000000000000000000000000000000000_m, // an obvious way to say: CHANGE THIS
         {
           "/armavator/elevator/pid/config",
           12_V / 1_m
