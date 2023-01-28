@@ -2,6 +2,7 @@
 #include "behaviour/BehaviourScheduler.h"
 #include "behaviour/Behaviour.h"
 #include "behaviour/SwerveBaseBehaviour.h"
+#include "behaviour/SideIntakeBehaviour.h"
 
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <frc/event/BooleanEvent.h>
@@ -17,6 +18,12 @@ void Robot::RobotInit() {
 
   vision = new Vision(map.vision.config);
 
+  sideIntake = new SideIntake(map.sideIntake.config);
+  BehaviourScheduler::GetInstance()->Register(sideIntake);
+  sideIntake->SetDefaultBehaviour([this]() {
+    return make<SideIntakeBehaviour>(sideIntake, map.controllers.codriver);
+  });
+  
   swerve = new wom::SwerveDrive(map.swerveBase.config, frc::Pose2d());
   // map.swerveBase.moduleConfigs[0].turnMotor.transmission->SetInverted(true);
   // map.swerveBase.moduleConfigs[2].turnMotor.transmission->SetInverted(true);
@@ -59,6 +66,8 @@ void Robot::RobotPeriodic() {
   armavator->OnUpdate(dt);
 
   vision->OnUpdate(dt);
+  swerve->OnUpdate(dt);
+  sideIntake->OnUpdate(dt);
 }
 
 void Robot::AutonomousInit() { }
@@ -142,7 +151,7 @@ void Robot::TeleopInit() {
 
 }
 
-void Robot::TeleopPeriodic() { }
+void Robot::TeleopPeriodic() {}
 
 void Robot::DisabledInit() { }
 void Robot::DisabledPeriodic() { }
