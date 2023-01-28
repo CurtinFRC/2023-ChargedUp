@@ -39,6 +39,9 @@ void Elevator::OnUpdate(units::second_t dt) {
         voltage = _pid.Calculate(height, dt, feedforward);
       }
     break;
+    case ElevatorState::kRaw:
+      voltage = _voltage;
+    break;
   }
 
   // Top sensor detector
@@ -73,6 +76,11 @@ void Elevator::SetPID(units::meter_t height) {
 
 void Elevator::SetIdle() {
   _state = ElevatorState::kIdle;
+}
+
+void Elevator::SetRaw(units::volt_t voltage) {
+  _state = ElevatorState::kRaw;
+  _voltage = voltage;
 }
 
 ElevatorConfig &Elevator::GetConfig() {
