@@ -37,8 +37,9 @@ namespace wom {
       LUTPoint<X, Y> previousThing = _points[0];
       for (int pointNum = 1; pointNum < tableSize; pointNum++){
         previousThing = _points[pointNum - 1];
+        //if (_points[pointNum].x == x){  return _points[pointNum].y;  }
 
-        if (_points[pointNum].x > x){
+        if (_points[pointNum].x >= x){
           double m = (_points[pointNum].y - previousThing.y) / (_points[pointNum].x - previousThing.x);
           return m * (x - previousThing.x) + previousThing.y; // y = mx+c
         }

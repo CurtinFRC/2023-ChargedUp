@@ -47,3 +47,12 @@ TEST(LUT, AfterLastPoint) {
     EXPECT_NEAR(lut.Estimate(314159265359), 3, 0.001);
     
 }
+TEST(LUT, AtAPoint) {
+    LUT<double, double> lut({
+        {1, 900},
+        {5, 1200.8},
+        {16, 7.1},
+        {21, 300}
+    });
+    EXPECT_NEAR(lut.Estimate(16), 7.1, 0.001);
+}

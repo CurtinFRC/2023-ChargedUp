@@ -13,9 +13,9 @@ ManualDrivebase::ManualDrivebase(wom::SwerveDrive *swerveDrivebase, frc::XboxCon
 }
 
 void ManualDrivebase::OnTick(units::second_t deltaTime){
-  double l_x = -wom::deadzone(_driverController->GetLeftY(), driverDeadzone); // GetLeftY due to x being where y should be
-  double l_y = wom::deadzone(_driverController->GetLeftX(), driverDeadzone);
-  double r_x = wom::deadzone(_driverController->GetRightX(), turningDeadzone);
+  double l_x = wom::spow2(-wom::deadzone(_driverController->GetLeftY(), driverDeadzone)); // GetLeftY due to x being where y should be
+  double l_y = wom::spow2(wom::deadzone(_driverController->GetLeftX(), driverDeadzone));
+  double r_x = wom::spow2(wom::deadzone(_driverController->GetRightX(), turningDeadzone));
 
   // _swerveDrivebase->GetConfig();
 
@@ -30,8 +30,8 @@ void ManualDrivebase::OnTick(units::second_t deltaTime){
 
   // Field Relative Controls
   _swerveDrivebase->SetFieldRelativeVelocity(wom::FieldRelativeSpeeds {
-   l_x * maxMovementMagnitude,
-   l_y * maxMovementMagnitude,
+   l_x * l_x * maxMovementMagnitude,
+   l_y * l_y * maxMovementMagnitude,
    r_x * 360_deg / 0.01_s // were once 360_deg / 1_s
   });
   
