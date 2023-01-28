@@ -30,7 +30,7 @@ void ArmavatorGoToPositionBehaviour::OnStart() {
 
 //Function for OnTick
 void ArmavatorGoToPositionBehaviour::OnTick(units::second_t dt) {
-  std::cout << "Running" << std::endl;
+  _armavator->SetPosition(_setpoint);
 
   //If statement for targetted waypoint position is empty
   // if (!waypoints.empty()) {
@@ -66,7 +66,6 @@ ArmavatorManualBehaviour::ArmavatorManualBehaviour(Armavator *armavator, frc::Xb
 };
 
 void ArmavatorManualBehaviour::OnStart() {
-  std::cout << "On Start" << std::endl;
 
 }
 
@@ -112,7 +111,6 @@ ArmavatorRawBehaviour::ArmavatorRawBehaviour(Armavator *armavator, frc::XboxCont
 };
 
 void ArmavatorRawBehaviour::OnStart() {
-  std::cout << "On Start" << std::endl;
 }
 
 void ArmavatorRawBehaviour::OnTick(units::second_t dt) {
