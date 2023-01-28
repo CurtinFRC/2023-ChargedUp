@@ -16,8 +16,6 @@ class ManualDrivebase : public behaviour::Behaviour{
 
   void OnTick(units::second_t deltaTime) override;
 
-
-
  private:
   wom::SwerveDrive *_swerveDrivebase;
   frc::XboxController *_driverController;
@@ -27,9 +25,6 @@ class ManualDrivebase : public behaviour::Behaviour{
 
   nt::NetworkTableInstance _defaultTable = nt::NetworkTableInstance::GetDefault();
   std::shared_ptr<nt::NetworkTable> _swerveDriveTable = _defaultTable.GetTable("swerve");
-
-  
-  
 
   //std::shared_ptr<nt::NetworkTable> _swerveDriveTable;
 };
@@ -50,9 +45,7 @@ class DrivebaseBalance : public behaviour::Behaviour{
 
   void OnTick(units::second_t deltaTime) override;
 
-
  private:
   wom::SwerveDrive *_swerveDrivebase;
   double *_gyroAngle;
-
 };

@@ -1,17 +1,20 @@
 #pragma once
 #include "VoltageController.h"
-// #include "Arm.h"
-// #include "Elevator.h"
-// #include "Armavator.h"
+#include "Arm.h"
+#include "Elevator.h"
+#include "Armavator.h"
 #include "Gyro.h"
 #include "behaviour/ArmavatorBehaviour.h"
-
 #include <ctre/phoenix/motorcontrol/can/WPI_TalonFX.h>
 
+#include <ctre/phoenix/motorcontrol/can/WPI_TalonFX.h>
+#include <frc/Compressor.h>
 #include <frc/XboxController.h>
 #include <ctre/Phoenix.h>
 
 #include "drivetrain/SwerveDrive.h"
+#include <frc/DoubleSolenoid.h>
+#include <units/length.h>
 
 #include <iostream>
 #include <string>
@@ -23,87 +26,6 @@ struct RobotMap {
   };
   Controllers controllers;
 
-  // struct Armavator {
-  //   static constexpr units::kilogram_t loadMass = 10_kg;
-  //   static constexpr units::kilogram_t armMass = 5_kg;
-  //   static constexpr units::kilogram_t carriageMass = 5_kg;
-
-  //   struct Arm {
-  //     WPI_TalonSRX motor1{1};
-  //     WPI_TalonSRX motor2{2};
-
-  //     wom::MotorVoltageController motor = wom::MotorVoltageController::Group(motor1, motor2);
-
-  //     wom::DigitalEncoder encoder{0, 1, 2048};
-
-  //     wom::Gearbox gearbox {
-  //       &motor,
-  //       &encoder,
-  //       wom::DCMotor::CIM(2).WithReduction(100)
-  //     };
-  //     wom::ArmConfig config {
-  //       "/armavator/arm",
-  //       gearbox,
-  //       nullptr,
-  //       nullptr,
-  //       {
-  //         "/armavator/arm/pid/config",
-  //         12_V / 45_deg
-  //       },
-  //       armMass, loadMass, 1_m,
-  //       -90_deg, 270_deg,
-  //       -90_deg
-  //     };
-  //   };
-  //   Arm arm;
-
-  //   struct Elevator {
-  //     WPI_TalonSRX motor1{3};
-  //     WPI_TalonSRX motor2{4};
-
-  //     wom::MotorVoltageController motor = wom::MotorVoltageController::Group(motor1, motor2);
-
-  //     wom::DigitalEncoder encoder{2, 3, 2048};
-
-  //     wom::Gearbox gearbox {
-  //       &motor,
-  //       &encoder,
-  //       wom::DCMotor::CIM(2).WithReduction(10)
-  //     };
-
-  //     wom::ElevatorConfig config {
-  //       "/armavator/elevator",
-  //       gearbox,
-  //       nullptr,
-  //       nullptr,
-  //       2_in,
-  //       armMass + loadMass + carriageMass,
-  //       1.5_m,
-  //       1_m,
-  //       {
-  //         "/armavator/elevator/pid/config",
-  //         12_V / 1_m
-  //       }
-  //     };
-  //   };
-  //   Elevator elevator;
-
-  //   ArmavatorConfig::grid_t occupancyGrid = ArmavatorConfig::grid_t(
-  //     arm.config.minAngle, arm.config.maxAngle,
-  //     0_m, elevator.config.maxHeight,
-  //     50, 50
-  //   ).FillF([this](units::radian_t angle, units::meter_t height) {
-  //     units::meter_t x = arm.config.armLength * units::math::cos(angle);
-  //     units::meter_t y = height + arm.config.armLength * units::math::sin(angle);
-  //     return !(y >= 0.1_m && y <= 6_ft);
-  //   });
-
-  //   ArmavatorConfig config {
-  //     arm.config, elevator.config, occupancyGrid
-  //   };
-  // };
-  // Armavator armavator;
-
   struct SwerveBase{
     wom::NavX gyro;
     wpi::array<WPI_TalonFX*, 4> turnMotors{
@@ -112,6 +34,12 @@ struct RobotMap {
     wpi::array<WPI_TalonFX*, 4> driveMotors{
       new WPI_TalonFX(5), new WPI_TalonFX(8), new WPI_TalonFX(2), new WPI_TalonFX(7)
     };
+    //   wpi::array<WPI_TalonFX*, 4> turnMotors{
+    //   new WPI_TalonFX(1), new WPI_TalonFX(3), new WPI_TalonFX(4), new WPI_TalonFX(6)
+    // };
+    // wpi::array<WPI_TalonFX*, 4> driveMotors{
+    //   new WPI_TalonFX(5), new WPI_TalonFX(8), new WPI_TalonFX(2), new WPI_TalonFX(7)
+    // };
     
     wpi::array<wom::SwerveModuleConfig, 4> moduleConfigs{
       wom::SwerveModuleConfig{ // dimensions are assuming perfect square robot 1m^2 area
@@ -223,6 +151,9 @@ struct RobotMap {
     }
   };
 
+  SwerveBase swerveBase;
+
+
   struct SwerveGridPoses { // positions to place the items
     frc::Pose2d innerGrid1 = frc::Pose2d(1_m, 1_m, 0_deg); // Closest grid position to the Wall
     frc::Pose2d innerGrid2 = frc::Pose2d(1_m, 2_m, 0_deg); // Middle of Inner Grid
@@ -234,13 +165,114 @@ struct RobotMap {
     frc::Pose2d outerGrid2 = frc::Pose2d(1_m, 8_m, 0_deg); // Middle of Outer Grid
     frc::Pose2d outerGrid3 = frc::Pose2d(1_m, 9_m, 0_deg); // Closest grid position to enemy Loading Zone
   };
-  
-  SwerveBase swerveBase;
   SwerveGridPoses swerveGridPoses;
 
+  struct IntakeSystem {
+    WPI_TalonSRX rightMotor{98};
+    WPI_VictorSPX leftMotor{99};
+
+    // wom::MotorVoltageController rightIntake = wom::MotorVoltageController::Group(rightMotor);
+    // wom::TalonSr
+
+    // wom::Gearbox intakeGearbox  {
+    //   &rightIntake,
+    //   &
+    // };
+
+
+    frc::Compressor compressor{1, frc::PneumaticsModuleType::CTREPCM};
+    frc::DoubleSolenoid leftSolenoid{1, frc::PneumaticsModuleType::CTREPCM, 0, 1};
+    // frc::DoubleSolenoid rightSolenoid{PneumaticsModuleType::CTREPCM, 2};
+    frc::DoubleSolenoid gripSolenoid{1, frc::PneumaticsModuleType::CTREPCM, 6, 7};
+
+  }; IntakeSystem intake;
+
+  struct GripperSystem {
+    // WPI_TalonSRX leftGrip{89};
+    // WPI_TalonSRX rightGrip{88};
+
+    WPI_TalonSRX leftGrip{3};
+    WPI_TalonSRX rightGrip{4};
+  }; GripperSystem gripper;
+
+  struct Armavator {
+    static constexpr units::kilogram_t loadMass = 10_kg;
+    static constexpr units::kilogram_t armMass = 5_kg;
+    static constexpr units::kilogram_t carriageMass = 5_kg;
+
+    struct Arm {
+      WPI_TalonSRX motor{15};
+
+      wom::MotorVoltageController motorGroup = wom::MotorVoltageController::Group(motor);
+      
+      wom::DigitalEncoder encoder{0, 1, 2048};
+
+      wom::Gearbox gearbox {
+        &motorGroup,
+        &encoder,
+        wom::DCMotor::CIM(2).WithReduction(100)
+      };
+
+      wom::ArmConfig config {
+        "/armavator/arm",
+        gearbox,
+        wom::PIDConfig<units::radian, units::volts>("/armavator/arm/pid/config")
+      };
+    };
+    Arm arm;
+
+    struct Elevator {
+      WPI_TalonSRX motor{9};
+      WPI_TalonSRX motor1{10};
+
+      wom::MotorVoltageController motorGroup = wom::MotorVoltageController::Group(motor, motor1);
+
+      wom::DigitalEncoder encoder{2, 3, 2048};
+
+      wom::Gearbox gearbox {
+        &motorGroup,
+        &encoder,
+        wom::DCMotor::CIM(2).WithReduction(10)
+      };
+
+      wom::ElevatorConfig config {
+        "/armavator/elevator",
+        gearbox,
+        nullptr,
+        nullptr,
+        2_in,
+        armMass + loadMass + carriageMass,
+        1.5_m,
+        1_m,
+        000000000000000000000000000000000000000000_m, // an obvious way to say: CHANGE THIS
+        {
+          "/armavator/elevator/pid/config",
+          12_V / 1_m
+        }
+      };
+    };
+    Elevator elevator;
+
+    ArmavatorConfig::grid_t occupancyGrid = ArmavatorConfig::grid_t(
+      arm.config.minAngle, arm.config.maxAngle,
+      0_m, elevator.config.maxHeight,
+      50, 50
+    ).FillF([this](units::radian_t angle, units::meter_t height) {
+      units::meter_t x = arm.config.armLength * units::math::cos(angle);
+      units::meter_t y = height + arm.config.armLength * units::math::sin(angle);
+      return !(y >= 0.1_m && y <= 6_ft);
+    });
+
+    ArmavatorConfig config {
+      arm.config, elevator.config, occupancyGrid
+    };
+  }; Armavator armavator;
+
+  struct ArmTable {
+    std::shared_ptr<nt::NetworkTable> armManualTable = nt::NetworkTableInstance::GetDefault().GetTable("armManual");
+  }; ArmTable armTable;
 
   struct SwerveTable {
     std::shared_ptr<nt::NetworkTable> swerveDriveTable = nt::NetworkTableInstance::GetDefault().GetTable("swerve");
-  };
-  SwerveTable swerveTable;
+  }; SwerveTable swerveTable;
 };

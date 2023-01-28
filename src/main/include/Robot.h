@@ -4,8 +4,19 @@
 // #include "Vision.h"
 
 #include <string>
+
+#include <ctre/Phoenix.h>
 #include <frc/TimedRobot.h>
 #include <frc/event/EventLoop.h>
+#include "ControlUtil.h"
+
+
+#include "behaviour/BehaviourScheduler.h"
+#include "behaviour/Behaviour.h"
+#include "behaviour/SwerveBaseBehaviour.h"
+
+#include <frc/smartdashboard/SmartDashboard.h>
+#include <frc/event/BooleanEvent.h>
 
 using namespace frc;
 
@@ -29,7 +40,8 @@ class Robot : public frc::TimedRobot {
   frc::EventLoop loop;
   
   RobotMap map;
-  // Armavator *armavator;
+  Armavator *armavator;
   wom::SwerveDrive *swerve;
-  //SwerveModuleTest *swerveModule;
+  bool intakeSol = false;
+  bool gripperSol = false;
 };

@@ -1,11 +1,11 @@
 #include "Robot.h"
-
 #include "behaviour/BehaviourScheduler.h"
 #include "behaviour/Behaviour.h"
 #include "behaviour/SwerveBaseBehaviour.h"
 
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <frc/event/BooleanEvent.h>
+#include <units/math.h>
 
 using namespace frc;
 using namespace behaviour;
@@ -15,10 +15,6 @@ static units::second_t lastPeriodic;
 void Robot::RobotInit() {
   lastPeriodic = wom::now();
 
-  // armavator = new Armavator(map.armavator.config);
-  // BehaviourScheduler::GetInstance()->Register(armavator);
-
-  
   swerve = new wom::SwerveDrive(map.swerveBase.config, frc::Pose2d());
   // map.swerveBase.moduleConfigs[0].turnMotor.transmission->SetInverted(true);
   // map.swerveBase.moduleConfigs[2].turnMotor.transmission->SetInverted(true);
@@ -27,7 +23,11 @@ void Robot::RobotInit() {
     return make<ManualDrivebase>(swerve, &map.controllers.driver);
   });
 
-  
+  armavator = new Armavator(map.armavator.arm.gearbox, map.armavator.elevator.gearbox, map.armavator.config);
+  BehaviourScheduler::GetInstance()->Register(armavator);
+  armavator->SetDefaultBehaviour([this]() {
+    return make<ArmavatorRawBehaviour>(armavator, map.controllers.codriver);
+  });
 }
 
 void Robot::RobotPeriodic() {
@@ -39,9 +39,6 @@ void Robot::RobotPeriodic() {
 
   // map.swerveBase.turnMotors[0]->Set(map.controllers.driver.GetRightX());
   // map.swerveBase.driveMotors[0]->Set(map.controllers.driver.GetLeftY());
-
-
-  
   
   // Gets each module's supply and output currents and outputs them onto networktables
   map.swerveTable.swerveDriveTable->GetEntry("Module1SupplyCurrent").SetDoubleArray(std::vector<double>({map.swerveBase.driveMotors[0]->GetSupplyCurrent(), map.swerveBase.turnMotors[0]->GetSupplyCurrent()}));
@@ -53,10 +50,11 @@ void Robot::RobotPeriodic() {
   map.swerveTable.swerveDriveTable->GetEntry("Module4SupplyCurrent").SetDoubleArray(std::vector<double>({map.swerveBase.driveMotors[3]->GetSupplyCurrent(), map.swerveBase.turnMotors[3]->GetSupplyCurrent()}));
   map.swerveTable.swerveDriveTable->GetEntry("Module4OutputCurrent").SetDoubleArray(std::vector<double>({map.swerveBase.driveMotors[3]->GetOutputCurrent(), map.swerveBase.turnMotors[3]->GetOutputCurrent()}));
   
-
-
-  // armavator->OnUpdate(dt);
   swerve->OnUpdate(dt);
+
+  map.armTable.armManualTable->GetEntry("arm").SetDouble(map.armavator.arm.motor.GetSupplyCurrent());
+  map.armTable.armManualTable->GetEntry("elv").SetDouble(map.armavator.elevator.motor.GetSupplyCurrent());
+  armavator->OnUpdate(dt);
 }
 
 void Robot::AutonomousInit() { }
@@ -65,7 +63,9 @@ void Robot::AutonomousPeriodic() { }
 void Robot::TeleopInit() {
   loop.Clear();
   BehaviourScheduler *sched = BehaviourScheduler::GetInstance();
-  
+
+  swerve->OnStart();
+
   // map.controllers.driver.A(&loop).Rising().IfHigh([sched, this]() {
   //   sched->Schedule(make<ArmavatorGoToPositionBehaviour>(armavator, ArmavatorPosition{0.2_m, 0_deg}));
   // });
@@ -82,10 +82,11 @@ void Robot::TeleopInit() {
   //   sched->Schedule(make<ArmavatorGoToPositionBehaviour>(armavator, ArmavatorPosition{0_m, 0_deg}));
   // });
 
-
+  // if(!map.controllers.codriver.GetAButton() && !map.controllers.codriver.GetBButton() && map.controllers.codriver.GetRightTriggerAxis() <= 0.05 && map.controllers.codriver.GetLeftTriggerAxis() <= 0.05) {
+  //   map.armavator.arm.gearbox.transmission->SetVoltage(0_V);
+  
 
   // Swervedrivebase grid poses
-
   map.controllers.driver.POV(0, &loop).Rising().IfHigh([sched, this]() { // up dpad
     if (map.controllers.driver.GetAButton()) {
       if (map.controllers.driver.GetXButton()){
@@ -118,7 +119,22 @@ void Robot::TeleopInit() {
       sched->Schedule(make<DrivebasePoseBehaviour>(swerve, map.swerveGridPoses.centreGrid1)); // Community Grid 1 (inner grid side)
     }
   });
+
   swerve->OnStart();
+
+
+  //   map.armavator.elevator.gearbox.transmission->SetVoltage(0_V);
+  // } else{
+  //   if(map.controllers.codriver.GetAButton()) {
+  //     map.armavator.arm.gearbox.transmission->SetVoltage(13_V);
+  //   } else if (map.controllers.codriver.GetBButton()) {
+  //     map.armavator.arm.gearbox.transmission->SetVoltage(-13_V);
+  //   }else if(map.controllers.codriver.GetRightTriggerAxis() > 0.05) {
+  //     map.armavator.elevator.gearbox.transmission->SetVoltage(13_V * map.controllers.codriver.GetRightTriggerAxis());
+  //   } else if (map.controllers.codriver.GetLeftTriggerAxis() > 0.05) {
+  //     map.armavator.elevator.gearbox.transmission->SetVoltage(-13_V * map.controllers.codriver.GetLeftTriggerAxis() );
+  //   }
+  // }
 
 }
 
@@ -162,10 +178,11 @@ void Robot::TestPeriodic() { }
 //   simConfig->swerveSim.Update(dt);
 
 //   auto batteryVoltage = units::math::min(units::math::max(frc::sim::BatterySim::Calculate({
-//     simConfig->arm.GetCurrent(),
+//     // simConfig->arm.GetCurrent()
+
 //   }), 0_V), 12_V);
 //   frc::sim::RoboRioSim::SetVInVoltage(batteryVoltage);
 //   simTable->GetEntry("batteryVoltage").SetDouble(batteryVoltage.value()); 
 
 //   lastSimPeriodic = wom::now();
-// }
+// };

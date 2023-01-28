@@ -21,7 +21,7 @@ model {
           exportedHeaders {
             srcDir 'src/main/include'
           }
-        }
+        } 
       }
 
       binaries.all {
