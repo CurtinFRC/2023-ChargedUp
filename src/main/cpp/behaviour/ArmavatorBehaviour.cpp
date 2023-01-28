@@ -117,15 +117,19 @@ void ArmavatorRawBehaviour::OnStart() {
 
 void ArmavatorRawBehaviour::OnTick(units::second_t dt) {
   //Raw Positioning
-  if(!_codriver.GetRightY() && !_codriver.GetLeftY()) {
-    _armavator->arm->GetConfig().gearbox.transmission->SetVoltage(0_V);
-    _armavator->elevator->SetManual(0_V);
-  } else{
-    if(_codriver.GetRightY()) {
-      _armavator->arm->GetConfig().gearbox.transmission->SetVoltage(9.0_V * _codriver.GetRightY());
-    } else if (_codriver.GetLeftY()) {
-      _armavator->elevator->GetConfig().gearbox.transmission->SetVoltage(9.0_V * _codriver.GetLeftY());
-    }
-  }
+  _armavator->SetManual(
+    -_codriver.GetLeftY() * 9_V,
+    -_codriver.GetRightY() * 9_V
+  );
+  // if(!_codriver.GetRightY() && !_codriver.GetLeftY()) {
+  //   _armavator->arm->GetConfig().gearbox.transmission->SetVoltage(0_V);
+  //   _armavator->elevator->SetManual(0_V);
+  // } else{
+  //   if(_codriver.GetRightY()) {
+  //     _armavator->arm->GetConfig().gearbox.transmission->SetVoltage(9.0_V * _codriver.GetRightY());
+  //   } else if (_codriver.GetLeftY()) {
+  //     _armavator->elevator->GetConfig().gearbox.transmission->SetVoltage(9.0_V * _codriver.GetLeftY());
+  //   }
+  // }
 }
 

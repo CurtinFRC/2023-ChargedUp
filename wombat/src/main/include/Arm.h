@@ -32,6 +32,7 @@ namespace wom {
   enum class ArmState {
     kIdle,
     kAngle,
+    kRaw
   };
 
   class Arm : public behaviour::HasBehaviour {
@@ -42,10 +43,7 @@ namespace wom {
 
     void SetIdle();
     void SetAngle(units::radian_t angle);
-    void SetZeroing();
-    void SetRaw();
-
-    units::volt_t GetRaw();
+    void SetRaw(units::volt_t voltage);
 
     ArmConfig &GetConfig();
 
@@ -59,5 +57,7 @@ namespace wom {
     wom::PIDController<units::radian, units::volt> _pid;
     
     std::shared_ptr<nt::NetworkTable> _table;
+
+    units::volt_t _voltage{0};
   };
 };
