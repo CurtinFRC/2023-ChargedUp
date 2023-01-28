@@ -10,7 +10,6 @@ class ManualDrivebase : public behaviour::Behaviour{
   ManualDrivebase(wom::SwerveDrive *swerveDrivebase, frc::XboxController *driverController);
 
   void OnTick(units::second_t deltaTime) override;
-
  private:
   wom::SwerveDrive *_swerveDrivebase;
   frc::XboxController *_driverController;
@@ -19,12 +18,12 @@ class ManualDrivebase : public behaviour::Behaviour{
   const units::meters_per_second_t maxMovementMagnitude = 10_ft / 1_s;
 };
 
-class DrivebasePoseBehaviour : public behaviour::Behaviour{
- public:
-  DrivebasePoseBehaviour(wom::SwerveDrive *swerveDrivebase, frc::Pose2d pose);
-  void OnTick(units::second_t deltaTime) override;
+// class DrivebasePoseBehaviour : public behaviour::Behaviour{
+//  public:
+//   DrivebasePoseBehaviour(wom::SwerveDrive *swerveDrivebase, frc::Pose2d pose);
+//   void OnTick(units::second_t deltaTime) override;
 
- private:
-  wom::SwerveDrive *_swerveDrivebase;
-  frc::Pose2d _pose; // storing it directly, so not a pointer
-};
+//  private:
+//   wom::SwerveDrive *_swerveDrivebase;
+//   frc::Pose2d _pose; // storing it directly, so not a pointer
+// };

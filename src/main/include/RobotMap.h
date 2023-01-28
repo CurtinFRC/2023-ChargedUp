@@ -15,6 +15,7 @@
 #include "drivetrain/SwerveDrive.h"
 #include <frc/DoubleSolenoid.h>
 // #include "SwerveMod.h"
+#include <units/length.h>
 
 #include <iostream>
 #include <string>
@@ -25,87 +26,6 @@ struct RobotMap {
     frc::XboxController codriver{1};
   };
   Controllers controllers;
-
-  // struct Armavator {
-  //   static constexpr units::kilogram_t loadMass = 10_kg;
-  //   static constexpr units::kilogram_t armMass = 5_kg;
-  //   static constexpr units::kilogram_t carriageMass = 5_kg;
-
-  //   struct Arm {
-  //     WPI_TalonSRX motor1{1};
-  //     WPI_TalonSRX motor2{2};
-
-  //     wom::MotorVoltageController motor = wom::MotorVoltageController::Group(motor1, motor2);
-
-  //     wom::DigitalEncoder encoder{0, 1, 2048};
-
-  //     wom::Gearbox gearbox {
-  //       &motor,
-  //       &encoder,
-  //       wom::DCMotor::CIM(2).WithReduction(100)
-  //     };
-  //     wom::ArmConfig config {
-  //       "/armavator/arm",
-  //       gearbox,
-  //       nullptr,
-  //       nullptr,
-  //       {
-  //         "/armavator/arm/pid/config",
-  //         12_V / 45_deg
-  //       },
-  //       armMass, loadMass, 1_m,
-  //       -90_deg, 270_deg,
-  //       -90_deg
-  //     };
-  //   };
-  //   Arm arm;
-
-  //   struct Elevator {
-  //     WPI_TalonSRX motor1{3};
-  //     WPI_TalonSRX motor2{4};
-
-  //     wom::MotorVoltageController motor = wom::MotorVoltageController::Group(motor1, motor2);
-
-  //     wom::DigitalEncoder encoder{2, 3, 2048};
-
-  //     wom::Gearbox gearbox {
-  //       &motor,
-  //       &encoder,
-  //       wom::DCMotor::CIM(2).WithReduction(10)
-  //     };
-
-  //     wom::ElevatorConfig config {
-  //       "/armavator/elevator",
-  //       gearbox,
-  //       nullptr,
-  //       nullptr,
-  //       2_in,
-  //       armMass + loadMass + carriageMass,
-  //       1.5_m,
-  //       1_m,
-  //       {
-  //         "/armavator/elevator/pid/config",
-  //         12_V / 1_m
-  //       }
-  //     };
-  //   };
-  //   Elevator elevator;
-
-  //   ArmavatorConfig::grid_t occupancyGrid = ArmavatorConfig::grid_t(
-  //     arm.config.minAngle, arm.config.maxAngle,
-  //     0_m, elevator.config.maxHeight,
-  //     50, 50
-  //   ).FillF([this](units::radian_t angle, units::meter_t height) {
-  //     units::meter_t x = arm.config.armLength * units::math::cos(angle);
-  //     units::meter_t y = height + arm.config.armLength * units::math::sin(angle);
-  //     return !(y >= 0.1_m && y <= 6_ft);
-  //   });
-
-  //   ArmavatorConfig config {
-  //     arm.config, elevator.config, occupancyGrid
-  //   };
-  // };
-  // Armavator armavator;
 
   struct SwerveBase{
     wom::NavX gyro;
@@ -279,4 +199,82 @@ struct RobotMap {
     WPI_TalonSRX leftGrip{3};
     WPI_TalonSRX rightGrip{4};
   }; GripperSystem gripper;
+
+  struct Armavator {
+    static constexpr units::kilogram_t loadMass = 10_kg;
+    static constexpr units::kilogram_t armMass = 5_kg;
+    static constexpr units::kilogram_t carriageMass = 5_kg;
+
+    struct Arm {
+      WPI_TalonSRX motor{15};
+
+      wom::MotorVoltageController motorGroup = wom::MotorVoltageController::Group(motor);
+      
+      wom::DigitalEncoder encoder{0, 1, 2048};
+
+      wom::Gearbox gearbox {
+        &motorGroup,
+        &encoder,
+        wom::DCMotor::CIM(2).WithReduction(100)
+      };
+
+      wom::ArmConfig config {
+        "/armavator/arm",
+        gearbox,
+        wom::PIDConfig<units::radian, units::volts>("/armavator/arm/pid/config")
+      };
+    };
+    Arm arm;
+
+    struct Elevator {
+      WPI_TalonSRX motor{9};
+      WPI_TalonSRX motor1{10};
+
+      wom::MotorVoltageController motorGroup = wom::MotorVoltageController::Group(motor, motor1);
+
+      wom::DigitalEncoder encoder{2, 3, 2048};
+
+      wom::Gearbox gearbox {
+        &motorGroup,
+        &encoder,
+        wom::DCMotor::CIM(2).WithReduction(10)
+      };
+
+      wom::ElevatorConfig config {
+        "/armavator/elevator",
+        gearbox,
+        nullptr,
+        nullptr,
+        2_in,
+        armMass + loadMass + carriageMass,
+        1.5_m,
+        1_m,
+        000000000000000000000000000000000000000000_m, // an obvious way to say: CHANGE THIS
+        {
+          "/armavator/elevator/pid/config",
+          12_V / 1_m
+        }
+      };
+    };
+    Elevator elevator;
+
+    ArmavatorConfig::grid_t occupancyGrid = ArmavatorConfig::grid_t(
+      arm.config.minAngle, arm.config.maxAngle,
+      0_m, elevator.config.maxHeight,
+      50, 50
+    ).FillF([this](units::radian_t angle, units::meter_t height) {
+      units::meter_t x = arm.config.armLength * units::math::cos(angle);
+      units::meter_t y = height + arm.config.armLength * units::math::sin(angle);
+      return !(y >= 0.1_m && y <= 6_ft);
+    });
+
+    ArmavatorConfig config {
+      arm.config, elevator.config, occupancyGrid
+    };
+  }; Armavator armavator;
+
+  struct ArmTable {
+    
+  std::shared_ptr<nt::NetworkTable> armManualTable = nt::NetworkTableInstance::GetDefault().GetTable("armManual");
+  }; ArmTable armTable;
 };

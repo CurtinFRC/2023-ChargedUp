@@ -1,5 +1,4 @@
 #include "Robot.h"
-
 #include "behaviour/BehaviourScheduler.h"
 #include "behaviour/Behaviour.h"
 #include "behaviour/SwerveBaseBehaviour.h"
@@ -7,7 +6,6 @@
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <frc/event/BooleanEvent.h>
 #include <units/math.h>
-
 
 using namespace frc;
 using namespace behaviour;
@@ -17,9 +15,6 @@ static units::second_t lastPeriodic;
 void Robot::RobotInit() {
   lastPeriodic = wom::now();
 
-  // armavator = new Armavator(map.armavator.config);
-  // BehaviourScheduler::GetInstance()->Register(armavator);
-
   swerve = new wom::SwerveDrive(map.swerveBase.config, frc::Pose2d());
   // map.swerveBase.moduleConfigs[0].turnMotor.transmission->SetInverted(true);
   // map.swerveBase.moduleConfigs[2].turnMotor.transmission->SetInverted(true);
@@ -27,9 +22,12 @@ void Robot::RobotInit() {
   swerve->SetDefaultBehaviour([this]() {
     return make<ManualDrivebase>(swerve, &map.controllers.driver);
   });
+  armavator = new Armavator(map.armavator.arm.gearbox, map.armavator.elevator.gearbox, map.armavator.config);
+  BehaviourScheduler::GetInstance()->Register(armavator);
 
-  
-
+  armavator->SetDefaultBehaviour([this]() {
+    return make<ArmavatorRawBehaviour>(armavator, map.controllers.codriver);
+  });
 }
 
 void Robot::RobotPeriodic() {
@@ -39,8 +37,11 @@ void Robot::RobotPeriodic() {
   loop.Poll();
   BehaviourScheduler::GetInstance()->Tick();
 
-  // // armavator->OnUpdate(dt);
   swerve->OnUpdate(dt);
+  armavator->OnUpdate(dt);
+  map.armTable.armManualTable->GetEntry("arm").SetDouble(map.armavator.arm.motor.GetSupplyCurrent());
+  map.armTable.armManualTable->GetEntry("elv").SetDouble(map.armavator.elevator.motor.GetSupplyCurrent());
+
 }
 
 void Robot::AutonomousInit() { }
@@ -48,7 +49,7 @@ void Robot::AutonomousPeriodic() { }
 
 void Robot::TeleopInit() {
   loop.Clear();
-  // BehaviourScheduler *sched = BehaviourScheduler::GetInstance();
+  BehaviourScheduler *sched = BehaviourScheduler::GetInstance();
   
   // map.controllers.driver.A(&loop).Rising().IfHigh([sched, this]() {
   //   sched->Schedule(make<ArmavatorGoToPositionBehaviour>(armavator, ArmavatorPosition{0.2_m, 0_deg}));
@@ -70,61 +71,30 @@ void Robot::TeleopInit() {
   //   sched->Schedule(make<DrivebasePoseBehaviour>(swerve, frc::Pose2d(1_m, 1_m, 0_rad)));
   // });
   swerve->OnStart();
+  // map.controllers.codriver.X(&loop).Rising().IfHigh([sched, this]() {
+  //   sched->Schedule(make<ArmavatorGoToPositionBehaviour>(armavator, ArmavatorPosition{1.0_m, 240_deg}, map.controllers.codriver));
+  // });
 
-
+  // map.controllers.codriver.Y(&loop).Rising().IfHigh([sched, this]() {
+  //   sched->Schedule(make<ArmavatorGoToPositionBehaviour>(armavator, ArmavatorPosition{0_m, 0_deg}, map.controllers.codriver));
+  // });
 }
 
 void Robot::TeleopPeriodic() {
-  // map.swerveBase.turnMotors[0]->Set(0.5);
-  // double intakeSpeed = wom::deadzone(map.controllers.codriver.GetLeftY());
-
-  // // units::newton_meter_t max_torque_at_current_limit_i = map.intake.rightMotor.Torque(20_A);
-  // // units::volt_t max_voltage_for_current_limit_i = map.intake.rightMotor.Voltage(max_torque_at_current_limit_i, map.intake.rightMotor.encoder->GetEncoderAngularVelocity());
-  // // intakeSpeed = units::math::max(units::math::min(intakeSpeed * 11_V, max_voltage_for_current_limit_d), -max_voltage_for_current_limit_i);
-
-  // map.intake.rightMotor.Set(intakeSpeed);
-  // map.intake.leftMotor.Set(-intakeSpeed);
-
-  // if (map.controllers.codriver.GetAButtonReleased()) {
-  //   if (intakeSol) {
-  //     intakeSol = false;
-  //   } else {
-  //     intakeSol = true;
+  // if(!map.controllers.codriver.GetAButton() && !map.controllers.codriver.GetBButton() && map.controllers.codriver.GetRightTriggerAxis() <= 0.05 && map.controllers.codriver.GetLeftTriggerAxis() <= 0.05) {
+  //   map.armavator.arm.gearbox.transmission->SetVoltage(0_V);
+  //   map.armavator.elevator.gearbox.transmission->SetVoltage(0_V);
+  // } else{
+  //   if(map.controllers.codriver.GetAButton()) {
+  //     map.armavator.arm.gearbox.transmission->SetVoltage(13_V);
+  //   } else if (map.controllers.codriver.GetBButton()) {
+  //     map.armavator.arm.gearbox.transmission->SetVoltage(-13_V);
+  //   }else if(map.controllers.codriver.GetRightTriggerAxis() > 0.05) {
+  //     map.armavator.elevator.gearbox.transmission->SetVoltage(13_V * map.controllers.codriver.GetRightTriggerAxis());
+  //   } else if (map.controllers.codriver.GetLeftTriggerAxis() > 0.05) {
+  //     map.armavator.elevator.gearbox.transmission->SetVoltage(-13_V * map.controllers.codriver.GetLeftTriggerAxis() );
   //   }
   // }
-
-  // if (intakeSol) {
-  //   map.intake.leftSolenoid.Set(frc::DoubleSolenoid::Value::kForward);
-  //   // leftSolenoid.Set(Value::kForward);
-  //   std::cout << "out" << std::endl;
-  // } else {
-  //   map.intake.leftSolenoid.Set(frc::DoubleSolenoid::Value::kReverse);
-  //   // rightSolenoid.Set(Value::kReverse);
-  // }
-
-  // if (map.controllers.codriver.GetBButtonReleased()) {
-  //   if (gripperSol) {
-  //     gripperSol = false;
-  //   } else {
-  //     gripperSol = true;
-  //   }
-  // }
-
-  // if (gripperSol) {
-  //   map.intake.gripSolenoid.Set(frc::DoubleSolenoid::Value::kForward);
-  // } else {
-  //   map.intake.gripSolenoid.Set(frc::DoubleSolenoid::Value::kReverse);
-    
-  // }
-  // map.intake.compressor.EnableDigital();
-
-  double gripperSpeed = wom::deadzone(map.controllers.codriver.GetRightY(), 0.2);
-  gripperSpeed *= 0.6;
-  std::cout << gripperSpeed << std::endl;
-  map.gripper.leftGrip.Set(-gripperSpeed);
-  map.gripper.rightGrip.Set(gripperSpeed);
-
-  
  }
 
 void Robot::DisabledInit() { }
@@ -165,10 +135,11 @@ void Robot::TestPeriodic() { }
 //   simConfig->swerveSim.Update(dt);
 
 //   auto batteryVoltage = units::math::min(units::math::max(frc::sim::BatterySim::Calculate({
-//     simConfig->arm.GetCurrent(),
+//     // simConfig->arm.GetCurrent()
+
 //   }), 0_V), 12_V);
 //   frc::sim::RoboRioSim::SetVInVoltage(batteryVoltage);
 //   simTable->GetEntry("batteryVoltage").SetDouble(batteryVoltage.value()); 
 
 //   lastSimPeriodic = wom::now();
-// }
+// };

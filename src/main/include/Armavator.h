@@ -1,71 +1,60 @@
-// #pragma once
+#pragma once
 
-// #include "Arm.h"
-// #include "Elevator.h"
-// #include "Gearbox.h"
-// #include "Grid.h"
+#include "Arm.h"
+#include "Elevator.h"
+#include "Gearbox.h"
+#include "Grid.h"
 
-// #include <frc/DigitalInput.h>
-// #include <frc/simulation/DIOSim.h>
-// #include <frc/simulation/ElevatorSim.h>
-// #include <units/velocity.h>
+#include <frc/DigitalInput.h>
+#include <frc/simulation/DIOSim.h>
+#include <frc/simulation/ElevatorSim.h>
+#include <units/velocity.h>
+#include <ctre/Phoenix.h>
+#include <units/math.h>
+#include "behaviour/HasBehaviour.h"
 
-// struct ArmavatorConfig {
-//   using grid_t = wom::DiscretisedOccupancyGrid<units::radian, units::meter>;
+struct ArmavatorConfig {
+  using grid_t = wom::DiscretisedOccupancyGrid<units::radian, units::meter>;
 
-//   wom::ArmConfig arm;
-//   wom::ElevatorConfig elevator;
-//   grid_t grid;
-// };
+  wom::ArmConfig arm;
+  wom::ElevatorConfig elevator;
+  grid_t grid;
+};
 
-// struct ArmavatorPosition {
-//   units::meter_t height;
-//   units::radian_t angle;
-// };
+struct ArmavatorPosition {
+  units::meter_t height;
+  units::radian_t angle;
+};
 
+enum class ArmavatorState {
+  kIdle,
+  kPosition,
+  kManual
+};
 
-// enum class ArmavatorState {
-//   kIdle,
-//   kPosition,
-//   //ManualPositioning
-// };
+class Armavator : public behaviour::HasBehaviour {
+ public:
+  Armavator(wom::Gearbox &armGearbox, wom::Gearbox &elevatorGearbox, ArmavatorConfig &config);
+  ~Armavator();
+  void OnUpdate(units::second_t dt);
 
-// class Armavator : public behaviour::HasBehaviour {
-//  public:
-//   Armavator(ArmavatorConfig config);
+  void SetIdle();
+  void SetPosition(ArmavatorPosition pos);
+  void SetZeroing();
+  void SetManual(ArmavatorPosition pos);
 
-//   void OnUpdate(units::second_t dt);
+  ArmavatorPosition GetCurrentPosition() const;
+  bool IsStable() const;
 
-//   void SetIdle();
-//   void SetPosition(ArmavatorPosition pos);
+  wom::Arm *arm;
+  wom::Elevator *elevator;
 
-//   ArmavatorPosition GetCurrentPosition() const;
-//   bool IsStable() const;
+ private: 
+  ArmavatorState _state = ArmavatorState::kIdle;
 
-//   ArmavatorConfig config;
-//   wom::Arm arm;
-//   wom::Elevator elevator;
+  ArmavatorPosition _setpoint;
 
-//  private: 
-//   ArmavatorState _state = ArmavatorState::kIdle;
-
-//   ArmavatorPosition _setpoint;
-// };
-
-// /* SIMULATION */
-
-// namespace sim {
-//   class ArmavatorSim {
-//    public:
-//     ArmavatorSim(ArmavatorConfig config);
-
-//     void OnUpdate(units::second_t dt);
-
-//     units::ampere_t GetCurrent() const;
-
-//     ArmavatorConfig config;
-
-//     wom::sim::ArmSim armSim;
-//     wom::sim::ElevatorSim elevatorSim;
-//   };
-// }
+  wom::Gearbox &_armGearbox;
+  wom::Gearbox &_elevatorGearbox;
+  ArmavatorConfig &_config;
+};

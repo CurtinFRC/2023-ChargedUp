@@ -98,7 +98,6 @@ void ManualDrivebase::OnTick(units::second_t deltaTime){
   // _swerveDrivebase->SetTuning(3, 90_deg, 0_mps);
   // _swerveDrivebase->SetTuning(90_deg, 0_mps);
 
-
   _swerveDrivebase->SetVelocity(frc::ChassisSpeeds {
     l_x * maxMovementMagnitude,
     l_y * maxMovementMagnitude,
@@ -112,16 +111,16 @@ void ManualDrivebase::OnTick(units::second_t deltaTime){
 }
 
 
-DrivebasePoseBehaviour::DrivebasePoseBehaviour(wom::SwerveDrive *swerveDrivebase, frc::Pose2d pose)
-  : _swerveDrivebase(swerveDrivebase), _pose(pose)
-{
-  Controls(swerveDrivebase);
-}
+// DrivebasePoseBehaviour::DrivebasePoseBehaviour(wom::SwerveDrive *swerveDrivebase, frc::Pose2d pose)
+//   : _swerveDrivebase(swerveDrivebase), _pose(pose)
+// {
+//   Controls(swerveDrivebase);
+// }
 
-void DrivebasePoseBehaviour::OnTick(units::second_t deltaTime){
-  _swerveDrivebase->SetPose(_pose);
+// void DrivebasePoseBehaviour::OnTick(units::second_t deltaTime){
+//   _swerveDrivebase->SetPose(_pose);
 
-  if (_swerveDrivebase->IsAtSetPose()){
-    SetDone();
-  }
-}
+//   if (_swerveDrivebase->IsAtSetPose()){
+//     SetDone();
+//   }
+// }
