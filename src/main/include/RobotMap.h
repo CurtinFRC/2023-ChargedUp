@@ -215,18 +215,25 @@ struct RobotMap {
 
       wom::MotorVoltageController motorGroup = wom::MotorVoltageController::Group(motor);
       
-      wom::DigitalEncoder encoder{0, 1, 2048};
+      // wom::DigitalEncoder encoder{0, 1, 2048};
+      wom::DutyCycleEncoder encoder{0};
 
       wom::Gearbox gearbox {
         &motorGroup,
         &encoder,
-        wom::DCMotor::CIM(2).WithReduction(100)
+        wom::DCMotor::CIM(1).WithReduction(100)
       };
 
       wom::ArmConfig config {
         "/armavator/arm",
         gearbox,
-        wom::PIDConfig<units::radian, units::volts>("/armavator/arm/pid/config")
+        wom::PIDConfig<units::radian, units::volts>("/armavator/arm/pid/config"),
+        5_kg, 
+        5_kg,
+        1_m,
+        -90_deg,
+        270_deg,
+        0_deg
       };
     };
     Arm arm;
@@ -237,12 +244,12 @@ struct RobotMap {
 
       wom::MotorVoltageController motorGroup = wom::MotorVoltageController::Group(motor, motor1);
 
-      wom::DigitalEncoder encoder{2, 3, 2048};
+      wom::TalonSRXEncoder encoder{&motor, 20, 12.75};
 
       wom::Gearbox gearbox {
         &motorGroup,
         &encoder,
-        wom::DCMotor::CIM(2).WithReduction(10)
+        wom::DCMotor::CIM(2).WithReduction(12.75)
       };
 
       wom::ElevatorConfig config {
@@ -250,11 +257,11 @@ struct RobotMap {
         gearbox,
         nullptr,
         nullptr,
-        2_in,
+        65_mm / 2,
         armMass + loadMass + carriageMass,
-        1.5_m,
-        1_m,
-        000000000000000000000000000000000000000000_m, // an obvious way to say: CHANGE THIS
+        1.33_m,
+        0.28_m,
+        0.28_m, // an obvious way to say: CHANGE THIS
         {
           "/armavator/elevator/pid/config",
           12_V / 1_m

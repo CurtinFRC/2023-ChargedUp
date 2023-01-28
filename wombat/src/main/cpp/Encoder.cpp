@@ -75,8 +75,8 @@ double TalonFXEncoder::GetEncoderTickVelocity() const {
   return _controller->GetSelectedSensorVelocity() * 10;
 }
 
-TalonSRXEncoder::TalonSRXEncoder(ctre::phoenix::motorcontrol::can::TalonSRX *controller, double reduction) 
-  : Encoder(2048, reduction), _controller(controller) {
+TalonSRXEncoder::TalonSRXEncoder(ctre::phoenix::motorcontrol::can::TalonSRX *controller, double ticksPerRotation, double reduction) 
+  : Encoder(ticksPerRotation, reduction), _controller(controller) {
     controller->ConfigSelectedFeedbackSensor(ctre::phoenix::motorcontrol::TalonSRXFeedbackDevice::QuadEncoder);
   }
 
@@ -88,8 +88,8 @@ double TalonSRXEncoder::GetEncoderTickVelocity() const {
   return _controller->GetSelectedSensorVelocity() * 10;
 }
 
-DutyCycleEncoder::DutyCycleEncoder(int channel, double reduction) 
-  : Encoder(1, reduction), _dutyCycleEncoder(channel) {}
+DutyCycleEncoder::DutyCycleEncoder(int channel, double ticksPerRotation, double reduction) 
+  : Encoder(ticksPerRotation, reduction), _dutyCycleEncoder(channel) {}
 
 double DutyCycleEncoder::GetEncoderRawTicks() const {
   return _dutyCycleEncoder.Get().value();
@@ -161,4 +161,12 @@ class SimTalonFXEncoder : public sim::SimCapableEncoder {
 
 std::shared_ptr<sim::SimCapableEncoder> TalonFXEncoder::MakeSimEncoder() {
   return std::make_shared<SimTalonFXEncoder>(this, _controller);
+}
+
+std::shared_ptr<sim::SimCapableEncoder> TalonSRXEncoder::MakeSimEncoder() {
+  return nullptr;
+}
+
+std::shared_ptr<sim::SimCapableEncoder> DutyCycleEncoder::MakeSimEncoder() {
+  return nullptr;
 }

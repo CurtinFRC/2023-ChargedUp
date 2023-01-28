@@ -20,7 +20,7 @@ Arm::Arm(ArmConfig config)
     _pid(config.path + "/pid", config.pidConfig),
     _table(nt::NetworkTableInstance::GetDefault().GetTable(config.path))
 {
-  // _config.gearbox.encoder->SetEncoderPosition(_config.initialAngle);
+  _config.gearbox.encoder->SetEncoderPosition(_config.initialAngle);
 }
 
 void Arm::OnUpdate(units::second_t dt) {

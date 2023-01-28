@@ -82,21 +82,24 @@ namespace wom {
 
   class TalonSRXEncoder : public Encoder {
    public: 
-    TalonSRXEncoder(ctre::phoenix::motorcontrol::can::TalonSRX *controller, double reduction = 1);
+    TalonSRXEncoder(ctre::phoenix::motorcontrol::can::TalonSRX *controller, double ticksPerRotation, double reduction = 1);
    
     double GetEncoderRawTicks() const override;
     double GetEncoderTickVelocity() const override;
 
+    std::shared_ptr<sim::SimCapableEncoder> MakeSimEncoder() override;
    private: 
     ctre::phoenix::motorcontrol::can::TalonSRX *_controller;
   };
 
   class DutyCycleEncoder : public Encoder {
    public: 
-    DutyCycleEncoder(int channel, double reduction = 1);
+    DutyCycleEncoder(int channel, double ticksPerRotation = 1, double reduction = 1);
 
     double GetEncoderRawTicks() const override;
     double GetEncoderTickVelocity() const override;
+
+    std::shared_ptr<sim::SimCapableEncoder> MakeSimEncoder() override;
    private: 
     frc::DutyCycleEncoder _dutyCycleEncoder;
   };
