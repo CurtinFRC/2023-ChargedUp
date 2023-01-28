@@ -5,6 +5,7 @@
 #include "Armavator.h"
 #include "Gyro.h"
 #include "behaviour/ArmavatorBehaviour.h"
+#include <ctre/phoenix/motorcontrol/can/WPI_TalonFX.h>
 
 #include <ctre/phoenix/motorcontrol/can/WPI_TalonFX.h>
 #include <frc/Compressor.h>
@@ -28,10 +29,10 @@ struct RobotMap {
   struct SwerveBase{
     wom::NavX gyro;
     wpi::array<WPI_TalonFX*, 4> turnMotors{
-      new WPI_TalonFX(90), new WPI_TalonFX(92), new WPI_TalonFX(94), new WPI_TalonFX(97)
+      new WPI_TalonFX(1), new WPI_TalonFX(3), new WPI_TalonFX(4), new WPI_TalonFX(6)
     };
     wpi::array<WPI_TalonFX*, 4> driveMotors{
-      new WPI_TalonFX(91), new WPI_TalonFX(93), new WPI_TalonFX(95), new WPI_TalonFX(96)
+      new WPI_TalonFX(5), new WPI_TalonFX(8), new WPI_TalonFX(2), new WPI_TalonFX(7)
     };
     //   wpi::array<WPI_TalonFX*, 4> turnMotors{
     //   new WPI_TalonFX(1), new WPI_TalonFX(3), new WPI_TalonFX(4), new WPI_TalonFX(6)
@@ -111,7 +112,8 @@ struct RobotMap {
     };
     wom::SwerveModule::velocity_pid_conf_t velocityPID{
       "/drivetrain/pid/velocity/config",
-      // -1_V / 8_mps
+      //  12_V / 4_mps // webers per metre
+
     };
     wom::SwerveDriveConfig::pose_angle_conf_t poseAnglePID {
       "/drivetrain/pid/pose/angle/config",
@@ -143,9 +145,14 @@ struct RobotMap {
     SwerveBase() {
       for (size_t i = 0; i < 4; i++) {
         turnMotors[i]->ConfigSupplyCurrentLimit(SupplyCurrentLimitConfiguration(true, 15, 15, 0));
+        driveMotors[i]->SetNeutralMode(NeutralMode::Brake); // [Potential Issue]
+        turnMotors[i]->SetNeutralMode(NeutralMode::Brake); // [Potential Issue]
       }
     }
   };
+
+  SwerveBase swerveBase;
+
 
   struct SwerveGridPoses { // positions to place the items
     frc::Pose2d innerGrid1 = frc::Pose2d(1_m, 1_m, 0_deg); // Closest grid position to the Wall
@@ -158,17 +165,7 @@ struct RobotMap {
     frc::Pose2d outerGrid2 = frc::Pose2d(1_m, 8_m, 0_deg); // Middle of Outer Grid
     frc::Pose2d outerGrid3 = frc::Pose2d(1_m, 9_m, 0_deg); // Closest grid position to enemy Loading Zone
   };
-
-  // struct SwerveSingleModule{
-  //   SwerveSingleModuleConfig config{
-  //     WPI_TalonFX(1),
-  //     WPI_TalonFX(2)
-  //   };
-  // };
-  
-  SwerveBase swerveBase;
   SwerveGridPoses swerveGridPoses;
-  //SwerveSingleModule swerveSingleModuleMotors;
 
   struct IntakeSystem {
     WPI_TalonSRX rightMotor{98};
@@ -274,4 +271,8 @@ struct RobotMap {
   struct ArmTable {
     std::shared_ptr<nt::NetworkTable> armManualTable = nt::NetworkTableInstance::GetDefault().GetTable("armManual");
   }; ArmTable armTable;
+
+  struct SwerveTable {
+    std::shared_ptr<nt::NetworkTable> swerveDriveTable = nt::NetworkTableInstance::GetDefault().GetTable("swerve");
+  }; SwerveTable swerveTable;
 };
