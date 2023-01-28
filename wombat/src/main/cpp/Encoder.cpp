@@ -75,6 +75,30 @@ double TalonFXEncoder::GetEncoderTickVelocity() const {
   return _controller->GetSelectedSensorVelocity() * 10;
 }
 
+TalonSRXEncoder::TalonSRXEncoder(ctre::phoenix::motorcontrol::can::TalonSRX *controller, double reduction) 
+  : Encoder(2048, reduction), _controller(controller) {
+    controller->ConfigSelectedFeedbackSensor(ctre::phoenix::motorcontrol::TalonSRXFeedbackDevice::QuadEncoder);
+  }
+
+double TalonSRXEncoder::GetEncoderRawTicks() const {
+  return _controller->GetSelectedSensorPosition();
+}
+
+double TalonSRXEncoder::GetEncoderTickVelocity() const {
+  return _controller->GetSelectedSensorVelocity() * 10;
+}
+
+DutyCycleEncoder::DutyCycleEncoder(int channel, double reduction) 
+  : Encoder(1, reduction), _dutyCycleEncoder(channel) {}
+
+double DutyCycleEncoder::GetEncoderRawTicks() const {
+  return _dutyCycleEncoder.Get().value();
+}
+
+double DutyCycleEncoder::GetEncoderTickVelocity() const {
+  return 0;
+}
+
 /* SIM */
 #include "frc/simulation/EncoderSim.h"
 

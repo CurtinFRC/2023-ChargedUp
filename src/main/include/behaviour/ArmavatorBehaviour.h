@@ -6,6 +6,7 @@
 #include "Grid.h"
 #include <units/angle.h>
 #include <units/length.h>
+#include <iostream>
 
 class ArmavatorGoToPositionBehaviour : public behaviour::Behaviour {
  public:

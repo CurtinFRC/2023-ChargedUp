@@ -13,22 +13,18 @@
 #include <units/math.h>
 #include "behaviour/HasBehaviour.h"
 
-
 struct ArmavatorConfig {
   using grid_t = wom::DiscretisedOccupancyGrid<units::radian, units::meter>;
 
   wom::ArmConfig arm;
   wom::ElevatorConfig elevator;
   grid_t grid;
-
-
 };
 
 struct ArmavatorPosition {
   units::meter_t height;
   units::radian_t angle;
 };
-
 
 enum class ArmavatorState {
   kIdle,
@@ -47,8 +43,6 @@ class Armavator : public behaviour::HasBehaviour {
   void SetPosition(ArmavatorPosition pos);
   void SetZeroing();
   void SetManual(units::volt_t arm, units::volt_t elevator);
-
-  
 
   ArmavatorPosition GetCurrentPosition() const;
   bool IsStable() const;

@@ -1,12 +1,14 @@
 #pragma once
 
 #include "RobotMap.h"
+#include "Vision.h"
 
 #include <string>
 
 #include <ctre/Phoenix.h>
 #include <frc/TimedRobot.h>
 #include <frc/event/EventLoop.h>
+#include "ControlUtil.h"
 
 
 #include "behaviour/BehaviourScheduler.h"
@@ -40,4 +42,8 @@ class Robot : public frc::TimedRobot {
   RobotMap map;
   Armavator *armavator;
   wom::SwerveDrive *swerve;
+  bool intakeSol = false;
+  bool gripperSol = false;
+  Vision *vision;
+  //SwerveModuleTest *swerveModule;
 };

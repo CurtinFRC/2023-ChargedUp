@@ -1,6 +1,5 @@
 #include "behaviour/ArmavatorBehaviour.h"
 
-
 //Constructs class
 ArmavatorGoToPositionBehaviour::ArmavatorGoToPositionBehaviour(Armavator *armavator, ArmavatorPosition setpoint, frc::XboxController &codriver)
 : _armavator(armavator), _setpoint(setpoint), _codriver(codriver) {
@@ -130,4 +129,3 @@ void ArmavatorRawBehaviour::OnTick(units::second_t dt) {
   //   }
   // }
 }
-
