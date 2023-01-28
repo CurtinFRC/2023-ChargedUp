@@ -3,6 +3,7 @@
 #include "Arm.h"
 #include "Elevator.h"
 #include "Armavator.h"
+#include "SideIntake.h"
 #include "Gyro.h"
 #include "behaviour/ArmavatorBehaviour.h"
 #include "Vision.h"
@@ -11,6 +12,7 @@
 #include <frc/Compressor.h>
 #include <frc/XboxController.h>
 #include <ctre/Phoenix.h>
+#include <frc/DoubleSolenoid.h>
 
 #include "drivetrain/SwerveDrive.h"
 #include <frc/DoubleSolenoid.h>
@@ -284,5 +286,23 @@ struct RobotMap {
 
   struct SwerveTable {
     std::shared_ptr<nt::NetworkTable> swerveDriveTable = nt::NetworkTableInstance::GetDefault().GetTable("swerve");
-  }; SwerveTable swerveTable;
+  };
+  SwerveTable swerveTable;
+
+  struct SideIntakeSystem {
+
+    wom::MotorVoltageController rightIntakeMotor{new WPI_TalonSRX(18)};
+    wom::MotorVoltageController leftIntakeMotor{new WPI_TalonSRX(19)};
+
+    frc::DoubleSolenoid claspSolenoid{1, frc::PneumaticsModuleType::CTREPCM, 0, 1};  // change chanel values // grab pistons
+    frc::DoubleSolenoid deploySolenoid{1, frc::PneumaticsModuleType::CTREPCM, 2, 3};  // change chanel values // move pistons
+
+    SideIntakeConfig config{
+      &claspSolenoid,
+      &deploySolenoid,
+      &rightIntakeMotor,
+      &leftIntakeMotor
+    };
+  }; 
+  SideIntakeSystem sideIntake;
 };
