@@ -20,6 +20,7 @@ namespace wom {
     virtual void      ZeroEncoder();
 
     void SetEncoderPosition(units::radian_t position);
+    void SetEncoderOffset(units::radian_t offset);
 
     double  GetEncoderTicks() const;
     double  GetEncoderTicksPerRotation() const;

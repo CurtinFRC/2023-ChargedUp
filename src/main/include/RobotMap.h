@@ -236,6 +236,10 @@ struct RobotMap {
         270_deg,
         0_deg
       };
+
+      Arm() {
+        // encoder.SetEncoderOffset();
+      }
     };
     Arm arm;
 
