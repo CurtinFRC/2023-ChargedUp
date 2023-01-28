@@ -12,7 +12,7 @@ void Robot::RobotInit() {
   BehaviourScheduler::GetInstance()->Register(armavator);
 
   armavator->SetDefaultBehaviour([this]() {
-    return make<ArmavatorManualBehaviour>(armavator, map.controllers.codriver);
+    return make<ArmavatorRawBehaviour>(armavator, map.controllers.codriver);
   });
 
   // swerve = new wom::SwerveDrive(map.SwerveBase.config, frc::Pose2d());
