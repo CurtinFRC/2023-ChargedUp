@@ -122,9 +122,9 @@ void ArmavatorRawBehaviour::OnTick(units::second_t dt) {
     _armavator->elevator->SetManual(0_V);
   } else{
     if(_codriver.GetRightY()) {
-      _armavator->arm->GetConfig().gearbox.transmission->SetVoltage(12.0_V * _codriver.GetRightY());
+      _armavator->arm->GetConfig().gearbox.transmission->SetVoltage(9.0_V * _codriver.GetRightY());
     } else if (_codriver.GetLeftY()) {
-      _armavator->elevator->GetConfig().gearbox.transmission->SetVoltage(12.0_V * _codriver.GetLeftY());
+      _armavator->elevator->GetConfig().gearbox.transmission->SetVoltage(9.0_V * _codriver.GetLeftY());
     }
   }
 }
