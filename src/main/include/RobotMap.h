@@ -228,7 +228,10 @@ struct RobotMap {
       wom::ArmConfig config {
         "/armavator/arm",
         gearbox,
-        wom::PIDConfig<units::radian, units::volts>("/armavator/arm/pid/config"),
+        wom::PIDConfig<units::radian, units::volts>(
+          "/armavator/arm/pid/config",
+          6_V / 90_deg
+        ),
         5_kg, 
         5_kg,
         1_m,
@@ -238,7 +241,8 @@ struct RobotMap {
       };
 
       Arm() {
-        // encoder.SetEncoderOffset();
+        encoder.SetEncoderOffset(282_deg);
+        motor.SetInverted(true);
       }
     };
     Arm arm;
@@ -249,7 +253,7 @@ struct RobotMap {
 
       wom::MotorVoltageController motorGroup = wom::MotorVoltageController::Group(motor, motor1);
 
-      wom::TalonSRXEncoder encoder{&motor, 20, 10.71};
+      wom::TalonSRXEncoder encoder{&motor, -40, 10.71};
 
       wom::Gearbox gearbox {
         &motorGroup,
@@ -272,6 +276,11 @@ struct RobotMap {
           12_V / 1_m
         }
       };
+
+      Elevator() {
+        motor.SetInverted(true);
+        motor1.SetInverted(true);
+      }
     };
     Elevator elevator;
 

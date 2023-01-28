@@ -25,6 +25,7 @@ void Elevator::OnUpdate(units::second_t dt) {
 
   units::meter_t height = GetHeight();
 
+  _table->GetEntry("height").SetDouble(height.value());
 
   switch(_state) {
     case ElevatorState::kIdle:
