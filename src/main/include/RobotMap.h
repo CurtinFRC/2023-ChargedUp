@@ -244,12 +244,12 @@ struct RobotMap {
 
       wom::MotorVoltageController motorGroup = wom::MotorVoltageController::Group(motor, motor1);
 
-      wom::TalonSRXEncoder encoder{&motor, 20, 12.75};
+      wom::TalonSRXEncoder encoder{&motor, 20, 10.71};
 
       wom::Gearbox gearbox {
         &motorGroup,
         &encoder,
-        wom::DCMotor::CIM(2).WithReduction(12.75)
+        wom::DCMotor::CIM(2).WithReduction(10.71)
       };
 
       wom::ElevatorConfig config {
