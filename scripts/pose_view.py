@@ -12,7 +12,7 @@ parser.add_argument("paths", type=str, nargs='+', help="The NetworkTable paths f
 args = parser.parse_args()
 
 NetworkTables.initialize(server=args.ip)
-field_img = pygame.image.load("field.png")
+field_img = pygame.image.load("scripts/field.png")
 
 pygame.init()
 pygame.display.set_caption("Pose View")
@@ -30,6 +30,7 @@ def to_wh(meterXY, min_m=(0, 0), max_m=(16.459, 8.2296), reference_px=field_img.
 
 def to_xy(meterXY, min_m=(0, 0), max_m=(16.459, 8.2296), reference_px=field_img.get_size()):
   return np.array([int(remap(meterXY[0], min_m[0], max_m[0], 0, reference_px[0])), reference_px[1] - int(remap(meterXY[1], min_m[1], max_m[1], 0, reference_px[1]))])
+
 
 def draw_robot(colour):
   module_positions = [NetworkTables.getEntry("/drivetrain/modules/" + str(i) + "/config/position").getDoubleArray([0, 0]) for i in range(1, 5)]

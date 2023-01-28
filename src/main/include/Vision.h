@@ -5,7 +5,9 @@
 #include <photonlib/RobotPoseEstimator.h>
 #include <photonlib/SimPhotonCamera.h>
 
-#include <frc/apriltag/AprilTagFieldLayout.h>
+// #include <frc/geometry/Pose3d.h>
+// #include <photonlib/PhotonCamera.h>
+// #include <photonlib/SimPhotonCamera.h>
 
 #include <math.h>
 #include <iostream>

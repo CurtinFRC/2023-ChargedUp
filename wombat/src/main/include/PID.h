@@ -89,6 +89,10 @@ namespace wom {
       _wrap_range = range;
     }
 
+    void Reset() {
+      _integralSum = sum_t{0};
+    }
+
     out_t Calculate(in_t pv, units::second_t dt, out_t feedforward = out_t{0}) {
       auto error = do_wrap(_setpoint - pv);
       _integralSum += error * dt;
