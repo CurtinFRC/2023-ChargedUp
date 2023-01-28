@@ -149,7 +149,9 @@ struct RobotMap {
       &gyro,
       poseAnglePID, 
       posePositionPID,
-      10_kg // robot mass (estimate rn)
+      10_kg, // robot mass (estimate rn)
+      {0.1, 0.1, 0.1},
+      {0.9, 0.9, 0.9}
     };  
 
     SwerveBase() {

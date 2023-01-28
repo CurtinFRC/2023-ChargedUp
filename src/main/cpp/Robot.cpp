@@ -58,7 +58,12 @@ void Robot::RobotPeriodic() {
   map.armTable.armManualTable->GetEntry("elv").SetDouble(map.armavator.elevator.motor.GetSupplyCurrent());
   armavator->OnUpdate(dt);
 
-  vision->OnUpdate(dt);
+  auto visionPose = vision->OnUpdate(dt);
+
+  if (visionPose.has_value()){
+    swerve->AddVisionMeasurement(visionPose.value().first.ToPose2d(), visionPose.value().second);
+  }
+
 }
 
 void Robot::AutonomousInit() { }
