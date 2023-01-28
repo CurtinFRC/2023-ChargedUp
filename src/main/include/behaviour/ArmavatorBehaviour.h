@@ -47,6 +47,7 @@ class ArmavatorRawBehaviour : public behaviour::Behaviour {
  public:
   using grid_t = ArmavatorConfig::grid_t;
 
+  //constructor
   ArmavatorRawBehaviour(Armavator *armavator, frc::XboxController &codriver);
 
   void OnStart() override;

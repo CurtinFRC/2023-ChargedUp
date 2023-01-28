@@ -25,9 +25,11 @@ void Robot::RobotInit() {
     return make<ManualDrivebase>(swerve, &map.controllers.driver);
   });
 
+  //creates an instance of the armavator that can be used
   armavator = new Armavator(map.armavator.arm.gearbox, map.armavator.elevator.gearbox, map.armavator.config);
   BehaviourScheduler::GetInstance()->Register(armavator);
   armavator->SetDefaultBehaviour([this]() {
+    //sets default behaviour class
     return make<ArmavatorRawBehaviour>(armavator, map.controllers.codriver);
   });
 }
@@ -106,8 +108,9 @@ void Robot::TeleopInit() {
 
   swerve->OnStart();
 
+  //sets the premade positions usings buttonsS
   map.controllers.driver.A(&loop).Rising().IfHigh([sched, this]() {
-    sched->Schedule(make<ArmavatorGoToPositionBehaviour>(armavator, ArmavatorPosition{0.2_m, 0_deg}));
+    sched->Schedule(make<ArmavatorGoToPositionBehaviour>(armavator, ArmavatorPosition{1.0_m, 0_deg}));
   });
   map.controllers.driver.B(&loop).Rising().IfHigh([sched, this]() {
     sched->Schedule(make<ArmavatorGoToPositionBehaviour>(armavator, ArmavatorPosition{1.2_m, -75_deg}));
@@ -116,7 +119,7 @@ void Robot::TeleopInit() {
     sched->Schedule(make<ArmavatorGoToPositionBehaviour>(armavator, ArmavatorPosition{1.0_m, 240_deg}));
   });
   map.controllers.driver.Y(&loop).Rising().IfHigh([sched, this]() {
-    sched->Schedule(make<ArmavatorGoToPositionBehaviour>(armavator, ArmavatorPosition{0_m, 0_deg}));
+    sched->Schedule(make<ArmavatorGoToPositionBehaviour>(armavator, ArmavatorPosition{0.77_m, 0_deg}));
   });
 
   // if(!map.controllers.codriver.GetAButton() && !map.controllers.codriver.GetBButton() && map.controllers.codriver.GetRightTriggerAxis() <= 0.05 && map.controllers.codriver.GetLeftTriggerAxis() <= 0.05) {

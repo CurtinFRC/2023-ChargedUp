@@ -13,25 +13,30 @@
 #include <units/math.h>
 #include "behaviour/HasBehaviour.h"
 
+//the config class
 struct ArmavatorConfig {
   using grid_t = wom::DiscretisedOccupancyGrid<units::radian, units::meter>;
 
+  //uses the configs from gthe arm and elevator, as well as includes the grid
   wom::ArmConfig arm;
   wom::ElevatorConfig elevator;
   grid_t grid;
 };
 
+//class of info for setting positions
 struct ArmavatorPosition {
   units::meter_t height;
   units::radian_t angle;
 };
 
+//creates the states used to control the robot
 enum class ArmavatorState {
   kIdle,
   kPosition,
   kManual
 };
 
+//the behaviour class information
 class Armavator : public behaviour::HasBehaviour {
  public:
   Armavator(wom::Gearbox &armGearbox, wom::Gearbox &elevatorGearbox, ArmavatorConfig &config);
@@ -39,6 +44,7 @@ class Armavator : public behaviour::HasBehaviour {
 
   void OnUpdate(units::second_t dt);
 
+  //sets what infomation is needed for the states
   void SetIdle();
   void SetPosition(ArmavatorPosition pos);
   void SetZeroing();
@@ -47,6 +53,7 @@ class Armavator : public behaviour::HasBehaviour {
   ArmavatorPosition GetCurrentPosition() const;
   bool IsStable() const;
 
+  //creates the arm and the elevator
   wom::Arm *arm;
   wom::Elevator *elevator;
 
@@ -57,6 +64,7 @@ class Armavator : public behaviour::HasBehaviour {
   units::volt_t _rawArm;
   units::volt_t _rawElevator;
 
+  //creates an instance of the gearboxes and config
   wom::Gearbox &_armGearbox;
   wom::Gearbox &_elevatorGearbox;
   ArmavatorConfig &_config;
