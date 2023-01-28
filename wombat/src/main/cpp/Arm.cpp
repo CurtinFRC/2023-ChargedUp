@@ -37,15 +37,18 @@ void Arm::OnUpdate(units::second_t dt) {
         voltage = _pid.Calculate(angle, dt, feedforward);
       }
       break;
+    case ArmState::kRaw:
+      voltage = _voltage;
+      break;
   }
 
-  if (
-    (((_config.minAngle + _config.angleOffset) < 75_deg && units::math::abs(_pid.GetSetpoint() - _config.minAngle) <= 1_deg)
-     || ((_config.maxAngle + _config.angleOffset) > 105_deg && units::math::abs(_pid.GetSetpoint() - _config.maxAngle) <= 1_deg)) && 
-    units::math::abs(_pid.GetError()) <= 1_deg
-  ) {
-    voltage = 0_V;
-  }
+  // if (
+  //   (((_config.minAngle + _config.angleOffset) < 75_deg && units::math::abs(_pid.GetSetpoint() - _config.minAngle) <= 1_deg)
+  //    || ((_config.maxAngle + _config.angleOffset) > 105_deg && units::math::abs(_pid.GetSetpoint() - _config.maxAngle) <= 1_deg)) && 
+  //   units::math::abs(_pid.GetError()) <= 1_deg
+  // ) {
+  //   voltage = 0_V;
+  // }
   _config.gearbox.transmission->SetVoltage(voltage);
 
   _table->GetEntry("angle").SetDouble(angle.convert<units::degree>().value());
@@ -54,6 +57,11 @@ void Arm::OnUpdate(units::second_t dt) {
 
 void Arm::SetIdle() {
   _state = ArmState::kIdle;
+}
+
+void Arm::SetRaw(units::volt_t voltage) {
+  _state = ArmState::kRaw;
+  _voltage = voltage;
 }
 
 void Arm::SetAngle(units::radian_t angle) {

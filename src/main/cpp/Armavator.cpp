@@ -24,8 +24,8 @@ void Armavator::OnUpdate(units::second_t dt) {
       elevator->SetPID(_setpoint.height);
       break;
     case ArmavatorState::kManual:
-      arm->SetAngle(_setpoint.angle);
-      elevator->SetPID(_setpoint.height);
+      arm->SetRaw(_rawArm);
+      elevator->SetManual(_rawElevator);
       break;
   }
 
@@ -42,9 +42,10 @@ void Armavator::SetPosition(ArmavatorPosition pos) {
   _setpoint = pos;
 }
 
-void Armavator::SetManual(ArmavatorPosition pos) {
+void Armavator::SetManual(units::volt_t arm, units::volt_t elevator) {
   _state = ArmavatorState::kManual;
-  _setpoint = pos;
+  _rawArm = arm;
+  _rawElevator = elevator;
 }
 
 ArmavatorPosition Armavator::GetCurrentPosition() const {

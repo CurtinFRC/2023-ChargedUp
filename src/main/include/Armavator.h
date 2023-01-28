@@ -36,12 +36,13 @@ class Armavator : public behaviour::HasBehaviour {
  public:
   Armavator(wom::Gearbox &armGearbox, wom::Gearbox &elevatorGearbox, ArmavatorConfig &config);
   ~Armavator();
+
   void OnUpdate(units::second_t dt);
 
   void SetIdle();
   void SetPosition(ArmavatorPosition pos);
   void SetZeroing();
-  void SetManual(ArmavatorPosition pos);
+  void SetManual(units::volt_t arm, units::volt_t elevator);
 
   ArmavatorPosition GetCurrentPosition() const;
   bool IsStable() const;
@@ -53,6 +54,8 @@ class Armavator : public behaviour::HasBehaviour {
   ArmavatorState _state = ArmavatorState::kIdle;
 
   ArmavatorPosition _setpoint;
+  units::volt_t _rawArm;
+  units::volt_t _rawElevator;
 
   wom::Gearbox &_armGearbox;
   wom::Gearbox &_elevatorGearbox;

@@ -1,10 +1,9 @@
 #pragma once
 #include "VoltageController.h"
-// #include "Arm.h"
-// #include "Elevator.h"
-// #include "Armavator.h"
+#include "Arm.h"
+#include "Elevator.h"
+#include "Armavator.h"
 #include "Gyro.h"
-// #include "behaviour/SingleSwerveBehaviour.h"
 #include "behaviour/ArmavatorBehaviour.h"
 
 #include <ctre/phoenix/motorcontrol/can/WPI_TalonFX.h>
@@ -14,7 +13,6 @@
 
 #include "drivetrain/SwerveDrive.h"
 #include <frc/DoubleSolenoid.h>
-// #include "SwerveMod.h"
 #include <units/length.h>
 
 #include <iostream>
@@ -274,7 +272,6 @@ struct RobotMap {
   }; Armavator armavator;
 
   struct ArmTable {
-    
-  std::shared_ptr<nt::NetworkTable> armManualTable = nt::NetworkTableInstance::GetDefault().GetTable("armManual");
+    std::shared_ptr<nt::NetworkTable> armManualTable = nt::NetworkTableInstance::GetDefault().GetTable("armManual");
   }; ArmTable armTable;
 };

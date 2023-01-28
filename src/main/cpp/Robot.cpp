@@ -22,9 +22,9 @@ void Robot::RobotInit() {
   swerve->SetDefaultBehaviour([this]() {
     return make<ManualDrivebase>(swerve, &map.controllers.driver);
   });
+
   armavator = new Armavator(map.armavator.arm.gearbox, map.armavator.elevator.gearbox, map.armavator.config);
   BehaviourScheduler::GetInstance()->Register(armavator);
-
   armavator->SetDefaultBehaviour([this]() {
     return make<ArmavatorRawBehaviour>(armavator, map.controllers.codriver);
   });
@@ -38,10 +38,10 @@ void Robot::RobotPeriodic() {
   BehaviourScheduler::GetInstance()->Tick();
 
   swerve->OnUpdate(dt);
-  armavator->OnUpdate(dt);
+
   map.armTable.armManualTable->GetEntry("arm").SetDouble(map.armavator.arm.motor.GetSupplyCurrent());
   map.armTable.armManualTable->GetEntry("elv").SetDouble(map.armavator.elevator.motor.GetSupplyCurrent());
-
+  armavator->OnUpdate(dt);
 }
 
 void Robot::AutonomousInit() { }
@@ -50,7 +50,9 @@ void Robot::AutonomousPeriodic() { }
 void Robot::TeleopInit() {
   loop.Clear();
   BehaviourScheduler *sched = BehaviourScheduler::GetInstance();
-  
+
+  swerve->OnStart();
+
   // map.controllers.driver.A(&loop).Rising().IfHigh([sched, this]() {
   //   sched->Schedule(make<ArmavatorGoToPositionBehaviour>(armavator, ArmavatorPosition{0.2_m, 0_deg}));
   // });
@@ -70,7 +72,6 @@ void Robot::TeleopInit() {
   // map.controllers.driver.POV(0, &loop).Rising().IfHigh([sched, this]() { // up dpad
   //   sched->Schedule(make<DrivebasePoseBehaviour>(swerve, frc::Pose2d(1_m, 1_m, 0_rad)));
   // });
-  swerve->OnStart();
   // map.controllers.codriver.X(&loop).Rising().IfHigh([sched, this]() {
   //   sched->Schedule(make<ArmavatorGoToPositionBehaviour>(armavator, ArmavatorPosition{1.0_m, 240_deg}, map.controllers.codriver));
   // });
