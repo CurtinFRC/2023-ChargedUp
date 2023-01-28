@@ -1,8 +1,8 @@
 #include "behaviour/ArmavatorBehaviour.h"
 
 //Constructs class
-ArmavatorGoToPositionBehaviour::ArmavatorGoToPositionBehaviour(Armavator *armavator, ArmavatorPosition setpoint, frc::XboxController &codriver)
-: _armavator(armavator), _setpoint(setpoint), _codriver(codriver) {
+ArmavatorGoToPositionBehaviour::ArmavatorGoToPositionBehaviour(Armavator *armavator, ArmavatorPosition setpoint)
+: _armavator(armavator), _setpoint(setpoint) {
   //tells code that the points are controlled (one point at a time) 
   Controls(armavator);
 };

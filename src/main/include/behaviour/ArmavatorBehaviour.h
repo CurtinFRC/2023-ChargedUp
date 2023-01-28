@@ -13,7 +13,7 @@ class ArmavatorGoToPositionBehaviour : public behaviour::Behaviour {
    using grid_t = ArmavatorConfig::grid_t;
 
    //constructor for class
-   ArmavatorGoToPositionBehaviour(Armavator *armavator, ArmavatorPosition setpoint, frc::XboxController &codriver);
+   ArmavatorGoToPositionBehaviour(Armavator *armavator, ArmavatorPosition setpoint);
 
    //Override the OnStart abd OnTick functions, while setting the units for when Armavator runs
    void OnStart() override;
@@ -25,7 +25,6 @@ class ArmavatorGoToPositionBehaviour : public behaviour::Behaviour {
 
    ArmavatorPosition _setpoint;
    std::deque<grid_t::GridPathNode<units::second>> _waypoints;
-   frc::XboxController &_codriver;
 };
 
 class ArmavatorManualBehaviour : public behaviour::Behaviour {
