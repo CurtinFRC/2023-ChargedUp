@@ -244,8 +244,8 @@ struct RobotMap {
     Arm arm;
 
     struct Elevator {
-      WPI_TalonSRX motor{9};
-      WPI_TalonSRX motor1{10};
+      WPI_TalonSRX motor{19};
+      WPI_TalonSRX motor1{18};
 
       wom::MotorVoltageController motorGroup = wom::MotorVoltageController::Group(motor, motor1);
 
