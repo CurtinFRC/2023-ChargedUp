@@ -15,6 +15,8 @@ static units::second_t lastPeriodic;
 void Robot::RobotInit() {
   lastPeriodic = wom::now();
 
+  vision = new Vision(map.vision.config);
+
   swerve = new wom::SwerveDrive(map.swerveBase.config, frc::Pose2d());
   // map.swerveBase.moduleConfigs[0].turnMotor.transmission->SetInverted(true);
   // map.swerveBase.moduleConfigs[2].turnMotor.transmission->SetInverted(true);
@@ -55,6 +57,8 @@ void Robot::RobotPeriodic() {
   map.armTable.armManualTable->GetEntry("arm").SetDouble(map.armavator.arm.motor.GetSupplyCurrent());
   map.armTable.armManualTable->GetEntry("elv").SetDouble(map.armavator.elevator.motor.GetSupplyCurrent());
   armavator->OnUpdate(dt);
+
+  vision->OnUpdate(dt);
 }
 
 void Robot::AutonomousInit() { }
