@@ -14,25 +14,24 @@ void SideIntake::OnUpdate(units::second_t dt) {
       break;
 
     case SideIntakeState::kIntaking:
-      if (voltage == intakeVoltage) {
         voltage = intakeVoltage;
-        _config.claspSolenoid->Set(frc::DoubleSolenoid::kForward);
-      } else {
-        voltage = intakeVoltage;
-      }
+        //_config.claspSolenoid->Set(frc::DoubleSolenoid::kForward);
       break;
     
     case SideIntakeState::kMovePiston:
       _config.deploySolenoid->Toggle();
       break;
 
+    case SideIntakeState::kClaspPiston:
+    _config.claspSolenoid->Toggle();
+     break;
+
     case SideIntakeState::kOuttaking:
-      if (voltage == outtakeVoltage) {
         voltage = outtakeVoltage;
-        _config.claspSolenoid->Set(frc::DoubleSolenoid::kReverse);
-      } else {
-        voltage = outtakeVoltage;
-      }
+        //_config.claspSolenoid->Set(frc::DoubleSolenoid::kReverse);
+       
+        
+      
       break;
   }
     _config.leftIntakeMotor->SetVoltage(voltage);
@@ -47,13 +46,18 @@ void SideIntake::SetIntaking() {
   _state = SideIntakeState::kIntaking;
 }
 
-void SideIntake::SetPistons() {
+void SideIntake::SetMovePiston() {
   _state = SideIntakeState::kMovePiston;
 }
 
+void SideIntake::SetClaspPiston(){
+  _state = SideIntakeState::kClaspPiston;
+}
 void SideIntake::SetOuttaking() {
   _state = SideIntakeState::kOuttaking;
 }
+
+
 
 SideIntakeState SideIntake::GetState() const {
   return _state;

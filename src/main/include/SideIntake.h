@@ -17,6 +17,7 @@ enum class SideIntakeState {
   kIdle,
   kIntaking,
   kMovePiston,
+  kClaspPiston,
   kOuttaking
 };
 
@@ -28,7 +29,9 @@ class SideIntake : public behaviour::HasBehaviour {
 
   void SetIdle();
   void SetIntaking();
-  void SetPistons();
+  void SetMovePiston();
+  void SetClaspPiston();
+
   void SetOuttaking();
 
   SideIntakeState GetState() const;

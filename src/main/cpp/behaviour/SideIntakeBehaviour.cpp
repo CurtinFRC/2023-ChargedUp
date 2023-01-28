@@ -14,6 +14,9 @@ void SideIntakeBehaviour::OnTick(units::second_t dt) {
   } if (_codriver.GetBButton()) {
     sideIntake->SetOuttaking();
   } if (_codriver.GetXButton())  {
-    sideIntake->SetPistons();
+    sideIntake->SetMovePiston();
+  } if (_codriver.GetYButton()){
+    sideIntake->SetClaspPiston();
   }
+
 }
