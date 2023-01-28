@@ -1,7 +1,7 @@
 #pragma once
 
 #include "RobotMap.h"
-// #include "Vision.h"
+#include "Vision.h"
 
 #include <string>
 
@@ -44,4 +44,6 @@ class Robot : public frc::TimedRobot {
   wom::SwerveDrive *swerve;
   bool intakeSol = false;
   bool gripperSol = false;
+  Vision *vision;
+  //SwerveModuleTest *swerveModule;
 };

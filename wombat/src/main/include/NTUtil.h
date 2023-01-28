@@ -3,6 +3,7 @@
 #include <networktables/NetworkTable.h>
 
 #include <frc/geometry/Pose2d.h>
+#include <frc/geometry/Pose3d.h>
 
 #include <functional>
 #include <iostream>
@@ -56,4 +57,6 @@ namespace wom {
   };
 
   void WritePose2NT(std::shared_ptr<nt::NetworkTable> table, frc::Pose2d pose);
+  void WritePose2NT(std::shared_ptr<nt::NetworkTable> table, frc::Pose3d pose);
+
 }
