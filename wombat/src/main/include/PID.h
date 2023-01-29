@@ -81,8 +81,16 @@ namespace wom {
       return _setpoint;
     }
 
+    in_t GetError() const {
+      return _last_error;
+    }
+
     void SetWrap(std::optional<in_t> range) {
       _wrap_range = range;
+    }
+
+    void Reset() {
+      _integralSum = sum_t{0};
     }
 
     out_t Calculate(in_t pv, units::second_t dt, out_t feedforward = out_t{0}) {
@@ -109,6 +117,7 @@ namespace wom {
       _table->GetEntry("demand").SetDouble(out.value());
 
       _last_pv = pv;
+      _last_error = error;
       _iterations++;
       return out;
     }
@@ -137,7 +146,7 @@ namespace wom {
 
     in_t _setpoint;
     sum_t _integralSum{0};
-    in_t _last_pv{0};
+    in_t _last_pv{0}, _last_error{0};
 
     std::optional<in_t> _wrap_range;
     

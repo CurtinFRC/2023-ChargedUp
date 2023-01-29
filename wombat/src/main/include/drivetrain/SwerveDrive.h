@@ -1,5 +1,5 @@
 #pragma once 
-
+//Hazzer was here :]
 #include "Gearbox.h"
 #include "Gyro.h"
 #include "behaviour/HasBehaviour.h"
@@ -28,6 +28,8 @@ namespace wom {
     Gearbox turnMotor;
 
     units::meter_t wheelRadius;
+
+    void WriteNT(std::shared_ptr<nt::NetworkTable> table) const;
   };
 
   class SwerveModule {
@@ -37,10 +39,13 @@ namespace wom {
 
     SwerveModule(std::string path, SwerveModuleConfig config, angle_pid_conf_t anglePID, velocity_pid_conf_t velocityPID);
     void OnUpdate(units::second_t dt);
+    void OnStart();
 
     void SetIdle();
     void SetPID(units::radian_t angle, units::meters_per_second_t speed);
   
+    void SetAccelerationLimit(units::meters_per_second_squared_t limit);
+
     // frc::SwerveModuleState GetState();
     frc::SwerveModulePosition GetPosition() const;
 
@@ -57,9 +62,14 @@ namespace wom {
     PIDController<units::meters_per_second, units::volt> _velocityPIDController;
 
     std::shared_ptr<nt::NetworkTable> _table;
+
+    units::meters_per_second_squared_t _currentAccelerationLimit = 6_mps / 1_s;
   };
 
   struct SwerveDriveConfig {
+    using pose_angle_conf_t = PIDConfig<units::radian, units::radians_per_second>;
+    using pose_position_conf_t = PIDConfig<units::meter, units::meters_per_second>;
+
     std::string path;
     SwerveModule::angle_pid_conf_t anglePID;
     SwerveModule::velocity_pid_conf_t velocityPID;
@@ -68,21 +78,24 @@ namespace wom {
 
     wom::Gyro *gyro;
 
-    PIDConfig<units::radian, units::radians_per_second> poseAnglePID;
-    PIDConfig<units::meter, units::meters_per_second> posePositionPID;
+    pose_angle_conf_t poseAnglePID;
+    pose_position_conf_t posePositionPID;
 
     units::kilogram_t mass;
 
     wpi::array<double, 3> stateStdDevs{0.0, 0.0, 0.0};
     wpi::array<double, 3> visionMeasurementStdDevs{0.0, 0.0, 0.0};
 
+    void WriteNT(std::shared_ptr<nt::NetworkTable> table);
   };
 
   enum class SwerveDriveState {
     kIdle, 
     kVelocity,
     kFieldRelativeVelocity,
-    kPose
+    kPose,
+    kIndividualTuning,
+    kTuning
   };
 
   struct FieldRelativeSpeeds {
@@ -107,12 +120,17 @@ namespace wom {
     SwerveDrive(SwerveDriveConfig config, frc::Pose2d initialPose);
 
     void OnUpdate(units::second_t dt);
+    void OnStart();
 
     void SetIdle();
     void SetVelocity(frc::ChassisSpeeds speeds);
     void SetFieldRelativeVelocity(FieldRelativeSpeeds speeds);
     void SetPose(frc::Pose2d pose);
     bool IsAtSetPose();
+    void SetIndividualTuning(int mod, units::radian_t angle, units::meters_per_second_t speed);
+    void SetTuning(units::radian_t angle, units::meters_per_second_t speed);
+
+    void SetAccelerationLimit(units::meters_per_second_squared_t limit);
 
     void ResetPose(frc::Pose2d pose);
 
@@ -139,6 +157,12 @@ namespace wom {
     PIDController<units::meter, units::meters_per_second> _yPIDController;
 
     std::shared_ptr<nt::NetworkTable> _table;
+
+    int _mod;
+    units::radian_t _angle;
+    units::meters_per_second_t _speed;
+
+
   };
 
   namespace sim {

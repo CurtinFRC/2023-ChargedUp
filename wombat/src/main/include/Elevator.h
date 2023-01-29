@@ -18,19 +18,23 @@ namespace wom {
   enum class ElevatorState {
     kIdle, 
     kPID,
-    kZeroing,
-    kManual
+    kManual,
+    kRaw
   };
 
   struct ElevatorConfig {
     std::string path;
-    Gearbox gearbox;
+    wom::Gearbox gearbox;
     frc::DigitalInput *topSensor;
     frc::DigitalInput *bottomSensor;
     units::meter_t radius;
     units::kilogram_t mass;
-    units::meter_t maxHeight;
+    units::meter_t maxHeight = 1.33_m;
+    units::meter_t minHeight = 0.28_m;
+    units::meter_t initialHeight = 1.3_m;
     PIDConfig<units::meter, units::volt> pid;
+
+    void WriteNT(std::shared_ptr<nt::NetworkTable> table);
   };
 
   class Elevator : public behaviour::HasBehaviour {
@@ -40,12 +44,17 @@ namespace wom {
     void OnUpdate(units::second_t dt);
 
     void SetManual(units::volt_t voltage);
-    void SetPID();
-    void SetZeroing();
+    void SetPID(units::meter_t height);
     void SetIdle();
+    void SetRaw(units::volt_t voltage);
 
+    ElevatorConfig &GetConfig();
+    
     bool IsStable() const;
     ElevatorState GetState() const;
+
+    units::meter_t GetHeight() const;
+    units::meters_per_second_t MaxSpeed() const;
   
    private:
     units::volt_t _setpointManual{0};
@@ -56,27 +65,7 @@ namespace wom {
     PIDController<units::meter, units::volt> _pid;
 
     std::shared_ptr<nt::NetworkTable> _table;
+
+    units::volt_t _voltage{0};
   };
-
-  /* SIMULATION */
-
-  namespace sim {
-    class ElevatorSim {
-     public:
-      ElevatorSim(ElevatorConfig config);
-
-      void Update(units::second_t dt);
-
-      units::meter_t GetHeight() const;
-      units::ampere_t GetCurrent() const;
-     private:
-      ElevatorConfig config;
-      frc::sim::ElevatorSim sim;
-
-      std::shared_ptr<SimCapableEncoder> encoder;
-      frc::sim::DIOSim *lowerLimit, *upperLimit;
-
-      std::shared_ptr<nt::NetworkTable> table;
-    };
-  }
-}
+};
