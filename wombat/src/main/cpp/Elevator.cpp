@@ -25,6 +25,7 @@ void Elevator::OnUpdate(units::second_t dt) {
 
   units::meter_t height = GetHeight();
 
+  _table->GetEntry("height").SetDouble(height.value());
 
   switch(_state) {
     case ElevatorState::kIdle:
@@ -38,6 +39,9 @@ void Elevator::OnUpdate(units::second_t dt) {
         auto feedforward = _config.gearbox.motor.Voltage((_config.mass * 9.81_mps_sq) * _config.radius, 0_rad_per_s);
         voltage = _pid.Calculate(height, dt, feedforward);
       }
+    break;
+    case ElevatorState::kRaw:
+      voltage = _voltage;
     break;
   }
 
@@ -73,6 +77,11 @@ void Elevator::SetPID(units::meter_t height) {
 
 void Elevator::SetIdle() {
   _state = ElevatorState::kIdle;
+}
+
+void Elevator::SetRaw(units::volt_t voltage) {
+  _state = ElevatorState::kRaw;
+  _voltage = voltage;
 }
 
 ElevatorConfig &Elevator::GetConfig() {

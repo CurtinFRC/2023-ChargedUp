@@ -19,6 +19,7 @@ namespace wom {
     kIdle, 
     kPID,
     kManual,
+    kRaw
   };
 
   struct ElevatorConfig {
@@ -28,9 +29,9 @@ namespace wom {
     frc::DigitalInput *bottomSensor;
     units::meter_t radius;
     units::kilogram_t mass;
-    units::meter_t maxHeight;
-    units::meter_t minHeight;
-    units::meter_t initialHeight;
+    units::meter_t maxHeight = 1.33_m;
+    units::meter_t minHeight = 0.28_m;
+    units::meter_t initialHeight = 1.3_m;
     PIDConfig<units::meter, units::volt> pid;
 
     void WriteNT(std::shared_ptr<nt::NetworkTable> table);
@@ -45,9 +46,7 @@ namespace wom {
     void SetManual(units::volt_t voltage);
     void SetPID(units::meter_t height);
     void SetIdle();
-    void SetRaw();
-
-    units::volt_t GetRaw();
+    void SetRaw(units::volt_t voltage);
 
     ElevatorConfig &GetConfig();
     
@@ -66,5 +65,7 @@ namespace wom {
     PIDController<units::meter, units::volt> _pid;
 
     std::shared_ptr<nt::NetworkTable> _table;
+
+    units::volt_t _voltage{0};
   };
 };

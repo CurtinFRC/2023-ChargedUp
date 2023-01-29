@@ -23,6 +23,7 @@
 
 struct RobotMap {
   struct Controllers {  
+    //sets driver station numbers for the controllers
     frc::XboxController driver{0};
     frc::XboxController codriver{1};
   };
@@ -217,34 +218,49 @@ struct RobotMap {
 
       wom::MotorVoltageController motorGroup = wom::MotorVoltageController::Group(motor);
       
-      wom::DigitalEncoder encoder{0, 1, 2048};
+      // wom::DigitalEncoder encoder{0, 1, 2048};
+      wom::DutyCycleEncoder encoder{0};
 
       wom::Gearbox gearbox {
         &motorGroup,
         &encoder,
-        wom::DCMotor::CIM(2).WithReduction(100)
+        wom::DCMotor::CIM(1).WithReduction(100)
       };
 
       wom::ArmConfig config {
         "/armavator/arm",
         gearbox,
-        wom::PIDConfig<units::radian, units::volts>("/armavator/arm/pid/config")
+        wom::PIDConfig<units::radian, units::volts>(
+          "/armavator/arm/pid/config",
+          6_V / 90_deg
+        ),
+        5_kg, 
+        5_kg,
+        1_m,
+        -90_deg,
+        270_deg,
+        0_deg
       };
+
+      Arm() {
+        encoder.SetEncoderOffset(282_deg);
+        motor.SetInverted(true);
+      }
     };
     Arm arm;
 
     struct Elevator {
-      WPI_TalonSRX motor{9};
-      WPI_TalonSRX motor1{10};
+      WPI_TalonSRX motor{19};
+      WPI_TalonSRX motor1{18};
 
       wom::MotorVoltageController motorGroup = wom::MotorVoltageController::Group(motor, motor1);
 
-      wom::DigitalEncoder encoder{2, 3, 2048};
+      wom::TalonSRXEncoder encoder{&motor, -40, 10.71};
 
       wom::Gearbox gearbox {
         &motorGroup,
         &encoder,
-        wom::DCMotor::CIM(2).WithReduction(10)
+        wom::DCMotor::CIM(2).WithReduction(10.71)
       };
 
       wom::ElevatorConfig config {
@@ -252,16 +268,21 @@ struct RobotMap {
         gearbox,
         nullptr,
         nullptr,
-        2_in,
+        65_mm / 2,
         armMass + loadMass + carriageMass,
-        1.5_m,
-        1_m,
-        000000000000000000000000000000000000000000_m, // an obvious way to say: CHANGE THIS
+        1.33_m,
+        0.28_m,
+        0.28_m, // an obvious way to say: CHANGE THIS
         {
           "/armavator/elevator/pid/config",
           12_V / 1_m
         }
       };
+
+      Elevator() {
+        motor.SetInverted(true);
+        motor1.SetInverted(true);
+      }
     };
     Elevator elevator;
 
