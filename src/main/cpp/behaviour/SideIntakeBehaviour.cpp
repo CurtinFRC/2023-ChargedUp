@@ -9,9 +9,9 @@ SideIntakeBehaviour::SideIntakeBehaviour(SideIntake *sideIntake, frc::XboxContro
 void SideIntakeBehaviour::OnStart() {}
 
 void SideIntakeBehaviour::OnTick(units::second_t dt) {
-  if (_codriver.GetAButton()) {
+  if (_codriver.GetLeftBumper()) {
     sideIntake->SetIntaking();
-  } else if (_codriver.GetBButton()) {
+  } else if (_codriver.GetRightBumper()) {
     sideIntake->SetOuttaking();
   } else if (_codriver.GetXButton())  {
     sideIntake->SetPistons();
