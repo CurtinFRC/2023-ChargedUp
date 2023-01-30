@@ -13,7 +13,7 @@ void SideIntakeBehaviour::OnTick(units::second_t dt) {
     sideIntake->SetIntaking();
   } else if (_codriver.GetRightBumper()) {
     sideIntake->SetOuttaking();
-  } else if (_codriver.GetXButton())  {
+  } else if (_codriver.GetLeftTriggerAxis()>0.15)  {
     sideIntake->SetPistons();
   } else {
     sideIntake->SetIdle();

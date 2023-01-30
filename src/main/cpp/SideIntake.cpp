@@ -14,12 +14,13 @@ void SideIntake::OnUpdate(units::second_t dt) {
       break;
 
     case SideIntakeState::kIntaking:
-      if (voltage == intakeVoltage) {
-        voltage = intakeVoltage;
-        _config.claspSolenoid->Set(frc::DoubleSolenoid::kForward);
-      } else {
-        voltage = intakeVoltage;
-      }
+      // if (voltage == intakeVoltage) {
+      //   voltage = intakeVoltage;
+      //   _config.claspSolenoid->Set(frc::DoubleSolenoid::kForward);
+      // } else {
+      //   voltage = intakeVoltage;
+      // }
+      voltage = intakeVoltage;
       break;
     
     case SideIntakeState::kMovePiston:
@@ -27,12 +28,13 @@ void SideIntake::OnUpdate(units::second_t dt) {
       break;
 
     case SideIntakeState::kOuttaking:
-      if (voltage == outtakeVoltage) {
-        voltage = outtakeVoltage;
-        _config.claspSolenoid->Set(frc::DoubleSolenoid::kReverse);
-      } else {
-        voltage = outtakeVoltage;
-      }
+      // if (voltage == outtakeVoltage) {
+      //   voltage = outtakeVoltage;
+      //   _config.claspSolenoid->Set(frc::DoubleSolenoid::kReverse);
+      // } else {
+      //   voltage = outtakeVoltage;
+      // }
+      voltage = outtakeVoltage;
       break;
   }
     _config.leftIntakeMotor->SetVoltage(voltage);
