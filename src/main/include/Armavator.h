@@ -27,6 +27,7 @@ struct ArmavatorConfig {
 struct ArmavatorPosition {
   units::meter_t height;
   units::radian_t angle;
+
 };
 
 //creates the states used to control the robot
@@ -56,11 +57,11 @@ class Armavator : public behaviour::HasBehaviour {
   //creates the arm and the elevator
   wom::Arm *arm;
   wom::Elevator *elevator;
+  ArmavatorPosition _setpoint;
 
  private: 
   ArmavatorState _state = ArmavatorState::kIdle;
 
-  ArmavatorPosition _setpoint;
   units::volt_t _rawArm;
   units::volt_t _rawElevator;
 

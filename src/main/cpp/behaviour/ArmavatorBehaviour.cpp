@@ -29,6 +29,15 @@ void ArmavatorGoToPositionBehaviour::OnStart() {
 
 //Function for OnTick
 void ArmavatorGoToPositionBehaviour::OnTick(units::second_t dt) {
+
+  if(_setpoint.height < 1_m) {
+    if (_setpoint.angle >  0_rad){ // _setpoint.angle.value() < 0
+      _setpoint.angle = 0_rad;
+    }
+    if (_setpoint.angle > 90_rad){
+      _setpoint.angle = 90_rad;
+    }
+  };
   _armavator->SetPosition(_setpoint);
 
   //If statement for targetted waypoint position is empty

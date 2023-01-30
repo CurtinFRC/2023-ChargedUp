@@ -239,7 +239,7 @@ struct RobotMap {
         gearbox,
         wom::PIDConfig<units::radian, units::volts>(
           "/armavator/arm/pid/config",
-          4_V / 90_deg
+          18_V / 90_deg
         ),
         5_kg, 
         5_kg,
@@ -251,7 +251,7 @@ struct RobotMap {
 
       Arm() {
         //sets the ofset for the encoder so it reads the right value
-        encoder.SetEncoderOffset(282_deg);
+        encoder.SetEncoderOffset(-77.6_deg);
         //inverts the motor so that it goes in the right direction while using RAW controlls
         motor.SetInverted(true);
       }
@@ -291,7 +291,7 @@ struct RobotMap {
         {
           //creates the pid for the elevator to remove error
           "/armavator/elevator/pid/config",
-          12_V / 1_m
+          4_V / 1_m
         }
       };
 

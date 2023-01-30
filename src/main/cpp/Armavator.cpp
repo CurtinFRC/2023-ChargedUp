@@ -51,6 +51,7 @@ void Armavator::SetManual(units::volt_t arm, units::volt_t elevator) {
   _rawElevator = elevator;
 }
 
+
 //returns the current position
 ArmavatorPosition Armavator::GetCurrentPosition() const {
   return ArmavatorPosition {
