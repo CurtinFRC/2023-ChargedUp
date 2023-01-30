@@ -11,9 +11,11 @@ void SideIntakeBehaviour::OnStart() {}
 void SideIntakeBehaviour::OnTick(units::second_t dt) {
   if (_codriver.GetAButton()) {
     sideIntake->SetIntaking();
-  } if (_codriver.GetBButton()) {
+  } else if (_codriver.GetBButton()) {
     sideIntake->SetOuttaking();
-  } if (_codriver.GetXButton())  {
+  } else if (_codriver.GetXButton())  {
     sideIntake->SetPistons();
+  } else {
+    sideIntake->SetIdle();
   }
 }
