@@ -12,6 +12,7 @@
 #include <units/current.h>
 
 namespace wom {
+  //stes up the config information 
   struct ArmConfig {
     std::string path;
 
@@ -29,16 +30,19 @@ namespace wom {
     void WriteNT(std::shared_ptr<nt::NetworkTable> table);
   };
 
+  //creates all states that will be used
   enum class ArmState {
     kIdle,
     kAngle,
     kRaw
   };
 
+  //allows the different states to be usable
   class Arm : public behaviour::HasBehaviour {
   public:
     Arm(ArmConfig config);
 
+    //creates functions based of off the different states with useable information
     void OnUpdate(units::second_t dt);
 
     void SetIdle();
@@ -52,6 +56,7 @@ namespace wom {
     
     bool IsStable() const;
   private:
+    //information that cannot be changed or edited by user
     ArmConfig _config;
     ArmState _state = ArmState::kIdle;
     wom::PIDController<units::radian, units::volt> _pid;

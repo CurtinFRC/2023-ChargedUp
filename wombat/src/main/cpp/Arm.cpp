@@ -5,6 +5,7 @@
 using namespace frc;
 using namespace wom;
 
+//creates network table instatnce on shuffleboard
 void ArmConfig::WriteNT(std::shared_ptr<nt::NetworkTable> table) {
   table->GetEntry("armMass").SetDouble(armMass.value());
   table->GetEntry("loadMass").SetDouble(loadMass.value());
@@ -15,6 +16,7 @@ void ArmConfig::WriteNT(std::shared_ptr<nt::NetworkTable> table) {
   table->GetEntry("angleOffset").SetDouble(initialAngle.convert<units::degree>().value());
 }
 
+//arm config is used
 Arm::Arm(ArmConfig config)
   : _config(config),
     _pid(config.path + "/pid", config.pidConfig),
@@ -22,10 +24,13 @@ Arm::Arm(ArmConfig config)
 {
 }
 
+//the loop that allows the information to be used
 void Arm::OnUpdate(units::second_t dt) {
+  //sets the voltage and gets the current angle
   units::volt_t voltage = 0_V;
   auto angle = GetAngle();
 
+  //sets usable infromation for each state
   switch (_state) {
     case ArmState::kIdle:
       break;
@@ -50,9 +55,12 @@ void Arm::OnUpdate(units::second_t dt) {
   // }
   _config.gearbox.transmission->SetVoltage(voltage);
 
+  //creates network table instances for the angle and config of the arm
   _table->GetEntry("angle").SetDouble(angle.convert<units::degree>().value());
   _config.WriteNT(_table->GetSubTable("config"));
 }
+
+//defines information needed for the functions and connects the states to their respective function
 
 void Arm::SetIdle() {
   _state = ArmState::kIdle;

@@ -20,6 +20,7 @@
 
 using namespace frc;
 
+//overrides the preset robot functions so that we can edit them
 class Robot : public frc::TimedRobot {
  public:
   void RobotInit() override;
@@ -39,6 +40,7 @@ class Robot : public frc::TimedRobot {
  private:
   frc::EventLoop loop;
   
+  //creates nessesary instances to use in robot.cpp and robotmap.h
   RobotMap map;
   Armavator *armavator;
   wom::SwerveDrive *swerve;

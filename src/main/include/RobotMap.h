@@ -27,7 +27,7 @@ struct RobotMap {
   };
   Controllers controllers;
 
-
+  //stores nessesary info for vision
   struct Vision {
     VisionConfig config{
       std::make_shared<photonlib::PhotonCamera>("camera"), 
@@ -37,6 +37,7 @@ struct RobotMap {
   };
   Vision vision;
 
+  ////stores nessesary info for swerve
   struct SwerveBase{
     wom::NavX gyro;
     wpi::array<WPI_TalonFX*, 4> turnMotors{
@@ -206,31 +207,39 @@ struct RobotMap {
     WPI_TalonSRX rightGrip{4};
   }; GripperSystem gripper;
 
+  //stores nessesary info for Armavator
   struct Armavator {
+    //sets up the percieved masses for the load, arm and carraige
     static constexpr units::kilogram_t loadMass = 10_kg;
     static constexpr units::kilogram_t armMass = 5_kg;
     static constexpr units::kilogram_t carriageMass = 5_kg;
 
+    //stores nessesary info for arm
     struct Arm {
+      //creates the motor used for the arm as well as the port it is plugged in
       WPI_TalonSRX motor{15};
 
+      //create the motor group used for the arm
       wom::MotorVoltageController motorGroup = wom::MotorVoltageController::Group(motor);
       
       // wom::DigitalEncoder encoder{0, 1, 2048};
+      //sets the type sof encoder that is used up
       wom::DutyCycleEncoder encoder{0};
 
+      //creates an instance of the arm gearbox
       wom::Gearbox gearbox {
         &motorGroup,
         &encoder,
         wom::DCMotor::CIM(1).WithReduction(100)
       };
 
+      //creates arm config information
       wom::ArmConfig config {
         "/armavator/arm",
         gearbox,
         wom::PIDConfig<units::radian, units::volts>(
           "/armavator/arm/pid/config",
-          6_V / 90_deg
+          4_V / 90_deg
         ),
         5_kg, 
         5_kg,
@@ -241,26 +250,34 @@ struct RobotMap {
       };
 
       Arm() {
+        //sets the ofset for the encoder so it reads the right value
         encoder.SetEncoderOffset(282_deg);
+        //inverts the motor so that it goes in the right direction while using RAW controlls
         motor.SetInverted(true);
       }
     };
     Arm arm;
 
+    ////stores nessesary info for elevator
     struct Elevator {
+      //creates instances of the motors used for the elevator as well as what ports they are plugged in to
       WPI_TalonSRX motor{19};
       WPI_TalonSRX motor1{18};
 
+      //creates the motor group that can be used to set voltage
       wom::MotorVoltageController motorGroup = wom::MotorVoltageController::Group(motor, motor1);
 
+      //creates an instance of the encoder that will be used for the elevator
       wom::TalonSRXEncoder encoder{&motor, -40, 10.71};
 
+      //creates an instance of the gearbox used for the elevator
       wom::Gearbox gearbox {
         &motorGroup,
         &encoder,
         wom::DCMotor::CIM(2).WithReduction(10.71)
       };
 
+      //creates the elevator config information to use
       wom::ElevatorConfig config {
         "/armavator/elevator",
         gearbox,
@@ -272,11 +289,13 @@ struct RobotMap {
         0.28_m,
         0.28_m, // an obvious way to say: CHANGE THIS
         {
+          //creates the pid for the elevator to remove error
           "/armavator/elevator/pid/config",
           12_V / 1_m
         }
       };
 
+      //inverts the motor directions so that the arm goes to the right place during RAW control
       Elevator() {
         motor.SetInverted(true);
         motor1.SetInverted(true);
@@ -284,6 +303,7 @@ struct RobotMap {
     };
     Elevator elevator;
 
+    //creates the config for the occupancygrid 
     ArmavatorConfig::grid_t occupancyGrid = ArmavatorConfig::grid_t(
       arm.config.minAngle, arm.config.maxAngle,
       0_m, elevator.config.maxHeight,
@@ -299,6 +319,7 @@ struct RobotMap {
     };
   }; Armavator armavator;
 
+  //creates the arm and swerve instances for network tables on shuffleboard
   struct ArmTable {
     std::shared_ptr<nt::NetworkTable> armManualTable = nt::NetworkTableInstance::GetDefault().GetTable("armManual");
   }; ArmTable armTable;

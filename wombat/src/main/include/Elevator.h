@@ -15,6 +15,7 @@
 #include <memory>
 
 namespace wom {
+  //creates states used for the elevator
   enum class ElevatorState {
     kIdle, 
     kPID,
@@ -22,6 +23,7 @@ namespace wom {
     kRaw
   };
 
+  //creates infromation that is used in the config
   struct ElevatorConfig {
     std::string path;
     wom::Gearbox gearbox;
@@ -37,10 +39,12 @@ namespace wom {
     void WriteNT(std::shared_ptr<nt::NetworkTable> table);
   };
 
+  //allows the states to be useable
   class Elevator : public behaviour::HasBehaviour {
    public: 
     Elevator(ElevatorConfig params);
 
+    //creates functions for the states with the nessesary information
     void OnUpdate(units::second_t dt);
 
     void SetManual(units::volt_t voltage);
@@ -57,6 +61,7 @@ namespace wom {
     units::meters_per_second_t MaxSpeed() const;
   
    private:
+   //information that cannot be changed or edited by user
     units::volt_t _setpointManual{0};
 
     ElevatorConfig _config;
