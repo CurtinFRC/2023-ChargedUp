@@ -2,6 +2,7 @@
 #include "behaviour/BehaviourScheduler.h"
 #include "behaviour/Behaviour.h"
 #include "behaviour/SwerveBaseBehaviour.h"
+#include "behaviour/SideIntakeBehaviour.h"
 
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <frc/event/BooleanEvent.h>
@@ -17,6 +18,12 @@ void Robot::RobotInit() {
 
   vision = new Vision(map.vision.config);
 
+  sideIntake = new SideIntake(map.sideIntake.config);
+  BehaviourScheduler::GetInstance()->Register(sideIntake);
+  sideIntake->SetDefaultBehaviour([this]() {
+    return make<SideIntakeBehaviour>(sideIntake, map.controllers.codriver);
+  });
+  
   swerve = new wom::SwerveDrive(map.swerveBase.config, frc::Pose2d());
   // map.swerveBase.moduleConfigs[0].turnMotor.transmission->SetInverted(true);
   // map.swerveBase.moduleConfigs[2].turnMotor.transmission->SetInverted(true);
@@ -59,6 +66,7 @@ void Robot::RobotPeriodic() {
   armavator->OnUpdate(dt);
 
   vision->OnUpdate(dt);
+  sideIntake->OnUpdate(dt);
 }
 
 void Robot::AutonomousInit() { }
@@ -127,6 +135,10 @@ void Robot::TeleopInit() {
   swerve->OnStart();
 
 
+  // map.controllers.driver.POV(0, &loop).Rising().IfHigh([sched, this]() { // up dpad
+  //   sched->Schedule(make<DrivebasePoseBehaviour>(swerve, frc::Pose2d(1_m, 1_m, 0_rad)));
+  // });
+
   //   map.armavator.elevator.gearbox.transmission->SetVoltage(0_V);
   // } else{
   //   if(map.controllers.codriver.GetAButton()) {
@@ -142,7 +154,7 @@ void Robot::TeleopInit() {
 
 }
 
-void Robot::TeleopPeriodic() { }
+void Robot::TeleopPeriodic() {}
 
 void Robot::DisabledInit() { }
 void Robot::DisabledPeriodic() { }

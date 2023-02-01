@@ -3,6 +3,7 @@
 #include "Arm.h"
 #include "Elevator.h"
 #include "Armavator.h"
+#include "SideIntake.h"
 #include "Gyro.h"
 #include "behaviour/ArmavatorBehaviour.h"
 #include "Vision.h"
@@ -11,6 +12,7 @@
 #include <frc/Compressor.h>
 #include <frc/XboxController.h>
 #include <ctre/Phoenix.h>
+#include <frc/DoubleSolenoid.h>
 
 #include "drivetrain/SwerveDrive.h"
 #include <frc/DoubleSolenoid.h>
@@ -163,7 +165,6 @@ struct RobotMap {
 
   SwerveBase swerveBase;
 
-
   struct SwerveGridPoses { // positions to place the items
     frc::Pose2d innerGrid1 = frc::Pose2d(1_m, 1_m, 0_deg); // Closest grid position to the Wall
     frc::Pose2d innerGrid2 = frc::Pose2d(1_m, 2_m, 0_deg); // Middle of Inner Grid
@@ -177,32 +178,32 @@ struct RobotMap {
   };
   SwerveGridPoses swerveGridPoses;
 
-  struct IntakeSystem {
-    WPI_TalonSRX rightMotor{98};
-    WPI_VictorSPX leftMotor{99};
+  // struct IntakeSystem {
+  //   WPI_TalonSRX rightMotor{98};
+  //   WPI_VictorSPX leftMotor{99};
 
-    // wom::MotorVoltageController rightIntake = wom::MotorVoltageController::Group(rightMotor);
-    // wom::TalonSr
+  //   // wom::MotorVoltageController rightIntake = wom::MotorVoltageController::Group(rightMotor);
+  //   // wom::TalonSr
 
-    // wom::Gearbox intakeGearbox  {
-    //   &rightIntake,
-    //   &
-    // };
+  //   // wom::Gearbox intakeGearbox  {
+  //   //   &rightIntake,
+  //   //   &
+  //   // };
 
 
-    frc::Compressor compressor{1, frc::PneumaticsModuleType::CTREPCM};
-    frc::DoubleSolenoid leftSolenoid{1, frc::PneumaticsModuleType::CTREPCM, 0, 1};
-    // frc::DoubleSolenoid rightSolenoid{PneumaticsModuleType::CTREPCM, 2};
-    frc::DoubleSolenoid gripSolenoid{1, frc::PneumaticsModuleType::CTREPCM, 6, 7};
+  //   frc::Compressor compressor{1, frc::PneumaticsModuleType::CTREPCM};
+  //   frc::DoubleSolenoid leftSolenoid{1, frc::PneumaticsModuleType::CTREPCM, 0, 1};
+  //   // frc::DoubleSolenoid rightSolenoid{PneumaticsModuleType::CTREPCM, 2};
+  //   frc::DoubleSolenoid gripSolenoid{1, frc::PneumaticsModuleType::CTREPCM, 6, 7};
 
-  }; IntakeSystem intake;
+  // }; IntakeSystem intake;
 
   struct GripperSystem {
     // WPI_TalonSRX leftGrip{89};
     // WPI_TalonSRX rightGrip{88};
 
-    WPI_TalonSRX leftGrip{3};
-    WPI_TalonSRX rightGrip{4};
+    WPI_TalonSRX leftGrip{16};
+    WPI_TalonSRX rightGrip{17};
   }; GripperSystem gripper;
 
   struct Armavator {
@@ -232,8 +233,8 @@ struct RobotMap {
     Arm arm;
 
     struct Elevator {
-      WPI_TalonSRX motor{9};
-      WPI_TalonSRX motor1{10};
+      WPI_TalonSRX motor{18};
+      WPI_TalonSRX motor1{19};
 
       wom::MotorVoltageController motorGroup = wom::MotorVoltageController::Group(motor, motor1);
 
@@ -285,4 +286,21 @@ struct RobotMap {
   struct SwerveTable {
     std::shared_ptr<nt::NetworkTable> swerveDriveTable = nt::NetworkTableInstance::GetDefault().GetTable("swerve");
   }; SwerveTable swerveTable;
+
+  struct SideIntakeSystem {
+
+    wom::MotorVoltageController rightIntakeMotor{new WPI_TalonSRX(9)};
+    wom::MotorVoltageController leftIntakeMotor{new WPI_TalonSRX(10)};
+
+    frc::DoubleSolenoid claspSolenoid{1, frc::PneumaticsModuleType::CTREPCM, 2, 3};  // change chanel values // grab pistons
+    frc::DoubleSolenoid deploySolenoid{1, frc::PneumaticsModuleType::CTREPCM, 0, 1};  // change chanel values // move pistons
+
+    SideIntakeConfig config{
+      &claspSolenoid,
+      &deploySolenoid,
+      &rightIntakeMotor,
+      &leftIntakeMotor
+    };
+  }; 
+  SideIntakeSystem sideIntake;
 };
