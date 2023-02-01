@@ -28,8 +28,8 @@ void ManualDrivebase::OnTick(units::second_t deltaTime){
 
   // Field Relative Controls
   _swerveDrivebase->SetFieldRelativeVelocity(wom::FieldRelativeSpeeds {
-   l_x * l_x * maxMovementMagnitude,
-   l_y * l_y * maxMovementMagnitude,
+   l_x * maxMovementMagnitude,
+   l_y * maxMovementMagnitude,
    r_x * 360_deg / 0.01_s // were once 360_deg / 1_s
   });
   

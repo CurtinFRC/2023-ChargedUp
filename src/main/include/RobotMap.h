@@ -40,7 +40,7 @@ struct RobotMap {
     wom::NavX gyro;
     wpi::array<WPI_TalonFX*, 4> turnMotors{
       new WPI_TalonFX(1), new WPI_TalonFX(3), new WPI_TalonFX(4), new WPI_TalonFX(6)
-    };
+    }; 
     wpi::array<WPI_TalonFX*, 4> driveMotors{
       new WPI_TalonFX(5), new WPI_TalonFX(8), new WPI_TalonFX(2), new WPI_TalonFX(7)
     };
@@ -50,7 +50,7 @@ struct RobotMap {
     // wpi::array<WPI_TalonFX*, 4> driveMotors{
     //   new WPI_TalonFX(5), new WPI_TalonFX(8), new WPI_TalonFX(2), new WPI_TalonFX(7)
     // };
-    
+
     wpi::array<wom::SwerveModuleConfig, 4> moduleConfigs{
       wom::SwerveModuleConfig{ // dimensions are assuming perfect square robot 1m^2 area
         frc::Translation2d(0.5_m, 0.5_m),
