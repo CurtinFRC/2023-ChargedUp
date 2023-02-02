@@ -7,6 +7,7 @@
 #include "Gyro.h"
 #include "behaviour/ArmavatorBehaviour.h"
 #include "Vision.h"
+#include "Gripper.h"
 
 #include <ctre/phoenix/motorcontrol/can/WPI_TalonFX.h>
 #include <frc/Compressor.h>
@@ -27,6 +28,10 @@ struct RobotMap {
     frc::XboxController codriver{1};
   };
   Controllers controllers;
+
+  struct ControlSystem {
+    frc::Compressor pcmCompressor{1, frc::PneumaticsModuleType::CTREPCM};
+  }; ControlSystem controlSystem;
 
 
   struct Vision {
@@ -198,13 +203,13 @@ struct RobotMap {
 
   // }; IntakeSystem intake;
 
-  struct GripperSystem {
-    // WPI_TalonSRX leftGrip{89};
-    // WPI_TalonSRX rightGrip{88};
+  // struct GripperSystem {
+  //   // WPI_TalonSRX leftGrip{89};
+  //   // WPI_TalonSRX rightGrip{88};
 
-    WPI_TalonSRX leftGrip{16};
-    WPI_TalonSRX rightGrip{17};
-  }; GripperSystem gripper;
+  //   WPI_TalonSRX leftGrip{16};
+  //   WPI_TalonSRX rightGrip{17};
+  // }; GripperSystem gripper;
 
   struct Armavator {
     static constexpr units::kilogram_t loadMass = 10_kg;
@@ -287,8 +292,11 @@ struct RobotMap {
     std::shared_ptr<nt::NetworkTable> swerveDriveTable = nt::NetworkTableInstance::GetDefault().GetTable("swerve");
   }; SwerveTable swerveTable;
 
-  struct SideIntakeSystem {
+  struct IntakeTable {
+    std::shared_ptr<nt::NetworkTable> intakeTable = nt::NetworkTableInstance::GetDefault().GetTable("intake");
+  }; IntakeTable intakeTable;
 
+  struct SideIntakeSystem {
     wom::MotorVoltageController rightIntakeMotor{new WPI_TalonSRX(9)};
     wom::MotorVoltageController leftIntakeMotor{new WPI_TalonSRX(10)};
 
@@ -303,4 +311,15 @@ struct RobotMap {
     };
   }; 
   SideIntakeSystem sideIntake;
+
+  struct GripperSystem {
+    wom::MotorVoltageController leftGripperMotor{ new WPI_TalonSRX(16)};
+    wom::MotorVoltageController rightGripperMotor{ new WPI_TalonSRX(17)};
+  
+    GripperConfig config{
+      &leftGripperMotor,
+      &rightGripperMotor
+    };
+  
+  }; GripperSystem gripper;
 };

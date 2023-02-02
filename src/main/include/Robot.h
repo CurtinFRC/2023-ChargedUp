@@ -47,4 +47,5 @@ class Robot : public frc::TimedRobot {
   Vision *vision;
   //SwerveModuleTest *swerveModule;
   SideIntake *sideIntake;
+  Gripper *gripper;
 };

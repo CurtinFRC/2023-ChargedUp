@@ -4,6 +4,7 @@
 #include "behaviour/HasBehaviour.h"
 #include <frc/DoubleSolenoid.h>
 #include <ctre/Phoenix.h>
+#include <string>
 
 
 struct SideIntakeConfig {
@@ -19,6 +20,8 @@ enum class SideIntakeState {
   kOuttakingWide,
   kIntakingClosed,
   kOutakingClosed,
+  kWide,
+  kClosed,
   kStowed
 };
 
@@ -34,8 +37,10 @@ class SideIntake : public behaviour::HasBehaviour {
   void SetOutakingWide();
   void SetOutakingClosed();
   void SetStowed();
+  void SetClosed();
+  void SetWide();
 
-  SideIntakeState GetState() const;
+  std::string GetState() const;
 
  private:
   SideIntakeConfig _config;

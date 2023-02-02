@@ -3,6 +3,7 @@
 #include "behaviour/Behaviour.h"
 #include "behaviour/SwerveBaseBehaviour.h"
 #include "behaviour/SideIntakeBehaviour.h"
+#include "behaviour/GripperBehaviour.h"
 
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <frc/event/BooleanEvent.h>
@@ -37,6 +38,12 @@ void Robot::RobotInit() {
   armavator->SetDefaultBehaviour([this]() {
     return make<ArmavatorRawBehaviour>(armavator, map.controllers.codriver);
   });
+
+  gripper = new Gripper(map.gripper.config);
+  BehaviourScheduler::GetInstance()->Register(gripper);
+  gripper->SetDefaultBehaviour([this]() {
+    return make<GripperBehaviour>(gripper, map.controllers.codriver);
+  });
 }
 
 void Robot::RobotPeriodic() {
@@ -65,8 +72,12 @@ void Robot::RobotPeriodic() {
   map.armTable.armManualTable->GetEntry("elv").SetDouble(map.armavator.elevator.motor.GetSupplyCurrent());
   armavator->OnUpdate(dt);
 
+  map.intakeTable.intakeTable->GetEntry("state").SetString(sideIntake->GetState());
+
   vision->OnUpdate(dt);
   sideIntake->OnUpdate(dt);
+
+  gripper->OnUpdate(dt);
 }
 
 void Robot::AutonomousInit() { }
@@ -154,10 +165,19 @@ void Robot::TeleopInit() {
 
 }
 
-void Robot::TeleopPeriodic() {}
+void Robot::TeleopPeriodic() {
+  map.controlSystem.pcmCompressor.EnableDigital();
+  // map.controlSystem.pcmCompressor.Enable();
 
-void Robot::DisabledInit() { }
-void Robot::DisabledPeriodic() { }
+  // bool enabled = map.controlSystem.pcmCompressor.Enabled();
+  // bool pressureSwitch = map.controlSystem.pcmCompressor.GetPressureSwitchValue();
+  // double current = map.controlSystem.pcmCompressor.GetCompressorCurrent();
+}
+
+void Robot::DisabledInit() { 
+  // map.controlSystem.pcmCompressor.Disable();
+}
+void Robot::DisabledPeriodic() {}
 
 void Robot::TestInit() { }
 void Robot::TestPeriodic() { }

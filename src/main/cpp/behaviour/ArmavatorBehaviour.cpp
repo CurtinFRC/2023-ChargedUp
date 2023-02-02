@@ -84,22 +84,22 @@ void ArmavatorManualBehaviour::OnTick(units::second_t dt) {
   // Set Position
   _armavator->SetPosition(_setpoint);
 
-  if(!_codriver.GetAButton() && !_codriver.GetBButton() && !_codriver.GetXButton() && !_codriver.GetYButton()) {
-    units::volt_t voltage{0};
-  } else {
-    if(_codriver.GetAButton()) {
-      _armavator->SetPosition({0.2_m, 0_deg});
-    }
-    if(_codriver.GetBButton()) {
-      _armavator->SetPosition({1.2_m, 75_deg});
-    }
-    if(_codriver.GetXButton()) {
-      _armavator->SetPosition({1.0_m, 240_deg});
-    }
-    if(_codriver.GetYButton()) {
-      _armavator->SetPosition({0_m, 0_deg});
-    }
-  }
+  // if(!_codriver.GetAButton() && !_codriver.GetBButton() && !_codriver.GetXButton() && !_codriver.GetYButton()) {
+  //   units::volt_t voltage{0};
+  // } else {
+  //   if(_codriver.GetAButton()) {
+  //     _armavator->SetPosition({0.2_m, 0_deg});
+  //   }
+  //   if(_codriver.GetBButton()) {
+  //     _armavator->SetPosition({1.2_m, 75_deg});
+  //   }
+  //   if(_codriver.GetXButton()) {
+  //     _armavator->SetPosition({1.0_m, 240_deg});
+  //   }
+  //   if(_codriver.GetYButton()) {
+  //     _armavator->SetPosition({0_m, 0_deg});
+  //   }
+  // }
 }
 
 ArmavatorRawBehaviour::ArmavatorRawBehaviour(Armavator *armavator, frc::XboxController &codriver)
