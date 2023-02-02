@@ -14,11 +14,10 @@ ManualDrivebase::ManualDrivebase(wom::SwerveDrive *swerveDrivebase, frc::XboxCon
 
 void ManualDrivebase::OnTick(units::second_t deltaTime){
   double l_x = wom::spow2(-wom::deadzone(_driverController->GetLeftY(), driverDeadzone)); // GetLeftY due to x being where y should be
-  double l_y = wom::spow2(wom::deadzone(_driverController->GetLeftX(), driverDeadzone));
-  double r_x = wom::spow2(wom::deadzone(_driverController->GetRightX(), turningDeadzone));
+  double l_y = wom::spow2(-wom::deadzone(_driverController->GetLeftX(), driverDeadzone));
+  double r_x = wom::spow2(-wom::deadzone(_driverController->GetRightX(), turningDeadzone));
 
   // _swerveDrivebase->GetConfig();
-  
   // Robot Relative Controls
   // _swerveDrivebase->SetVelocity(frc::ChassisSpeeds {
   //   l_x * maxMovementMagnitude,
@@ -56,7 +55,35 @@ DrivebaseBalance::DrivebaseBalance(wom::SwerveDrive *swerveDrivebase) : _swerveD
   Controls(swerveDrivebase);
 }
 void DrivebaseBalance::OnTick(units::second_t deltaTime){
-  // determine if it's moving, speed based off of roll back speed
+  /*
+    current plan:
+      Drive at a large-ish speed
+      When angle changes (~5_deg), set convergence point to current position     # check if angle change is expected for driving, <- this check can lead to false info
+      Reverse at a slower speed (0.9*speed + lowestPossibleSpeed)
+      Repeat
+  */
 
-  // get a feel for the wheel before doing this
+  /*
+    speed = (x, 0)
+    if (prevAngle - currentAngle >= 5){   // prev-cur due to angle being reduced if balanced
+      convergencePoint = _swerveDrivebase.GetPose()
+      _speed.x *= -0.9
+    }
+    distanceFromLastPoint (aka the error) = convergencePoint - prevConvergencePoint
+
+    if (distanceFromLastPoint <= 2_cm) {
+      swerve.XWheels()
+    }
+
+  */
+
+
+}
+
+
+XDrivebase::XDrivebase(wom::SwerveDrive *swerveDrivebase):  _swerveDrivebase(swerveDrivebase){
+  Controls(swerveDrivebase);
+}
+void XDrivebase::OnTick(units::second_t deltaTime){
+  _swerveDrivebase->SetXWheelState();
 }

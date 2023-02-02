@@ -23,7 +23,7 @@ std::shared_ptr<frc::AprilTagFieldLayout> Get2023Layout();
 class Vision {
   public :
     Vision(VisionConfig config);
-    void OnUpdate(units::second_t dt);   
+    std::optional<std::pair<frc::Pose3d, units::second_t>> OnUpdate(units::second_t dt);   
 
   private :
     VisionConfig _config;

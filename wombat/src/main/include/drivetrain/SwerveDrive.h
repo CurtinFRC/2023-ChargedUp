@@ -46,6 +46,7 @@ namespace wom {
   
     void SetAccelerationLimit(units::meters_per_second_squared_t limit);
 
+
     // frc::SwerveModuleState GetState();
     frc::SwerveModulePosition GetPosition() const;
 
@@ -95,7 +96,8 @@ namespace wom {
     kFieldRelativeVelocity,
     kPose,
     kIndividualTuning,
-    kTuning
+    kTuning,
+    kXWheels
   };
 
   struct FieldRelativeSpeeds {
@@ -129,6 +131,8 @@ namespace wom {
     bool IsAtSetPose();
     void SetIndividualTuning(int mod, units::radian_t angle, units::meters_per_second_t speed);
     void SetTuning(units::radian_t angle, units::meters_per_second_t speed);
+
+    void SetXWheelState();
 
     void SetAccelerationLimit(units::meters_per_second_squared_t limit);
 
