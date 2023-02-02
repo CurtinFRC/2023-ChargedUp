@@ -18,8 +18,6 @@ void Robot::RobotInit() {
   vision = new Vision(map.vision.config);
 
   swerve = new wom::SwerveDrive(map.swerveBase.config, frc::Pose2d());
-  // map.swerveBase.moduleConfigs[0].turnMotor.transmission->SetInverted(true);
-  // map.swerveBase.moduleConfigs[2].turnMotor.transmission->SetInverted(true);
   BehaviourScheduler::GetInstance()->Register(swerve);
   swerve->SetDefaultBehaviour([this]() {
     return make<ManualDrivebase>(swerve, &map.controllers.driver);
@@ -98,7 +96,7 @@ void Robot::TeleopInit() {
   // Swervedrivebase grid poses
   map.controllers.driver.POV(0, &loop).Rising().IfHigh([sched, this]() { // up dpad
     if (map.controllers.driver.GetAButton()) {
-      if (map.controllers.driver.GetXButton()){
+      if (map.controllers.driver.GetYButton()){
         sched->Schedule(make<DrivebasePoseBehaviour>(swerve, map.swerveGridPoses.centreGrid2)); // central grid
       } else {
         sched->Schedule(make<DrivebasePoseBehaviour>(swerve, map.swerveGridPoses.outerGrid3)); // Outer Grid 3 (furthest from centre)
@@ -129,22 +127,17 @@ void Robot::TeleopInit() {
     }
   });
 
+  map.controllers.driver.X(&loop).Rising().IfHigh([sched, this]() {
+    sched->Schedule(make<XDrivebase>(swerve));
+  });
+
+
+  map.controllers.driver.B(&loop).Rising().IfHigh([sched, this]() {
+    swerve->GetActiveBehaviour()->Interrupt();
+  });
+
   swerve->OnStart();
-
-
-  //   map.armavator.elevator.gearbox.transmission->SetVoltage(0_V);
-  // } else{
-  //   if(map.controllers.codriver.GetAButton()) {
-  //     map.armavator.arm.gearbox.transmission->SetVoltage(13_V);
-  //   } else if (map.controllers.codriver.GetBButton()) {
-  //     map.armavator.arm.gearbox.transmission->SetVoltage(-13_V);
-  //   }else if(map.controllers.codriver.GetRightTriggerAxis() > 0.05) {
-  //     map.armavator.elevator.gearbox.transmission->SetVoltage(13_V * map.controllers.codriver.GetRightTriggerAxis());
-  //   } else if (map.controllers.codriver.GetLeftTriggerAxis() > 0.05) {
-  //     map.armavator.elevator.gearbox.transmission->SetVoltage(-13_V * map.controllers.codriver.GetLeftTriggerAxis() );
-  //   }
-  // }
-
+  
 }
 
 void Robot::TeleopPeriodic() { }

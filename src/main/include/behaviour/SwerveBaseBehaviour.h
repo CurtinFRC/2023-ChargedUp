@@ -49,3 +49,12 @@ class DrivebaseBalance : public behaviour::Behaviour{
   wom::SwerveDrive *_swerveDrivebase;
   double *_gyroAngle;
 };
+
+class XDrivebase : public behaviour::Behaviour{
+ public:
+  XDrivebase(wom::SwerveDrive *swerveDrivebase);
+  void OnTick(units::second_t deltaTime) override;
+
+ private:
+  wom::SwerveDrive *_swerveDrivebase;
+};

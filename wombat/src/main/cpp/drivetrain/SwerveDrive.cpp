@@ -105,6 +105,7 @@ void SwerveModule::SetPID(units::radian_t angle, units::meters_per_second_t spee
   _velocityPIDController.SetSetpoint(speed);
 }
 
+
 units::meters_per_second_t SwerveModule::GetSpeed() const {
   return units::meters_per_second_t{_config.driveMotor.encoder->GetEncoderAngularVelocity().value() * _config.wheelRadius.value()};
 }
@@ -119,6 +120,8 @@ units::meter_t SwerveModule::GetDistance() const {
 //     _config.turnMotor.encoder->GetEncoderPosition()
 //   };
 // }
+
+
 
 frc::SwerveModulePosition SwerveModule::GetPosition() const {
   return frc::SwerveModulePosition {
@@ -166,6 +169,7 @@ SwerveDrive::SwerveDrive(SwerveDriveConfig config, frc::Pose2d initialPose) :
   ResetPose(initialPose);
 }
 
+
 frc::ChassisSpeeds FieldRelativeSpeeds::ToChassisSpeeds(const units::radian_t robotHeading) {
   return frc::ChassisSpeeds::FromFieldRelativeSpeeds(vx, vy, omega, frc::Rotation2d{robotHeading});
 }
@@ -204,7 +208,12 @@ void SwerveDrive::OnUpdate(units::second_t dt) {
         _modules[i].SetPID(_angle, _speed);
       }
       break;
-
+    case SwerveDriveState::kXWheels:
+      _modules[0].SetPID(45_deg, 0_mps);
+      _modules[1].SetPID(135_deg, 0_mps);
+      _modules[2].SetPID(315_deg, 0_mps);
+      _modules[3].SetPID(225_deg, 0_mps);
+      break;
   }
 
   for (auto mod = _modules.begin(); mod < _modules.end(); mod++) {
@@ -224,6 +233,11 @@ void SwerveDrive::OnUpdate(units::second_t dt) {
   WritePose2NT(_table->GetSubTable("estimatedPose"), _poseEstimator.GetEstimatedPosition());
   _config.WriteNT(_table->GetSubTable("config"));
 }
+
+void SwerveDrive::SetXWheelState(){
+  _state = SwerveDriveState::kXWheels;
+}
+
 
 void SwerveDrive::OnStart() {
   _config.gyro->Reset();
