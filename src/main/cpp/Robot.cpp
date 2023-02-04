@@ -19,11 +19,11 @@ void Robot::RobotInit() {
 
   vision = new Vision(map.vision.config);
 
-  sideIntake = new SideIntake(map.sideIntake.config);
-  BehaviourScheduler::GetInstance()->Register(sideIntake);
-  sideIntake->SetDefaultBehaviour([this]() {
-    return make<SideIntakeBehaviour>(sideIntake, map.controllers.codriver);
-  });
+  // sideIntake = new SideIntake(map.sideIntake.config);
+  // BehaviourScheduler::GetInstance()->Register(sideIntake);
+  // sideIntake->SetDefaultBehaviour([this]() {
+  //   return make<SideIntakeBehaviour>(sideIntake, map.controllers.codriver);
+  // });
 
   swerve = new wom::SwerveDrive(map.swerveBase.config, frc::Pose2d());
   BehaviourScheduler::GetInstance()->Register(swerve);
@@ -32,18 +32,18 @@ void Robot::RobotInit() {
   });
 
   //creates an instance of the armavator that can be used
-  armavator = new Armavator(map.armavator.arm.gearbox, map.armavator.elevator.gearbox, map.armavator.config);
-  BehaviourScheduler::GetInstance()->Register(armavator);
-  armavator->SetDefaultBehaviour([this]() {
-    //sets default behaviour class
-    return make<ArmavatorManualBehaviour>(armavator, map.controllers.codriver);
-  });
+  // armavator = new Armavator(map.armavator.arm.gearbox, map.armavator.elevator.gearbox, map.armavator.config);
+  // BehaviourScheduler::GetInstance()->Register(armavator);
+  // armavator->SetDefaultBehaviour([this]() {
+  //   //sets default behaviour class
+  //   return make<ArmavatorManualBehaviour>(armavator, map.controllers.codriver);
+  // });
 
-  gripper = new Gripper(map.gripper.config);
-  BehaviourScheduler::GetInstance()->Register(gripper);
-  gripper->SetDefaultBehaviour([this]() {
-    return make<GripperBehaviour>(gripper, map.controllers.codriver);
-  });
+  // gripper = new Gripper(map.gripper.config);
+  // BehaviourScheduler::GetInstance()->Register(gripper);
+  // gripper->SetDefaultBehaviour([this]() {
+  //   return make<GripperBehaviour>(gripper, map.controllers.codriver);
+  // });
 }
 
 void Robot::RobotPeriodic() {
@@ -68,15 +68,15 @@ void Robot::RobotPeriodic() {
   
   swerve->OnUpdate(dt);
 
-  map.armTable.armManualTable->GetEntry("arm").SetDouble(map.armavator.arm.motor.GetSupplyCurrent());
-  map.armTable.armManualTable->GetEntry("elv").SetDouble(map.armavator.elevator.motor.GetSupplyCurrent());
-  armavator->OnUpdate(dt);
+  // map.armTable.armManualTable->GetEntry("arm").SetDouble(map.armavator.arm.motor.GetSupplyCurrent());
+  // map.armTable.armManualTable->GetEntry("elv").SetDouble(map.armavator.elevator.motor.GetSupplyCurrent());
+  // armavator->OnUpdate(dt);
 
-  map.intakeTable.intakeTable->GetEntry("state").SetString(sideIntake->GetState());
+  // map.intakeTable.intakeTable->GetEntry("state").SetString(sideIntake->GetState());
 
-  sideIntake->OnUpdate(dt);
+  // sideIntake->OnUpdate(dt);
 
-  gripper->OnUpdate(dt);
+  // gripper->OnUpdate(dt);
   // auto visionPose = vision->OnUpdate(dt);
 
   // if (visionPose.has_value()){
