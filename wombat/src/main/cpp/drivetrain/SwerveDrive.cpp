@@ -245,8 +245,6 @@ void SwerveDrive::OnStart() {
   for (auto mod = _modules.begin(); mod < _modules.end(); mod++) {
     mod->OnStart();
   }
-
-
 }
 
 

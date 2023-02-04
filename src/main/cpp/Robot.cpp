@@ -73,68 +73,53 @@ void Robot::TeleopInit() {
 
   swerve->OnStart();
 
-  // map.controllers.driver.A(&loop).Rising().IfHigh([sched, this]() {
-  //   sched->Schedule(make<ArmavatorGoToPositionBehaviour>(armavator, ArmavatorPosition{0.2_m, 0_deg}));
-  // });
-
-  // map.controllers.driver.B(&loop).Rising().IfHigh([sched, this]() {
-  //   sched->Schedule(make<ArmavatorGoToPositionBehaviour>(armavator, ArmavatorPosition{1.2_m, -75_deg}));
-  // });
-
-  // map.controllers.driver.X(&loop).Rising().IfHigh([sched, this]() {
-  //   sched->Schedule(make<ArmavatorGoToPositionBehaviour>(armavator, ArmavatorPosition{1.0_m, 240_deg}));
-  // });
-
-  // map.controllers.driver.Y(&loop).Rising().IfHigh([sched, this]() {
-  //   sched->Schedule(make<ArmavatorGoToPositionBehaviour>(armavator, ArmavatorPosition{0_m, 0_deg}));
-  // });
-
-  // if(!map.controllers.codriver.GetAButton() && !map.controllers.codriver.GetBButton() && map.controllers.codriver.GetRightTriggerAxis() <= 0.05 && map.controllers.codriver.GetLeftTriggerAxis() <= 0.05) {
-  //   map.armavator.arm.gearbox.transmission->SetVoltage(0_V);
-  
-
   // Swervedrivebase grid poses
-  map.controllers.driver.POV(0, &loop).Rising().IfHigh([sched, this]() { // up dpad
-    if (map.controllers.driver.GetAButton()) {
-      if (map.controllers.driver.GetYButton()){
-        sched->Schedule(make<DrivebasePoseBehaviour>(swerve, map.swerveGridPoses.centreGrid2)); // central grid
-      } else {
-        sched->Schedule(make<DrivebasePoseBehaviour>(swerve, map.swerveGridPoses.outerGrid3)); // Outer Grid 3 (furthest from centre)
-      }
-    } else {
-      sched->Schedule(make<DrivebasePoseBehaviour>(swerve,map.swerveGridPoses.innerGrid1)); // Inner Grid 1 (furthest from centre)
-    }
-  });
-  map.controllers.driver.POV(90, &loop).Rising().IfHigh([sched, this]() { // right dpad
-    if (map.controllers.driver.GetAButton()) {
-      sched->Schedule(make<DrivebasePoseBehaviour>(swerve, map.swerveGridPoses.outerGrid2)); // Outer Grid 2
-    } else {
-      sched->Schedule(make<DrivebasePoseBehaviour>(swerve, map.swerveGridPoses.innerGrid2)); // Inner Grid 2
-    }
-  });
-  map.controllers.driver.POV(180, &loop).Rising().IfHigh([sched, this]() { // down dpad
-    if (map.controllers.driver.GetAButton()) {
-      sched->Schedule(make<DrivebasePoseBehaviour>(swerve, map.swerveGridPoses.outerGrid1)); // Outer Grid 1 (closest to centre)
-    } else{
-      sched->Schedule(make<DrivebasePoseBehaviour>(swerve, map.swerveGridPoses.innerGrid3)); // Inner Grid 3 (closest to centre)
-    }
-  });
-  map.controllers.driver.POV(270, &loop).Rising().IfHigh([sched, this]() { // left dpad
-    if (map.controllers.driver.GetAButton()) {
-      sched->Schedule(make<DrivebasePoseBehaviour>(swerve, map.swerveGridPoses.centreGrid3)); // Community Grid 3 (outer grid side)
-    } else {
-      sched->Schedule(make<DrivebasePoseBehaviour>(swerve, map.swerveGridPoses.centreGrid1)); // Community Grid 1 (inner grid side)
-    }
-  });
+  // UP D-BAD
+  // map.controllers.driver.POV(0, &loop).Rising().IfHigh([sched, this]() {
+  //   if (map.controllers.driver.GetAButton()) {
+  //     if (map.controllers.driver.GetYButton()){
+  //       sched->Schedule(make<DrivebasePoseBehaviour>(swerve, map.swerveGridPoses.centreGrid2)); // central grid
+  //     } else {
+  //       sched->Schedule(make<DrivebasePoseBehaviour>(swerve, map.swerveGridPoses.outerGrid3)); // Outer Grid 3 (furthest from centre)
+  //     }
+  //   } else {
+  //     sched->Schedule(make<DrivebasePoseBehaviour>(swerve, map.swerveGridPoses.innerGrid1)); // Inner Grid 1 (furthest from centre)
+  //   }
+  // });
+  // // RIGHT D-PAD
+  // map.controllers.driver.POV(90, &loop).Rising().IfHigh([sched, this]() {
+  //   if (map.controllers.driver.GetAButton()) {
+  //     sched->Schedule(make<DrivebasePoseBehaviour>(swerve, map.swerveGridPoses.outerGrid2)); // Outer Grid 2
+  //   } else {
+  //     sched->Schedule(make<DrivebasePoseBehaviour>(swerve, map.swerveGridPoses.innerGrid2)); // Inner Grid 2
+  //   }
+  // });
+  // // DOWN D-PAD
+  // map.controllers.driver.POV(180, &loop).Rising().IfHigh([sched, this]() {
+  //   if (map.controllers.driver.GetAButton()) {
+  //     sched->Schedule(make<DrivebasePoseBehaviour>(swerve, map.swerveGridPoses.outerGrid1)); // Outer Grid 1 (closest to centre)
+  //   } else{
+  //     sched->Schedule(make<DrivebasePoseBehaviour>(swerve, map.swerveGridPoses.innerGrid3)); // Inner Grid 3 (closest to centre)
+  //   }
+  // });
+  // // LEFT D-PAD
+  // map.controllers.driver.POV(270, &loop).Rising().IfHigh([sched, this]() {
+  //   if (map.controllers.driver.GetAButton()) {
+  //     sched->Schedule(make<DrivebasePoseBehaviour>(swerve, map.swerveGridPoses.centreGrid3)); // Community Grid 3 (outer grid side)
+  //   } else {
+  //     sched->Schedule(make<DrivebasePoseBehaviour>(swerve, map.swerveGridPoses.centreGrid1)); // Community Grid 1 (inner grid side)
+  //   }
+  // });
 
   map.controllers.driver.X(&loop).Rising().IfHigh([sched, this]() {
     sched->Schedule(make<XDrivebase>(swerve));
+    map.swerveTable.swerveDriveTable->GetEntry("IsX-ed").SetBoolean(true);
   });
-
-
   map.controllers.driver.B(&loop).Rising().IfHigh([sched, this]() {
     swerve->GetActiveBehaviour()->Interrupt();
+    map.swerveTable.swerveDriveTable->GetEntry("IsX-ed").SetBoolean(false);
   });
+
 
   swerve->OnStart();
   
