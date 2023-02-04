@@ -24,17 +24,19 @@ void Robot::RobotInit() {
   sideIntake->SetDefaultBehaviour([this]() {
     return make<SideIntakeBehaviour>(sideIntake, map.controllers.codriver);
   });
-  
+
   swerve = new wom::SwerveDrive(map.swerveBase.config, frc::Pose2d());
   BehaviourScheduler::GetInstance()->Register(swerve);
   swerve->SetDefaultBehaviour([this]() {
     return make<ManualDrivebase>(swerve, &map.controllers.driver);
   });
 
+  //creates an instance of the armavator that can be used
   armavator = new Armavator(map.armavator.arm.gearbox, map.armavator.elevator.gearbox, map.armavator.config);
   BehaviourScheduler::GetInstance()->Register(armavator);
   armavator->SetDefaultBehaviour([this]() {
-    return make<ArmavatorRawBehaviour>(armavator, map.controllers.codriver);
+    //sets default behaviour class
+    return make<ArmavatorManualBehaviour>(armavator, map.controllers.codriver);
   });
 
   gripper = new Gripper(map.gripper.config);
@@ -75,11 +77,11 @@ void Robot::RobotPeriodic() {
   sideIntake->OnUpdate(dt);
 
   gripper->OnUpdate(dt);
-  auto visionPose = vision->OnUpdate(dt);
+  // auto visionPose = vision->OnUpdate(dt);
 
-  if (visionPose.has_value()){
-    swerve->AddVisionMeasurement(visionPose.value().first.ToPose2d(), visionPose.value().second);
-  }
+  // if (visionPose.has_value()){
+  //   swerve->AddVisionMeasurement(visionPose.value().first.ToPose2d(), visionPose.value().second);
+  // }
 }
 
 void Robot::AutonomousInit() { }
@@ -90,26 +92,6 @@ void Robot::TeleopInit() {
   BehaviourScheduler *sched = BehaviourScheduler::GetInstance();
 
   swerve->OnStart();
-
-  // map.controllers.driver.A(&loop).Rising().IfHigh([sched, this]() {
-  //   sched->Schedule(make<ArmavatorGoToPositionBehaviour>(armavator, ArmavatorPosition{0.2_m, 0_deg}));
-  // });
-
-  // map.controllers.driver.B(&loop).Rising().IfHigh([sched, this]() {
-  //   sched->Schedule(make<ArmavatorGoToPositionBehaviour>(armavator, ArmavatorPosition{1.2_m, -75_deg}));
-  // });
-
-  // map.controllers.driver.X(&loop).Rising().IfHigh([sched, this]() {
-  //   sched->Schedule(make<ArmavatorGoToPositionBehaviour>(armavator, ArmavatorPosition{1.0_m, 240_deg}));
-  // });
-
-  // map.controllers.driver.Y(&loop).Rising().IfHigh([sched, this]() {
-  //   sched->Schedule(make<ArmavatorGoToPositionBehaviour>(armavator, ArmavatorPosition{0_m, 0_deg}));
-  // });
-
-  // if(!map.controllers.codriver.GetAButton() && !map.controllers.codriver.GetBButton() && map.controllers.codriver.GetRightTriggerAxis() <= 0.05 && map.controllers.codriver.GetLeftTriggerAxis() <= 0.05) {
-  //   map.armavator.arm.gearbox.transmission->SetVoltage(0_V);
-  
 
   // Swervedrivebase grid poses
   map.controllers.driver.POV(0, &loop).Rising().IfHigh([sched, this]() { // up dpad
@@ -145,25 +127,83 @@ void Robot::TeleopInit() {
     }
   });
 
+
   map.controllers.driver.X(&loop).Rising().IfHigh([sched, this]() {
     sched->Schedule(make<XDrivebase>(swerve));
   });
 
+  // swerve->OnStart();
 
-  map.controllers.driver.B(&loop).Rising().IfHigh([sched, this]() {
-    swerve->GetActiveBehaviour()->Interrupt();
-  });
-  swerve->OnStart();
-  
+
+
+  // if (map.controllers.codriver.GetLeftY() <= 0.05 && map.controllers.codriver.GetLeftY() >= 0.05 && map.controllers.codriver.GetRightY() <= 0.05 && map.controllers.codriver.GetRightY() >= 0.05) {
+  //   sched->Schedule(make<ArmavatorGoToPositionBehaviour>(armavator, ArmavatorPosition{armavator->_setpoint.height, armavator->_setpoint.angle}));
+  // }
+
+  // if(!map.controllers.codriver.GetAButton() && !map.controllers.codriver.GetBButton() && !map.controllers.codriver.GetXButton() && !map.controllers.codriver.GetYButton()) {
+  // } else {
+    //sets the premade positions usings buttonsS
+    // map.controllers.codriver.A(&loop).Rising().IfHigh([sched, this]() {
+    //   sched->Schedule(make<ArmavatorGoToPositionBehaviour>(armavator, ArmavatorPosition{1.0_m, 0_deg}));
+    // });
+    // map.controllers.codriver.B(&loop).Rising().IfHigh([sched, this]() {
+    //   sched->Schedule(make<ArmavatorGoToPositionBehaviour>(armavator, ArmavatorPosition{1.2_m, -75_deg}));
+    // });
+    // map.controllers.codriver.X(&loop).Rising().IfHigh([sched, this]() {
+    //   sched->Schedule(make<ArmavatorGoToPositionBehaviour>(armavator, ArmavatorPosition{1.0_m, 90_deg}));
+    // });
+    // map.controllers.codriver.Y(&loop).Rising().IfHigh([sched, this]() {
+    //   sched->Schedule(make<ArmavatorGoToPositionBehaviour>(armavator, ArmavatorPosition{0.77_m, 45_deg}));
+    // });
+  // }
+
+  // if(!map.controllers.codriver.GetAButton() && !map.controllers.codriver.GetBButton() && map.controllers.codriver.GetRightTriggerAxis() <= 0.05 && map.controllers.codriver.GetLeftTriggerAxis() <= 0.05) {
+  //   map.armavator.arm.gearbox.transmission->SetVoltage(0_V);
+  //   map.armavator.elevator.gearbox.transmission->SetVoltage(0_V);
+  // } else{
+  //   if(map.controllers.codriver.GetAButton()) {
+  //     map.armavator.arm.gearbox.transmission->SetVoltage(13_V);
+  //   } else if (map.controllers.codriver.GetBButton()) {
+  //     map.armavator.arm.gearbox.transmission->SetVoltage(-13_V);
+  //   }else if(map.controllers.codriver.GetRightTriggerAxis() > 0.05) {
+  //     map.armavator.elevator.gearbox.transmission->SetVoltage(13_V * map.controllers.codriver.GetRightTriggerAxis());
+  //   } else if (map.controllers.codriver.GetLeftTriggerAxis() > 0.05) {
+  //     map.armavator.elevator.gearbox.transmission->SetVoltage(-13_V * map.controllers.codriver.GetLeftTriggerAxis() );
+  //   }
+  // }
+
+  // map.controllers.driver.B(&loop).Rising().IfHigh([sched, this]() {
+  //   swerve->GetActiveBehaviour()->Interrupt();
+  // });
+  // swerve->OnStart();
+
+  // _armSetpoint = armavator->_setpoint.angle;
+  // _elevatorSetpoint = armavator->_setpoint.height;
+
+  // _armSetpoint = 60_deg;
+  // _elevatorSetpoint = 0_m;
+
+  // sched->Schedule(make<ArmavatorManualBehaviour>(armavator, map.controllers.codriver));
+
 }
 
 void Robot::TeleopPeriodic() {
   map.controlSystem.pcmCompressor.EnableDigital();
+  // BehaviourScheduler *sched = BehaviourScheduler::GetInstance();
   // map.controlSystem.pcmCompressor.Enable();
 
   // bool enabled = map.controlSystem.pcmCompressor.Enabled();
   // bool pressureSwitch = map.controlSystem.pcmCompressor.GetPressureSwitchValue();
   // double current = map.controlSystem.pcmCompressor.GetCompressorCurrent();
+  // units::meter_t addHeight = map.controllers.codriver.GetLeftY();
+
+  // _armSetpoint += (map.controllers.codriver.GetLeftY() * 1_rad) / 100;
+  // _elevatorSetpoint += (map.controllers.codriver.GetRightY() * 1_m) / 100;
+
+  // sched->Schedule(make<ArmavatorGoToPositionBehaviour>(armavator, ArmavatorPosition{_elevatorSetpoint, _armSetpoint}));
+
+  map.armTable.armManualTable->GetEntry("armSetpoint").SetDouble(_armSetpoint.convert<units::degree>().value());
+  map.armTable.armManualTable->GetEntry("elevatorSetpoint").SetDouble(_elevatorSetpoint.convert<units::meter>().value());
 }
 
 void Robot::DisabledInit() { 
