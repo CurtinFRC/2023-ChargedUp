@@ -42,19 +42,26 @@ DrivebasePoseBehaviour::DrivebasePoseBehaviour(
   Controls(swerveDrivebase);
 }
 void DrivebasePoseBehaviour::OnTick(units::second_t deltaTime) {
-  _swerveDrivebase->SetPose(_pose);
+  double setPoseAngle = _pose.Rotation().Degrees().value();
+  double difference = fmod(_swerveDrivebase->GetPose().Rotation().Degrees().value(), 360.0);
 
-  // frc::Pose2d currentPose = _swerveDrivebase->GetPose();
-  // _swerveDriveTable->GetEntry("SetPose X").SetDouble(_pose.X().value());
-  // _swerveDriveTable->GetEntry("SetPose Y").SetDouble(_pose.Y().value());
-  // _swerveDriveTable->GetEntry("SetPose Theta").SetDouble(_pose.Rotation().Degrees().value());
-  // _swerveDriveTable->GetEntry("CurrentPose X").SetDouble(currentPose.X().value());
-  // _swerveDriveTable->GetEntry("CurrentPose Y").SetDouble(currentPose.Y().value());
-  // _swerveDriveTable->GetEntry("CurrentPose Theta").SetDouble(currentPose.Rotation().Degrees().value());
+  double currentAngle = _swerveDrivebase->GetPose().Rotation().Degrees().value();
+  units::degree_t adjustedAngle = 1_deg * (currentAngle - fmod(currentAngle, 360) + _pose.Rotation().Degrees().value());
 
-  // if (_swerveDrivebase->IsAtSetPose()){
-  //   SetDone();
-  // }
+  _swerveDrivebase->SetPose(frc::Pose2d{_pose.X(), _pose.Y(), adjustedAngle});
+
+
+  frc::Pose2d currentPose = _swerveDrivebase->GetPose();
+  _swerveDriveTable->GetEntry("SetPose X").SetDouble(_pose.X().value());
+  _swerveDriveTable->GetEntry("SetPose Y").SetDouble(_pose.Y().value());
+  _swerveDriveTable->GetEntry("SetPose Theta").SetDouble(_pose.Rotation().Degrees().value());
+  _swerveDriveTable->GetEntry("CurrentPose X").SetDouble(currentPose.X().value());
+  _swerveDriveTable->GetEntry("CurrentPose Y").SetDouble(currentPose.Y().value());
+  _swerveDriveTable->GetEntry("CurrentPose Theta").SetDouble(currentPose.Rotation().Degrees().value());
+
+  if (_swerveDrivebase->IsAtSetPose()){
+    SetDone();
+  }
 }
 
 DrivebaseBalance::DrivebaseBalance(wom::SwerveDrive *swerveDrivebase) : _swerveDrivebase(swerveDrivebase) {
