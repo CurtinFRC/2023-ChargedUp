@@ -1,11 +1,22 @@
 #pragma once
 
 #include "RobotMap.h"
+#include "Vision.h"
 
 #include <string>
 
+#include <ctre/Phoenix.h>
 #include <frc/TimedRobot.h>
 #include <frc/event/EventLoop.h>
+#include "ControlUtil.h"
+
+
+#include "behaviour/BehaviourScheduler.h"
+#include "behaviour/Behaviour.h"
+#include "behaviour/SwerveBaseBehaviour.h"
+
+#include <frc/smartdashboard/SmartDashboard.h>
+#include <frc/event/BooleanEvent.h>
 
 using namespace frc;
 
@@ -22,8 +33,8 @@ class Robot : public frc::TimedRobot {
   void TestInit() override;
   void TestPeriodic() override;
 
-  void SimulationInit() override;
-  void SimulationPeriodic() override;
+  // void SimulationInit() override;
+  // void SimulationPeriodic() override;
 
  private:
   frc::EventLoop loop;
@@ -31,4 +42,10 @@ class Robot : public frc::TimedRobot {
   RobotMap map;
   Armavator *armavator;
   wom::SwerveDrive *swerve;
+  SideIntake *sideIntake;
+
+  bool intakeSol = false;
+  bool gripperSol = false;
+  Vision *vision;
+  //SwerveModuleTest *swerveModule;
 };

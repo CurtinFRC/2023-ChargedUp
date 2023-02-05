@@ -8,12 +8,29 @@
 #include <vector>
 #include <memory>
 #include <algorithm>
+#include <unordered_set>
 
 namespace wom {
-  template<typename I, typename O>
-  O remap(I x, I in_min, I in_max, O out_min, O out_max) {
-    return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+  namespace detail {
+    // From https://wjngkoh.wordpress.com/2015/03/04/c-hash-function-for-eigen-matrix-and-vector/
+    template<typename T>
+    struct matrix_hash {
+      std::size_t operator()(T const& matrix) const {
+        size_t seed = 0;
+        for (size_t i = 0; i < (size_t)matrix.size(); ++i) {
+          auto elem = *(matrix.data() + i);
+          seed ^= std::hash<typename T::Scalar>()(elem) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+        }
+        return seed;
+      }
+    };
+
+    template<typename I, typename O>
+    O remap(I x, I in_min, I in_max, O out_min, O out_max) {
+      return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+    }
   }
+
 
   template<typename CostT>
   struct AStarNode {
@@ -92,25 +109,60 @@ namespace wom {
 
     Idx_t Discretise(ContinuousIdxT i) {
       return Eigen::Vector2i{
-        (int)remap(i.x, _xmin, _xmax, 0.0, (double)_grid.cols()),
-        (int)remap(i.y, _ymin, _ymax, 0.0, (double)_grid.rows())
+        (int)detail::remap(i.x, _xmin, _xmax, 0.0, (double)_grid.cols()),
+        (int)detail::remap(i.y, _ymin, _ymax, 0.0, (double)_grid.rows())
       };
     }
 
     ContinuousIdxT CenterOf(Idx_t idx) {
       return ContinuousIdxT {
-        (remap((double)idx.x(), 0.0, (double)_grid.cols(), _xmin, _xmax) + remap((double)idx.x() + 1, 0.0, (double)_grid.cols(), _xmin, _xmax)) / 2.0,
-        (remap((double)idx.y(), 0.0, (double)_grid.rows(), _ymin, _ymax) + remap((double)idx.y() + 1, 0.0, (double)_grid.rows(), _ymin, _ymax)) / 2.0
+        (detail::remap((double)idx.x(), 0.0, (double)_grid.cols(), _xmin, _xmax) + detail::remap((double)idx.x() + 1, 0.0, (double)_grid.cols(), _xmin, _xmax)) / 2.0,
+        (detail::remap((double)idx.y(), 0.0, (double)_grid.rows(), _ymin, _ymax) + detail::remap((double)idx.y() + 1, 0.0, (double)_grid.rows(), _ymin, _ymax)) / 2.0
       };
     }
 
     /* SEARCH */
-
     template<typename From, typename To>
     using converting_unit = typename units::unit_t<units::compound_unit<To, units::inverse<From>>>;
 
+    Idx_t GetClosestValidNode(Idx_t start) {
+      std::unordered_set<Idx_t, detail::matrix_hash<Idx_t>> visited;
+      visited.insert(start);
+
+      std::deque<Idx_t> q;
+      q.push_front(start);
+
+      while (!q.empty()) {
+        Idx_t current = q.back();
+        q.pop_back();
+
+        if (!Get(current)) {
+          return current;
+        } else {
+          for (int dx = -1; dx <= 1; dx++) {
+            for (int dy = -1; dy <= 1; dy++) {
+              Idx_t newPos = current + Idx_t{ dx, dy };
+              if (!visited.contains(newPos)) {
+                visited.insert(newPos);
+                q.push_front(newPos);
+              }
+            }
+          }
+        }
+      }
+
+      return start;
+    }
+
+    // Will return a path from the closest non-obstacle nodes at the start and end.
     template<typename CostT>
     std::deque<GridPathNode<CostT>> AStar(Idx_t start, Idx_t end, converting_unit<T_X, CostT> dxCost, converting_unit<T_Y, CostT> dyCost) {
+      return AStarStrict<CostT>(GetClosestValidNode(start), GetClosestValidNode(end), dxCost, dyCost);
+    }
+
+    // Will return a blank path if either the start or the end are in obstacles.
+    template<typename CostT>
+    std::deque<GridPathNode<CostT>> AStarStrict(Idx_t start, Idx_t end, converting_unit<T_X, CostT> dxCost, converting_unit<T_Y, CostT> dyCost) {
       using cost_t = units::unit_t<CostT>;
       using node_t = std::shared_ptr<AStarNode<CostT>>;
 
@@ -136,7 +188,7 @@ namespace wom {
           while (current->parent) {
             queue.push_front(GridPathNode<CostT> {
               CenterOf(current->parent->position),
-              current->gScore
+              current->parent->gScore
             });
             current = current->parent;
           }

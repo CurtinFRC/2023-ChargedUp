@@ -1,13 +1,16 @@
 #include "Armavator.h"
-#include <units/math.h>
-#include "drivetrain/SwerveDrive.h"
-#include "Robot.cpp"
-
-using namespace frc;
 
 //Armavator configeration
-Armavator::Armavator(ArmavatorConfig config, wom::SwerveDrive swervedrive)
-: config(config), arm(config.arm), elevator(config.elevator), swervedrive(swervedrive) {}
+Armavator::Armavator(wom::Gearbox &armGearbox, wom::Gearbox &elevatorGearbox, ArmavatorConfig &config)
+: _armGearbox(armGearbox), _elevatorGearbox(elevatorGearbox), _config(config) {
+  arm = new wom::Arm(config.arm);
+  elevator = new wom::Elevator(config.elevator);
+}
+
+Armavator::~Armavator() {
+  free(arm);
+  free(elevator);
+}
 
 //Instructions for when the program updates (seconds delta time)
 void Armavator::OnUpdate(units::second_t dt) {
@@ -17,24 +20,17 @@ void Armavator::OnUpdate(units::second_t dt) {
     case ArmavatorState::kIdle:
       break;
     case ArmavatorState::kPosition:
-      //frc::Pose2d SwerveDrive::GetPose()
-      frc::Pose2d pose = swervedrive.GetPose();
-      pose.X();
-      pose.Y();
-      pose.Rotation();
-
-      if ((pose.X() <= 2.51_m && pose.Y() >= 8.53_m) || (pose.X() >= 2.52_m && pose.Y() >= 10.33_m)){
-        ArmavatorPosition{0_m, 90_deg};
-
-      } else{
-        arm.SetAngle(_setpoint.angle);
-        elevator.SetPID(_setpoint.height);
-      }
+      arm->SetAngle(_setpoint.angle);
+      elevator->SetPID(_setpoint.height);
       break;
+    case ArmavatorState::kManual:
+      arm->SetRaw(_rawArm);
+      elevator->SetManual(_rawElevator);
+      break;
+  }
 
-  arm.OnUpdate(dt);
-  elevator.OnUpdate(dt);
-}
+  arm->OnUpdate(dt);
+  elevator->OnUpdate(dt);
 }
 
 //Sets the states names
@@ -47,27 +43,19 @@ void Armavator::SetPosition(ArmavatorPosition pos) {
   _setpoint = pos;
 }
 
+void Armavator::SetManual(units::volt_t arm, units::volt_t elevator) {
+  _state = ArmavatorState::kManual;
+  _rawArm = arm;
+  _rawElevator = elevator;
+}
+
 ArmavatorPosition Armavator::GetCurrentPosition() const {
   return ArmavatorPosition {
-    elevator.GetHeight(),
-    arm.GetAngle()
+    elevator->GetHeight(),
+    arm->GetAngle()
   };
 }
 
 bool Armavator::IsStable() const {
-  return elevator.IsStable() && arm.IsStable();
+  return elevator->IsStable() && arm->IsStable();
 }
-
-/* SIMULATION */
-
-// ::sim::ArmavatorSim::ArmavatorSim(ArmavatorConfig config)
-//   : config(config), armSim(config.arm), elevatorSim(config.elevator) {}
-
-// void ::sim::ArmavatorSim::OnUpdate(units::second_t dt) {
-//   armSim.Update(dt);
-//   elevatorSim.Update(dt);
-// }
-
-// units::ampere_t sim::ArmavatorSim::GetCurrent() const {
-//   return armSim.GetCurrent() + elevatorSim.GetCurrent();
-// }
