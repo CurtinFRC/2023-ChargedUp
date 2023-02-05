@@ -70,6 +70,7 @@ namespace wom {
   struct SwerveDriveConfig {
     using pose_angle_conf_t = PIDConfig<units::radian, units::radians_per_second>;
     using pose_position_conf_t = PIDConfig<units::meter, units::meters_per_second>;
+    using balance_conf_t = PIDConfig<units::degree, units::meters_per_second>;
 
     std::string path;
     SwerveModule::angle_pid_conf_t anglePID;
@@ -146,8 +147,6 @@ namespace wom {
    protected:
 
    private:
-    frc::Pose2d setPose_LiamImplemented_Testing;
-
     SwerveDriveConfig _config;
     SwerveDriveState _state = SwerveDriveState::kIdle;
     std::vector<SwerveModule> _modules;

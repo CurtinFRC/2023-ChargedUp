@@ -23,6 +23,7 @@ void ManualDrivebase::OnTick(units::second_t deltaTime) {
   double l_y = wom::spow2(-wom::deadzone(_driverController->GetLeftX(), driverDeadzone));
   double r_x = wom::spow2(-wom::deadzone(_driverController->GetRightX(), turningDeadzone));
 
+
   if (_driverController->GetYButtonPressed()) {  isFieldOrientated = !isFieldOrientated;  }
 
   if (isFieldOrientated) {  // Field Relative Controls
@@ -42,53 +43,39 @@ void ManualDrivebase::OnTick(units::second_t deltaTime) {
   }
 
 DrivebasePoseBehaviour::DrivebasePoseBehaviour(
-    wom::SwerveDrive *swerveDrivebase, frc::Pose2d pose)
-    : _swerveDrivebase(swerveDrivebase), _pose(pose) {
+    wom::SwerveDrive *swerveDrivebase, frc::Pose2d pose, bool hold)
+    : _swerveDrivebase(swerveDrivebase), _pose(pose), _hold(hold) {
   Controls(swerveDrivebase);
 }
 void DrivebasePoseBehaviour::OnTick(units::second_t deltaTime) {
-  _swerveDrivebase->SetPose(_pose);
+  double setPoseAngle = _pose.Rotation().Degrees().value();
+  double difference = fmod(_swerveDrivebase->GetPose().Rotation().Degrees().value(), 360.0);
 
-  // frc::Pose2d currentPose = _swerveDrivebase->GetPose();
-  // _swerveDriveTable->GetEntry("SetPose X").SetDouble(_pose.X().value());
-  // _swerveDriveTable->GetEntry("SetPose Y").SetDouble(_pose.Y().value());
-  // _swerveDriveTable->GetEntry("SetPose Theta").SetDouble(_pose.Rotation().Degrees().value());
-  // _swerveDriveTable->GetEntry("CurrentPose X").SetDouble(currentPose.X().value());
-  // _swerveDriveTable->GetEntry("CurrentPose Y").SetDouble(currentPose.Y().value());
-  // _swerveDriveTable->GetEntry("CurrentPose Theta").SetDouble(currentPose.Rotation().Degrees().value());
+  double currentAngle = _swerveDrivebase->GetPose().Rotation().Degrees().value();
+  units::degree_t adjustedAngle = 1_deg * (currentAngle - fmod(currentAngle, 360) + _pose.Rotation().Degrees().value());
 
-  // if (_swerveDrivebase->IsAtSetPose()){
-  //   SetDone();
-  // }
+  _swerveDrivebase->SetPose(frc::Pose2d{_pose.X(), _pose.Y(), adjustedAngle});
+
+  if (_swerveDrivebase->IsAtSetPose() && !_hold){
+    SetDone();
+  }
 }
 
-DrivebaseBalance::DrivebaseBalance(wom::SwerveDrive *swerveDrivebase) : _swerveDrivebase(swerveDrivebase) {
+DrivebaseBalance::DrivebaseBalance(wom::SwerveDrive *swerveDrivebase, wom::NavX *gyro) : _swerveDrivebase(swerveDrivebase), _gyro(gyro) {
   Controls(swerveDrivebase);
 }
 void DrivebaseBalance::OnTick(units::second_t deltaTime) {
-  /*
-    current plan:
-      Drive at a large-ish speed
-      When angle changes (~5_deg), set convergence point to current position #
-    check if angle change is expected for driving, <- this check can lead to
-    false info Reverse at a slower speed (0.9*speed + lowestPossibleSpeed)
-      Repeat
-  */
+  units::meters_per_second_t motorSpeed = balancePID.Calculate(_gyro->GetPitch(), deltaTime);
+  _swerveDrivebase->SetVelocity(frc::ChassisSpeeds{
+    motorSpeed,
+    0_mps,
+    0_deg / 1_s
+  });
 
-  /*
-    speed = (x, 0)
-    if (prevAngle - currentAngle >= 5){   // prev-cur due to angle being reduced
-    if balanced convergencePoint = _swerveDrivebase.GetPose() _speed.x *= -0.9
-    }
-    distanceFromLastPoint (aka the error) = convergencePoint -
-    prevConvergencePoint
-
-    if (distanceFromLastPoint <= 2_cm) {
-      swerve.XWheels()
-    }
-
-  */
+  _swerveDriveTable->GetEntry("Pitch").SetDouble(_gyro->GetPitch().convert<units::degree>().value());
+  _swerveDriveTable->GetEntry("BalanceMotorSpeed").SetDouble(motorSpeed.value());
 }
+
 
 XDrivebase::XDrivebase(wom::SwerveDrive *swerveDrivebase) : _swerveDrivebase(swerveDrivebase) {
   Controls(swerveDrivebase);

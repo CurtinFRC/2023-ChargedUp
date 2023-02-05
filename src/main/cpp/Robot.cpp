@@ -9,6 +9,9 @@
 #include <frc/event/BooleanEvent.h>
 #include <units/math.h>
 
+
+#include "Auto.h"
+
 using namespace frc;
 using namespace behaviour;
 
@@ -19,11 +22,7 @@ void Robot::RobotInit() {
 
   vision = new Vision(map.vision.config);
 
-  // sideIntake = new SideIntake(map.sideIntake.config);
-  // BehaviourScheduler::GetInstance()->Register(sideIntake);
-  // sideIntake->SetDefaultBehaviour([this]() {
-  //   return make<SideIntakeBehaviour>(sideIntake, map.controllers.codriver);
-  // });
+  map.swerveBase.gyro.Reset();
 
   swerve = new wom::SwerveDrive(map.swerveBase.config, frc::Pose2d());
   BehaviourScheduler::GetInstance()->Register(swerve);
@@ -53,19 +52,6 @@ void Robot::RobotPeriodic() {
   loop.Poll();
   BehaviourScheduler::GetInstance()->Tick();
 
-  // map.swerveBase.turnMotors[0]->Set(map.controllers.driver.GetRightX());
-  // map.swerveBase.driveMotors[0]->Set(map.controllers.driver.GetLeftY());
-  
-  // Gets each module's supply and output currents and outputs them onto networktables
-  map.swerveTable.swerveDriveTable->GetEntry("Module1SupplyCurrent").SetDoubleArray(std::vector<double>({map.swerveBase.driveMotors[0]->GetSupplyCurrent(), map.swerveBase.turnMotors[0]->GetSupplyCurrent()}));
-  map.swerveTable.swerveDriveTable->GetEntry("Module1OutputCurrent").SetDoubleArray(std::vector<double>({map.swerveBase.driveMotors[0]->GetOutputCurrent(), map.swerveBase.turnMotors[0]->GetOutputCurrent()}));
-  map.swerveTable.swerveDriveTable->GetEntry("Module2SupplyCurrent").SetDoubleArray(std::vector<double>({map.swerveBase.driveMotors[1]->GetSupplyCurrent(), map.swerveBase.turnMotors[1]->GetSupplyCurrent()}));
-  map.swerveTable.swerveDriveTable->GetEntry("Module2OutputCurrent").SetDoubleArray(std::vector<double>({map.swerveBase.driveMotors[1]->GetOutputCurrent(), map.swerveBase.turnMotors[1]->GetOutputCurrent()}));
-  map.swerveTable.swerveDriveTable->GetEntry("Module3SupplyCurrent").SetDoubleArray(std::vector<double>({map.swerveBase.driveMotors[2]->GetSupplyCurrent(), map.swerveBase.turnMotors[2]->GetSupplyCurrent()}));
-  map.swerveTable.swerveDriveTable->GetEntry("Module3OutputCurrent").SetDoubleArray(std::vector<double>({map.swerveBase.driveMotors[2]->GetOutputCurrent(), map.swerveBase.turnMotors[2]->GetOutputCurrent()}));
-  map.swerveTable.swerveDriveTable->GetEntry("Module4SupplyCurrent").SetDoubleArray(std::vector<double>({map.swerveBase.driveMotors[3]->GetSupplyCurrent(), map.swerveBase.turnMotors[3]->GetSupplyCurrent()}));
-  map.swerveTable.swerveDriveTable->GetEntry("Module4OutputCurrent").SetDoubleArray(std::vector<double>({map.swerveBase.driveMotors[3]->GetOutputCurrent(), map.swerveBase.turnMotors[3]->GetOutputCurrent()}));
-  
   swerve->OnUpdate(dt);
 
   // map.armTable.armManualTable->GetEntry("arm").SetDouble(map.armavator.arm.motor.GetSupplyCurrent());
@@ -84,14 +70,59 @@ void Robot::RobotPeriodic() {
   // }
 }
 
-void Robot::AutonomousInit() { }
+void Robot::AutonomousInit() {
+  swerve->OnStart();
+  swerve->ResetPose(frc::Pose2d());
+  BehaviourScheduler *sched = BehaviourScheduler::GetInstance();
+  sched->Schedule(CircularPathing(swerve));
+ }
+
 void Robot::AutonomousPeriodic() { }
 
 void Robot::TeleopInit() {
   loop.Clear();
   BehaviourScheduler *sched = BehaviourScheduler::GetInstance();
+  sched->InterruptAll();
 
-  // swerve->OnStart();
+  swerve->OnStart();
+
+  // Swervedrivebase grid poses
+  // UP D-BAD
+  map.controllers.driver.POV(0, &loop).Rising().IfHigh([sched, this]() {
+    if (map.controllers.driver.GetRightBumper()) {
+      if (map.controllers.driver.GetLeftBumper()){
+        sched->Schedule(make<DrivebasePoseBehaviour>(swerve, map.swerveGridPoses.centreGrid2, false)); // central grid
+      } else {
+        sched->Schedule(make<DrivebasePoseBehaviour>(swerve, map.swerveGridPoses.outerGrid3, false)); // Outer Grid 3 (furthest from centre)
+      }
+    } else {
+      sched->Schedule(make<DrivebasePoseBehaviour>(swerve, map.swerveGridPoses.innerGrid1, false)); // Inner Grid 1 (furthest from centre)
+    }
+  });
+  // RIGHT D-PAD
+  map.controllers.driver.POV(90, &loop).Rising().IfHigh([sched, this]() {
+    if (map.controllers.driver.GetRightBumper()) {
+      sched->Schedule(make<DrivebasePoseBehaviour>(swerve, map.swerveGridPoses.outerGrid2, false)); // Outer Grid 2
+    } else {
+      sched->Schedule(make<DrivebasePoseBehaviour>(swerve, map.swerveGridPoses.innerGrid2, false)); // Inner Grid 2
+    }
+  });
+  // DOWN D-PAD
+  map.controllers.driver.POV(180, &loop).Rising().IfHigh([sched, this]() {
+    if (map.controllers.driver.GetRightBumper()) {
+      sched->Schedule(make<DrivebasePoseBehaviour>(swerve, map.swerveGridPoses.outerGrid1, false)); // Outer Grid 1 (closest to centre)
+    } else{
+      sched->Schedule(make<DrivebasePoseBehaviour>(swerve, map.swerveGridPoses.innerGrid3, false)); // Inner Grid 3 (closest to centre)
+    }
+  });
+  // LEFT D-PAD
+  map.controllers.driver.POV(270, &loop).Rising().IfHigh([sched, this]() {
+    if (map.controllers.driver.GetRightBumper()) {
+      sched->Schedule(make<DrivebasePoseBehaviour>(swerve, map.swerveGridPoses.centreGrid3, false)); // Community Grid 3 (outer grid side)
+    } else {
+      sched->Schedule(make<DrivebasePoseBehaviour>(swerve, map.swerveGridPoses.centreGrid1, false)); // Community Grid 1 (inner grid side)
+    }
+  });
 
   map.controllers.driver.X(&loop).Rising().IfHigh([sched, this]() {
     sched->Schedule(make<XDrivebase>(swerve));
@@ -155,6 +186,11 @@ void Robot::TeleopInit() {
   //   swerve->GetActiveBehaviour()->Interrupt();
   //   map.swerveTable.swerveDriveTable->GetEntry("IsX-ed").SetBoolean(false);
   // });
+
+  map.controllers.driver.RightStick(&loop).Rising().IfHigh([sched, this]() {
+    sched->Schedule(make<DrivebaseBalance>(swerve, &map.swerveBase.gyro));
+  });
+
 
   swerve->OnStart();
 }

@@ -22,8 +22,7 @@ SwerveModule::SwerveModule(std::string path, SwerveModuleConfig config, SwerveMo
 }
 
 void SwerveModule::OnStart() {
-  _config.driveMotor.encoder->ZeroEncoder();
-  _config.turnMotor.encoder->ZeroEncoder();
+  _config.turnMotor.encoder->ZeroEncoder(); // take out when absolute encoders
 
   _anglePIDController.Reset();
   _velocityPIDController.Reset();
@@ -150,7 +149,7 @@ SwerveDrive::SwerveDrive(SwerveDriveConfig config, frc::Pose2d initialPose) :
   _config(config),
   _kinematics( _config.modules[0].position, _config.modules[1].position, _config.modules[2].position, _config.modules[3].position),
   _poseEstimator(
-    _kinematics, _config.gyro->GetRotation2d(),
+    _kinematics, frc::Rotation2d(0_deg),
     wpi::array<frc::SwerveModulePosition, 4> { 
       frc::SwerveModulePosition { 0_m, frc::Rotation2d{0_deg} },
       frc::SwerveModulePosition { 0_m, frc::Rotation2d{0_deg} },
@@ -248,7 +247,9 @@ void SwerveDrive::SetXWheelState(){
 
 
 void SwerveDrive::OnStart() {
-  _config.gyro->Reset();
+  _xPIDController.Reset();
+  _yPIDController.Reset();
+  _anglePIDController.Reset();
 
   for (auto mod = _modules.begin(); mod < _modules.end(); mod++) {
     mod->OnStart();
