@@ -22,8 +22,8 @@ SwerveModule::SwerveModule(std::string path, SwerveModuleConfig config, SwerveMo
 }
 
 void SwerveModule::OnStart() {
-  _config.driveMotor.encoder->ZeroEncoder();
-  _config.turnMotor.encoder->ZeroEncoder();
+  // _config.driveMotor.encoder->ZeroEncoder();
+  // _config.turnMotor.encoder->ZeroEncoder();
 
   _anglePIDController.Reset();
   _velocityPIDController.Reset();
@@ -245,8 +245,6 @@ void SwerveDrive::OnStart() {
   for (auto mod = _modules.begin(); mod < _modules.end(); mod++) {
     mod->OnStart();
   }
-
-
 }
 
 

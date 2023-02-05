@@ -91,45 +91,11 @@ void Robot::TeleopInit() {
   loop.Clear();
   BehaviourScheduler *sched = BehaviourScheduler::GetInstance();
 
-  swerve->OnStart();
-
-  // Swervedrivebase grid poses
-  map.controllers.driver.POV(0, &loop).Rising().IfHigh([sched, this]() { // up dpad
-    if (map.controllers.driver.GetAButton()) {
-      if (map.controllers.driver.GetYButton()){
-        sched->Schedule(make<DrivebasePoseBehaviour>(swerve, map.swerveGridPoses.centreGrid2)); // central grid
-      } else {
-        sched->Schedule(make<DrivebasePoseBehaviour>(swerve, map.swerveGridPoses.outerGrid3)); // Outer Grid 3 (furthest from centre)
-      }
-    } else {
-      sched->Schedule(make<DrivebasePoseBehaviour>(swerve,map.swerveGridPoses.innerGrid1)); // Inner Grid 1 (furthest from centre)
-    }
-  });
-  map.controllers.driver.POV(90, &loop).Rising().IfHigh([sched, this]() { // right dpad
-    if (map.controllers.driver.GetAButton()) {
-      sched->Schedule(make<DrivebasePoseBehaviour>(swerve, map.swerveGridPoses.outerGrid2)); // Outer Grid 2
-    } else {
-      sched->Schedule(make<DrivebasePoseBehaviour>(swerve, map.swerveGridPoses.innerGrid2)); // Inner Grid 2
-    }
-  });
-  map.controllers.driver.POV(180, &loop).Rising().IfHigh([sched, this]() { // down dpad
-    if (map.controllers.driver.GetAButton()) {
-      sched->Schedule(make<DrivebasePoseBehaviour>(swerve, map.swerveGridPoses.outerGrid1)); // Outer Grid 1 (closest to centre)
-    } else{
-      sched->Schedule(make<DrivebasePoseBehaviour>(swerve, map.swerveGridPoses.innerGrid3)); // Inner Grid 3 (closest to centre)
-    }
-  });
-  map.controllers.driver.POV(270, &loop).Rising().IfHigh([sched, this]() { // left dpad
-    if (map.controllers.driver.GetAButton()) {
-      sched->Schedule(make<DrivebasePoseBehaviour>(swerve, map.swerveGridPoses.centreGrid3)); // Community Grid 3 (outer grid side)
-    } else {
-      sched->Schedule(make<DrivebasePoseBehaviour>(swerve, map.swerveGridPoses.centreGrid1)); // Community Grid 1 (inner grid side)
-    }
-  });
-
+  // swerve->OnStart();
 
   map.controllers.driver.X(&loop).Rising().IfHigh([sched, this]() {
     sched->Schedule(make<XDrivebase>(swerve));
+    map.swerveTable.swerveDriveTable->GetEntry("IsX-ed").SetBoolean(true);
   });
 
   // swerve->OnStart();
@@ -185,6 +151,12 @@ void Robot::TeleopInit() {
 
   // sched->Schedule(make<ArmavatorManualBehaviour>(armavator, map.controllers.codriver));
 
+  // map.controllers.driver.B(&loop).Rising().IfHigh([sched, this]() {
+  //   swerve->GetActiveBehaviour()->Interrupt();
+  //   map.swerveTable.swerveDriveTable->GetEntry("IsX-ed").SetBoolean(false);
+  // });
+
+  swerve->OnStart();
 }
 
 void Robot::TeleopPeriodic() {
