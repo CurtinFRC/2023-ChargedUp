@@ -19,6 +19,9 @@ namespace wom {
     double GetAngle() const override;
     double GetRate() const override;
 
+    units::radian_t GetPitch();
+    units::radian_t GetRoll();
+
     void SetAngle(units::radian_t angle);
 
     std::shared_ptr<sim::SimCapableGyro> MakeSimGyro() override;

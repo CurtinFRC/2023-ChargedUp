@@ -25,6 +25,14 @@ using namespace wom;
       return ahrs.GetRate();
     }
 
+    units::radian_t GetPitch() {
+      return units::degree_t{ahrs.GetPitch()};
+    }
+
+    units::radian_t GetRoll() {
+      return units::degree_t{ahrs.GetRoll()};
+    }
+
     void SetAngle(units::radian_t offset) {
       Reset();
       this->offset = offset.convert<units::degree>().value();
@@ -41,6 +49,9 @@ using namespace wom;
     double GetAngle() const { return angle; }
     // TODO:
     double GetRate() const { return 0; }
+
+    units::radian_t GetPitch() { return 0_rad; }
+    units::radian_t GetRoll() { return 0_rad; }
 
     void SetAngle(units::radian_t offset) {
       angle = offset.convert<units::degree>().value();
@@ -79,6 +90,14 @@ double NavX::GetAngle() const {
 
 double NavX::GetRate() const {
   return impl->GetRate();
+}
+
+units::radian_t NavX::GetPitch() {
+  return impl->GetPitch();
+}
+
+units::radian_t NavX::GetRoll() {
+  return impl->GetRoll();
 }
 
 void NavX::SetAngle(units::radian_t angle) {
