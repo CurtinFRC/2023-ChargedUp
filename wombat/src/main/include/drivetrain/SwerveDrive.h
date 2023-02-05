@@ -42,7 +42,7 @@ namespace wom {
     void OnStart();
 
     void SetIdle();
-    void SetPID(units::radian_t angle, units::meters_per_second_t speed);
+    void SetPID(units::radian_t angle, units::meters_per_second_t speed, units::second_t dt);
   
     void SetAccelerationLimit(units::meters_per_second_squared_t limit);
 

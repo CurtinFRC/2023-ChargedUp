@@ -29,13 +29,13 @@ void ManualDrivebase::OnTick(units::second_t deltaTime) {
     _swerveDrivebase->SetFieldRelativeVelocity(wom::FieldRelativeSpeeds{
         l_x * maxMovementMagnitude,
         l_y * maxMovementMagnitude,
-        r_x * 360_deg / 2_s
+        r_x * 360_deg / 1_s
     });
   } else {  // Robot Relative Controls
     _swerveDrivebase->SetVelocity(frc::ChassisSpeeds{
         l_x * maxMovementMagnitude,
         l_y * maxMovementMagnitude,
-        r_x * 360_deg / 2_s
+        r_x * 360_deg / 1_s
     });
   }
   _swerveDriveTable->GetEntry("isFieldOrientated").SetBoolean(isFieldOrientated);

@@ -187,7 +187,6 @@ void ArmavatorRawBehaviour::OnTick(units::second_t dt) {
 }
 
 
-
 ArmavatorManualBehaviour::ArmavatorManualBehaviour(Armavator *armavator, frc::XboxController &codriver) 
   : _armavator(armavator), _codriver(codriver) {
     Controls(armavator);
