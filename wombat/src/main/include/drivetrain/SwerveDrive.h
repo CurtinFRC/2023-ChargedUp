@@ -146,8 +146,6 @@ namespace wom {
    protected:
 
    private:
-    frc::Pose2d setPose_LiamImplemented_Testing;
-
     SwerveDriveConfig _config;
     SwerveDriveState _state = SwerveDriveState::kIdle;
     std::vector<SwerveModule> _modules;
