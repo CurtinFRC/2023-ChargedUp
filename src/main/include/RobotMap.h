@@ -128,17 +128,17 @@ struct RobotMap {
     wom::SwerveDriveConfig::pose_angle_conf_t poseAnglePID {
       "/drivetrain/pid/pose/angle/config",
       180_deg / 1_s / 45_deg,
-      wom::SwerveDriveConfig::pose_angle_conf_t::ki_t{0},
+      wom::SwerveDriveConfig::pose_angle_conf_t::ki_t{0.01},
       0_deg / 1_deg,
-      1_deg,
+      3_deg,
       10_deg / 1_s
     };
     wom::SwerveDriveConfig::pose_position_conf_t posePositionPID{
       "/drivetrain/pid/pose/position/config",
       3_mps / 1_m,
-      wom::SwerveDriveConfig::pose_position_conf_t::ki_t{0},
+      wom::SwerveDriveConfig::pose_position_conf_t::ki_t{0.1},
       0_m / 1_m,
-      5_cm, 
+      10_cm, 
       10_cm / 1_s
     };
 
@@ -168,14 +168,14 @@ struct RobotMap {
 
 
   struct SwerveGridPoses { // positions to place the items
-    frc::Pose2d innerGrid1 = frc::Pose2d(0.5_m, 0.5_m, 0_deg); // Closest grid position to the Wall
+    frc::Pose2d innerGrid1 = frc::Pose2d(0.1_m, 0.1_m, 0_deg); // Closest grid position to the Wall
     frc::Pose2d innerGrid2 = frc::Pose2d(0.5_m, 0_m, 0_deg); // Middle of Inner Grid
     frc::Pose2d innerGrid3 = frc::Pose2d(0.5_m, -0.5_m, 0_deg); // Centremost Inner Grid position
     frc::Pose2d centreGrid1 = frc::Pose2d(0_m, 0.5_m, 0_deg); // The non central grid on the Inner Grid side
     frc::Pose2d centreGrid2 = frc::Pose2d(0_m, 0_m, 216_deg); // The middle most grid 
     frc::Pose2d centreGrid3 = frc::Pose2d(0_m, -0.5_m, 0_deg); // The non central grid on the Outer Grid side
     frc::Pose2d outerGrid1 = frc::Pose2d(-0.5_m, 0.5_m, 0_deg); // Centremost outer grid position
-    frc::Pose2d outerGrid2 = frc::Pose2d(-0.5_m, 0_m, 0_deg); // Middle of Outer Grid
+    frc::Pose2d outerGrid2 = frc::Pose2d(1_m, 0_m, 0_deg); // Middle of Outer Grid
     frc::Pose2d outerGrid3 = frc::Pose2d(-0.5_m, -0.5_m, 0_deg); // Closest grid position to enemy Loading Zone
   };
   SwerveGridPoses swerveGridPoses;

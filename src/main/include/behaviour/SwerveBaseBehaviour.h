@@ -37,7 +37,7 @@ class DrivebasePoseBehaviour : public behaviour::Behaviour{
  
  private:
   wom::SwerveDrive *_swerveDrivebase;
-  frc::Pose2d _pose; // storing it directly, so not a pointer
+  frc::Pose2d _pose;
   std::shared_ptr<nt::NetworkTable> _swerveDriveTable = nt::NetworkTableInstance::GetDefault().GetTable("swerve");
 };
 
@@ -50,6 +50,7 @@ class DrivebaseBalance : public behaviour::Behaviour{
  private:
   wom::SwerveDrive *_swerveDrivebase;
   double *_gyroAngle;
+  double _previousAngle;
 };
 
 class XDrivebase : public behaviour::Behaviour{

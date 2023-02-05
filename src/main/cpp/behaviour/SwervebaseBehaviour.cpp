@@ -18,19 +18,20 @@ void ManualDrivebase::OnTick(units::second_t deltaTime) {
   double l_y = wom::spow2(-wom::deadzone(_driverController->GetLeftX(), driverDeadzone));
   double r_x = wom::spow2(-wom::deadzone(_driverController->GetRightX(), turningDeadzone));
 
+
   if (_driverController->GetYButtonPressed()) {  isFieldOrientated = !isFieldOrientated;  }
 
   if (isFieldOrientated) {  // Field Relative Controls
     _swerveDrivebase->SetFieldRelativeVelocity(wom::FieldRelativeSpeeds{
         l_x * maxMovementMagnitude,
         l_y * maxMovementMagnitude,
-        r_x * 360_deg / 0.01_s
+        r_x * 360_deg / 2_s
     });
   } else {  // Robot Relative Controls
     _swerveDrivebase->SetVelocity(frc::ChassisSpeeds{
         l_x * maxMovementMagnitude,
         l_y * maxMovementMagnitude,
-        r_x * 360_deg / 0.01_s
+        r_x * 360_deg / 2_s
     });
   }
   _swerveDriveTable->GetEntry("isFieldOrientated").SetBoolean(isFieldOrientated);
@@ -90,6 +91,40 @@ void DrivebaseBalance::OnTick(units::second_t deltaTime) {
     }
 
   */
+
+  /*
+  
+  currentState = positiveClimbing
+  if (gyro >= 13) and (currentState == negativeClimbing):
+    currentState = positiveClimbing
+    speed = -0.9 * speed
+  else if (gyro <= -13) and (currentState == positiveClimbing):
+    currentState = negativeClimbing
+
+
+  */
+
+
+  /*
+  
+  driving on the charge station, the gyro will be at an initial angle, this is the angle that we treat as positive
+
+  initialAngle = gyro.GetAngle()   <- runs only on start
+  if (gyro.GetAngle()){
+
+  }
+  
+  
+  */
+
+
+  // if (fmod(_swerveDrivebase->GetConfig().gyro->GetAngle(), 360) >= 13){
+
+  // }
+  // else if (fmod(_swerveDrivebase->GetConfig().gyro->GetAngle(), 360) <= -13){
+    
+  // }
+
 }
 
 XDrivebase::XDrivebase(wom::SwerveDrive *swerveDrivebase) : _swerveDrivebase(swerveDrivebase) {

@@ -7,6 +7,9 @@
 #include <frc/event/BooleanEvent.h>
 #include <units/math.h>
 
+
+#include "Auto.h"
+
 using namespace frc;
 using namespace behaviour;
 
@@ -17,6 +20,7 @@ void Robot::RobotInit() {
 
   vision = new Vision(map.vision.config);
 
+  map.swerveBase.gyro.Reset();
   swerve = new wom::SwerveDrive(map.swerveBase.config, frc::Pose2d());
   BehaviourScheduler::GetInstance()->Register(swerve);
   swerve->SetDefaultBehaviour([this]() {
@@ -51,12 +55,19 @@ void Robot::RobotPeriodic() {
 
 }
 
-void Robot::AutonomousInit() { }
+void Robot::AutonomousInit() {
+  swerve->OnStart();
+  swerve->ResetPose(frc::Pose2d());
+  BehaviourScheduler *sched = BehaviourScheduler::GetInstance();
+  sched->Schedule(CircularPathing(swerve));
+ }
+
 void Robot::AutonomousPeriodic() { }
 
 void Robot::TeleopInit() {
   loop.Clear();
   BehaviourScheduler *sched = BehaviourScheduler::GetInstance();
+  sched->InterruptAll();
 
   swerve->OnStart();
 
