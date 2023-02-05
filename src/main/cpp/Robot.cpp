@@ -91,36 +91,36 @@ void Robot::TeleopInit() {
   map.controllers.driver.POV(0, &loop).Rising().IfHigh([sched, this]() {
     if (map.controllers.driver.GetRightBumper()) {
       if (map.controllers.driver.GetLeftBumper()){
-        sched->Schedule(make<DrivebasePoseBehaviour>(swerve, map.swerveGridPoses.centreGrid2)); // central grid
+        sched->Schedule(make<DrivebasePoseBehaviour>(swerve, map.swerveGridPoses.centreGrid2, false)); // central grid
       } else {
-        sched->Schedule(make<DrivebasePoseBehaviour>(swerve, map.swerveGridPoses.outerGrid3)); // Outer Grid 3 (furthest from centre)
+        sched->Schedule(make<DrivebasePoseBehaviour>(swerve, map.swerveGridPoses.outerGrid3, false)); // Outer Grid 3 (furthest from centre)
       }
     } else {
-      sched->Schedule(make<DrivebasePoseBehaviour>(swerve, map.swerveGridPoses.innerGrid1)); // Inner Grid 1 (furthest from centre)
+      sched->Schedule(make<DrivebasePoseBehaviour>(swerve, map.swerveGridPoses.innerGrid1, false)); // Inner Grid 1 (furthest from centre)
     }
   });
   // RIGHT D-PAD
   map.controllers.driver.POV(90, &loop).Rising().IfHigh([sched, this]() {
     if (map.controllers.driver.GetRightBumper()) {
-      sched->Schedule(make<DrivebasePoseBehaviour>(swerve, map.swerveGridPoses.outerGrid2)); // Outer Grid 2
+      sched->Schedule(make<DrivebasePoseBehaviour>(swerve, map.swerveGridPoses.outerGrid2, false)); // Outer Grid 2
     } else {
-      sched->Schedule(make<DrivebasePoseBehaviour>(swerve, map.swerveGridPoses.innerGrid2)); // Inner Grid 2
+      sched->Schedule(make<DrivebasePoseBehaviour>(swerve, map.swerveGridPoses.innerGrid2, false)); // Inner Grid 2
     }
   });
   // DOWN D-PAD
   map.controllers.driver.POV(180, &loop).Rising().IfHigh([sched, this]() {
     if (map.controllers.driver.GetRightBumper()) {
-      sched->Schedule(make<DrivebasePoseBehaviour>(swerve, map.swerveGridPoses.outerGrid1)); // Outer Grid 1 (closest to centre)
+      sched->Schedule(make<DrivebasePoseBehaviour>(swerve, map.swerveGridPoses.outerGrid1, false)); // Outer Grid 1 (closest to centre)
     } else{
-      sched->Schedule(make<DrivebasePoseBehaviour>(swerve, map.swerveGridPoses.innerGrid3)); // Inner Grid 3 (closest to centre)
+      sched->Schedule(make<DrivebasePoseBehaviour>(swerve, map.swerveGridPoses.innerGrid3, false)); // Inner Grid 3 (closest to centre)
     }
   });
   // LEFT D-PAD
   map.controllers.driver.POV(270, &loop).Rising().IfHigh([sched, this]() {
     if (map.controllers.driver.GetRightBumper()) {
-      sched->Schedule(make<DrivebasePoseBehaviour>(swerve, map.swerveGridPoses.centreGrid3)); // Community Grid 3 (outer grid side)
+      sched->Schedule(make<DrivebasePoseBehaviour>(swerve, map.swerveGridPoses.centreGrid3, false)); // Community Grid 3 (outer grid side)
     } else {
-      sched->Schedule(make<DrivebasePoseBehaviour>(swerve, map.swerveGridPoses.centreGrid1)); // Community Grid 1 (inner grid side)
+      sched->Schedule(make<DrivebasePoseBehaviour>(swerve, map.swerveGridPoses.centreGrid1, false)); // Community Grid 1 (inner grid side)
     }
   });
 
@@ -186,6 +186,11 @@ void Robot::TeleopInit() {
   //   swerve->GetActiveBehaviour()->Interrupt();
   //   map.swerveTable.swerveDriveTable->GetEntry("IsX-ed").SetBoolean(false);
   // });
+
+  map.controllers.driver.RightStick(&loop).Rising().IfHigh([sched, this]() {
+    sched->Schedule(make<DrivebaseBalance>(swerve, &map.swerveBase.gyro));
+  });
+
 
   swerve->OnStart();
 }
