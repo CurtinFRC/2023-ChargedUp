@@ -12,6 +12,7 @@
 #include "ControlUtil.h"
 #include <units/math.h>
 
+#include <stdio.h>
 
 #include "behaviour/BehaviourScheduler.h"
 #include "behaviour/Behaviour.h"

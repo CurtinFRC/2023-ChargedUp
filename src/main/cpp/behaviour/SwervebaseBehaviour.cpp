@@ -23,7 +23,6 @@ void ManualDrivebase::OnTick(units::second_t deltaTime) {
   double l_y = wom::spow2(-wom::deadzone(_driverController->GetLeftX(), driverDeadzone));
   double r_x = wom::spow2(-wom::deadzone(_driverController->GetRightX(), turningDeadzone));
 
-
   if (_driverController->GetYButtonPressed()) {  isFieldOrientated = !isFieldOrientated;  }
 
   if (isFieldOrientated) {  // Field Relative Controls

@@ -25,6 +25,8 @@ void Robot::RobotInit() {
   map.swerveBase.gyro.Reset();
 
   swerve = new wom::SwerveDrive(map.swerveBase.config, frc::Pose2d());
+  // map.swerveBase.moduleConfigs[1].turnMotor.transmission->SetInverted(true);
+  // map.swerveBase.moduleConfigs[3].turnMotor.transmission->SetInverted(true);
   BehaviourScheduler::GetInstance()->Register(swerve);
   swerve->SetDefaultBehaviour([this]() {
     return make<ManualDrivebase>(swerve, &map.controllers.driver);

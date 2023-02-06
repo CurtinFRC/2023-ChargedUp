@@ -18,6 +18,7 @@
 #include "drivetrain/SwerveDrive.h"
 #include <frc/DoubleSolenoid.h>
 #include <units/length.h>
+#include <units/angle.h>
 
 #include <iostream>
 #include <string>
@@ -171,9 +172,7 @@ struct RobotMap {
         driveMotors[i]->SetInverted(true);
       }
     }
-  };
-
-  SwerveBase swerveBase;
+  }; SwerveBase swerveBase;
 
   struct SwerveGridPoses { // positions to place the items
     frc::Pose2d innerGrid1 = frc::Pose2d(0.1_m, 0.1_m, 0_deg); // Closest grid position to the Wall

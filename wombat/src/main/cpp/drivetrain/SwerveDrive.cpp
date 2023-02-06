@@ -256,7 +256,6 @@ void SwerveDrive::OnStart() {
   }
 }
 
-
 void SwerveDrive::SetIdle() {
   _state = SwerveDriveState::kIdle;
 }

@@ -98,7 +98,8 @@ namespace wom {
     kPose,
     kIndividualTuning,
     kTuning,
-    kXWheels
+    kXWheels,
+    kModuleTurn
   };
 
   struct FieldRelativeSpeeds {
@@ -166,8 +167,6 @@ namespace wom {
     int _mod;
     units::radian_t _angle;
     units::meters_per_second_t _speed;
-
-
   };
 
   namespace sim {
