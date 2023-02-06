@@ -55,4 +55,3 @@ void SideIntakeBehaviour::OnTick(units::second_t dt) {
     sideIntake->SetStowed();
   }
 }
-

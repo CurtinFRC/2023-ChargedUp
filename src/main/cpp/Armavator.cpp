@@ -64,19 +64,3 @@ ArmavatorPosition Armavator::GetCurrentPosition() const {
 bool Armavator::IsStable() const {
   return elevator->IsStable() && arm->IsStable();
 }
-
-
-
-/* SIMULATION */
-
-// ::sim::ArmavatorSim::ArmavatorSim(ArmavatorConfig config)
-//   : config(config), armSim(config.arm), elevatorSim(config.elevator) {}
-
-// void ::sim::ArmavatorSim::OnUpdate(units::second_t dt) {
-//   armSim.Update(dt);
-//   elevatorSim.Update(dt);
-// }
-
-// units::ampere_t sim::ArmavatorSim::GetCurrent() const {
-//   return armSim.GetCurrent() + elevatorSim.GetCurrent();
-// }
