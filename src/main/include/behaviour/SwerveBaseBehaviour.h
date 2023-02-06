@@ -56,12 +56,16 @@ class DrivebaseBalance : public behaviour::Behaviour{
 
   wom::SwerveDriveConfig::balance_conf_t balancePIDConfig{
     "swerve/balancePID/",
-    0.3_mps / 10_deg,
-    wom::SwerveDriveConfig::balance_conf_t::ki_t{0},
+    0.7_mps / 10_deg,
+    wom::SwerveDriveConfig::balance_conf_t::ki_t{0.00},
     wom::SwerveDriveConfig::balance_conf_t::kd_t{0}
   };
-
-  wom::PIDController<units::degree, units::meters_per_second> balancePID{
+  wom::PIDController<units::degree, units::meters_per_second> lateralBalancePID{
+    "swerve/balancePID",
+    balancePIDConfig,
+    0_deg
+  };
+  wom::PIDController<units::degree, units::meters_per_second> sidwaysBalancePID{
     "swerve/balancePID",
     balancePIDConfig,
     0_deg

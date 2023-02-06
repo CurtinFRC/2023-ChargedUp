@@ -60,15 +60,18 @@ DrivebaseBalance::DrivebaseBalance(wom::SwerveDrive *swerveDrivebase, wom::NavX 
   Controls(swerveDrivebase);
 }
 void DrivebaseBalance::OnTick(units::second_t deltaTime) {
-  units::meters_per_second_t motorSpeed = balancePID.Calculate(_gyro->GetPitch(), deltaTime);
+  units::meters_per_second_t lateralMotorSpeed = lateralBalancePID.Calculate(_gyro->GetPitch(), deltaTime);
+  units::meters_per_second_t sidewaysMotorSpeed = sidwaysBalancePID.Calculate(-_gyro->GetRoll(), deltaTime);
   _swerveDrivebase->SetVelocity(frc::ChassisSpeeds{
-    motorSpeed,
-    0_mps,
+    // units::math::min(units::math::max(lateralMotorSpeed, -0.8), 0.8),
+    lateralMotorSpeed,
+    sidewaysMotorSpeed,
     0_deg / 1_s
   });
 
   _swerveDriveTable->GetEntry("Pitch").SetDouble(_gyro->GetPitch().convert<units::degree>().value());
-  _swerveDriveTable->GetEntry("BalanceMotorSpeed").SetDouble(motorSpeed.value());
+  _swerveDriveTable->GetEntry("BalanceLateralSpeed").SetDouble(lateralMotorSpeed.value());
+  _swerveDriveTable->GetEntry("BalanceSidewaysSpeed").SetDouble(sidewaysMotorSpeed.value());
 }
 
 

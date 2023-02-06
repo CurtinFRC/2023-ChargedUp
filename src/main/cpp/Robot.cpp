@@ -42,9 +42,6 @@ void Robot::RobotPeriodic() {
   BehaviourScheduler::GetInstance()->Tick();
 
   swerve->OnUpdate(dt);
-
-  map.armTable.armManualTable->GetEntry("arm").SetDouble(map.armavator.arm.motor.GetSupplyCurrent());
-  map.armTable.armManualTable->GetEntry("elv").SetDouble(map.armavator.elevator.motor.GetSupplyCurrent());
   armavator->OnUpdate(dt);
 
   auto visionPose = vision->OnUpdate(dt);
@@ -67,7 +64,7 @@ void Robot::AutonomousPeriodic() { }
 void Robot::TeleopInit() {
   loop.Clear();
   BehaviourScheduler *sched = BehaviourScheduler::GetInstance();
-  sched->InterruptAll();
+  sched->InterruptAll(); // removes all previously scheduled behaviours
 
   swerve->OnStart();
 
@@ -119,10 +116,20 @@ void Robot::TeleopInit() {
   });
 
 
-  map.controllers.driver.RightStick(&loop).Rising().IfHigh([sched, this]() {
+  map.controllers.driver.A(&loop).Rising().IfHigh([sched, this]() {
+    
     sched->Schedule(make<DrivebaseBalance>(swerve, &map.swerveBase.gyro));
   });
 
+  // Current Keybinds:
+  /*
+    A - Balance Behaviour
+    B - Interrupts any behaviour, and sets active behaviour to the manual drive behaviour
+    X - X Wheels
+    Y - Field Orientated / Robot Relative Toggle
+    RightBumper - Acting as a shift key for grid poses
+    LeftBumper - Acting as a shift key for grid poses
+  */
 
   swerve->OnStart();
   

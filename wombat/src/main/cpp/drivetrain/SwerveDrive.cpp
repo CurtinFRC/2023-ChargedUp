@@ -207,7 +207,7 @@ void SwerveDrive::OnUpdate(units::second_t dt) {
         _modules[i].SetPID(_angle, _speed);
       }
       break;
-    case SwerveDriveState::kXWheels:
+    // case SwerveDriveState::kXWheels:
       _modules[0].SetPID(45_deg, 0_mps);
       _modules[1].SetPID(135_deg, 0_mps);
       _modules[2].SetPID(315_deg, 0_mps);
