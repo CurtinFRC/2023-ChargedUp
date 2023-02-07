@@ -7,6 +7,7 @@
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <frc/event/BooleanEvent.h>
 #include <units/math.h>
+#include <networktables/NetworkTableInstance.h>
 
 using namespace frc;
 using namespace behaviour;
@@ -68,6 +69,12 @@ void Robot::RobotPeriodic() {
   vision->OnUpdate(dt);
   swerve->OnUpdate(dt);
   sideIntake->OnUpdate(dt);
+
+  std::optional<units::meter_t> distance = map.gripper.gamepiecePresence.GetDistance();
+  if (distance.has_value())
+    nt::NetworkTableInstance::GetDefault().GetTable("TOF")->GetEntry("distance").SetDouble(distance.value().value());
+  else
+    nt::NetworkTableInstance::GetDefault().GetTable("TOF")->GetEntry("distance").SetDouble(-1);
 }
 
 void Robot::AutonomousInit() { }

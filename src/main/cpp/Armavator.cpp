@@ -32,6 +32,7 @@ void Armavator::OnUpdate(units::second_t dt) {
   arm->OnUpdate(dt);
   elevator->OnUpdate(dt);
 }
+
 //Sets the states names
 void Armavator::SetIdle() {
   _state = ArmavatorState::kIdle;

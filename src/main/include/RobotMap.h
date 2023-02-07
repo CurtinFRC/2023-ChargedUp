@@ -7,6 +7,7 @@
 #include "Gyro.h"
 #include "behaviour/ArmavatorBehaviour.h"
 #include "Vision.h"
+#include "TOF.h"
 
 #include <ctre/phoenix/motorcontrol/can/WPI_TalonFX.h>
 #include <frc/Compressor.h>
@@ -35,6 +36,7 @@ struct RobotMap {
       frc::Transform3d{ frc::Translation3d{ 0_m, 0_m, 0_m }, frc::Rotation3d{ 0_rad, 0_rad, 0_rad } },
       Get2023Layout()
     };
+    
   };
   Vision vision;
 
@@ -205,6 +207,8 @@ struct RobotMap {
 
     WPI_TalonSRX leftGrip{3};
     WPI_TalonSRX rightGrip{4};
+    TOF gamepiecePresence{frc::I2C::Port::kMXP};
+
   }; GripperSystem gripper;
 
   struct Armavator {
@@ -294,8 +298,8 @@ struct RobotMap {
     wom::MotorVoltageController rightIntakeMotor{new WPI_TalonSRX(18)};
     wom::MotorVoltageController leftIntakeMotor{new WPI_TalonSRX(19)};
 
-    frc::DoubleSolenoid claspSolenoid{1, frc::PneumaticsModuleType::CTREPCM, 0, 1};  // change chanel values // grab pistons
-    frc::DoubleSolenoid deploySolenoid{1, frc::PneumaticsModuleType::CTREPCM, 2, 3};  // change chanel values // move pistons
+    frc::DoubleSolenoid claspSolenoid{1, frc::PneumaticsModuleType::CTREPCM, 2, 3};  // change chanel values // grab pistons
+    frc::DoubleSolenoid deploySolenoid{1, frc::PneumaticsModuleType::CTREPCM, 4, 5};  // change chanel values // move pistons
 
     SideIntakeConfig config{
       &claspSolenoid,
