@@ -35,3 +35,151 @@ std::shared_ptr<behaviour::Behaviour> CircularPathing(wom::SwerveDrive *swerve) 
         // << make<WaitTime>(1_s)
         // << make<DrivebasePoseBehaviour>(swerve, Poses::outerGrid1);
 }
+
+
+std::shared_ptr<behaviour::Behaviour> Drive(wom::SwerveDrive *swerve){
+    return
+    make<WaitTime>(1_s)
+    << make<DrivebasePoseBehaviour>(swerve, frc::Pose2d{224_in, 0_m, 0_deg})
+    << make<DrivebasePoseBehaviour>(swerve, frc::Pose2d{0_m, 0_m, 0_deg});
+}
+
+
+// Assuming in auto we only score high
+
+// BLUE
+
+// Docking Only
+std::shared_ptr<behaviour::Behaviour> BLUE_Top_Dock(wom::SwerveDrive *swerve){
+    // assumes Top is in placement position for outergrid_1
+    return
+    /*
+    relative drive frc::Pose2d{0.3_m, -62.39_in, 0_deg}
+    relative drive frc::Pose2d{68.3_in, 0_m, 0_deg}
+    activate swerve balance behaviour
+    */
+    make<WaitTime>(1_s);
+}
+std::shared_ptr<behaviour::Behaviour> BLUE_Middle_Dock(wom::SwerveDrive *swerve){
+    // assumes Middle is in placement position for centregrid_2
+    return
+    /*
+    relative drive frc::Pose2d{68.3_in, 0_m, 0_deg}
+    activate swerve balance behaviour
+    */
+    make<WaitTime>(1_s);
+}
+std::shared_ptr<behaviour::Behaviour> BLUE_Bottom_Dock(wom::SwerveDrive *swerve){
+    // assumes Bottom is in placement position for innergrid_1
+    return
+    /*
+    relative drive frc::Pose2d{0.3_m, 62.39_in, 0_deg}
+    relative drive frc::Pose2d{68.3_in, 0_m, 0_deg}
+    activate swerve balance behaviour
+    */
+    make<WaitTime>(1_s);
+}
+
+// Single Score                 <- We should not need to move for this
+std::shared_ptr<behaviour::Behaviour> BLUE_Single(wom::SwerveDrive *swerve){
+    return
+    /*
+    make<ArmavatorScoreHigh>();
+    */
+    make<WaitTime>(1_s);
+}
+
+// Single Score + Dock          <- We should only be in middle for doing this one
+std::shared_ptr<behaviour::Behaviour> BLUE_Single_Dock(wom::SwerveDrive *swerve){
+    return
+    /*
+    make<ArmavatorScoreHigh>();
+    make<ArmavatorGoToBalancePosition() & relative drive frc::Pose2d{68.3_in, 0_m, 0_deg}
+    activate swerve balance behaviour
+    */
+    make<WaitTime>(1_s);
+}
+
+// Triple Score                 <- We should never be in the middle for doing this one
+std::shared_ptr<behaviour::Behaviour> BLUE_Top_Triple(wom::SwerveDrive *swerve){
+    /*
+    make<ArmavatorScoreHigh>();
+    make<ArmavatorGoToBalancePosition() & drive to centreTopMidGamePiece & deploy intake
+    after a certain amount of driving time, start intaking
+    drive to adjacent inner grid & "(maybe)retract intake" & start moving arm up
+    */
+    
+    return
+    make<WaitTime>(1_s)
+    << make<DrivebasePoseBehaviour>(swerve, frc::Pose2d{224_in, -16_in, 0_deg})
+    << make<DrivebasePoseBehaviour>(swerve, frc::Pose2d{0_m, 0_m, 0_deg})
+    << make<WaitTime>(1_s)
+    << make<DrivebasePoseBehaviour>(swerve, frc::Pose2d{145_in, 0_m, 0_deg})
+    << make<WaitTime>(5_s)
+    << make<DrivebasePoseBehaviour>(swerve, frc::Pose2d{224_in, -45_in, 0_deg})
+    << make<DrivebasePoseBehaviour>(swerve, frc::Pose2d{145_in, 0_in, 0_deg})
+    << make<WaitTime>(5_s);
+    //<< make<DrivebasePoseBehaviour>(swerve, frc::Pose2d{})
+}
+std::shared_ptr<behaviour::Behaviour> BLUE_Bottom_Triple(wom::SwerveDrive *swerve){
+
+}
+
+// Double Score + Dock          <- We should never be in the middle for doing this one
+std::shared_ptr<behaviour::Behaviour> BLUE_Top_Double_Dock(wom::SwerveDrive *swerve){
+
+}
+std::shared_ptr<behaviour::Behaviour> BLUE_Bottom_Double_Dock(wom::SwerveDrive *swerve){
+
+}
+
+// Double                       <- We should never be in the middle for doing this one
+std::shared_ptr<behaviour::Behaviour> BLUE_Top_Double(wom::SwerveDrive *swerve){
+
+}
+std::shared_ptr<behaviour::Behaviour> BLUE_Bottom_Double(wom::SwerveDrive *swerve){
+
+}
+
+// Quad Collect                 <- We should never be in the middle for doing this one
+std::shared_ptr<behaviour::Behaviour> BLUE_Top_Quad_Collect(wom::SwerveDrive *swerve){
+
+}
+std::shared_ptr<behaviour::Behaviour> BLUE_Bottom_Quad_Collect(wom::SwerveDrive *swerve){
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+FOR docking:
+    drive to one of 3 points,
+    drive towards centre a bit,
+    activate balance behaviour
+
+FOR collecting middle piece, starting from a grid position:
+    drive to middle piece position (might require a straight movement, and then a diagonal, dodging the chargestation)
+        after driving a certain distance (or time) engage intake
+            after driving a certain distance (or time) activate intake
+
+FOR returning to a grid position after collecting from centre:
+    drive to grid position (might require a diagonal, straight then diagonal movement, dodging the chargestation)
+        deploy gripper to grab intaked game object
+            after some time, move up, to avoid intake
+        after a small amount of time disable intake
+        (MAYBE) after a small amount of time retract intake
+
+        
+
+*/
