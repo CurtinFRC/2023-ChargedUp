@@ -4,6 +4,7 @@
 #include "behaviour/SwerveBaseBehaviour.h"
 #include "behaviour/ArmavatorBehaviour.h"
 
+
 using namespace behaviour;
 
 // std::shared_ptr<behaviour::Behaviour> BlueSinglePiece() {
@@ -37,11 +38,14 @@ std::shared_ptr<behaviour::Behaviour> CircularPathing(wom::SwerveDrive *swerve) 
 }
 
 
-std::shared_ptr<behaviour::Behaviour> Drive(wom::SwerveDrive *swerve){
+std::shared_ptr<behaviour::Behaviour> Drive(wom::SwerveDrive *swerve, wom::NavX *gyro){
+    auto wait_until2 = make<DrivebasePoseBehaviour>(swerve, frc::Pose2d{0_in, 1.5_m, 0_deg}) | make<WaitTime>(2_s); 
     return
     make<WaitTime>(1_s)
-    << make<DrivebasePoseBehaviour>(swerve, frc::Pose2d{224_in, 0_m, 0_deg})
-    << make<DrivebasePoseBehaviour>(swerve, frc::Pose2d{0_m, 0_m, 0_deg});
+    << make<DrivebasePoseBehaviour>(swerve, frc::Pose2d{0_in, -2.4_m, 0_deg})
+    << wait_until2
+    << make<DrivebasePoseBehaviour>(swerve, frc::Pose2d{1_m, -2.4_m, 0_deg})
+    << make<DrivebaseBalance>(swerve, gyro);
 }
 
 
@@ -108,18 +112,22 @@ std::shared_ptr<behaviour::Behaviour> BLUE_Top_Triple(wom::SwerveDrive *swerve){
     after a certain amount of driving time, start intaking
     drive to adjacent inner grid & "(maybe)retract intake" & start moving arm up
     */
-    
+
+    auto wait_until = make<DrivebasePoseBehaviour>(swerve, frc::Pose2d{224_in, -45_in, 0_deg}) | make<WaitTime>(4_s);
+    auto wait_until2 = make<DrivebasePoseBehaviour>(swerve, frc::Pose2d{0_in, 1.5_m, 0_deg}) | make<WaitTime>(2_s); 
     return
     make<WaitTime>(1_s)
-    << make<DrivebasePoseBehaviour>(swerve, frc::Pose2d{224_in, -16_in, 0_deg})
+    << make<DrivebasePoseBehaviour>(swerve, frc::Pose2d{224_in, 0_m, 0_deg})
     << make<DrivebasePoseBehaviour>(swerve, frc::Pose2d{0_m, 0_m, 0_deg})
-    << make<WaitTime>(1_s)
+
     << make<DrivebasePoseBehaviour>(swerve, frc::Pose2d{145_in, 0_m, 0_deg})
-    << make<WaitTime>(5_s)
-    << make<DrivebasePoseBehaviour>(swerve, frc::Pose2d{224_in, -45_in, 0_deg})
+    << wait_until
     << make<DrivebasePoseBehaviour>(swerve, frc::Pose2d{145_in, 0_in, 0_deg})
-    << make<WaitTime>(5_s);
-    //<< make<DrivebasePoseBehaviour>(swerve, frc::Pose2d{})
+    << make<DrivebasePoseBehaviour>(swerve, frc::Pose2d{0_in, 0_in, 0_deg});
+
+    // << make<DrivebasePoseBehaviour>(swerve, frc::Pose2d{0_in, -1_m, 0_deg})
+    // << wait_until2
+    // << make<DrivebasePoseBehaviour>(swerve, frc::Pose2d{1_m, -1_m, 0_deg});
 }
 std::shared_ptr<behaviour::Behaviour> BLUE_Bottom_Triple(wom::SwerveDrive *swerve){
 

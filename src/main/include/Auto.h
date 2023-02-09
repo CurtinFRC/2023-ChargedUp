@@ -7,7 +7,7 @@ std::shared_ptr<behaviour::Behaviour> BlueSinglePiece();
 
 std::shared_ptr<behaviour::Behaviour> CircularPathing(wom::SwerveDrive *swerve);
 
-std::shared_ptr<behaviour::Behaviour> Drive(wom::SwerveDrive *swerve);
+std::shared_ptr<behaviour::Behaviour> Drive(wom::SwerveDrive *swerve, wom::NavX *gyro);
 
 
 // Assuming in auto we only score high

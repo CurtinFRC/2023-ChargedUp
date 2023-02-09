@@ -128,9 +128,9 @@ struct RobotMap {
     wom::SwerveDriveConfig::pose_angle_conf_t poseAnglePID {
       "/drivetrain/pid/pose/angle/config",
       180_deg / 1_s / 45_deg,
-      wom::SwerveDriveConfig::pose_angle_conf_t::ki_t{0.01},
+      wom::SwerveDriveConfig::pose_angle_conf_t::ki_t{0.1},
       0_deg / 1_deg,
-      3_deg,
+      10_deg,
       10_deg / 1_s
     };
     wom::SwerveDriveConfig::pose_position_conf_t posePositionPID{
@@ -138,8 +138,9 @@ struct RobotMap {
       3_mps / 1_m,
       wom::SwerveDriveConfig::pose_position_conf_t::ki_t{0.1},
       0_m / 1_m,
-      10_cm, 
-      10_cm / 1_s
+      20_cm, 
+      10_cm / 1_s,
+      10_cm,
     };
 
     wom::SwerveDriveConfig config{

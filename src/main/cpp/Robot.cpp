@@ -56,7 +56,7 @@ void Robot::AutonomousInit() {
   swerve->OnStart();
   swerve->ResetPose(frc::Pose2d());
   BehaviourScheduler *sched = BehaviourScheduler::GetInstance();
-  sched->Schedule(CircularPathing(swerve));
+  sched->Schedule(BLUE_Top_Triple(swerve));
  }
 
 void Robot::AutonomousPeriodic() { }
