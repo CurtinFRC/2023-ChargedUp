@@ -49,6 +49,26 @@ std::shared_ptr<behaviour::Behaviour> Drive(wom::SwerveDrive *swerve, wom::NavX 
 }
 
 
+
+
+
+
+std::shared_ptr<behaviour::Behaviour> Dock(wom::SwerveDrive *swerve, bool areWeBlueAlliance, enum startPos, enum endPos);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // Assuming in auto we only score high
 
 // BLUE
@@ -130,31 +150,31 @@ std::shared_ptr<behaviour::Behaviour> BLUE_Top_Triple(wom::SwerveDrive *swerve){
     // << make<DrivebasePoseBehaviour>(swerve, frc::Pose2d{1_m, -1_m, 0_deg});
 }
 std::shared_ptr<behaviour::Behaviour> BLUE_Bottom_Triple(wom::SwerveDrive *swerve){
-
+    return make<WaitTime>(1_s);
 }
 
 // Double Score + Dock          <- We should never be in the middle for doing this one
 std::shared_ptr<behaviour::Behaviour> BLUE_Top_Double_Dock(wom::SwerveDrive *swerve){
-
+    return make<WaitTime>(1_s);
 }
 std::shared_ptr<behaviour::Behaviour> BLUE_Bottom_Double_Dock(wom::SwerveDrive *swerve){
-
+    return make<WaitTime>(1_s);
 }
 
 // Double                       <- We should never be in the middle for doing this one
 std::shared_ptr<behaviour::Behaviour> BLUE_Top_Double(wom::SwerveDrive *swerve){
-
+    return make<WaitTime>(1_s);
 }
 std::shared_ptr<behaviour::Behaviour> BLUE_Bottom_Double(wom::SwerveDrive *swerve){
-
+    return make<WaitTime>(1_s);
 }
 
 // Quad Collect                 <- We should never be in the middle for doing this one
 std::shared_ptr<behaviour::Behaviour> BLUE_Top_Quad_Collect(wom::SwerveDrive *swerve){
-
+    return make<WaitTime>(1_s);
 }
 std::shared_ptr<behaviour::Behaviour> BLUE_Bottom_Quad_Collect(wom::SwerveDrive *swerve){
-
+    return make<WaitTime>(1_s);
 }
 
 

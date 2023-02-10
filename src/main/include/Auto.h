@@ -3,11 +3,41 @@
 #include "behaviour/Behaviour.h"
 #include "drivetrain/SwerveDrive.h"
 
-std::shared_ptr<behaviour::Behaviour> BlueSinglePiece();
 
-std::shared_ptr<behaviour::Behaviour> CircularPathing(wom::SwerveDrive *swerve);
+
+/*
+Starting Poses corresponding with:
+    Top:  frc::Pose2d{0_m, 0_m, 0_deg}
+    Middle: frc::Pose2d{0_m, 0_m, 0_deg}
+    Bottom: frc::Pose2d{0_m, 0_m, 0_deg}
+*/
 
 std::shared_ptr<behaviour::Behaviour> Drive(wom::SwerveDrive *swerve, wom::NavX *gyro);
+
+
+
+
+
+std::shared_ptr<behaviour::Behaviour> Dock(wom::SwerveDrive *swerve, bool blueAlliance, enum startPos, enum endPos);
+
+std::shared_ptr<behaviour::Behaviour> Single(wom::SwerveDrive *swerve, bool blueAlliance, bool dock, enum startPos, enum endPos);
+
+std::shared_ptr<behaviour::Behaviour> Double(wom::SwerveDrive *swerve, bool blueAlliance, bool dock, enum startPos, enum endPos);
+
+std::shared_ptr<behaviour::Behaviour> Triple(wom::SwerveDrive *swerve, bool blueAlliance, bool dock, enum startPos, enum endPos);
+
+std::shared_ptr<behaviour::Behaviour> Quad(wom::SwerveDrive *swerve, bool blueAlliance, bool dock, enum startPos, enum endPos);
+
+
+
+
+
+
+
+
+
+
+
 
 
 // Assuming in auto we only score high
