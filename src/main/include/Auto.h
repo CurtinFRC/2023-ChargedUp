@@ -3,44 +3,109 @@
 #include "behaviour/Behaviour.h"
 #include "drivetrain/SwerveDrive.h"
 
-
-
-/*
-Starting Poses corresponding with:
-    Top:  frc::Pose2d{0_m, 0_m, 0_deg}
-    Middle: frc::Pose2d{0_m, 0_m, 0_deg}
-    Bottom: frc::Pose2d{0_m, 0_m, 0_deg}
-*/
-
 std::shared_ptr<behaviour::Behaviour> Drive(wom::SwerveDrive *swerve, wom::NavX *gyro);
 
 
-enum endingConfig {
-    Dock,
-    Steal,
-    Collect,
-    PrepareManual, // get rdy to go collect from substation
-    Taxi
+class DefinedPoses {
+ public:
+  struct Poses {
+    frc::Pose2d startPos;
+    frc::Pose2d dock_LineUp_Pos;  frc::Pose2d dockPos;
+    frc::Pose2d stealPos;  frc::Pose2d taxiPos;
+    frc::Pose2d subStationWaitPos;
+  };
+  Poses poseSet{};
+
+  Poses top_Blue {
+    {0_m, 0_m, 0_deg}, // startPos
+    {0_m, -1.5_m, 0_deg}, // dock_LineUp_Pos
+    {2_m, -1.5_m, 0_deg}, // dockPos
+    {0_m, 0_m, 0_deg}, // stealPos
+    {0_m, 0_m, 0_deg}, // taxiPos
+    {0_m, 0_m, 0_deg}  // subStationWaitPOs
+  };
+  Poses middle_Blue {
+    {0_m, 0_m, 0_deg}, // startPos
+    {0_m, 0_m, 0_deg}, // dock_LineUp_Pos
+    {0_m, 0_m, 0_deg}, // dockPos
+    {0_m, 0_m, 0_deg}, // stealPos
+    {0_m, 0_m, 0_deg}, // taxiPos
+    {0_m, 0_m, 0_deg}  // subStationWaitPOs
+  };
+  Poses bottom_Blue {
+    {0_m, 0_m, 0_deg}, // startPos
+    {0_m, 0_m, 0_deg}, // dock_LineUp_Pos
+    {0_m, 0_m, 0_deg}, // dockPos
+    {0_m, 0_m, 0_deg}, // stealPos
+    {0_m, 0_m, 0_deg}, // taxiPos
+    {0_m, 0_m, 0_deg}  // subStationWaitPOs
+  };
+
+  Poses top_Red {
+    {0_m, 0_m, 0_deg}, // startPos
+    {0_m, 0_m, 0_deg}, // dock_LineUp_Pos
+    {0_m, 0_m, 0_deg}, // dockPos
+    {0_m, 0_m, 0_deg}, // stealPos
+    {0_m, 0_m, 0_deg}, // taxiPos
+    {0_m, 0_m, 0_deg}  // subStationWaitPOs
+  };
+  Poses middle_Red {
+    {0_m, 0_m, 0_deg}, // startPos
+    {0_m, 0_m, 0_deg}, // dock_LineUp_Pos
+    {0_m, 0_m, 0_deg}, // dockPos
+    {0_m, 0_m, 0_deg}, // stealPos
+    {0_m, 0_m, 0_deg}, // taxiPos
+    {0_m, 0_m, 0_deg}  // subStationWaitPOs
+  };
+  Poses bottom_Red {
+    {0_m, 0_m, 0_deg}, // startPos
+    {0_m, 0_m, 0_deg}, // dock_LineUp_Pos
+    {0_m, 0_m, 0_deg}, // dockPos
+    {0_m, 0_m, 0_deg}, // stealPos
+    {0_m, 0_m, 0_deg}, // taxiPos
+    {0_m, 0_m, 0_deg}  // subStationWaitPOs
+  };
 };
 
-enum startingConfig {
-    Top,
-    Middle,
-    Bottom
+
+struct SwervePack { // contains the gyro as well
+  wom::SwerveDrive *swerve;
+  wom::NavX *gyro;
 };
 
 
+enum EndingConfig {
+  Dock,
+  Steal,
+  Collect,
+  PrepareManual, // get rdy to go collect from substation
+  Taxi
+};
+
+enum StartingConfig {
+  Top,
+  Middle,
+  Bottom
+};
 
 
-// std::shared_ptr<behaviour::Behaviour> Dock(wom::SwerveDrive *swerve, bool blueAlliance, enum startingConfig, enum endingConfig);
+struct AutoPathDetails {
+  frc::Pose2d startPos;
+  std::shared_ptr<behaviour::Behaviour> endPathing;
+};
 
-// std::shared_ptr<behaviour::Behaviour> Single(wom::SwerveDrive *swerve, bool blueAlliance, bool dock, enum startPos, enum endPos);
+AutoPathDetails GetAutoPathingDetails(SwervePack swerve, StartingConfig startConfig, EndingConfig endConfig, bool blueAlliance, std::vector<frc::Pose2d> adjustmentPoses = {});
 
-// std::shared_ptr<behaviour::Behaviour> Double(wom::SwerveDrive *swerve, bool blueAlliance, bool dock, enum startPos, enum endPos);
 
-// std::shared_ptr<behaviour::Behaviour> Triple(wom::SwerveDrive *swerve, bool blueAlliance, bool dock, enum startPos, enum endPos);
+std::shared_ptr<behaviour::Behaviour> DockBot(SwervePack swerve, bool blueAlliance, StartingConfig startConfig, EndingConfig endConfig);
 
-// std::shared_ptr<behaviour::Behaviour> Quad(wom::SwerveDrive *swerve, bool blueAlliance, bool dock, enum startPos, enum endPos);
+std::shared_ptr<behaviour::Behaviour> Single(SwervePack swerve, bool blueAlliance, StartingConfig startConfig, EndingConfig endConfig);
+
+std::shared_ptr<behaviour::Behaviour> Double(SwervePack swerve, bool blueAlliance, StartingConfig startConfig, EndingConfig endConfig);
+
+std::shared_ptr<behaviour::Behaviour> Triple(SwervePack swerve, bool blueAlliance, StartingConfig startConfig, EndingConfig endConfig);
+
+std::shared_ptr<behaviour::Behaviour> Quad(SwervePack swerve, bool blueAlliance, StartingConfig startConfig, EndingConfig endConfig);
 
 
 

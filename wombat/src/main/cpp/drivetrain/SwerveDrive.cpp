@@ -288,7 +288,7 @@ void SwerveDrive::SetPose(frc::Pose2d pose) {
 }
 
 bool SwerveDrive::IsAtSetPose() {
-  return _anglePIDController.IsStable() && _xPIDController.IsStable() && _yPIDController.IsStable();
+  return _anglePIDController.IsStable() && _xPIDController.IsStable() && _yPIDController.IsStable(0.05_m);
 }
 
 void SwerveDrive::ResetPose(frc::Pose2d pose) {
