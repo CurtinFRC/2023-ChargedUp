@@ -38,7 +38,8 @@ struct RobotMap {
   }; ControlSystem controlSystem;
 
   struct GripTest {
-    rev::CANSparkMax gripper{19, rev::CANSparkMax::MotorType::kBrushless};
+    // rev::CANSparkMax gripper{19, rev::CANSparkMax::MotorType::kBrushless};
+    VictorSPX gripper{18};
   }; GripTest grTest;
 
   //stores nessesary info for vision
