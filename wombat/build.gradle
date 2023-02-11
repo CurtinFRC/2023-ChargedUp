@@ -20,7 +20,7 @@ model {
 
           exportedHeaders {
             srcDir 'src/main/include'
-          } 
+          }
         } 
       }
 

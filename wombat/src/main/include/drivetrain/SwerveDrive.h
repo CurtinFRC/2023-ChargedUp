@@ -43,7 +43,7 @@ namespace wom {
     void OnStart();
 
     void SetIdle();
-    void SetPID(units::radian_t angle, units::meters_per_second_t speed, units::second_t dt);
+    void SetPID(units::radian_t angle, units::meters_per_second_t speed);
   
     void SetAccelerationLimit(units::meters_per_second_squared_t limit);
 
@@ -101,8 +101,7 @@ namespace wom {
     kPose,
     kIndividualTuning,
     kTuning,
-    kXWheels,
-    kModuleTurn
+    kXWheels
   };
 
   struct FieldRelativeSpeeds {
@@ -171,6 +170,8 @@ namespace wom {
     int _mod;
     units::radian_t _angle;
     units::meters_per_second_t _speed;
+
+
   };
 
   namespace sim {

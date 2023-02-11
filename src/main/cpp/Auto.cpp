@@ -55,7 +55,7 @@ AutoPathDetails GetAutoPathingDetails(SwervePack swerve, StartingConfig startCon
         make<DrivebasePoseBehaviour>(swerve.swerve, definedPoses.poseSet.subStationWaitPos);
       break;
     case EndingConfig::Collect:
-          /* You are fucked, have fun with this Liam :D */
+          /* haha have fun with this Liam :D */
       break;
     case EndingConfig::Taxi:
         endPathing = //autoPathingDetails.endPathing
