@@ -37,6 +37,10 @@ struct RobotMap {
     frc::Compressor pcmCompressor{1, frc::PneumaticsModuleType::CTREPCM};
   }; ControlSystem controlSystem;
 
+  struct GripTest {
+    rev::CANSparkMax gripper{19, rev::CANSparkMax::MotorType::kBrushless};
+  }; GripTest grTest;
+
   //stores nessesary info for vision
   struct Vision {
     VisionConfig config{
