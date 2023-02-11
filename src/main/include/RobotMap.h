@@ -9,6 +9,7 @@
 #include "Vision.h"
 #include "Gripper.h"
 #include "behaviour/VisionBehaviour.h"
+#include "TOF.h"
 
 #include <ctre/phoenix/motorcontrol/can/WPI_TalonFX.h>
 #include <frc/Compressor.h>
@@ -43,6 +44,7 @@ struct RobotMap {
       frc::Transform3d{ frc::Translation3d{ 0_m, 0_m, 0_m }, frc::Rotation3d{ 0_rad, 0_rad, 0_rad } },
       Get2023Layout()
     };
+    
   };
   Vision vision;
 
@@ -210,11 +212,16 @@ struct RobotMap {
   // }; IntakeSystem intake;
 
   // struct GripperSystem {
-  //   // WPI_TalonSRX leftGrip{89};
-  //   // WPI_TalonSRX rightGrip{88};
+  // //   // WPI_TalonSRX leftGrip{89};
+  // //   // WPI_TalonSRX rightGrip{88};
 
-  //   WPI_TalonSRX leftGrip{16};
-  //   WPI_TalonSRX rightGrip{17};
+  // //   WPI_TalonSRX leftGrip{16};
+  // //   WPI_TalonSRX rightGrip{17};
+  // // }; GripperSystem gripper;
+  //   WPI_TalonSRX leftGrip{3};
+  //   WPI_TalonSRX rightGrip{4};
+  //   TOF gamepiecePresence{frc::I2C::Port::kMXP};
+
   // }; GripperSystem gripper;
 
   //stores nessesary info for Armavator
@@ -362,6 +369,10 @@ struct RobotMap {
     wom::MotorVoltageController leftGripperMotor{ new WPI_TalonSRX(16)};
     wom::MotorVoltageController rightGripperMotor{ new WPI_TalonSRX(17)};
   
+    WPI_TalonSRX leftGrip{3};
+    WPI_TalonSRX rightGrip{4};
+    TOF gamepiecePresence{frc::I2C::Port::kMXP};
+
     GripperConfig config{
       &leftGripperMotor,
       &rightGripperMotor

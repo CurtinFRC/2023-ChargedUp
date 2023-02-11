@@ -4,6 +4,7 @@
 #include "Elevator.h"
 #include "Gearbox.h"
 #include "Grid.h"
+#include "drivetrain/SwerveDrive.h"
 
 #include <frc/DigitalInput.h>
 #include <frc/simulation/DIOSim.h>
