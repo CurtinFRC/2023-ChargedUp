@@ -15,10 +15,24 @@ Starting Poses corresponding with:
 std::shared_ptr<behaviour::Behaviour> Drive(wom::SwerveDrive *swerve, wom::NavX *gyro);
 
 
+enum endingConfig {
+    Dock,
+    Steal,
+    Collect,
+    PrepareManual, // get rdy to go collect from substation
+    Taxi
+};
+
+enum startingConfig {
+    Top,
+    Middle,
+    Bottom
+};
 
 
 
-// std::shared_ptr<behaviour::Behaviour> Dock(wom::SwerveDrive *swerve, bool blueAlliance, enum startPos, enum endPos);
+
+// std::shared_ptr<behaviour::Behaviour> Dock(wom::SwerveDrive *swerve, bool blueAlliance, enum startingConfig, enum endingConfig);
 
 // std::shared_ptr<behaviour::Behaviour> Single(wom::SwerveDrive *swerve, bool blueAlliance, bool dock, enum startPos, enum endPos);
 
