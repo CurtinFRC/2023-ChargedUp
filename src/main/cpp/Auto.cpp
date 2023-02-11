@@ -42,9 +42,9 @@ std::shared_ptr<behaviour::Behaviour> Drive(wom::SwerveDrive *swerve, wom::NavX 
     auto wait_until2 = make<DrivebasePoseBehaviour>(swerve, frc::Pose2d{0_in, 1.5_m, 0_deg}) | make<WaitTime>(2_s); 
     return
     make<WaitTime>(1_s)
-    << make<DrivebasePoseBehaviour>(swerve, frc::Pose2d{0_in, -2.4_m, 0_deg})
-    << wait_until2
-    << make<DrivebasePoseBehaviour>(swerve, frc::Pose2d{1_m, -2.4_m, 0_deg})
+    // << make<DrivebasePoseBehaviour>(swerve, frc::Pose2d{0_in, -1.8_m, 0_deg})
+    // << wait_until2
+    << make<DrivebasePoseBehaviour>(swerve, frc::Pose2d{2_m, 0_m, 0_deg})
     << make<DrivebaseBalance>(swerve, gyro);
 }
 
@@ -53,12 +53,25 @@ std::shared_ptr<behaviour::Behaviour> Drive(wom::SwerveDrive *swerve, wom::NavX 
 
 
 
-std::shared_ptr<behaviour::Behaviour> Dock(wom::SwerveDrive *swerve, bool areWeBlueAlliance, enum startPos, enum endPos);
+// std::shared_ptr<behaviour::Behaviour> Dock(wom::SwerveDrive *swerve, bool blueAlliance, enum startPos, enum endPos){
 
+// }
 
+// std::shared_ptr<behaviour::Behaviour> Single(wom::SwerveDrive *swerve, bool blueAlliance, bool dock, enum startPos, enum endPos){
 
+// }
 
+// std::shared_ptr<behaviour::Behaviour> Double(wom::SwerveDrive *swerve, bool blueAlliance, bool dock, enum startPos, enum endPos){
 
+// }
+
+// std::shared_ptr<behaviour::Behaviour> Triple(wom::SwerveDrive *swerve, bool blueAlliance, bool dock, enum startPos, enum endPos){
+
+// }
+
+// std::shared_ptr<behaviour::Behaviour> Quad(wom::SwerveDrive *swerve, bool blueAlliance, bool dock, enum startPos, enum endPos){
+
+// }
 
 
 
