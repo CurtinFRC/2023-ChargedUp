@@ -82,7 +82,7 @@ void Robot::AutonomousInit() {
   swerve->OnStart();
   swerve->ResetPose(frc::Pose2d());
   BehaviourScheduler *sched = BehaviourScheduler::GetInstance();
-  sched->Schedule(CircularPathing(swerve));
+  sched->Schedule(Drive(swerve, &map.swerveBase.gyro));
  }
 
 void Robot::AutonomousPeriodic() { }
@@ -90,7 +90,7 @@ void Robot::AutonomousPeriodic() { }
 void Robot::TeleopInit() {
   loop.Clear();
   BehaviourScheduler *sched = BehaviourScheduler::GetInstance();
-  sched->InterruptAll();
+  sched->InterruptAll(); // removes all previously scheduled behaviours
 
   swerve->OnStart();
 
@@ -194,10 +194,20 @@ void Robot::TeleopInit() {
   //   map.swerveTable.swerveDriveTable->GetEntry("IsX-ed").SetBoolean(false);
   // });
 
-  map.controllers.driver.RightStick(&loop).Rising().IfHigh([sched, this]() {
+  map.controllers.driver.A(&loop).Rising().IfHigh([sched, this]() {
+    
     sched->Schedule(make<DrivebaseBalance>(swerve, &map.swerveBase.gyro));
   });
 
+  // Current Keybinds:
+  /*
+    A - Balance Behaviour
+    B - Interrupts any behaviour, and sets active behaviour to the manual drive behaviour
+    X - X Wheels
+    Y - Field Orientated / Robot Relative Toggle
+    RightBumper - Acting as a shift key for grid poses
+    LeftBumper - Acting as a shift key for grid poses
+  */
 
   swerve->OnStart();
 }
@@ -228,44 +238,3 @@ void Robot::DisabledPeriodic() {}
 
 void Robot::TestInit() { }
 void Robot::TestPeriodic() { }
-
-/* SIMULATION */
-
-// #include <frc/simulation/BatterySim.h>
-// #include <frc/simulation/RoboRioSim.h>
-// #include <networktables/NetworkTableInstance.h>
-// #include "ControlUtil.h"
-
-// static units::second_t lastSimPeriodic{0};
-// static auto simTable = nt::NetworkTableInstance::GetDefault().GetTable("/sim");
-
-// struct SimConfig {
-//   ::sim::ArmavatorSim arm;
-//   wom::sim::SwerveDriveSim swerveSim; 
-// };
-// SimConfig *simConfig;
-
-// void Robot::SimulationInit() {
-//   simConfig = new SimConfig{
-//     ::sim::ArmavatorSim(map.armavator.config),
-//     wom::sim::SwerveDriveSim(map.swerveBase.config, 0.5 * 6_lb * 7.5_in * 7.5_in)
-//   };
-
-//   lastSimPeriodic = wom::now();
-// }
-
-// void Robot::SimulationPeriodic() {
-//   auto dt = wom::now() - lastSimPeriodic;
-
-//   simConfig->arm.OnUpdate(dt);
-//   simConfig->swerveSim.Update(dt);
-
-//   auto batteryVoltage = units::math::min(units::math::max(frc::sim::BatterySim::Calculate({
-//     // simConfig->arm.GetCurrent()
-
-//   }), 0_V), 12_V);
-//   frc::sim::RoboRioSim::SetVInVoltage(batteryVoltage);
-//   simTable->GetEntry("batteryVoltage").SetDouble(batteryVoltage.value()); 
-
-//   lastSimPeriodic = wom::now();
-// };

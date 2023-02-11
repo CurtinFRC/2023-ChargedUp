@@ -64,8 +64,8 @@ void SwerveModule::OnUpdate(units::second_t dt) {
   //driveVoltage = units::math::min(driveVoltage, 10_V);
   turnVoltage = units::math::min(turnVoltage, 7_V);
 
-  driveVoltage = units::math::min(driveVoltage, 10_V);
-  turnVoltage = units::math::min(turnVoltage, 7_V);
+  driveVoltage = units::math::min(units::math::max(driveVoltage, -4_V), 4_V); // was originally 10_V
+  turnVoltage = units::math::min(units::math::max(turnVoltage, -7_V), 7_V);
 
   // turnVoltage = units::math::min(turnVoltage, 6_V);
 
