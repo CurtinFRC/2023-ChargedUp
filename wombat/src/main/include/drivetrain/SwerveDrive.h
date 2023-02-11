@@ -18,7 +18,8 @@
 namespace wom {
   enum class SwerveModuleState {
     kIdle, 
-    kPID
+    kPID,
+    // kZeroWheels
   };
 
   struct SwerveModuleConfig {
@@ -46,6 +47,7 @@ namespace wom {
   
     void SetAccelerationLimit(units::meters_per_second_squared_t limit);
 
+    void SetZeroWheel(int moduleNum);
 
     // frc::SwerveModuleState GetState();
     frc::SwerveModulePosition GetPosition() const;
@@ -56,6 +58,7 @@ namespace wom {
     const SwerveModuleConfig &GetConfig() const;
 
    private:
+    units::radian_t _zeroedPosition;
     SwerveModuleConfig _config;
     SwerveModuleState _state;
 
@@ -138,6 +141,7 @@ namespace wom {
     void SetAccelerationLimit(units::meters_per_second_squared_t limit);
 
     void ResetPose(frc::Pose2d pose);
+    void StoreWheelZeros();
 
     frc::Pose2d GetPose();
     void AddVisionMeasurement(frc::Pose2d pose, units::second_t timestamp);

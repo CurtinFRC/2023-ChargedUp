@@ -21,16 +21,28 @@ SwerveModule::SwerveModule(std::string path, SwerveModuleConfig config, SwerveMo
   _anglePIDController.SetWrap(360_deg);
 }
 
-void SwerveModule::OnStart() {
-  _config.turnMotor.encoder->ZeroEncoder(); // take out when absolute encoders
 
-  _anglePIDController.Reset();
-  _velocityPIDController.Reset();
+void SwerveModule::SetZeroWheel(int moduleNum){
+  if (moduleNum == 1 or moduleNum == 4){
+    _zeroedPosition = _config.turnMotor.encoder->GetEncoderPosition() + 45_deg;
+  }
+  else {
+    _zeroedPosition = _config.turnMotor.encoder->GetEncoderPosition();
+  }
+}
+
+void SwerveModule::OnStart() {
+  // _config.turnMotor.encoder->ZeroEncoder(); // take out when absolute encoders
+  _anglePIDController.SetSetpoint(_zeroedPosition);
+
+  // _anglePIDController.Reset();
+  // _velocityPIDController.Reset();
 }
 
 void SwerveModule::OnUpdate(units::second_t dt) {
   units::volt_t driveVoltage{0};
   units::volt_t turnVoltage{0};
+  _table->GetEntry("set   zero").SetDouble(_zeroedPosition.value());
 
   switch(_state) {
     case SwerveModuleState::kIdle:
@@ -44,6 +56,10 @@ void SwerveModule::OnUpdate(units::second_t dt) {
         turnVoltage = _anglePIDController.Calculate(_config.turnMotor.encoder->GetEncoderPosition(), dt);
       }
       break;
+    // case SwerveModuleState::kZeroWheels:
+      
+    //   _state = 
+    //   break;
   }
 
   // units::newton_meter_t max_torque_at_current_limit = _config.turnMotor.motor.Torque(30_A);
@@ -119,7 +135,6 @@ units::meter_t SwerveModule::GetDistance() const {
 //     _config.turnMotor.encoder->GetEncoderPosition()
 //   };
 // }
-
 
 
 frc::SwerveModulePosition SwerveModule::GetPosition() const {
@@ -207,7 +222,7 @@ void SwerveDrive::OnUpdate(units::second_t dt) {
         _modules[i].SetPID(_angle, _speed);
       }
       break;
-    // case SwerveDriveState::kXWheels:
+    case SwerveDriveState::kXWheels:
       _modules[0].SetPID(45_deg, 0_mps);
       _modules[1].SetPID(135_deg, 0_mps);
       _modules[2].SetPID(315_deg, 0_mps);
@@ -237,12 +252,19 @@ void SwerveDrive::SetXWheelState(){
   _state = SwerveDriveState::kXWheels;
 }
 
+void SwerveDrive::StoreWheelZeros(){
+  int n = 0;
+  for (auto mod = _modules.begin(); mod < _modules.end(); mod++) {
+    mod->SetZeroWheel(n);
+    n++;
+  }
+}
+
 
 void SwerveDrive::OnStart() {
   _xPIDController.Reset();
   _yPIDController.Reset();
   _anglePIDController.Reset();
-
   for (auto mod = _modules.begin(); mod < _modules.end(); mod++) {
     mod->OnStart();
   }

@@ -43,8 +43,8 @@ AutoPathDetails GetAutoPathingDetails(SwervePack swerve, StartingConfig startCon
   switch (endConfig) {
     case EndingConfig::Dock:
         {
-        auto wait_until = make<DrivebasePoseBehaviour>(swerve.swerve, definedPoses.poseSet.dock_LineUp_Pos) | make<WaitTime>(3_s);
-        auto wait_until2 =make<DrivebasePoseBehaviour>(swerve.swerve, definedPoses.poseSet.dockPos) | make<WaitTime>(2_s);
+        auto wait_until = make<DrivebasePoseBehaviour>(swerve.swerve, definedPoses.poseSet.dock_LineUp_Pos) | make<WaitTime>(3_s); // because PID
+        auto wait_until2 =make<DrivebasePoseBehaviour>(swerve.swerve, definedPoses.poseSet.dockPos) | make<WaitTime>(2_s); // because PID
         endPathing = //autoPathingDetails.endPathing 
         wait_until
         << wait_until2

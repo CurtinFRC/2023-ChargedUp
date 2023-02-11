@@ -18,10 +18,15 @@ static units::second_t lastPeriodic;
 void Robot::RobotInit() {
   lastPeriodic = wom::now();
 
+
+
   vision = new Vision(map.vision.config);
 
   map.swerveBase.gyro.Reset();
   swerve = new wom::SwerveDrive(map.swerveBase.config, frc::Pose2d());
+
+  swerve->StoreWheelZeros();
+
   BehaviourScheduler::GetInstance()->Register(swerve);
   swerve->SetDefaultBehaviour([this]() {
     return make<ManualDrivebase>(swerve, &map.controllers.driver);
@@ -56,7 +61,7 @@ void Robot::AutonomousInit() {
   swerve->OnStart();
   swerve->ResetPose(frc::Pose2d());
   BehaviourScheduler *sched = BehaviourScheduler::GetInstance();
-  sched->Schedule(Triple(SwervePack{swerve, &map.swerveBase.gyro}, true, StartingConfig::Top, EndingConfig::Dock));
+  sched->Schedule(Single(SwervePack{swerve, &map.swerveBase.gyro}, true, StartingConfig::Top, EndingConfig::Dock));
  }
 
 void Robot::AutonomousPeriodic() { }
