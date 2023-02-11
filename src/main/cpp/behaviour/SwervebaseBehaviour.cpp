@@ -13,11 +13,15 @@ ManualDrivebase::ManualDrivebase(wom::SwerveDrive *swerveDrivebase, frc::XboxCon
   Controls(swerveDrivebase);
 }
 
+void ManualDrivebase::OnStart() {
+  _swerveDrivebase->SetAccelerationLimit(6_mps_sq);
+  std::cout << "Manual Drivebase Start" << std::endl;
+}
+
 void ManualDrivebase::OnTick(units::second_t deltaTime) {
   double l_x = wom::spow2(-wom::deadzone(_driverController->GetLeftY(), driverDeadzone));  // GetLeftY due to x being where y should be on field
   double l_y = wom::spow2(-wom::deadzone(_driverController->GetLeftX(), driverDeadzone));
   double r_x = wom::spow2(-wom::deadzone(_driverController->GetRightX(), turningDeadzone));
-
 
   if (_driverController->GetYButtonPressed()) {  isFieldOrientated = !isFieldOrientated;  }
 
@@ -25,13 +29,13 @@ void ManualDrivebase::OnTick(units::second_t deltaTime) {
     _swerveDrivebase->SetFieldRelativeVelocity(wom::FieldRelativeSpeeds{
         l_x * maxMovementMagnitude,
         l_y * maxMovementMagnitude,
-        r_x * 360_deg / 2_s
+        r_x * 360_deg / 1_s
     });
   } else {  // Robot Relative Controls
     _swerveDrivebase->SetVelocity(frc::ChassisSpeeds{
         l_x * maxMovementMagnitude,
         l_y * maxMovementMagnitude,
-        r_x * 360_deg / 2_s
+        r_x * 360_deg / 1_s
     });
   }
   _swerveDriveTable->GetEntry("isFieldOrientated").SetBoolean(isFieldOrientated);

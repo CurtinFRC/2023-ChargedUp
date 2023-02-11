@@ -32,22 +32,28 @@ void Armavator::OnUpdate(units::second_t dt) {
   arm->OnUpdate(dt);
   elevator->OnUpdate(dt);
 }
+
 //Sets the states names
+//idle state
 void Armavator::SetIdle() {
   _state = ArmavatorState::kIdle;
 }
 
+//set positions state
 void Armavator::SetPosition(ArmavatorPosition pos) {
   _state = ArmavatorState::kPosition;
   _setpoint = pos;
 }
 
+//manual state setup
 void Armavator::SetManual(units::volt_t arm, units::volt_t elevator) {
   _state = ArmavatorState::kManual;
   _rawArm = arm;
   _rawElevator = elevator;
 }
 
+
+//returns the current position
 ArmavatorPosition Armavator::GetCurrentPosition() const {
   return ArmavatorPosition {
     elevator->GetHeight(),
@@ -55,6 +61,7 @@ ArmavatorPosition Armavator::GetCurrentPosition() const {
   };
 }
 
+//determines if the armavator is stable/done
 bool Armavator::IsStable() const {
   return elevator->IsStable() && arm->IsStable();
 }

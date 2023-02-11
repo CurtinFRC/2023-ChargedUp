@@ -12,6 +12,7 @@
 #include <units/current.h>
 
 namespace wom {
+  //stes up the config information 
   struct ArmConfig {
     std::string path;
 
@@ -21,24 +22,27 @@ namespace wom {
     units::kilogram_t armMass;
     units::kilogram_t loadMass;
     units::meter_t armLength;
-    units::radian_t minAngle = 0_deg;
-    units::radian_t maxAngle = 180_deg;
-    units::radian_t initialAngle = 0_deg;
+    units::radian_t minAngle = -90_deg;
+    units::radian_t maxAngle = 270_deg;
+    units::radian_t initialAngle = 90_deg;
     units::radian_t angleOffset = 0_deg;
 
     void WriteNT(std::shared_ptr<nt::NetworkTable> table);
   };
 
+  //creates all states that will be used
   enum class ArmState {
     kIdle,
     kAngle,
     kRaw
   };
 
+  //allows the different states to be usable
   class Arm : public behaviour::HasBehaviour {
   public:
     Arm(ArmConfig config);
 
+    //creates functions based of off the different states with useable information
     void OnUpdate(units::second_t dt);
 
     void SetIdle();
@@ -52,6 +56,7 @@ namespace wom {
     
     bool IsStable() const;
   private:
+    //information that cannot be changed or edited by user
     ArmConfig _config;
     ArmState _state = ArmState::kIdle;
     wom::PIDController<units::radian, units::volt> _pid;

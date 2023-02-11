@@ -6,6 +6,7 @@
 
 #include <rev/CANSparkMax.h>
 #include <ctre/phoenix.h>
+#include <frc/DutyCycleEncoder.h>
 
 #include "sim/SimEncoder.h"
 #include "Util.h"
@@ -19,6 +20,7 @@ namespace wom {
     virtual void      ZeroEncoder();
 
     void SetEncoderPosition(units::radian_t position);
+    void SetEncoderOffset(units::radian_t offset);
 
     double  GetEncoderTicks() const;
     double  GetEncoderTicksPerRotation() const;
@@ -77,5 +79,29 @@ namespace wom {
     std::shared_ptr<sim::SimCapableEncoder> MakeSimEncoder() override;
    private:
     ctre::phoenix::motorcontrol::can::TalonFX *_controller;
+  };
+
+  class TalonSRXEncoder : public Encoder {
+   public: 
+    TalonSRXEncoder(ctre::phoenix::motorcontrol::can::TalonSRX *controller, double ticksPerRotation, double reduction = 1);
+   
+    double GetEncoderRawTicks() const override;
+    double GetEncoderTickVelocity() const override;
+
+    std::shared_ptr<sim::SimCapableEncoder> MakeSimEncoder() override;
+   private: 
+    ctre::phoenix::motorcontrol::can::TalonSRX *_controller;
+  };
+
+  class DutyCycleEncoder : public Encoder {
+   public: 
+    DutyCycleEncoder(int channel, double ticksPerRotation = 1, double reduction = 1);
+
+    double GetEncoderRawTicks() const override;
+    double GetEncoderTickVelocity() const override;
+
+    std::shared_ptr<sim::SimCapableEncoder> MakeSimEncoder() override;
+   private: 
+    frc::DutyCycleEncoder _dutyCycleEncoder;
   };
 }  // namespace wom
