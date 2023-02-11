@@ -26,7 +26,7 @@ void ManualDrivebase::OnTick(units::second_t deltaTime) {
         l_x * maxMovementMagnitude,
         l_y * maxMovementMagnitude,
         r_x * 360_deg / 2_s
-    });
+    }); 
   } else {  // Robot Relative Controls
     _swerveDrivebase->SetVelocity(frc::ChassisSpeeds{
         l_x * maxMovementMagnitude,
