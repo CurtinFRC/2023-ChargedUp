@@ -9,7 +9,6 @@ void SideIntake::OnUpdate(units::second_t dt) {
   units::volt_t voltage = 0_V;
 
   switch (_state) {
-<<<<<<< HEAD
   case SideIntakeState::kIdle:
     voltage = 0_V;
     break;
@@ -58,32 +57,6 @@ void SideIntake::OnUpdate(units::second_t dt) {
     _config.deploySolenoid->Set(frc::DoubleSolenoid::Value::kForward);
     voltage = 0_V;
     break;
-=======
-    case SideIntakeState::kIdle:
-      voltage = 0_V;
-      break;
-
-    case SideIntakeState::kIntaking:
-        voltage = intakeVoltage;
-        //_config.claspSolenoid->Set(frc::DoubleSolenoid::kForward);
-      break;
-    
-    case SideIntakeState::kMovePiston:
-      _config.deploySolenoid->Toggle();
-      break;
-
-    case SideIntakeState::kClaspPiston:
-    _config.claspSolenoid->Toggle();
-     break;
-
-    case SideIntakeState::kOuttaking:
-        voltage = outtakeVoltage;
-        //_config.claspSolenoid->Set(frc::DoubleSolenoid::kReverse);
-       
-        
-      
-      break;
->>>>>>> 5bd0db5b1a3254005a6079342795f677ee67d364
   }
 
     _config.leftIntakeMotor->SetVoltage(-voltage);
@@ -98,7 +71,6 @@ void SideIntake::SetIntakingWide() {
   _state = SideIntakeState::kIntakingWide;
 }
 
-<<<<<<< HEAD
 void SideIntake::SetOutakingWide() {
   _state = SideIntakeState::kOuttakingWide;
 }
@@ -150,21 +122,4 @@ std::string SideIntake::GetState() const {
     return "Stowed";
     break;
   }
-=======
-void SideIntake::SetMovePiston() {
-  _state = SideIntakeState::kMovePiston;
-}
-
-void SideIntake::SetClaspPiston(){
-  _state = SideIntakeState::kClaspPiston;
-}
-void SideIntake::SetOuttaking() {
-  _state = SideIntakeState::kOuttaking;
-}
-
-
-
-SideIntakeState SideIntake::GetState() const {
-  return _state;
->>>>>>> 5bd0db5b1a3254005a6079342795f677ee67d364
 }

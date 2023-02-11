@@ -8,6 +8,7 @@
 #include "behaviour/ArmavatorBehaviour.h"
 #include "Vision.h"
 #include "Gripper.h"
+#include "behaviour/VisionBehaviour.h"
 
 #include <ctre/phoenix/motorcontrol/can/WPI_TalonFX.h>
 #include <frc/Compressor.h>

@@ -27,10 +27,6 @@ class ManualDrivebase : public behaviour::Behaviour{
 
   bool isFieldOrientated = true;
 
-  double _frontLeftOffset;
-  double _frontRightOffset;
-  double _backLeftOffset;
-  double _backRightOffset;
 
   std::shared_ptr<nt::NetworkTable> _swerveDriveTable = nt::NetworkTableInstance::GetDefault().GetTable("swerve");
 

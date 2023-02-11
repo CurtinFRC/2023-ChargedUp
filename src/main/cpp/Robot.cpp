@@ -20,7 +20,6 @@ static units::second_t lastPeriodic;
 void Robot::RobotInit() {
   lastPeriodic = wom::now();
 
-  vision = new Vision(map.vision.config);
 
   map.swerveBase.gyro.Reset();
 
@@ -31,6 +30,13 @@ void Robot::RobotInit() {
   swerve->SetDefaultBehaviour([this]() {
     return make<ManualDrivebase>(swerve, &map.controllers.driver);
   });
+
+  vision = new Vision(&map.vision.config);
+  BehaviourScheduler::GetInstance()->Register(vision);
+  vision->SetDefaultBehaviour([this]() {
+    return make<VisionBehaviour>(vision, swerve, &map.controllers.codriver);
+  });
+
 
   //creates an instance of the armavator that can be used
   // armavator = new Armavator(map.armavator.arm.gearbox, map.armavator.elevator.gearbox, map.armavator.config);
