@@ -122,10 +122,16 @@ namespace wom {
       return out;
     }
 
-    bool IsStable() const {
+    bool IsStable(std::optional<typename config_t::error_t> stableThreshOverride = {}, std::optional<typename config_t::deriv_t> velocityThreshOverride = {}) const {
+      auto stableThresh = config.stableThresh;
+      auto stableDerivThresh = config.stableDerivThresh;
+
+      if (stableThreshOverride.has_value()) stableThresh = stableThreshOverride.value();
+      if (velocityThreshOverride.has_value()) stableDerivThresh = velocityThreshOverride.value();
+
       return _iterations > 20
-        && std::abs(_stablePos.value()) <= config.stableThresh.value()
-        && (config.stableDerivThresh.value() < 0 || std::abs(_stableVel.value()) <= config.stableDerivThresh.value());
+        && std::abs(_stablePos.value()) <= stableThresh.value()
+        && (stableDerivThresh.value() < 0 || std::abs(_stableVel.value()) <= stableDerivThresh.value());
     }
 
    private:

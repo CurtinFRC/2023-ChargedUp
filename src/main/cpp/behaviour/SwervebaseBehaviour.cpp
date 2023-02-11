@@ -1,62 +1,87 @@
 #include "behaviour/SwerveBaseBehaviour.h"
-#include "ControlUtil.h"
 
 #include <units/angular_velocity.h>
 #include <units/charge.h>
 #include <units/moment_of_inertia.h>
+
+#include "ControlUtil.h"
 // #include <units/units.h>
 
 using namespace wom;
 
-ManualDrivebase::ManualDrivebase(wom::SwerveDrive *swerveDrivebase, frc::XboxController *driverController):  _swerveDrivebase(swerveDrivebase), _driverController(driverController){
-    Controls(swerveDrivebase);
-}
-
-void ManualDrivebase::OnTick(units::second_t deltaTime){
-  double l_x = wom::spow2(-wom::deadzone(_driverController->GetLeftY(), driverDeadzone)); // GetLeftY due to x being where y should be
-  double l_y = wom::spow2(wom::deadzone(_driverController->GetLeftX(), driverDeadzone));
-  double r_x = wom::spow2(wom::deadzone(_driverController->GetRightX(), turningDeadzone));
-
-  // _swerveDrivebase->GetConfig();
-  
-  // Robot Relative Controls
-  // _swerveDrivebase->SetVelocity(frc::ChassisSpeeds {
-  //   l_x * maxMovementMagnitude,
-  //   l_y * maxMovementMagnitude,
-  //   r_x * 360_deg / 0.01_s // were once 90_deg / 1_s
-  // });
-
-  // Field Relative Controls
-  _swerveDrivebase->SetFieldRelativeVelocity(wom::FieldRelativeSpeeds {
-   l_x * l_x * maxMovementMagnitude,
-   l_y * l_y * maxMovementMagnitude,
-   r_x * 360_deg / 0.01_s // were once 360_deg / 1_s
-  });
-  
-  // Tests if the Robot Moves
-  //  _swerveDrivebase->SetVelocity(frc::ChassisSpeeds {
-  //    0.5_mps,
-  //    0_mps,
-  //    0_rad_per_s
-  //  });
-}
-
-DrivebasePoseBehaviour::DrivebasePoseBehaviour(wom::SwerveDrive *swerveDrivebase, frc::Pose2d pose) : _swerveDrivebase(swerveDrivebase), _pose(pose){
+ManualDrivebase::ManualDrivebase(wom::SwerveDrive *swerveDrivebase, frc::XboxController *driverController) : _swerveDrivebase(swerveDrivebase), _driverController(driverController) {
   Controls(swerveDrivebase);
 }
-void DrivebasePoseBehaviour::OnTick(units::second_t deltaTime){
-  _swerveDrivebase->SetPose(_pose);
 
-  if (_swerveDrivebase->IsAtSetPose()){
+void ManualDrivebase::OnStart() {
+  _swerveDrivebase->SetAccelerationLimit(6_mps_sq);
+  std::cout << "Manual Drivebase Start" << std::endl;
+}
+
+void ManualDrivebase::OnTick(units::second_t deltaTime) {
+  double l_x = wom::spow2(-wom::deadzone(_driverController->GetLeftY(), driverDeadzone));  // GetLeftY due to x being where y should be on field
+  double l_y = wom::spow2(-wom::deadzone(_driverController->GetLeftX(), driverDeadzone));
+  double r_x = wom::spow2(-wom::deadzone(_driverController->GetRightX(), turningDeadzone));
+
+  if (_driverController->GetYButtonPressed()) {  isFieldOrientated = !isFieldOrientated;  }
+
+  if (isFieldOrientated) {  // Field Relative Controls
+    _swerveDrivebase->SetFieldRelativeVelocity(wom::FieldRelativeSpeeds{
+        l_x * maxMovementMagnitude,
+        l_y * maxMovementMagnitude,
+        r_x * 360_deg / 1_s
+    });
+  } else {  // Robot Relative Controls
+    _swerveDrivebase->SetVelocity(frc::ChassisSpeeds{
+        l_x * maxMovementMagnitude,
+        l_y * maxMovementMagnitude,
+        r_x * 360_deg / 1_s
+    });
+  }
+  _swerveDriveTable->GetEntry("isFieldOrientated").SetBoolean(isFieldOrientated);
+  }
+
+DrivebasePoseBehaviour::DrivebasePoseBehaviour(
+    wom::SwerveDrive *swerveDrivebase, frc::Pose2d pose, bool hold)
+    : _swerveDrivebase(swerveDrivebase), _pose(pose), _hold(hold) {
+  Controls(swerveDrivebase);
+}
+void DrivebasePoseBehaviour::OnTick(units::second_t deltaTime) {
+  double setPoseAngle = _pose.Rotation().Degrees().value();
+  double difference = fmod(_swerveDrivebase->GetPose().Rotation().Degrees().value(), 360.0);
+
+  double currentAngle = _swerveDrivebase->GetPose().Rotation().Degrees().value();
+  units::degree_t adjustedAngle = 1_deg * (currentAngle - fmod(currentAngle, 360) + _pose.Rotation().Degrees().value());
+
+  _swerveDrivebase->SetPose(frc::Pose2d{_pose.X(), _pose.Y(), adjustedAngle});
+
+  if (_swerveDrivebase->IsAtSetPose() && !_hold){
     SetDone();
   }
 }
 
-DrivebaseBalance::DrivebaseBalance(wom::SwerveDrive *swerveDrivebase) : _swerveDrivebase(swerveDrivebase) {
+DrivebaseBalance::DrivebaseBalance(wom::SwerveDrive *swerveDrivebase, wom::NavX *gyro) : _swerveDrivebase(swerveDrivebase), _gyro(gyro) {
   Controls(swerveDrivebase);
 }
-void DrivebaseBalance::OnTick(units::second_t deltaTime){
-  // determine if it's moving, speed based off of roll back speed
+void DrivebaseBalance::OnTick(units::second_t deltaTime) {
+  units::meters_per_second_t lateralMotorSpeed = lateralBalancePID.Calculate(_gyro->GetPitch(), deltaTime);
+  units::meters_per_second_t sidewaysMotorSpeed = sidwaysBalancePID.Calculate(-_gyro->GetRoll(), deltaTime);
+  _swerveDrivebase->SetVelocity(frc::ChassisSpeeds{
+    // units::math::min(units::math::max(lateralMotorSpeed, -0.8), 0.8),
+    lateralMotorSpeed,
+    sidewaysMotorSpeed,
+    0_deg / 1_s
+  });
 
-  // get a feel for the wheel before doing this
+  _swerveDriveTable->GetEntry("Pitch").SetDouble(_gyro->GetPitch().convert<units::degree>().value());
+  _swerveDriveTable->GetEntry("BalanceLateralSpeed").SetDouble(lateralMotorSpeed.value());
+  _swerveDriveTable->GetEntry("BalanceSidewaysSpeed").SetDouble(sidewaysMotorSpeed.value());
+}
+
+
+XDrivebase::XDrivebase(wom::SwerveDrive *swerveDrivebase) : _swerveDrivebase(swerveDrivebase) {
+  Controls(swerveDrivebase);
+}
+void XDrivebase::OnTick(units::second_t deltaTime) {
+  _swerveDrivebase->SetXWheelState();
 }

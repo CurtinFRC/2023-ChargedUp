@@ -33,8 +33,8 @@ void TOF::UpdateNow() {
   uint16_t distance_mm = (distance_mm_buf[0] << 8) | distance_mm_buf[1];
 
   //check if the status is correct
-  if (status == 9)
-    _currentValue = units::millimeter_t{distance_mm};
-  else
-    _currentValue = {};
+  // if (status == 9) //@Darcey ERROR 
+  //   _currentValue = units::millimeter_t{distance_mm};
+  // else
+  //   _currentValue = {};
 }

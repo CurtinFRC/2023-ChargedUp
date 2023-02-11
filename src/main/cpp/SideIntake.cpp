@@ -9,32 +9,57 @@ void SideIntake::OnUpdate(units::second_t dt) {
   units::volt_t voltage = 0_V;
 
   switch (_state) {
-    case SideIntakeState::kIdle:
-      voltage = 0_V;
-      break;
+  case SideIntakeState::kIdle:
+    voltage = 0_V;
+    break;
 
-    case SideIntakeState::kIntaking:
-        voltage = intakeVoltage;
-        //_config.claspSolenoid->Set(frc::DoubleSolenoid::kForward);
-      break;
-    
-    case SideIntakeState::kMovePiston:
-      _config.deploySolenoid->Toggle();
-      break;
+  case SideIntakeState::kStowed:
+    _config.claspSolenoid->Set(frc::DoubleSolenoid::Value::kReverse);
+    _config.deploySolenoid->Set(frc::DoubleSolenoid::Value::kReverse);
+    voltage = 0_V;
+    break;
 
-    case SideIntakeState::kClaspPiston:
-    _config.claspSolenoid->Toggle();
-     break;
+  case SideIntakeState::kIntakingWide:
+    _config.claspSolenoid->Set(frc::DoubleSolenoid::Value::kForward);
+    _config.deploySolenoid->Set(frc::DoubleSolenoid::Value::kReverse);
 
-    case SideIntakeState::kOuttaking:
-        voltage = outtakeVoltage;
-        //_config.claspSolenoid->Set(frc::DoubleSolenoid::kReverse);
-       
-        
-      
-      break;
+    voltage = 10_V;
+    break;
+
+  case SideIntakeState::kOuttakingWide:
+    _config.claspSolenoid->Set(frc::DoubleSolenoid::Value::kForward);
+    _config.deploySolenoid->Set(frc::DoubleSolenoid::Value::kReverse);
+
+    voltage = -10_V;
+    break;
+
+  case SideIntakeState::kIntakingClosed:
+    _config.claspSolenoid->Set(frc::DoubleSolenoid::Value::kForward);
+    _config.deploySolenoid->Set(frc::DoubleSolenoid::Value::kForward);
+
+    voltage = 10_V;
+    break;
+
+  case SideIntakeState::kOutakingClosed:
+    _config.claspSolenoid->Set(frc::DoubleSolenoid::Value::kForward);
+    _config.deploySolenoid->Set(frc::DoubleSolenoid::Value::kForward);
+
+    voltage = -10_V;
+    break;
+
+  case SideIntakeState::kWide:
+    _config.claspSolenoid->Set(frc::DoubleSolenoid::Value::kForward);
+    _config.deploySolenoid->Set(frc::DoubleSolenoid::Value::kReverse);
+    voltage = 0_V;
+    break;
+  case SideIntakeState::kClosed:
+    _config.claspSolenoid->Set(frc::DoubleSolenoid::Value::kForward);
+    _config.deploySolenoid->Set(frc::DoubleSolenoid::Value::kForward);
+    voltage = 0_V;
+    break;
   }
-    _config.leftIntakeMotor->SetVoltage(voltage);
+
+    _config.leftIntakeMotor->SetVoltage(-voltage);
     _config.rightIntakeMotor->SetVoltage(voltage);
 };
 
@@ -42,23 +67,59 @@ void SideIntake::SetIdle() {
   _state = SideIntakeState::kIdle;
 }
 
-void SideIntake::SetIntaking() {
-  _state = SideIntakeState::kIntaking;
+void SideIntake::SetIntakingWide() {
+  _state = SideIntakeState::kIntakingWide;
 }
 
-void SideIntake::SetMovePiston() {
-  _state = SideIntakeState::kMovePiston;
+void SideIntake::SetOutakingWide() {
+  _state = SideIntakeState::kOuttakingWide;
 }
 
-void SideIntake::SetClaspPiston(){
-  _state = SideIntakeState::kClaspPiston;
-}
-void SideIntake::SetOuttaking() {
-  _state = SideIntakeState::kOuttaking;
+void SideIntake::SetIntakingClosed() {
+  _state = SideIntakeState::kIntakingClosed;
 }
 
+void SideIntake::SetOutakingClosed() {
+  _state = SideIntakeState::kOutakingClosed;
+}
 
+void SideIntake::SetStowed() {
+  _state = SideIntakeState::kStowed;
+}
 
-SideIntakeState SideIntake::GetState() const {
-  return _state;
+void SideIntake::SetWide() {
+  _state = SideIntakeState::kWide;
+}
+
+void SideIntake::SetClosed() {
+  _state = SideIntakeState::kClosed;
+}
+
+std::string SideIntake::GetState() const {
+  switch (_state) {
+  case SideIntakeState::kIdle:
+    return "Idle";
+    break;
+  case SideIntakeState::kIntakingWide:
+    return "Intaking Wide";
+    break;
+  case SideIntakeState::kIntakingClosed:
+    return "Intaking Closed";
+    break;
+  case SideIntakeState::kOutakingClosed:
+    return "Outaking Closed";
+    break;
+  case SideIntakeState::kOuttakingWide:
+    return "Outaking Wide";
+    break;
+  case SideIntakeState::kWide:
+    return "Wide";
+    break;
+  case SideIntakeState::kClosed:
+    return "Closed";
+    break;
+  case SideIntakeState::kStowed:
+    return "Stowed";
+    break;
+  }
 }
