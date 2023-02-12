@@ -156,16 +156,18 @@ struct RobotMap {
     }
   };
   SwerveBase swerveBase;
-  struct SwerveGridPoses { // positions to place the items
-    frc::Pose2d innerGrid1 = frc::Pose2d(0.1_m, 0.1_m, 0_deg); // Closest grid position to the Wall
-    frc::Pose2d innerGrid2 = frc::Pose2d(0.5_m, 0_m, 0_deg); // Middle of Inner Grid
-    frc::Pose2d innerGrid3 = frc::Pose2d(0.5_m, -0.5_m, 0_deg); // Centremost Inner Grid position
-    frc::Pose2d centreGrid1 = frc::Pose2d(0_m, 0.5_m, 0_deg); // The non central grid on the Inner Grid side
-    frc::Pose2d centreGrid2 = frc::Pose2d(0_m, 0_m, 216_deg); // The middle most grid
-    frc::Pose2d centreGrid3 = frc::Pose2d(0_m, -0.5_m, 0_deg); // The non central grid on the Outer Grid side
-    frc::Pose2d outerGrid1 = frc::Pose2d(-0.5_m, 0.5_m, 0_deg); // Centremost outer grid position
-    frc::Pose2d outerGrid2 = frc::Pose2d(1_m, 0_m, 0_deg); // Middle of Outer Grid
-    frc::Pose2d outerGrid3 = frc::Pose2d(-0.5_m, -0.5_m, 0_deg); // Closest grid position to enemy Loading Zone
+
+  // ONLY FOR BLUE RN //
+  struct SwerveGridPoses { // positions to place the items 
+    frc::Pose2d innerGrid1 = frc::Pose2d(20.185_in, 20.208_in, 0_deg); // Closest grid position to the Wall
+    frc::Pose2d innerGrid2 = frc::Pose2d(42.2_in, 20.208_in, 0_deg); // Middle of Inner Grid
+    frc::Pose2d innerGrid3 = frc::Pose2d(64.185_in, 20.208_in, 0_deg); // Centremost Inner Grid position
+    frc::Pose2d centreGrid1 = frc::Pose2d(86.078_in, 20.208_in, 0_deg); // The non central grid on the Inner Grid side
+    frc::Pose2d centreGrid2 = frc::Pose2d(108.131_in, 20.208_in, 216_deg); // The middle most grid
+    frc::Pose2d centreGrid3 = frc::Pose2d(130.185_in, 20.208_in, 0_deg); // The non central grid on the Outer Grid side
+    frc::Pose2d outerGrid1 = frc::Pose2d(152.185_in, 20.208_in, 0_deg); // Centremost outer grid position
+    frc::Pose2d outerGrid2 = frc::Pose2d(174.170_in, 20.208_in, 0_deg); // Middle of Outer Grid
+    frc::Pose2d outerGrid3 = frc::Pose2d(196.185_in, 20.208_in, 0_deg); // Closest grid position to enemy Loading Zone
   };
   SwerveGridPoses swerveGridPoses;
   

@@ -1,5 +1,5 @@
 #include "Auto.h"
-#include "Poses.h"
+// #include "Poses.h"
 
 #include "behaviour/SwerveBaseBehaviour.h"
 
@@ -37,25 +37,32 @@ AutoPathDetails GetAutoPathingDetails(SwervePack swerve, StartingConfig startCon
       if (blueAlliance){  definedPoses.poseSet = definedPoses.bottom_Blue;  break;  }
       definedPoses.poseSet = definedPoses.bottom_Red;  break;
   }
+
   autoPathingDetails.startPos = definedPoses.poseSet.startPos;
 
   switch (endConfig) {
     case EndingConfig::Dock:
-      {
+        {
         auto wait_until = make<DrivebasePoseBehaviour>(swerve.swerve, definedPoses.poseSet.dock_LineUp_Pos) | make<WaitTime>(3_s); // because PID
         auto wait_until2 =make<DrivebasePoseBehaviour>(swerve.swerve, definedPoses.poseSet.dockPos) | make<WaitTime>(2_s); // because PID
         endPathing = //autoPathingDetails.endPathing 
         wait_until
         << wait_until2
         << make<DrivebaseBalance>(swerve.swerve, swerve.gyro);
-      break;
-      }
+      break;}
     case EndingConfig::PrepareManual:
         endPathing = //autoPathingDetails.endPathing
         make<DrivebasePoseBehaviour>(swerve.swerve, definedPoses.poseSet.subStationWaitPos);
       break;
     case EndingConfig::Collect:
           /* haha have fun with this Liam :D */
+          /*
+          if (id = single):
+          if (id = double):
+          if (id = triple):
+          if (id = quad):
+          if (id = quintuple):
+          */
       break;
     case EndingConfig::Taxi:
         endPathing = //autoPathingDetails.endPathing

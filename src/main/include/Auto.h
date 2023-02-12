@@ -17,27 +17,30 @@ class DefinedPoses {
   Poses poseSet{};
 
   Poses top_Blue {
-    {0_m, 0_m, 0_deg}, // startPos
-    {0_m, -1.5_m, 0_deg}, // dock_LineUp_Pos
-    {2_m, -1.5_m, 0_deg}, // dockPos
-    {0_m, 0_m, 0_deg}, // stealPos
-    {0_m, 0_m, 0_deg}, // taxiPos
-    {0_m, 0_m, 0_deg}  // subStationWaitPOs
+    {72.055_in, 196.3_in, 0_deg}, // startPos
+    {83.607_in, 139.388_in, 0_deg}, // dock_LineUp_Pos
+    {122.808_in, 139.286_in, 0_deg}, // dockPos
+    {287.887_in, 180.555_in, 0_deg}, // stealPos
+    {171.061_in, 195.748_in, 0_deg}, // taxiPos
+
+    {291.192_in, 246.31_in, 0_deg}  // subStationWaitPOs
   };
   Poses middle_Blue {
-    {0_m, 0_m, 0_deg}, // startPos
-    {0_m, 0_m, 0_deg}, // dock_LineUp_Pos
-    {0_m, 0_m, 0_deg}, // dockPos
+    {72.043_in, 86.608_in, 0_deg}, // startPos
+    {83.629_in, 107.795_in, 0_deg}, // dock_LineUp_Pos
+    {122.407_in, 107.992_in, 0_deg}, // dockPos
+
     {0_m, 0_m, 0_deg}, // stealPos
     {0_m, 0_m, 0_deg}, // taxiPos
     {0_m, 0_m, 0_deg}  // subStationWaitPOs
   };
   Poses bottom_Blue {
-    {0_m, 0_m, 0_deg}, // startPos
-    {0_m, 0_m, 0_deg}, // dock_LineUp_Pos
-    {0_m, 0_m, 0_deg}, // dockPos
-    {0_m, 0_m, 0_deg}, // stealPos
-    {0_m, 0_m, 0_deg}, // taxiPos
+    {72.061_in, 20.208_in, 0_deg}, // startPos
+    {82.138_in, 76.783_in, 0_deg}, // dock_LineUp_Pos
+    {124.158_in, 75.594_in, 0_deg}, // dockPos
+    {288.932_in, 35.832_in, 0_deg}, // stealPos
+    {221.744_in, 17.986_in, 0_deg}, // taxiPos
+
     {0_m, 0_m, 0_deg}  // subStationWaitPOs
   };
 
