@@ -16,7 +16,8 @@ class ManualDrivebase : public behaviour::Behaviour{
   ManualDrivebase(wom::SwerveDrive *swerveDrivebase, frc::XboxController *driverController);
 
   void OnTick(units::second_t deltaTime) override;
-
+  void OnStart();
+  
  private:
   wom::SwerveDrive *_swerveDrivebase;
   frc::XboxController *_driverController;

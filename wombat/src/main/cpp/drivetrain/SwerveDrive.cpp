@@ -22,27 +22,16 @@ SwerveModule::SwerveModule(std::string path, SwerveModuleConfig config, SwerveMo
 }
 
 
-void SwerveModule::SetZeroWheel(int moduleNum){
-  if (moduleNum == 1 or moduleNum == 4){
-    _zeroedPosition = _config.turnMotor.encoder->GetEncoderPosition() + 45_deg;
-  }
-  else {
-    _zeroedPosition = _config.turnMotor.encoder->GetEncoderPosition();
-  }
-}
-
 void SwerveModule::OnStart() {
-  // _config.turnMotor.encoder->ZeroEncoder(); // take out when absolute encoders
-  _anglePIDController.SetSetpoint(_zeroedPosition);
+  _config.turnMotor.encoder->ZeroEncoder(); // take out when absolute encoders
 
-  // _anglePIDController.Reset();
-  // _velocityPIDController.Reset();
+  _anglePIDController.Reset();
+  _velocityPIDController.Reset();
 }
 
 void SwerveModule::OnUpdate(units::second_t dt) {
   units::volt_t driveVoltage{0};
   units::volt_t turnVoltage{0};
-  _table->GetEntry("set   zero").SetDouble(_zeroedPosition.value());
 
   switch(_state) {
     case SwerveModuleState::kIdle:
@@ -56,10 +45,6 @@ void SwerveModule::OnUpdate(units::second_t dt) {
         turnVoltage = _anglePIDController.Calculate(_config.turnMotor.encoder->GetEncoderPosition(), dt);
       }
       break;
-    // case SwerveModuleState::kZeroWheels:
-      
-    //   _state = 
-    //   break;
   }
 
   // units::newton_meter_t max_torque_at_current_limit = _config.turnMotor.motor.Torque(30_A);
@@ -104,7 +89,7 @@ void SwerveModule::SetIdle() {
   _state = SwerveModuleState::kIdle;
 }
 
-void SwerveModule::SetPID(units::radian_t angle, units::meters_per_second_t speed) {
+void SwerveModule::SetPID(units::radian_t angle, units::meters_per_second_t speed, units::second_t dt) {
   _state = SwerveModuleState::kPID;
 
 
@@ -209,24 +194,24 @@ void SwerveDrive::OnUpdate(units::second_t dt) {
       {
         auto target_states = _kinematics.ToSwerveModuleStates(_target_speed);
         for (size_t i = 0; i < _modules.size(); i++) {
-          _modules[i].SetPID(target_states[i].angle.Radians(), target_states[i].speed);
+          _modules[i].SetPID(target_states[i].angle.Radians(), target_states[i].speed, dt);
         }
       }
       break;
     case SwerveDriveState::kIndividualTuning: 
-      _modules[_mod].SetPID(_angle, _speed);
+      _modules[_mod].SetPID(_angle, _speed, dt);
       break;
 
     case SwerveDriveState::kTuning:
       for (size_t i = 0; i < _modules.size(); i++) {
-        _modules[i].SetPID(_angle, _speed);
+        _modules[i].SetPID(_angle, _speed, dt);
       }
       break;
     case SwerveDriveState::kXWheels:
-      _modules[0].SetPID(45_deg, 0_mps);
-      _modules[1].SetPID(135_deg, 0_mps);
-      _modules[2].SetPID(315_deg, 0_mps);
-      _modules[3].SetPID(225_deg, 0_mps);
+      _modules[0].SetPID(45_deg, 0_mps, dt);
+      _modules[1].SetPID(135_deg, 0_mps, dt);
+      _modules[2].SetPID(315_deg, 0_mps, dt);
+      _modules[3].SetPID(225_deg, 0_mps, dt);
       break;
   }
 
@@ -251,15 +236,6 @@ void SwerveDrive::OnUpdate(units::second_t dt) {
 void SwerveDrive::SetXWheelState(){
   _state = SwerveDriveState::kXWheels;
 }
-
-void SwerveDrive::StoreWheelZeros(){
-  int n = 0;
-  for (auto mod = _modules.begin(); mod < _modules.end(); mod++) {
-    mod->SetZeroWheel(n);
-    n++;
-  }
-}
-
 
 void SwerveDrive::OnStart() {
   _xPIDController.Reset();

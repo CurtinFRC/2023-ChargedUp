@@ -1,24 +1,16 @@
 #include "Vision.h"
 
-#include <wpi/json.h>
-#include <units/length.h>
-#include <frc/apriltag/AprilTagFields.h>
-#include "NTUtil.h"
-
-#include "Util.h"
-
-
 std::shared_ptr<frc::AprilTagFieldLayout> Get2023Layout() {
   return std::make_shared<frc::AprilTagFieldLayout>(frc::LoadAprilTagLayoutField(frc::AprilTagField::k2023ChargedUp));
 }
 
-Vision::Vision(VisionConfig config) 
+Vision::Vision(VisionConfig *config) 
   : _config(config),
   _estimator(
-    config.layout,
+    config->layout,
     photonlib::AVERAGE_BEST_TARGETS,
     {
-      std::make_pair(config.camera, config.robotToCamera)
+      std::make_pair(config->camera, config->robotToCamera)
     }
   )
 { }

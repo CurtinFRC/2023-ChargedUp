@@ -1,10 +1,6 @@
 #pragma once
 #include "VoltageController.h"
-#include "Arm.h"
-#include "Elevator.h"
-#include "Armavator.h"
 #include "Gyro.h"
-#include "behaviour/ArmavatorBehaviour.h"
 #include "Vision.h"
 
 #include <ctre/phoenix/motorcontrol/can/WPI_TalonFX.h>
@@ -20,13 +16,14 @@
 #include <string>
 
 struct RobotMap {
-  struct Controllers {  
+  struct Controllers {    
+    //sets driver station numbers for the controllers
     frc::XboxController driver{0};
     frc::XboxController codriver{1};
   };
   Controllers controllers;
 
-
+  //stores nessesary info for vision
   struct Vision {
     VisionConfig config{
       std::make_shared<photonlib::PhotonCamera>("camera"), 
@@ -36,6 +33,7 @@ struct RobotMap {
   };
   Vision vision;
 
+  //stores nessesary info for swerve
   struct SwerveBase{
     wom::NavX gyro;
     wpi::array<WPI_TalonFX*, 4> turnMotors{
@@ -43,14 +41,7 @@ struct RobotMap {
     };
     wpi::array<WPI_TalonFX*, 4> driveMotors{
       new WPI_TalonFX(7), new WPI_TalonFX(2), new WPI_TalonFX(8), new WPI_TalonFX(5)
-    };
-    //   wpi::array<WPI_TalonFX*, 4> turnMotors{
-    //   new WPI_TalonFX(1), new WPI_TalonFX(3), new WPI_TalonFX(4), new WPI_TalonFX(6)
-    // };
-    // wpi::array<WPI_TalonFX*, 4> driveMotors{
-    //   new WPI_TalonFX(5), new WPI_TalonFX(8), new WPI_TalonFX(2), new WPI_TalonFX(7)
-    // };
-    
+    };    
     wpi::array<wom::SwerveModuleConfig, 4> moduleConfigs{
       wom::SwerveModuleConfig{ // dimensions are assuming perfect square robot 1m^2 area
         frc::Translation2d(0.5_m, 0.5_m),
@@ -164,129 +155,22 @@ struct RobotMap {
       }
     }
   };
-
   SwerveBase swerveBase;
-
-
   struct SwerveGridPoses { // positions to place the items
     frc::Pose2d innerGrid1 = frc::Pose2d(0.1_m, 0.1_m, 0_deg); // Closest grid position to the Wall
     frc::Pose2d innerGrid2 = frc::Pose2d(0.5_m, 0_m, 0_deg); // Middle of Inner Grid
     frc::Pose2d innerGrid3 = frc::Pose2d(0.5_m, -0.5_m, 0_deg); // Centremost Inner Grid position
     frc::Pose2d centreGrid1 = frc::Pose2d(0_m, 0.5_m, 0_deg); // The non central grid on the Inner Grid side
-    frc::Pose2d centreGrid2 = frc::Pose2d(0_m, 0_m, 216_deg); // The middle most grid 
+    frc::Pose2d centreGrid2 = frc::Pose2d(0_m, 0_m, 216_deg); // The middle most grid
     frc::Pose2d centreGrid3 = frc::Pose2d(0_m, -0.5_m, 0_deg); // The non central grid on the Outer Grid side
     frc::Pose2d outerGrid1 = frc::Pose2d(-0.5_m, 0.5_m, 0_deg); // Centremost outer grid position
     frc::Pose2d outerGrid2 = frc::Pose2d(1_m, 0_m, 0_deg); // Middle of Outer Grid
     frc::Pose2d outerGrid3 = frc::Pose2d(-0.5_m, -0.5_m, 0_deg); // Closest grid position to enemy Loading Zone
   };
   SwerveGridPoses swerveGridPoses;
-
-  struct IntakeSystem {
-    WPI_TalonSRX rightMotor{98};
-    WPI_VictorSPX leftMotor{99};
-
-    // wom::MotorVoltageController rightIntake = wom::MotorVoltageController::Group(rightMotor);
-    // wom::TalonSr
-
-    // wom::Gearbox intakeGearbox  {
-    //   &rightIntake,
-    //   &
-    // };
-
-
-    frc::Compressor compressor{1, frc::PneumaticsModuleType::CTREPCM};
-    frc::DoubleSolenoid leftSolenoid{1, frc::PneumaticsModuleType::CTREPCM, 0, 1};
-    // frc::DoubleSolenoid rightSolenoid{PneumaticsModuleType::CTREPCM, 2};
-    frc::DoubleSolenoid gripSolenoid{1, frc::PneumaticsModuleType::CTREPCM, 6, 7};
-
-  }; IntakeSystem intake;
-
-  struct GripperSystem {
-    // WPI_TalonSRX leftGrip{89};
-    // WPI_TalonSRX rightGrip{88};
-
-    WPI_TalonSRX leftGrip{3};
-    WPI_TalonSRX rightGrip{4};
-  }; GripperSystem gripper;
-
-  struct Armavator {
-    static constexpr units::kilogram_t loadMass = 10_kg;
-    static constexpr units::kilogram_t armMass = 5_kg;
-    static constexpr units::kilogram_t carriageMass = 5_kg;
-
-    struct Arm {
-      WPI_TalonSRX motor{15};
-
-      wom::MotorVoltageController motorGroup = wom::MotorVoltageController::Group(motor);
-      
-      wom::DigitalEncoder encoder{0, 1, 2048};
-
-      wom::Gearbox gearbox {
-        &motorGroup,
-        &encoder,
-        wom::DCMotor::CIM(2).WithReduction(100)
-      };
-
-      wom::ArmConfig config {
-        "/armavator/arm",
-        gearbox,
-        wom::PIDConfig<units::radian, units::volts>("/armavator/arm/pid/config")
-      };
-    };
-    Arm arm;
-
-    struct Elevator {
-      WPI_TalonSRX motor{9};
-      WPI_TalonSRX motor1{10};
-
-      wom::MotorVoltageController motorGroup = wom::MotorVoltageController::Group(motor, motor1);
-
-      wom::DigitalEncoder encoder{2, 3, 2048};
-
-      wom::Gearbox gearbox {
-        &motorGroup,
-        &encoder,
-        wom::DCMotor::CIM(2).WithReduction(10)
-      };
-
-      wom::ElevatorConfig config {
-        "/armavator/elevator",
-        gearbox,
-        nullptr,
-        nullptr,
-        2_in,
-        armMass + loadMass + carriageMass,
-        1.5_m,
-        1_m,
-        000000000000000000000000000000000000000000_m, // an obvious way to say: CHANGE THIS
-        {
-          "/armavator/elevator/pid/config",
-          12_V / 1_m
-        }
-      };
-    };
-    Elevator elevator;
-
-    ArmavatorConfig::grid_t occupancyGrid = ArmavatorConfig::grid_t(
-      arm.config.minAngle, arm.config.maxAngle,
-      0_m, elevator.config.maxHeight,
-      50, 50
-    ).FillF([this](units::radian_t angle, units::meter_t height) {
-      units::meter_t x = arm.config.armLength * units::math::cos(angle);
-      units::meter_t y = height + arm.config.armLength * units::math::sin(angle);
-      return !(y >= 0.1_m && y <= 6_ft);
-    });
-
-    ArmavatorConfig config {
-      arm.config, elevator.config, occupancyGrid
-    };
-  }; Armavator armavator;
-
-  struct ArmTable {
-    std::shared_ptr<nt::NetworkTable> armManualTable = nt::NetworkTableInstance::GetDefault().GetTable("armManual");
-  }; ArmTable armTable;
-
+  
   struct SwerveTable {
     std::shared_ptr<nt::NetworkTable> swerveDriveTable = nt::NetworkTableInstance::GetDefault().GetTable("swerve");
-  }; SwerveTable swerveTable;
+  };
+  SwerveTable swerveTable;
 };

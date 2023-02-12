@@ -2,7 +2,6 @@
 #include "Poses.h"
 
 #include "behaviour/SwerveBaseBehaviour.h"
-#include "behaviour/ArmavatorBehaviour.h"
 
 using namespace behaviour;
 
@@ -42,14 +41,15 @@ AutoPathDetails GetAutoPathingDetails(SwervePack swerve, StartingConfig startCon
 
   switch (endConfig) {
     case EndingConfig::Dock:
-        {
+      {
         auto wait_until = make<DrivebasePoseBehaviour>(swerve.swerve, definedPoses.poseSet.dock_LineUp_Pos) | make<WaitTime>(3_s); // because PID
         auto wait_until2 =make<DrivebasePoseBehaviour>(swerve.swerve, definedPoses.poseSet.dockPos) | make<WaitTime>(2_s); // because PID
         endPathing = //autoPathingDetails.endPathing 
         wait_until
         << wait_until2
         << make<DrivebaseBalance>(swerve.swerve, swerve.gyro);
-      break;}
+      break;
+      }
     case EndingConfig::PrepareManual:
         endPathing = //autoPathingDetails.endPathing
         make<DrivebasePoseBehaviour>(swerve.swerve, definedPoses.poseSet.subStationWaitPos);

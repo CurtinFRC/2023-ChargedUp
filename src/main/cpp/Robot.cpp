@@ -2,11 +2,12 @@
 #include "behaviour/BehaviourScheduler.h"
 #include "behaviour/Behaviour.h"
 #include "behaviour/SwerveBaseBehaviour.h"
+#include "behaviour/VisionBehaviour.h"
 
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <frc/event/BooleanEvent.h>
 #include <units/math.h>
-
+#include <networktables/NetworkTableInstance.h>
 
 #include "Auto.h"
 
@@ -18,24 +19,19 @@ static units::second_t lastPeriodic;
 void Robot::RobotInit() {
   lastPeriodic = wom::now();
 
-
-
-  vision = new Vision(map.vision.config);
-
   map.swerveBase.gyro.Reset();
-  swerve = new wom::SwerveDrive(map.swerveBase.config, frc::Pose2d());
 
-  swerve->StoreWheelZeros();
+  swerve = new wom::SwerveDrive(map.swerveBase.config, frc::Pose2d());
 
   BehaviourScheduler::GetInstance()->Register(swerve);
   swerve->SetDefaultBehaviour([this]() {
     return make<ManualDrivebase>(swerve, &map.controllers.driver);
   });
 
-  armavator = new Armavator(map.armavator.arm.gearbox, map.armavator.elevator.gearbox, map.armavator.config);
-  BehaviourScheduler::GetInstance()->Register(armavator);
-  armavator->SetDefaultBehaviour([this]() {
-    return make<ArmavatorRawBehaviour>(armavator, map.controllers.codriver);
+  vision = new Vision(&map.vision.config);
+  BehaviourScheduler::GetInstance()->Register(vision);
+  vision->SetDefaultBehaviour([this]() {
+    return make<VisionBehaviour>(vision, swerve, &map.controllers.codriver);
   });
 }
 
@@ -47,14 +43,11 @@ void Robot::RobotPeriodic() {
   BehaviourScheduler::GetInstance()->Tick();
 
   swerve->OnUpdate(dt);
-  armavator->OnUpdate(dt);
 
   auto visionPose = vision->OnUpdate(dt);
-
   if (visionPose.has_value()){
     swerve->AddVisionMeasurement(visionPose.value().first.ToPose2d(), visionPose.value().second);
   }
-
 }
 
 void Robot::AutonomousInit() {
@@ -119,8 +112,6 @@ void Robot::TeleopInit() {
     swerve->GetActiveBehaviour()->Interrupt();
     map.swerveTable.swerveDriveTable->GetEntry("IsX-ed").SetBoolean(false);
   });
-
-
   map.controllers.driver.A(&loop).Rising().IfHigh([sched, this]() {
     
     sched->Schedule(make<DrivebaseBalance>(swerve, &map.swerveBase.gyro));
@@ -137,7 +128,7 @@ void Robot::TeleopInit() {
   */
 
   swerve->OnStart();
-  
+
 }
 
 void Robot::TeleopPeriodic() { }
