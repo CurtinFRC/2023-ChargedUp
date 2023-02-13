@@ -7,7 +7,7 @@ using namespace behaviour;
 
 DefinedPoses definedPoses;
 
-AutoPathDetails GetAutoPathingDetails(Drivebase drivebase, StartingConfig startConfig, EndingConfig endConfig, bool blueAlliance, std::vector<frc::Pose2d> adjustmentPoses, int calledFromID){
+AutoPathDetails GetAutoPathingDetails(Drivebase drivebase, StartingConfig startConfig, EndingConfig endConfig, bool blueAlliance, int calledFromID, std::vector<frc::Pose2d> adjustmentPoses){
   AutoPathDetails autoPathingDetails;
   std::shared_ptr<Behaviour> adjustmentPathing;
   std::shared_ptr<Behaviour> endPathing;
