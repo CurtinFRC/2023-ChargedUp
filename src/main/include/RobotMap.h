@@ -43,9 +43,9 @@ struct RobotMap {
       new WPI_TalonFX(7), new WPI_TalonFX(2), new WPI_TalonFX(8), new WPI_TalonFX(5)
     };    
     wpi::array<wom::SwerveModuleConfig, 4> moduleConfigs{
-      wom::SwerveModuleConfig{ // dimensions are assuming perfect square robot 1m^2 area
+      wom::SwerveModuleConfig{
         frc::Translation2d(10.761_in, 9.455_in),
-        ctre::phoenix::sensors::CANCoder(99),
+        ctre::phoenix::sensors::CANCoder::CANCoder(99),
         wom::Gearbox{
           new wom::MotorVoltageController(driveMotors[0]),
           new wom::TalonFXEncoder(driveMotors[0], 6.75),
@@ -58,9 +58,9 @@ struct RobotMap {
         },
         4_in / 2
       },
-      wom::SwerveModuleConfig{ // dimensions are assuming perfect square robot 1m^2 area
+      wom::SwerveModuleConfig{
         frc::Translation2d(10.761_in, -9.455_in),
-        ctre::phoenix::sensors::CANCoder(99),
+        ctre::phoenix::sensors::CANCoder::CANCoder(99),
         wom::Gearbox{
           new wom::MotorVoltageController(driveMotors[1]),
           new wom::TalonFXEncoder(driveMotors[1], 6.75),
@@ -73,9 +73,9 @@ struct RobotMap {
         },
         4_in / 2
       },
-      wom::SwerveModuleConfig{ // dimensions are assuming perfect square robot 1m^2 area
+      wom::SwerveModuleConfig{
         frc::Translation2d(-10.761_in, 9.455_in),
-        ctre::phoenix::sensors::CANCoder(99),
+        ctre::phoenix::sensors::CANCoder::CANCoder(99),
         wom::Gearbox{
           new wom::MotorVoltageController(driveMotors[2]),
           new wom::TalonFXEncoder(driveMotors[2], 6.75),
@@ -88,9 +88,9 @@ struct RobotMap {
         },
         4_in / 2
       },
-      wom::SwerveModuleConfig{ // dimensions are assuming perfect square robot 1m^2 area
+      wom::SwerveModuleConfig{
         frc::Translation2d(-10.761_in, -9.455_in),
-        ctre::phoenix::sensors::CANCoder(99),
+        ctre::phoenix::sensors::CANCoder::CANCoder(99),
         wom::Gearbox{
           new wom::MotorVoltageController(driveMotors[3]),
           new wom::TalonFXEncoder(driveMotors[3], 6.75),
