@@ -23,7 +23,6 @@ void ManualDrivebase::OnTick(units::second_t deltaTime) {
   double l_y = wom::spow2(-wom::deadzone(_driverController->GetLeftX(), driverDeadzone));
   double r_x = wom::spow2(-wom::deadzone(_driverController->GetRightX(), turningDeadzone));
 
-
   if (_driverController->GetYButtonPressed()) {  isFieldOrientated = !isFieldOrientated;  }
 
   if (isFieldOrientated) {  // Field Relative Controls
@@ -42,6 +41,10 @@ void ManualDrivebase::OnTick(units::second_t deltaTime) {
   _swerveDriveTable->GetEntry("isFieldOrientated").SetBoolean(isFieldOrientated);
   }
 
+
+
+
+
 DrivebasePoseBehaviour::DrivebasePoseBehaviour(
     wom::SwerveDrive *swerveDrivebase, frc::Pose2d pose, bool hold)
     : _swerveDrivebase(swerveDrivebase), _pose(pose), _hold(hold) {
@@ -55,6 +58,10 @@ void DrivebasePoseBehaviour::OnTick(units::second_t deltaTime) {
 
   if (_swerveDrivebase->IsAtSetPose() && !_hold){   SetDone();   }
 }
+
+
+
+
 
 DrivebaseBalance::DrivebaseBalance(wom::SwerveDrive *swerveDrivebase, wom::NavX *gyro) : _swerveDrivebase(swerveDrivebase), _gyro(gyro) {
   Controls(swerveDrivebase);
@@ -75,9 +82,8 @@ void DrivebaseBalance::OnTick(units::second_t deltaTime) {
 }
 
 
-XDrivebase::XDrivebase(wom::SwerveDrive *swerveDrivebase) : _swerveDrivebase(swerveDrivebase) {
-  Controls(swerveDrivebase);
-}
-void XDrivebase::OnTick(units::second_t deltaTime) {
-  _swerveDrivebase->SetXWheelState();
-}
+
+
+
+XDrivebase::XDrivebase(wom::SwerveDrive *swerveDrivebase) : _swerveDrivebase(swerveDrivebase) {   Controls(swerveDrivebase);   }
+void XDrivebase::OnTick(units::second_t deltaTime) {   _swerveDrivebase->SetXWheelState();   }

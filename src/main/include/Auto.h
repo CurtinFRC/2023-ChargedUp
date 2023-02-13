@@ -3,15 +3,15 @@
 #include "behaviour/Behaviour.h"
 #include "drivetrain/SwerveDrive.h"
 
-std::shared_ptr<behaviour::Behaviour> Drive(wom::SwerveDrive *swerve, wom::NavX *gyro);
-
 
 class DefinedPoses {
  public:
   struct Poses {
     frc::Pose2d startPos;
-    frc::Pose2d dock_LineUp_Pos;  frc::Pose2d dockPos;
-    frc::Pose2d stealPos;  frc::Pose2d taxiPos;
+    frc::Pose2d dock_LineUp_Pos;
+    frc::Pose2d dockPos;
+    frc::Pose2d stealPos;
+    frc::Pose2d taxiPos;
     frc::Pose2d subStationWaitPos;
   };
   Poses poseSet{};
@@ -71,7 +71,7 @@ class DefinedPoses {
 };
 
 
-struct SwervePack { // contains the gyro as well
+struct Drivebase {
   wom::SwerveDrive *swerve;
   wom::NavX *gyro;
 };
@@ -93,19 +93,15 @@ enum EndingConfig {
   Taxi
 };
 
+AutoPathDetails GetAutoPathingDetails(Drivebase drivebase, StartingConfig startConfig, EndingConfig endConfig, bool blueAlliance, int calledFromID, std::vector<frc::Pose2d> adjustmentPoses = {});
 
 
+std::shared_ptr<behaviour::Behaviour> DockBot(Drivebase drivebase, bool blueAlliance, StartingConfig startConfig, EndingConfig endConfig);
 
+std::shared_ptr<behaviour::Behaviour> Single(Drivebase drivebase, bool blueAlliance, StartingConfig startConfig, EndingConfig endConfig);
 
-AutoPathDetails GetAutoPathingDetails(SwervePack swerve, StartingConfig startConfig, EndingConfig endConfig, bool blueAlliance, std::vector<frc::Pose2d> adjustmentPoses = {});
+std::shared_ptr<behaviour::Behaviour> Double(Drivebase drivebase, bool blueAlliance, StartingConfig startConfig, EndingConfig endConfig);
 
+std::shared_ptr<behaviour::Behaviour> Triple(Drivebase drivebase, bool blueAlliance, StartingConfig startConfig, EndingConfig endConfig);
 
-std::shared_ptr<behaviour::Behaviour> DockBot(SwervePack swerve, bool blueAlliance, StartingConfig startConfig, EndingConfig endConfig);
-
-std::shared_ptr<behaviour::Behaviour> Single(SwervePack swerve, bool blueAlliance, StartingConfig startConfig, EndingConfig endConfig);
-
-std::shared_ptr<behaviour::Behaviour> Double(SwervePack swerve, bool blueAlliance, StartingConfig startConfig, EndingConfig endConfig);
-
-std::shared_ptr<behaviour::Behaviour> Triple(SwervePack swerve, bool blueAlliance, StartingConfig startConfig, EndingConfig endConfig);
-
-std::shared_ptr<behaviour::Behaviour> Quad(SwervePack swerve, bool blueAlliance, StartingConfig startConfig, EndingConfig endConfig);
+std::shared_ptr<behaviour::Behaviour> Quad(Drivebase drivebase, bool blueAlliance, StartingConfig startConfig, EndingConfig endConfig);
