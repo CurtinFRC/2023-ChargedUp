@@ -48,17 +48,12 @@ DrivebasePoseBehaviour::DrivebasePoseBehaviour(
   Controls(swerveDrivebase);
 }
 void DrivebasePoseBehaviour::OnTick(units::second_t deltaTime) {
-  double setPoseAngle = _pose.Rotation().Degrees().value();
-  double difference = fmod(_swerveDrivebase->GetPose().Rotation().Degrees().value(), 360.0);
-
   double currentAngle = _swerveDrivebase->GetPose().Rotation().Degrees().value();
   units::degree_t adjustedAngle = 1_deg * (currentAngle - fmod(currentAngle, 360) + _pose.Rotation().Degrees().value());
 
   _swerveDrivebase->SetPose(frc::Pose2d{_pose.X(), _pose.Y(), adjustedAngle});
 
-  if (_swerveDrivebase->IsAtSetPose() && !_hold){
-    SetDone();
-  }
+  if (_swerveDrivebase->IsAtSetPose() && !_hold){   SetDone();   }
 }
 
 DrivebaseBalance::DrivebaseBalance(wom::SwerveDrive *swerveDrivebase, wom::NavX *gyro) : _swerveDrivebase(swerveDrivebase), _gyro(gyro) {

@@ -24,6 +24,8 @@ namespace wom {
   struct SwerveModuleConfig {
     frc::Translation2d position;
 
+    ctre::phoenix::sensors::CANCoder absoluteEncoder;
+
     Gearbox driveMotor;
     Gearbox turnMotor;
 
@@ -46,6 +48,7 @@ namespace wom {
   
     void SetAccelerationLimit(units::meters_per_second_squared_t limit);
 
+    void ZeroUsingCanCoder();
 
     // frc::SwerveModuleState GetState();
     frc::SwerveModulePosition GetPosition() const;
@@ -135,6 +138,7 @@ namespace wom {
     void SetTuning(units::radian_t angle, units::meters_per_second_t speed);
 
     void SetXWheelState();
+    void ZeroWheels();
 
     void SetAccelerationLimit(units::meters_per_second_squared_t limit);
 

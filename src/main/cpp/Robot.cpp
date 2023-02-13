@@ -66,6 +66,8 @@ void Robot::TeleopInit() {
 
   swerve->OnStart();
 
+  swerve->ZeroWheels();
+
   // Swervedrivebase grid poses
   // UP D-BAD
   map.controllers.driver.POV(0, &loop).Rising().IfHigh([sched, this]() {
@@ -113,7 +115,6 @@ void Robot::TeleopInit() {
     map.swerveTable.swerveDriveTable->GetEntry("IsX-ed").SetBoolean(false);
   });
   map.controllers.driver.A(&loop).Rising().IfHigh([sched, this]() {
-    
     sched->Schedule(make<DrivebaseBalance>(swerve, &map.swerveBase.gyro));
   });
 
