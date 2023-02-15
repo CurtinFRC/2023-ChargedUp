@@ -54,6 +54,8 @@ class Robot : public frc::TimedRobot {
   SideIntake *sideIntake;
   Gripper *gripper;
 
+  bool compressorToggle = false;
+
   units::meter_t _elevatorSetpoint = 0_m;
   units::radian_t _armSetpoint = 0_deg;
 };

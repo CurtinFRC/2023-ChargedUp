@@ -104,6 +104,13 @@ double DutyCycleEncoder::GetEncoderTickVelocity() const {
   return 0;
 }
 
+// CanEncoder::CanEncoder(int deviceNumber, double ticksPerRotation, double reduction)
+//   : Encoder(ticksPerRotation, reduction), _canEncoder(deviceNumber) {}
+
+// double CanEncoder::GetEncoderTickVelocity() const {
+//   return 0;
+// }
+
 /* SIM */
 #include "frc/simulation/EncoderSim.h"
 

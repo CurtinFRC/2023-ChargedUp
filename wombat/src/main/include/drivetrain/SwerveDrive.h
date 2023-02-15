@@ -17,6 +17,7 @@
 
 namespace wom {
   enum class SwerveModuleState {
+    kZeroing,
     kIdle, 
     kPID
   };
@@ -26,6 +27,8 @@ namespace wom {
 
     Gearbox driveMotor;
     Gearbox turnMotor;
+
+    CANCoder *canEncoder;
 
     units::meter_t wheelRadius;
 
@@ -39,11 +42,14 @@ namespace wom {
 
     SwerveModule(std::string path, SwerveModuleConfig config, angle_pid_conf_t anglePID, velocity_pid_conf_t velocityPID);
     void OnUpdate(units::second_t dt);
-    void OnStart();
+    void OnStart(double offset, units::second_t dt);
 
     void SetIdle();
     void SetPID(units::radian_t angle, units::meters_per_second_t speed, units::second_t dt);
-  
+    void SetZeroing(units::second_t dt);
+
+    double GetCancoderPosition();
+
     void SetAccelerationLimit(units::meters_per_second_squared_t limit);
 
 
@@ -55,15 +61,21 @@ namespace wom {
 
     const SwerveModuleConfig &GetConfig() const;
 
+    PIDController<units::radians, units::volt> _anglePIDController;
    private:
     SwerveModuleConfig _config;
     SwerveModuleState _state;
 
-    PIDController<units::radians, units::volt> _anglePIDController;
+    bool _hasZeroedEncoder = false; 
+    bool _hasZeroed = false;
+
     PIDController<units::meters_per_second, units::volt> _velocityPIDController;
 
     std::shared_ptr<nt::NetworkTable> _table;
 
+    double startingPos;
+
+    double _offset;
     units::meters_per_second_squared_t _currentAccelerationLimit = 6_mps / 1_s;
   };
 
@@ -92,6 +104,7 @@ namespace wom {
   };
 
   enum class SwerveDriveState {
+    kZeroing,
     kIdle, 
     kVelocity,
     kFieldRelativeVelocity,
@@ -124,15 +137,20 @@ namespace wom {
     SwerveDrive(SwerveDriveConfig config, frc::Pose2d initialPose);
 
     void OnUpdate(units::second_t dt);
-    void OnStart();
+    void OnStart(units::second_t dt);
 
     void SetIdle();
+
+    void SetZeroing();
+
     void SetVelocity(frc::ChassisSpeeds speeds);
     void SetFieldRelativeVelocity(FieldRelativeSpeeds speeds);
     void SetPose(frc::Pose2d pose);
     bool IsAtSetPose();
     void SetIndividualTuning(int mod, units::radian_t angle, units::meters_per_second_t speed);
     void SetTuning(units::radian_t angle, units::meters_per_second_t speed);
+
+    double GetModuleCANPosition(int mod);
 
     void SetXWheelState();
 
@@ -167,6 +185,11 @@ namespace wom {
     int _mod;
     units::radian_t _angle;
     units::meters_per_second_t _speed;
+
+    double frontLeftEncoderOffset = -143.26171875;
+    double frontRightEncoderOffset = 167.87109375;
+    double backLeftEncoderOffset = -316.669921875;
+    double backRightEncoderOffset = -119.619140625;
   };
 
   namespace sim {

@@ -10,8 +10,7 @@
 
 
 struct GripperConfig {
-  wom::MotorVoltageController *leftGripperMotor;
-  wom::MotorVoltageController *rightGripperMotor;
+  wom::MotorVoltageController *gripperMotor;
 };
 
 enum class GripperState {

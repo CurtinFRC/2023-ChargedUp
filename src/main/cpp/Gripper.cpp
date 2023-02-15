@@ -23,8 +23,7 @@ void Gripper::OnUpdate(units::second_t dt) {
       break;
   }
 
-  _config.leftGripperMotor->SetVoltage(voltage);
-  _config.rightGripperMotor->SetVoltage(voltage);
+  _config.gripperMotor->SetVoltage(voltage);
 }
 
 void Gripper::SetIdle() {
