@@ -13,7 +13,6 @@
 using namespace wom;
 
 // Code for Manual Drivebase
-
 ManualDrivebase::ManualDrivebase(wom::SwerveDrive *swerveDrivebase, wom::Controller *driverController) : _swerveDrivebase(swerveDrivebase), _driverController(driverController) {
   Controls(swerveDrivebase);
 }
@@ -31,11 +30,39 @@ void ManualDrivebase::OnTick(units::second_t deltaTime) {
   double r_y = wom::spow2(-wom::deadzone(_driverController->GetRightX(), turningDeadzone));
   
   if (_swerveDrivebase->GetIsFieldRelative()) {  // Field Relative Controls
-    _swerveDrivebase->SetFieldRelativeVelocity(wom::FieldRelativeSpeeds{
+    /*_swerveDrivebase->SetFieldRelativeVelocity(wom::FieldRelativeSpeeds{
         xVelocity * maxMovementMagnitude,
         yVelocity * maxMovementMagnitude,
         r_x * 360_deg / 1_s
-    }); 
+    });*/ 
+    
+    frc::Pose2d currentPose = _swerveDrivebase->GetPose();
+    units::degree_t currentAngle = currentPose.Rotation().Degrees();
+    units::degree_t requestedAngle = currentAngle;
+
+    // Handles all of the logic for getting the angle
+    if (r_x > 0 && r_y > 0) { // Quadrant 1
+      requestedAngle = (1_rad * atan2(r_y, r_x));
+    } else if (r_x < 0 && r_y > 0) { // Quadrant 2
+      requestedAngle = 180_deg - (1_rad * atan2(r_y, r_x));
+    } else if (r_x < 0 && r_y < 0) { // Quadrant 3
+      requestedAngle = 180_deg + (1_rad * atan2(r_y, r_x));
+    } else if (r_x > 0 && r_y < 0) { // Quadrant 4
+      requestedAngle = 360_deg - (1_rad * atan2(r_y, r_x));
+    }
+    if (r_x == 0) {
+      if (r_y > 0){   requestedAngle = 90_deg;   }
+      else if (r_y < 0){   requestedAngle = 270_deg;   }
+    }
+    if (r_y == 0){
+      if (r_x > 0){   requestedAngle = 0_deg;   }
+      else if (r_x < 0){   requestedAngle = 180_deg;   }
+    }
+    // Calculates the new x and y positions to drive to
+    units::meter_t newX = currentPose.X() - xVelocity * maxMovementMagnitude * deltaTime;
+    units::meter_t newY = currentPose.Y() - yVelocity * maxMovementMagnitude * deltaTime;
+    _swerveDrivebase->SetPose(frc::Pose2d(newX, newY, requestedAngle));
+
   } else {  // Robot Relative Controls
     _swerveDrivebase->SetVelocity(frc::ChassisSpeeds{
         xVelocity * maxMovementMagnitude,
@@ -43,40 +70,11 @@ void ManualDrivebase::OnTick(units::second_t deltaTime) {
         r_x * 360_deg / 1_s
     });
   }
-
-  frc::Pose2d currentPose = _swerveDrivebase->GetPose();
-  units::degree_t currentAngle = currentPose.Rotation().Degrees();
-  units::degree_t requestedAngle = currentAngle;
-
-  if (r_x > 0 && r_y > 0) { // Quadrant 1
-    requestedAngle = (1_rad * atan2(r_y, r_x));
-  } else if (r_x < 0 && r_y > 0) { // Quadrant 2
-    requestedAngle = 180_deg - (1_rad * atan2(r_y, r_x));
-  } else if (r_x < 0 && r_y < 0) { // Quadrant 3
-    requestedAngle = 180_deg + (1_rad * atan2(r_y, r_x));
-  } else if (r_x > 0 && r_y < 0) { // Quadrant 4
-    requestedAngle = 360_deg - (1_rad * atan2(r_y, r_x));
-  }
-  if (r_x == 0) {
-    if (r_y > 0){   requestedAngle = 90_deg;   }
-    else if (r_y < 0){   requestedAngle = 270_deg;   }
-  }
-  if (r_y == 0){
-    if (r_x > 0){   requestedAngle = 0_deg;   }
-    else if (r_x < 0){   requestedAngle = 180_deg;   }
-  }
-
-
-  units::meter_t newX = currentPose.X() - xVelocity * maxMovementMagnitude * deltaTime;
-  units::meter_t newY = currentPose.Y() - yVelocity * maxMovementMagnitude * deltaTime;
-  _swerveDrivebase->SetPose(frc::Pose2d(newX, newY, requestedAngle));
-
-  }
+}
 
 
 
 // Code for Drivebase Pose Controls
-
 DrivebasePoseBehaviour::DrivebasePoseBehaviour(
     wom::SwerveDrive *swerveDrivebase, frc::Pose2d pose, bool hold)
     : _swerveDrivebase(swerveDrivebase), _pose(pose), _hold(hold) {
@@ -94,7 +92,6 @@ void DrivebasePoseBehaviour::OnTick(units::second_t deltaTime) {
 
 
 // Code for Drivebase balancing on the chargestation
-
 DrivebaseBalance::DrivebaseBalance(wom::SwerveDrive *swerveDrivebase, wom::NavX *gyro) : _swerveDrivebase(swerveDrivebase), _gyro(gyro) {
   Controls(swerveDrivebase);
 }
@@ -116,13 +113,12 @@ void DrivebaseBalance::OnTick(units::second_t deltaTime) {
 
 
 // Code for x-ing the wheels on the drivebase
-
 XDrivebase::XDrivebase(wom::SwerveDrive *swerveDrivebase) : _swerveDrivebase(swerveDrivebase) {   Controls(swerveDrivebase);   }
 void XDrivebase::OnTick(units::second_t deltaTime) {   _swerveDrivebase->SetXWheelState();   }
 
 
 
-
+// Code for auto aligning to the nearest grid position
 AlignDrivebaseToNearestGrid::AlignDrivebaseToNearestGrid(wom::SwerveDrive *swerveDrivebase, std::vector<frc::Pose2d*> gridPoses) : _swerveDrivebase(swerveDrivebase), _gridPoses(gridPoses) {   Controls(swerveDrivebase);   }
 
 void AlignDrivebaseToNearestGrid::OnStart(){
@@ -144,6 +140,4 @@ void AlignDrivebaseToNearestGrid::OnStart(){
   }
 }
 
-void AlignDrivebaseToNearestGrid::OnTick(units::second_t deltaTime){
-
-}
+void AlignDrivebaseToNearestGrid::OnTick(units::second_t deltaTime) { }

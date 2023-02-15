@@ -10,8 +10,17 @@
 
 #include <vector>
 
+/**
+ * @brief Behaviour class to handle manual drivebase controlling with the controller
+ */ 
 class ManualDrivebase : public behaviour::Behaviour{
  public:
+   /**
+   * @param swerveDrivebase
+   * A pointer to the swerve drivebase
+   * @param driverController
+   * A pointer to the controller that the driver has been allocated
+  */
   ManualDrivebase(wom::SwerveDrive *swerveDrivebase, wom::Controller *driverController);
 
   void OnTick(units::second_t deltaTime) override;
@@ -32,10 +41,26 @@ class ManualDrivebase : public behaviour::Behaviour{
 
 
 
-
+/**
+ * @brief Behaviour Class to hangle the swerve drivebase going to and potentially maintaining the position
+ */
 class DrivebasePoseBehaviour : public behaviour::Behaviour{
  public:
+   /**
+   * @param swerveDrivebase
+   * A pointer to the swerve drivebase
+   * @param pose
+   * A variable containing an X coordinate, a Y coordinate, and a rotation, for the drivebase to go to
+   * @param hold
+   * An optional variable (defaulting false), to say whether this position should be maintained
+  */
   DrivebasePoseBehaviour(wom::SwerveDrive *swerveDrivebase, frc::Pose2d pose, bool hold = false);
+  
+  /**
+   * @brief 
+   * 
+   * @param deltaTime change in time since the last iteration
+   */
   void OnTick(units::second_t deltaTime) override;
  
  private:
@@ -49,9 +74,17 @@ class DrivebasePoseBehaviour : public behaviour::Behaviour{
 
 
 
-
+/**
+ * @brief Behaviour Class to handle the swerve drivebase balancing on the chargestation
+ */
 class DrivebaseBalance : public behaviour::Behaviour{
  public:
+   /**
+   * @param swerveDrivebase
+   * A pointer to the swerve drivebase
+   * @param gyro
+   * A pointer to the type of gyro being used on the swerve drivebase
+  */
   DrivebaseBalance(wom::SwerveDrive *swerveDrivebase, wom::NavX *gyro);
 
   void OnTick(units::second_t deltaTime) override;
@@ -83,9 +116,15 @@ class DrivebaseBalance : public behaviour::Behaviour{
 
 
 
-
+/**
+ * @brief Behaviour Class to handle locking wheels
+ */
 class XDrivebase : public behaviour::Behaviour{
  public:
+   /**
+   * @param swerveDrivebase
+   * A pointer to the swerve drivebase
+  */
   XDrivebase(wom::SwerveDrive *swerveDrivebase);
 
   void OnTick(units::second_t deltaTime) override;
@@ -96,7 +135,9 @@ class XDrivebase : public behaviour::Behaviour{
 
 
 
-
+/**
+ * @brief Behaviour Class to handle the swerve drivebase driving to the nearest team grid position if it is within range
+ */
 class AlignDrivebaseToNearestGrid : public behaviour::Behaviour{
   struct SwerveGridPoses{
     frc::Pose2d innerGrid1;
@@ -110,6 +151,12 @@ class AlignDrivebaseToNearestGrid : public behaviour::Behaviour{
     frc::Pose2d outerGrid3;
   };
  public:
+  /**
+   * @param wom::SwerveDrive
+   * A pointer to the swerve drivebase
+   * @param std::vector<frc::Pose2d*>
+   * A vector of frc::Pose2d's storing all 9 current alliance grid positions
+  */
   AlignDrivebaseToNearestGrid(wom::SwerveDrive *swerveDrivebase, std::vector<frc::Pose2d*> gridPoses);
 
   void OnTick(units::second_t deltaTime) override;
