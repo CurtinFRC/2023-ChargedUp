@@ -9,6 +9,8 @@
 #include <units/math.h>
 #include <networktables/NetworkTableInstance.h>
 
+
+
 #include "Auto.h"
 
 using namespace frc;
@@ -110,7 +112,9 @@ void Robot::TeleopInit() {
       sched->Schedule(make<DrivebasePoseBehaviour>(swerve, map.swerveGridPoses.centreGrid1, false)); // Community Grid 1 (inner grid side)
     }
     });
-
+    map.controllers.driver.Y(&loop).Rising().IfHigh([sched, this]() {
+      swerve->SetIsFieldRelative(!swerve->GetIsFieldRelative());
+    });
     map.controllers.driver.X(&loop).Rising().IfHigh([sched, this]() {
       sched->Schedule(make<XDrivebase>(swerve));
       map.swerveTable.swerveDriveTable->GetEntry("IsX-ed").SetBoolean(true);
@@ -123,7 +127,32 @@ void Robot::TeleopInit() {
       sched->Schedule(make<DrivebaseBalance>(swerve, &map.swerveBase.gyro));
     });
   #else
-    map.controllers.driver.
+    map.controllers.driver.Share(&loop).Rising().IfHigh([sched, this]() {
+      swerve->SetIsFieldRelative(true);
+    });
+    map.controllers.driver.Options(&loop).Rising().IfHigh([sched, this]() {
+      swerve->SetIsFieldRelative(false);
+    });
+    map.controllers.driver.Triangle(&loop).Rising().IfHigh([sched, this]() {
+      sched->Schedule(make<XDrivebase>(swerve));
+      map.swerveTable.swerveDriveTable->GetEntry("IsX-ed").SetBoolean(false);
+    });
+    map.controllers.driver.Circle(&loop).Rising().IfHigh([sched, this]() {
+      swerve->GetActiveBehaviour()->Interrupt();
+      map.swerveTable.swerveDriveTable->GetEntry("IsX-ed").SetBoolean(false);
+    });
+    map.controllers.driver.Cross(&loop).Rising().IfHigh([sched, this]() {
+      std::vector<frc::Pose2d*> blueGridPoses = {
+        &map.bluePoses.innerGrid1, &map.bluePoses.innerGrid2, &map.bluePoses.innerGrid3,
+        &map.bluePoses.centreGrid1, &map.bluePoses.centreGrid2, &map.bluePoses.centreGrid3,
+        &map.bluePoses.outerGrid1, &map.bluePoses.outerGrid2, &map.bluePoses.outerGrid3
+      };
+      sched->Schedule(make<AlignDrivebaseToNearestGrid>(swerve, blueGridPoses));
+    });
+    map.controllers.driver.PS(&loop).Rising().IfHigh([sched, this]() {
+      sched->Schedule(make<DrivebaseBalance>(swerve, &map.swerveBase.gyro));
+    });
+    
   #endif
   // Current Keybinds:
   /*

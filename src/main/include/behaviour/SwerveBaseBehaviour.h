@@ -4,6 +4,7 @@
 #include "behaviour/Behaviour.h"
 #include <ctre/Phoenix.h>
 #include <frc/XboxController.h>
+#include <frc/PS4Controller.h>
 #include <networktables/NetworkTableInstance.h>
 #include "PID.h"
 
@@ -11,14 +12,14 @@
 
 class ManualDrivebase : public behaviour::Behaviour{
  public:
-  ManualDrivebase(wom::SwerveDrive *swerveDrivebase, frc::XboxController *driverController);
+  ManualDrivebase(wom::SwerveDrive *swerveDrivebase, frc::PS4Controller *driverController);
 
   void OnTick(units::second_t deltaTime) override;
   void OnStart();
   
  private:
   wom::SwerveDrive *_swerveDrivebase;
-  frc::XboxController *_driverController;
+  frc::PS4Controller *_driverController;
 
   const double driverDeadzone = 0.08;
   const double turningDeadzone = 0.1;
@@ -93,4 +94,30 @@ class XDrivebase : public behaviour::Behaviour{
 
  private:
   wom::SwerveDrive *_swerveDrivebase;
+};
+
+
+
+
+class AlignDrivebaseToNearestGrid : public behaviour::Behaviour{
+  struct SwerveGridPoses{
+    frc::Pose2d innerGrid1;
+    frc::Pose2d innerGrid2;
+    frc::Pose2d innerGrid3;
+    frc::Pose2d centreGrid1;
+    frc::Pose2d centreGrid2;
+    frc::Pose2d centreGrid3;
+    frc::Pose2d outerGrid1;
+    frc::Pose2d outerGrid2;
+    frc::Pose2d outerGrid3;
+  };
+ public:
+  AlignDrivebaseToNearestGrid(wom::SwerveDrive *swerveDrivebase, std::vector<frc::Pose2d*> gridPoses);
+
+  void OnTick(units::second_t deltaTime) override;
+  void OnStart() override;
+
+ private:
+  wom::SwerveDrive *_swerveDrivebase;
+  std::vector<frc::Pose2d*> _gridPoses;
 };

@@ -101,8 +101,7 @@ namespace wom {
     kPose,
     kIndividualTuning,
     kTuning,
-    kXWheels,
-    kFieldRelativeRotationLockVelocity
+    kXWheels
   };
 
   struct FieldRelativeSpeeds {
@@ -139,8 +138,9 @@ namespace wom {
 
     void SetXWheelState();
     void ZeroWheels();
-
-    void SetFieldRelativeRotationLockVelocity(FieldRelativeSpeeds speeds, units::degree_t requestedRotation);
+    
+    void SetIsFieldRelative(bool value);
+    bool GetIsFieldRelative();
 
     void SetAccelerationLimit(units::meters_per_second_squared_t limit);
 
@@ -158,7 +158,6 @@ namespace wom {
     SwerveDriveState _state = SwerveDriveState::kIdle;
     std::vector<SwerveModule> _modules;
 
-    units::degree_t _requestedAngle;
     frc::ChassisSpeeds _target_speed;
     FieldRelativeSpeeds _target_fr_speeds;
 
@@ -170,6 +169,8 @@ namespace wom {
     PIDController<units::meter, units::meters_per_second> _yPIDController;
 
     std::shared_ptr<nt::NetworkTable> _table;
+
+    bool _isFieldRelative = true;
 
     int _mod;
     units::radian_t _angle;
