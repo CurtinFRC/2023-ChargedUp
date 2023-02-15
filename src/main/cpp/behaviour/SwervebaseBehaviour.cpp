@@ -6,13 +6,15 @@
 
 #include "ControlUtil.h"
 
+#include "XInputController.h"
+
 // #include <units/units.h>
 
 using namespace wom;
 
 // Code for Manual Drivebase
 
-ManualDrivebase::ManualDrivebase(wom::SwerveDrive *swerveDrivebase, frc::PS4Controller *driverController) : _swerveDrivebase(swerveDrivebase), _driverController(driverController) {
+ManualDrivebase::ManualDrivebase(wom::SwerveDrive *swerveDrivebase, wom::Controller *driverController) : _swerveDrivebase(swerveDrivebase), _driverController(driverController) {
   Controls(swerveDrivebase);
 }
 
@@ -67,12 +69,8 @@ void ManualDrivebase::OnTick(units::second_t deltaTime) {
 
   units::meter_t newX = currentPose.X() - xVelocity * maxMovementMagnitude * deltaTime;
   units::meter_t newY = currentPose.Y() - yVelocity * maxMovementMagnitude * deltaTime;
-  _swerveDrivebase.SetPose(frc::Pose2d(newX, newY, requestedAngle));
+  _swerveDrivebase->SetPose(frc::Pose2d(newX, newY, requestedAngle));
 
-
-
-
-  _swerveDriveTable->GetEntry("isFieldOrientated").SetBoolean(isFieldOrientated); // allows for a user to know if the robot is in field relative, or robot relative mode
   }
 
 

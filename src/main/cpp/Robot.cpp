@@ -14,8 +14,6 @@
 using namespace frc;
 using namespace behaviour;
 
-// #define XBOX_CONTROLLER
-
 static units::second_t lastPeriodic;
 
 void Robot::RobotInit() {
@@ -63,110 +61,43 @@ void Robot::AutonomousPeriodic() { }
 
 void Robot::TeleopInit() {
   loop.Clear();
-  BehaviourScheduler *sched = BehaviourScheduler::GetInstance();
+  sched = BehaviourScheduler::GetInstance();
   sched->InterruptAll(); // removes all previously scheduled behaviours
 
   swerve->OnStart();
-
   swerve->ZeroWheels();
-
-
-
-  #ifdef XBOX_CONTROLLER
-    // Swervedrivebase grid poses
-    // UP D-BAD
-    map.controllers.driver.POV(0, &loop).Rising().IfHigh([sched, this]() {
-    if (map.controllers.driver.GetRightBumper()) {
-      if (map.controllers.driver.GetLeftBumper()){
-        sched->Schedule(make<DrivebasePoseBehaviour>(swerve, map.swerveGridPoses.centreGrid2, false)); // central grid
-      } else {
-        sched->Schedule(make<DrivebasePoseBehaviour>(swerve, map.swerveGridPoses.outerGrid3, false)); // Outer Grid 3 (furthest from centre)
-      }
-    } else {
-      sched->Schedule(make<DrivebasePoseBehaviour>(swerve, map.swerveGridPoses.innerGrid1, false)); // Inner Grid 1 (furthest from centre)
-    }
-    });
-    // RIGHT D-PAD
-    map.controllers.driver.POV(90, &loop).Rising().IfHigh([sched, this]() {
-    if (map.controllers.driver.GetRightBumper()) {
-      sched->Schedule(make<DrivebasePoseBehaviour>(swerve, map.swerveGridPoses.outerGrid2, false)); // Outer Grid 2
-    } else {
-      sched->Schedule(make<DrivebasePoseBehaviour>(swerve, map.swerveGridPoses.innerGrid2, false)); // Inner Grid 2
-    }
-    });
-    // DOWN D-PAD
-    map.controllers.driver.POV(180, &loop).Rising().IfHigh([sched, this]() {
-    if (map.controllers.driver.GetRightBumper()) {
-      sched->Schedule(make<DrivebasePoseBehaviour>(swerve, map.swerveGridPoses.outerGrid1, false)); // Outer Grid 1 (closest to centre)
-    } else{
-      sched->Schedule(make<DrivebasePoseBehaviour>(swerve, map.swerveGridPoses.innerGrid3, false)); // Inner Grid 3 (closest to centre)
-    }
-    });
-    // LEFT D-PAD
-    map.controllers.driver.POV(270, &loop).Rising().IfHigh([sched, this]() {
-    if (map.controllers.driver.GetRightBumper()) {
-      sched->Schedule(make<DrivebasePoseBehaviour>(swerve, map.swerveGridPoses.centreGrid3, false)); // Community Grid 3 (outer grid side)
-    } else {
-      sched->Schedule(make<DrivebasePoseBehaviour>(swerve, map.swerveGridPoses.centreGrid1, false)); // Community Grid 1 (inner grid side)
-    }
-    });
-    map.controllers.driver.Y(&loop).Rising().IfHigh([sched, this]() {
-      swerve->SetIsFieldRelative(!swerve->GetIsFieldRelative());
-    });
-    map.controllers.driver.X(&loop).Rising().IfHigh([sched, this]() {
-      sched->Schedule(make<XDrivebase>(swerve));
-      map.swerveTable.swerveDriveTable->GetEntry("IsX-ed").SetBoolean(true);
-    });
-    map.controllers.driver.B(&loop).Rising().IfHigh([sched, this]() {
-      swerve->GetActiveBehaviour()->Interrupt();
-      map.swerveTable.swerveDriveTable->GetEntry("IsX-ed").SetBoolean(false);
-    });
-    map.controllers.driver.A(&loop).Rising().IfHigh([sched, this]() {
-      sched->Schedule(make<DrivebaseBalance>(swerve, &map.swerveBase.gyro));
-    });
-  #else
-    map.controllers.driver.Share(&loop).Rising().IfHigh([sched, this]() {
-      swerve->SetIsFieldRelative(true);
-    });
-    map.controllers.driver.Options(&loop).Rising().IfHigh([sched, this]() {
-      swerve->SetIsFieldRelative(false);
-    });
-    map.controllers.driver.Triangle(&loop).Rising().IfHigh([sched, this]() {
-      sched->Schedule(make<XDrivebase>(swerve));
-      map.swerveTable.swerveDriveTable->GetEntry("IsX-ed").SetBoolean(false);
-    });
-    map.controllers.driver.Circle(&loop).Rising().IfHigh([sched, this]() {
-      swerve->GetActiveBehaviour()->Interrupt();
-      map.swerveTable.swerveDriveTable->GetEntry("IsX-ed").SetBoolean(false);
-    });
-    map.controllers.driver.Cross(&loop).Rising().IfHigh([sched, this]() {
-      std::vector<frc::Pose2d*> blueGridPoses = {
-        &map.bluePoses.innerGrid1, &map.bluePoses.innerGrid2, &map.bluePoses.innerGrid3,
-        &map.bluePoses.centreGrid1, &map.bluePoses.centreGrid2, &map.bluePoses.centreGrid3,
-        &map.bluePoses.outerGrid1, &map.bluePoses.outerGrid2, &map.bluePoses.outerGrid3
-      };
-      sched->Schedule(make<AlignDrivebaseToNearestGrid>(swerve, blueGridPoses));
-    });
-    map.controllers.driver.PS(&loop).Rising().IfHigh([sched, this]() {
-      sched->Schedule(make<DrivebaseBalance>(swerve, &map.swerveBase.gyro));
-    });
-    
-  #endif
-  // Current Keybinds:
-  /*
-    A - Balance Behaviour
-    B - Interrupts any behaviour, and sets active behaviour to the manual drive behaviour
-    X - X Wheels
-    Y - Field Orientated / Robot Relative Toggle
-    RightBumper - Acting as a shift key for grid poses
-    LeftBumper - Acting as a shift key for grid poses
-  */
-
   swerve->OnStart();
 
 }
 
-void Robot::TeleopPeriodic() { }
+void Robot::TeleopPeriodic() {
+  if (map.controllers.driver.GetMiniLeftButtonPressed()){
+    swerve->SetIsFieldRelative(true);
+  }
+  if (map.controllers.driver.GetMiniRightButtonPressed()){
+    swerve->SetIsFieldRelative(false);
+  }
+  if (map.controllers.driver.GetCPAD_BottomPressed()){
+    std::vector<frc::Pose2d*> blueGridPoses = {
+      &map.bluePoses.innerGrid1, &map.bluePoses.innerGrid2, &map.bluePoses.innerGrid3,
+      &map.bluePoses.centreGrid1, &map.bluePoses.centreGrid2, &map.bluePoses.centreGrid3,
+      &map.bluePoses.outerGrid1, &map.bluePoses.outerGrid2, &map.bluePoses.outerGrid3
+    };
+    sched->Schedule(make<AlignDrivebaseToNearestGrid>(swerve, blueGridPoses));
+  }
+  if (map.controllers.driver.GetCPAD_TopPressed()){
+    sched->Schedule(make<XDrivebase>(swerve));
+    map.swerveTable.swerveDriveTable->GetEntry("IsX-ed").SetBoolean(false);
+  }
+  if (map.controllers.driver.GetCPAD_RightPressed()){
+    swerve->GetActiveBehaviour()->Interrupt();
+    map.swerveTable.swerveDriveTable->GetEntry("IsX-ed").SetBoolean(false);
+  }
+  if (map.controllers.driver.GetLogoButtonPressed()){
+    sched->Schedule(make<DrivebaseBalance>(swerve, &map.swerveBase.gyro));
+  }
+
+}
 
 void Robot::DisabledInit() { }
 void Robot::DisabledPeriodic() { }

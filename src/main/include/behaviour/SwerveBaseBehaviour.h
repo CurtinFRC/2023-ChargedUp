@@ -12,14 +12,14 @@
 
 class ManualDrivebase : public behaviour::Behaviour{
  public:
-  ManualDrivebase(wom::SwerveDrive *swerveDrivebase, frc::PS4Controller *driverController);
+  ManualDrivebase(wom::SwerveDrive *swerveDrivebase, wom::Controller *driverController);
 
   void OnTick(units::second_t deltaTime) override;
   void OnStart();
   
  private:
   wom::SwerveDrive *_swerveDrivebase;
-  frc::PS4Controller *_driverController;
+  wom::Controller *_driverController;
 
   const double driverDeadzone = 0.08;
   const double turningDeadzone = 0.1;

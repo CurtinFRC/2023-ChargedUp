@@ -243,12 +243,6 @@ void SwerveDrive::OnUpdate(units::second_t dt) {
   _config.WriteNT(_table->GetSubTable("config"));
 }
 
-void SwerveDrive::SetFieldRelativeRotationLockVelocity(FieldRelativeSpeeds speeds, units::degree_t requestedRotation){
-  _state = SwerveDriveState::kFieldRelativeRotationLockVelocity;
-  _target_fr_speeds = speeds;
-  _requestedAngle = requestedRotation;
-}
-
 void SwerveDrive::SetXWheelState(){
   _state = SwerveDriveState::kXWheels;
 }

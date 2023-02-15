@@ -44,5 +44,6 @@ class Robot : public frc::TimedRobot {
   bool intakeSol = false;
   bool gripperSol = false;
   Vision *vision;
+  BehaviourScheduler *sched;
   //SwerveModuleTest *swerveModule;
 };

@@ -6,8 +6,10 @@
 #include <ctre/phoenix/motorcontrol/can/WPI_TalonFX.h>
 #include <frc/Compressor.h>
 
-#include <frc/XboxController.h>
-#include <frc/PS4Controller.h>
+// #include <frc/XboxController.h>
+// #include <frc/PS4Controller.h>
+
+#include "XInputController.h"
 
 #include <ctre/Phoenix.h>
 
@@ -31,10 +33,8 @@ struct RobotMap {
 
   struct Controllers {    
     //sets driver station numbers for the controllers
-    frc::PS4Controller driver{0};
-    // contr::Controller driver{0};
-    // frc::PS4Controller driver{0};
-    frc::XboxController codriver{1};
+    wom::PS4Controller driver{0};
+    wom::XboxController codriver{1};
   };
   Controllers controllers;
 
