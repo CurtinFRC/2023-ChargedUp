@@ -9,6 +9,8 @@
 
 using namespace wom;
 
+// Code for Manual Drivebase
+
 ManualDrivebase::ManualDrivebase(wom::SwerveDrive *swerveDrivebase, frc::XboxController *driverController) : _swerveDrivebase(swerveDrivebase), _driverController(driverController) {
   Controls(swerveDrivebase);
 }
@@ -23,9 +25,7 @@ void ManualDrivebase::OnTick(units::second_t deltaTime) {
   double l_y = wom::spow2(-wom::deadzone(_driverController->GetLeftX(), driverDeadzone));
   double r_x = wom::spow2(-wom::deadzone(_driverController->GetRightX(), turningDeadzone));
 
-  if (_driverController->GetYButtonPressed()) {  isFieldOrientated = !isFieldOrientated;  }
-
-  if (isFieldOrientated) {  // Field Relative Controls
+  if (_swerveDrivebase.GetIsFieldRelative()) {  // Field Relative Controls
     _swerveDrivebase->SetFieldRelativeVelocity(wom::FieldRelativeSpeeds{
         l_x * maxMovementMagnitude,
         l_y * maxMovementMagnitude,
@@ -38,12 +38,12 @@ void ManualDrivebase::OnTick(units::second_t deltaTime) {
         r_x * 360_deg / 1_s
     });
   }
-  _swerveDriveTable->GetEntry("isFieldOrientated").SetBoolean(isFieldOrientated);
+  _swerveDriveTable->GetEntry("isFieldOrientated").SetBoolean(isFieldOrientated); // allows for a user to know if the robot is in field relative, or robot relative mode
   }
 
 
 
-
+// Code for Drivebase Pose Controls
 
 DrivebasePoseBehaviour::DrivebasePoseBehaviour(
     wom::SwerveDrive *swerveDrivebase, frc::Pose2d pose, bool hold)
@@ -61,7 +61,7 @@ void DrivebasePoseBehaviour::OnTick(units::second_t deltaTime) {
 
 
 
-
+// Code for Drivebase balancing on the chargestation
 
 DrivebaseBalance::DrivebaseBalance(wom::SwerveDrive *swerveDrivebase, wom::NavX *gyro) : _swerveDrivebase(swerveDrivebase), _gyro(gyro) {
   Controls(swerveDrivebase);
@@ -83,7 +83,7 @@ void DrivebaseBalance::OnTick(units::second_t deltaTime) {
 
 
 
-
+// Code for x-ing the wheels on the drivebase
 
 XDrivebase::XDrivebase(wom::SwerveDrive *swerveDrivebase) : _swerveDrivebase(swerveDrivebase) {   Controls(swerveDrivebase);   }
 void XDrivebase::OnTick(units::second_t deltaTime) {   _swerveDrivebase->SetXWheelState();   }

@@ -11,6 +11,8 @@
 
 #include "Auto.h"
 
+// #define USING_XBOX
+
 using namespace frc;
 using namespace behaviour;
 
@@ -68,9 +70,11 @@ void Robot::TeleopInit() {
 
   swerve->ZeroWheels();
 
-  // Swervedrivebase grid poses
-  // UP D-BAD
-  map.controllers.driver.POV(0, &loop).Rising().IfHigh([sched, this]() {
+
+  #ifdef USING_XBOX
+    // Swervedrivebase grid poses
+    // UP D-BAD
+    map.controllers.driver.POV(0, &loop).Rising().IfHigh([sched, this]() {
     if (map.controllers.driver.GetRightBumper()) {
       if (map.controllers.driver.GetLeftBumper()){
         sched->Schedule(make<DrivebasePoseBehaviour>(swerve, map.swerveGridPoses.centreGrid2, false)); // central grid
@@ -117,16 +121,75 @@ void Robot::TeleopInit() {
   map.controllers.driver.A(&loop).Rising().IfHigh([sched, this]() {
     sched->Schedule(make<DrivebaseBalance>(swerve, &map.swerveBase.gyro));
   });
+  map.controller.driver.Y(&loop).Rising().IfHigh([sched, this]() {
+    swerve.ToggleFieldRelative;
+  })
+  #else
+    /*
+    translation
+    rotation
+    
+    auto balance
+    lock wheels
+    cancel behaviour
+    
+    align forward to nearest
+    align backwards to nearest
+    
+    field relative
+    robot orientated
 
-  // Current Keybinds:
-  /*
-    A - Balance Behaviour
-    B - Interrupts any behaviour, and sets active behaviour to the manual drive behaviour
-    X - X Wheels
-    Y - Field Orientated / Robot Relative Toggle
-    RightBumper - Acting as a shift key for grid poses
-    LeftBumper - Acting as a shift key for grid poses
-  */
+    intake up
+    intake down
+    arm override
+    elevator overide
+    arm lock
+    elevator lock 
+
+    */
+    map.controllers.driver.Triangle(&loop).Rising().IfHigh([sched, this] () {
+      // lock wheels
+      sched->Schedule(make<XDrivebase>(swerve));
+      map.swerveTable.swerveDriveTable->GetEntry("IsX-ed").SetBoolean(true);
+    })
+    map.controllers.driver.Square(&loop).Rising().IfHigh([sched, this] () {
+      // align forward to nearest
+    })
+    map.controllers.driver.Cross(&loop).Rising().IfHigh([sched, this] () {
+      // align backward to neaest
+    })
+    map.controllers.driver.Circle(&loop).Rising().IfHigh([sched, this] () {
+      // cancel current behaviour
+      swerve->GetActiveBehaviour()->Interrupt();
+      map.swerveTable.swerveDriveTable->GetEntry("IsX-ed").SetBoolean(false);
+    })
+  
+    map.controllers.driver.PS(&loop).Rising().IfHigh([sched, this]() {
+      // auto balance behaviour
+      sched->Schedule(make<DrivebaseBalance>(swerve, &map.swerveBase.gyro));
+    });
+  
+    map.controllers.driver.Share(&loop).Rising().IfHigh([sched, this]() {
+      // field relative
+      swerve->SetFieldRelative();
+    });
+    map.controllers.driver.Options(&loop).Rising().IfHigh([sched, this]() {
+      // robot relative
+      swerve->SetRobotRelative();
+    });
+    
+    map.controllers.driver.POV(0, &loop).Rising().IfHigh([sched, this]() {
+      // intake up
+    });
+    map.controllers.driver.POV(180, &loop).Rising().IfHigh([sched, this]() {
+      // intake down
+    });
+  
+    // arm override
+    // elevator override
+    // arm lock
+    // elevator lock
+  #endif
 
   swerve->OnStart();
 

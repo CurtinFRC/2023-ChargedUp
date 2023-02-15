@@ -139,6 +139,10 @@ namespace wom {
 
     void SetXWheelState();
     void ZeroWheels();
+    
+    void SetFieldRelative();
+    void SetRobotRelative();
+    void GetIsFieldRelative()
 
     void SetAccelerationLimit(units::meters_per_second_squared_t limit);
 
@@ -167,6 +171,8 @@ namespace wom {
     PIDController<units::meter, units::meters_per_second> _yPIDController;
 
     std::shared_ptr<nt::NetworkTable> _table;
+
+    bool _isFieldRelative;
 
     int _mod;
     units::radian_t _angle;

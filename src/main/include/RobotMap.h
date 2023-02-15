@@ -16,9 +16,18 @@
 #include <string>
 
 struct RobotMap {
+
+  enum DriverController{
+    Xbox,
+    PS4
+  };
+
+  DriverController selectedDriverController = DriverController::Xbox;
+
   struct Controllers {    
     //sets driver station numbers for the controllers
-    frc::XboxController driver{0};
+    // frc::XboxController driver{0};
+    frc::PS4Controller driver{0};
     frc::XboxController codriver{1};
   };
   Controllers controllers;

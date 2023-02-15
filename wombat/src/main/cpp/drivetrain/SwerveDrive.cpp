@@ -287,6 +287,15 @@ void SwerveDrive::SetTuning(units::radian_t angle, units::meters_per_second_t sp
 }
 
 
+void SwerveDrive::SetFieldRelative(){
+  _isFieldRelative = true;
+}
+void SwerveDrive::SetRobotRelative(){
+  _isFieldRelative = false;
+}
+void SwerveDrive::GetIsFieldRelative(){
+  return _isFieldRelative;
+}
 
 void SwerveDrive::SetFieldRelativeVelocity(FieldRelativeSpeeds speeds) {
   _state = SwerveDriveState::kFieldRelativeVelocity;

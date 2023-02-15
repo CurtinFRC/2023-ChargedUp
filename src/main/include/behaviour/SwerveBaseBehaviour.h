@@ -24,8 +24,6 @@ class ManualDrivebase : public behaviour::Behaviour{
   const double turningDeadzone = 0.1;
   const units::meters_per_second_t maxMovementMagnitude = 6.5_ft / 1_s;
 
-  bool isFieldOrientated = true;
-
   std::shared_ptr<nt::NetworkTable> _swerveDriveTable = nt::NetworkTableInstance::GetDefault().GetTable("swerve");
 
 };
