@@ -223,6 +223,13 @@ void SwerveDrive::OnUpdate(units::second_t dt) {
       _modules[2].SetPID(315_deg, 0_mps, dt);
       _modules[3].SetPID(225_deg, 0_mps, dt);
       break;
+    case SwerveDriveState::kFieldRelativeRotationLockVelocity:
+        _target_fr_speeds.omega = _anglePIDController.Calculate(_requestedAngle, dt);
+
+        _anglePIDController.SetSetpoint(_requestedAngle);
+
+        _target_speed = _target_fr_speeds.ToChassisSpeeds(GetPose().Rotation().Radians());
+      break;
   }
 
   for (auto mod = _modules.begin(); mod < _modules.end(); mod++) {
@@ -286,7 +293,11 @@ void SwerveDrive::SetTuning(units::radian_t angle, units::meters_per_second_t sp
   _state = SwerveDriveState::kTuning;
 }
 
-
+void SwerveDrive::SetFieldRelativeRotationLockVelocity(FieldRelativeSpeeds speeds, units::degree_t requestedRotation){
+  _state = SwerveDriveState::kFieldRelativeRotationLockVelocity;
+  _target_fr_speeds = speeds;
+  _requestedAngle = requestedRotation;
+}
 
 void SwerveDrive::SetFieldRelativeVelocity(FieldRelativeSpeeds speeds) {
   _state = SwerveDriveState::kFieldRelativeVelocity;

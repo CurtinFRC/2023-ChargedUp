@@ -19,27 +19,63 @@ void ManualDrivebase::OnStart() {
 }
 
 void ManualDrivebase::OnTick(units::second_t deltaTime) {
-  double l_x = wom::spow2(-wom::deadzone(_driverController->GetLeftY(), driverDeadzone));  // GetLeftY due to x being where y should be on field
-  double l_y = wom::spow2(-wom::deadzone(_driverController->GetLeftX(), driverDeadzone));
+  double xVelocity = wom::spow2(-wom::deadzone(_driverController->GetLeftY(), driverDeadzone));  // GetLeftY due to x being where y should be on field
+  double yVelocity = wom::spow2(-wom::deadzone(_driverController->GetLeftX(), driverDeadzone));
+
+
   double r_x = wom::spow2(-wom::deadzone(_driverController->GetRightX(), turningDeadzone));
+  double r_y = wom::spow2(-wom::deadzone(_driverController->GetRightY(), turningDeadzone));
+
+  units::degree_t currentAngle = _swerveDrivebase->GetPose().Rotation().Degrees();
+  units::degree_t requestedAngle = 0_deg; // = swerve.currentAngle
+
+  if (r_x > 0 && r_y > 0){ // quad 1
+    requestedAngle = 1_deg * atan2(r_y, r_x);
+  } else if (r_x < 0 && r_y > 0) { // quad 2
+    requestedAngle = 1_deg * (180 - atan2(r_y, r_x));
+  } else if (r_x < 0 && r_y < 0){ // quad 3
+    requestedAngle = 1_deg * (180 + atan2(r_y, r_x));
+  } else if (r_x > 0 && r_y < 0) { // quad 4
+    requestedAngle = 1_deg * (360 - atan2(r_y, r_x));
+  } else if (r_x == 0) {
+    if (r_y > 0) {   requestedAngle = 90_deg;   }
+    else if (r_y < 0) {   requestedAngle = -90_deg;   }
+  }
+  // if yVelocity == 0, then atan2 = undefined
+
 
   if (_driverController->GetYButtonPressed()) {  isFieldOrientated = !isFieldOrientated;  }
 
   if (isFieldOrientated) {  // Field Relative Controls
     _swerveDrivebase->SetFieldRelativeVelocity(wom::FieldRelativeSpeeds{
-        l_x * maxMovementMagnitude,
-        l_y * maxMovementMagnitude,
-        r_x * 360_deg / 1_s
+        xVelocity * maxMovementMagnitude,
+        yVelocity * maxMovementMagnitude,
+        turnSpeed * 360_deg / 1_s
     }); 
   } else {  // Robot Relative Controls
     _swerveDrivebase->SetVelocity(frc::ChassisSpeeds{
-        l_x * maxMovementMagnitude,
-        l_y * maxMovementMagnitude,
-        r_x * 360_deg / 1_s
+        xVelocity * maxMovementMagnitude,
+        yVelocity * maxMovementMagnitude,
+        turnSpeed * 360_deg / 1_s
     });
   }
   _swerveDriveTable->GetEntry("isFieldOrientated").SetBoolean(isFieldOrientated);
-  }
+
+  
+
+
+  /*
+  
+  get current angle
+  get requested angle
+
+  // deltaTime is the time since the last call
+  // the drivebase wants to turn at most 360 degrees per second
+  // due to substitution, the turnSpeed will be 360_deg
+  
+  */
+
+}
 
 
 

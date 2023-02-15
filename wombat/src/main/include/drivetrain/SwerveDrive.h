@@ -102,7 +102,7 @@ namespace wom {
     kIndividualTuning,
     kTuning,
     kXWheels,
-    kModuleTurn
+    kFieldRelativeRotationLockVelocity
   };
 
   struct FieldRelativeSpeeds {
@@ -140,6 +140,8 @@ namespace wom {
     void SetXWheelState();
     void ZeroWheels();
 
+    void SetFieldRelativeRotationLockVelocity(FieldRelativeSpeeds speeds, units::degree_t requestedRotation);
+
     void SetAccelerationLimit(units::meters_per_second_squared_t limit);
 
     void ResetPose(frc::Pose2d pose);
@@ -156,6 +158,7 @@ namespace wom {
     SwerveDriveState _state = SwerveDriveState::kIdle;
     std::vector<SwerveModule> _modules;
 
+    units::degree_t _requestedAngle;
     frc::ChassisSpeeds _target_speed;
     FieldRelativeSpeeds _target_fr_speeds;
 

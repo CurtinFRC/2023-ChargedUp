@@ -18,7 +18,8 @@
 struct RobotMap {
   struct Controllers {    
     //sets driver station numbers for the controllers
-    frc::XboxController driver{0};
+    // frc::XboxController driver{0};
+    frc::PS4Controller driver{0};
     frc::XboxController codriver{1};
   };
   Controllers controllers;
