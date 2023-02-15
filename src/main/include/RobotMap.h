@@ -5,12 +5,17 @@
 
 #include <ctre/phoenix/motorcontrol/can/WPI_TalonFX.h>
 #include <frc/Compressor.h>
+
 #include <frc/XboxController.h>
+#include <frc/PS4Controller.h>
+
 #include <ctre/Phoenix.h>
 
 #include "drivetrain/SwerveDrive.h"
 #include <frc/DoubleSolenoid.h>
 #include <units/length.h>
+
+// #include "DriverController.h"
 
 #include <iostream>
 #include <string>
@@ -26,8 +31,9 @@ struct RobotMap {
 
   struct Controllers {    
     //sets driver station numbers for the controllers
-    // frc::XboxController driver{0};
     frc::PS4Controller driver{0};
+    // contr::Controller driver{0};
+    // frc::PS4Controller driver{0};
     frc::XboxController codriver{1};
   };
   Controllers controllers;
@@ -171,7 +177,7 @@ struct RobotMap {
   SwerveBase swerveBase;
 
   // ONLY FOR BLUE RN //
-  struct SwerveGridPoses { // positions to place the items 
+  struct SwerveGridPoses { // positions to place the items
     frc::Pose2d innerGrid1 = frc::Pose2d(20.185_in, 20.208_in, 0_deg); // Closest grid position to the Wall
     frc::Pose2d innerGrid2 = frc::Pose2d(42.2_in, 20.208_in, 0_deg); // Middle of Inner Grid
     frc::Pose2d innerGrid3 = frc::Pose2d(64.185_in, 20.208_in, 0_deg); // Centremost Inner Grid position
@@ -182,6 +188,30 @@ struct RobotMap {
     frc::Pose2d outerGrid2 = frc::Pose2d(174.170_in, 20.208_in, 0_deg); // Middle of Outer Grid
     frc::Pose2d outerGrid3 = frc::Pose2d(196.185_in, 20.208_in, 0_deg); // Closest grid position to enemy Loading Zone
   };
+
+  SwerveGridPoses bluePoses{
+    frc::Pose2d(20.185_in, 20.208_in, 0_deg),
+    frc::Pose2d(42.2_in, 20.208_in, 0_deg),
+    frc::Pose2d(64.185_in, 20.208_in, 0_deg),
+    frc::Pose2d(86.078_in, 20.208_in, 0_deg),
+    frc::Pose2d(108.131_in, 20.208_in, 216_deg),
+    frc::Pose2d(130.185_in, 20.208_in, 0_deg),
+    frc::Pose2d(152.185_in, 20.208_in, 0_deg),
+    frc::Pose2d(174.170_in, 20.208_in, 0_deg),
+    frc::Pose2d(196.185_in, 20.208_in, 0_deg)
+  };
+  SwerveGridPoses redPoses{
+    frc::Pose2d(20.185_in, 20.208_in, 0_deg),
+    frc::Pose2d(42.2_in, 20.208_in, 0_deg),
+    frc::Pose2d(64.185_in, 20.208_in, 0_deg),
+    frc::Pose2d(86.078_in, 20.208_in, 0_deg),
+    frc::Pose2d(108.131_in, 20.208_in, 216_deg),
+    frc::Pose2d(130.185_in, 20.208_in, 0_deg),
+    frc::Pose2d(152.185_in, 20.208_in, 0_deg),
+    frc::Pose2d(174.170_in, 20.208_in, 0_deg),
+    frc::Pose2d(196.185_in, 20.208_in, 0_deg)
+  };
+
   SwerveGridPoses swerveGridPoses;
   
   struct SwerveTable {

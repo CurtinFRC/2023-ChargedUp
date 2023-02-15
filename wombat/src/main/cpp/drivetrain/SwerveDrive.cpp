@@ -243,6 +243,12 @@ void SwerveDrive::OnUpdate(units::second_t dt) {
   _config.WriteNT(_table->GetSubTable("config"));
 }
 
+void SwerveDrive::SetFieldRelativeRotationLockVelocity(FieldRelativeSpeeds speeds, units::degree_t requestedRotation){
+  _state = SwerveDriveState::kFieldRelativeRotationLockVelocity;
+  _target_fr_speeds = speeds;
+  _requestedAngle = requestedRotation;
+}
+
 void SwerveDrive::SetXWheelState(){
   _state = SwerveDriveState::kXWheels;
 }
@@ -271,6 +277,13 @@ void SwerveDrive::SetVelocity(frc::ChassisSpeeds speeds) {
   _target_speed = speeds;
 }
 
+void SwerveDrive::SetIsFieldRelative(bool value){
+  _isFieldRelative = value;
+}
+bool SwerveDrive::GetIsFieldRelative(){
+  return _isFieldRelative;
+}
+
 void SwerveDrive::SetIndividualTuning(int mod, units::radian_t angle, units::meters_per_second_t speed) {
   // _modules[mod].SetPID(angle, speed);
   _mod = mod;
@@ -284,17 +297,6 @@ void SwerveDrive::SetTuning(units::radian_t angle, units::meters_per_second_t sp
   _angle = angle;
   _speed = speed;
   _state = SwerveDriveState::kTuning;
-}
-
-
-void SwerveDrive::SetFieldRelative(){
-  _isFieldRelative = true;
-}
-void SwerveDrive::SetRobotRelative(){
-  _isFieldRelative = false;
-}
-void SwerveDrive::GetIsFieldRelative(){
-  return _isFieldRelative;
 }
 
 void SwerveDrive::SetFieldRelativeVelocity(FieldRelativeSpeeds speeds) {

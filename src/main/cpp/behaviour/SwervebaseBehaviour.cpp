@@ -5,13 +5,14 @@
 #include <units/moment_of_inertia.h>
 
 #include "ControlUtil.h"
+
 // #include <units/units.h>
 
 using namespace wom;
 
 // Code for Manual Drivebase
 
-ManualDrivebase::ManualDrivebase(wom::SwerveDrive *swerveDrivebase, frc::XboxController *driverController) : _swerveDrivebase(swerveDrivebase), _driverController(driverController) {
+ManualDrivebase::ManualDrivebase(wom::SwerveDrive *swerveDrivebase, frc::PS4Controller *driverController) : _swerveDrivebase(swerveDrivebase), _driverController(driverController) {
   Controls(swerveDrivebase);
 }
 
@@ -21,23 +22,56 @@ void ManualDrivebase::OnStart() {
 }
 
 void ManualDrivebase::OnTick(units::second_t deltaTime) {
-  double l_x = wom::spow2(-wom::deadzone(_driverController->GetLeftY(), driverDeadzone));  // GetLeftY due to x being where y should be on field
-  double l_y = wom::spow2(-wom::deadzone(_driverController->GetLeftX(), driverDeadzone));
-  double r_x = wom::spow2(-wom::deadzone(_driverController->GetRightX(), turningDeadzone));
+  double xVelocity = wom::spow2(-wom::deadzone(_driverController->GetLeftY(), driverDeadzone));  // GetLeftY due to x being where y should be on field
+  double yVelocity = wom::spow2(-wom::deadzone(_driverController->GetLeftX(), driverDeadzone));
 
-  if (_swerveDrivebase.GetIsFieldRelative()) {  // Field Relative Controls
+  double r_x = wom::spow2(-wom::deadzone(_driverController->GetRightX(), turningDeadzone));
+  double r_y = wom::spow2(-wom::deadzone(_driverController->GetRightX(), turningDeadzone));
+  
+  if (_swerveDrivebase->GetIsFieldRelative()) {  // Field Relative Controls
     _swerveDrivebase->SetFieldRelativeVelocity(wom::FieldRelativeSpeeds{
-        l_x * maxMovementMagnitude,
-        l_y * maxMovementMagnitude,
+        xVelocity * maxMovementMagnitude,
+        yVelocity * maxMovementMagnitude,
         r_x * 360_deg / 1_s
     }); 
   } else {  // Robot Relative Controls
     _swerveDrivebase->SetVelocity(frc::ChassisSpeeds{
-        l_x * maxMovementMagnitude,
-        l_y * maxMovementMagnitude,
+        xVelocity * maxMovementMagnitude,
+        yVelocity * maxMovementMagnitude,
         r_x * 360_deg / 1_s
     });
   }
+
+  frc::Pose2d currentPose = _swerveDrivebase->GetPose();
+  units::degree_t currentAngle = currentPose.Rotation().Degrees();
+  units::degree_t requestedAngle = currentAngle;
+
+  if (r_x > 0 && r_y > 0) { // Quadrant 1
+    requestedAngle = (1_rad * atan2(r_y, r_x));
+  } else if (r_x < 0 && r_y > 0) { // Quadrant 2
+    requestedAngle = 180_deg - (1_rad * atan2(r_y, r_x));
+  } else if (r_x < 0 && r_y < 0) { // Quadrant 3
+    requestedAngle = 180_deg + (1_rad * atan2(r_y, r_x));
+  } else if (r_x > 0 && r_y < 0) { // Quadrant 4
+    requestedAngle = 360_deg - (1_rad * atan2(r_y, r_x));
+  }
+  if (r_x == 0) {
+    if (r_y > 0){   requestedAngle = 90_deg;   }
+    else if (r_y < 0){   requestedAngle = 270_deg;   }
+  }
+  if (r_y == 0){
+    if (r_x > 0){   requestedAngle = 0_deg;   }
+    else if (r_x < 0){   requestedAngle = 180_deg;   }
+  }
+
+
+  units::meter_t newX = currentPose.X() - xVelocity * maxMovementMagnitude * deltaTime;
+  units::meter_t newY = currentPose.Y() - yVelocity * maxMovementMagnitude * deltaTime;
+  _swerveDrivebase.SetPose(frc::Pose2d(newX, newY, requestedAngle));
+
+
+
+
   _swerveDriveTable->GetEntry("isFieldOrientated").SetBoolean(isFieldOrientated); // allows for a user to know if the robot is in field relative, or robot relative mode
   }
 
@@ -87,3 +121,31 @@ void DrivebaseBalance::OnTick(units::second_t deltaTime) {
 
 XDrivebase::XDrivebase(wom::SwerveDrive *swerveDrivebase) : _swerveDrivebase(swerveDrivebase) {   Controls(swerveDrivebase);   }
 void XDrivebase::OnTick(units::second_t deltaTime) {   _swerveDrivebase->SetXWheelState();   }
+
+
+
+
+AlignDrivebaseToNearestGrid::AlignDrivebaseToNearestGrid(wom::SwerveDrive *swerveDrivebase, std::vector<frc::Pose2d*> gridPoses) : _swerveDrivebase(swerveDrivebase), _gridPoses(gridPoses) {   Controls(swerveDrivebase);   }
+
+void AlignDrivebaseToNearestGrid::OnStart(){
+  frc::Pose2d currentPose = _swerveDrivebase->GetPose();
+  units::degree_t alignAngle = 0_deg;
+  if (90 < std::fmod(currentPose.Rotation().Degrees().value(), 360) <= 270){   alignAngle = 180_deg;   }
+
+  frc::Pose2d *nearestGrid = _gridPoses[0];
+
+  for (frc::Pose2d *pose : _gridPoses) {
+    frc::Pose2d difference = currentPose.RelativeTo(*pose);
+    double distance = pow(difference.X().value(), 2) + pow(difference.Y().value(), 2);
+    if (distance < pow(nearestGrid->X().value(), 2) + pow(nearestGrid->Y().value(), 2)){
+      nearestGrid = pose;
+    }
+  }
+  if (pow(nearestGrid->X().value(), 2) + pow(nearestGrid->Y().value(), 2) < 2){
+    _swerveDrivebase->SetPose(frc::Pose2d{nearestGrid->X(), nearestGrid->Y(), alignAngle});
+  }
+}
+
+void AlignDrivebaseToNearestGrid::OnTick(units::second_t deltaTime){
+
+}
