@@ -26,7 +26,7 @@ class ManualDrivebase : public behaviour::Behaviour{
   const units::meters_per_second_t maxMovementMagnitude = 6.5_ft / 1_s;
 
   bool isFieldOrientated = true;
-
+  bool isZero = false;
 
   std::shared_ptr<nt::NetworkTable> _swerveDriveTable = nt::NetworkTableInstance::GetDefault().GetTable("swerve");
 

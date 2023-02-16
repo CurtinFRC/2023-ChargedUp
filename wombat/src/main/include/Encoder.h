@@ -14,7 +14,7 @@
 namespace wom {
   class Encoder {
    public:
-    Encoder(double encoderTicksPerRotation, double reduction) : _encoderTicksPerRotation(encoderTicksPerRotation), _reduction(reduction) {};
+    Encoder(double encoderTicksPerRotation, double reduction, int type) : _encoderTicksPerRotation(encoderTicksPerRotation), _reduction(reduction), _type(type) {};
     virtual double    GetEncoderRawTicks() const = 0;
     virtual double    GetEncoderTickVelocity() const = 0;  // ticks/s
     virtual void      ZeroEncoder();
@@ -25,26 +25,33 @@ namespace wom {
     double  GetEncoderTicks() const;
     double  GetEncoderTicksPerRotation() const;
 
+    double GetAbsoluteEncoderPosition();
+
     void SetReduction(double reduction);
 
     units::radian_t GetEncoderPosition();
     units::radians_per_second_t GetEncoderAngularVelocity();   // rad/s
 
+    int encoderType = 0;
+
     virtual std::shared_ptr<sim::SimCapableEncoder> MakeSimEncoder() = 0;
    private:
     double _encoderTicksPerRotation;
     double _reduction = 1.0;
-    double _offset = 0;
+    units::radian_t _offset = 0_rad;
+    int _type = 0;
+
   };
 
   class DigitalEncoder : public Encoder {
    public:
     DigitalEncoder(int channelA, int channelB, double ticksPerRotation, double reduction = 1)
-        : Encoder(ticksPerRotation, reduction),
+        : Encoder(ticksPerRotation, reduction, 0),
           _nativeEncoder(channelA, channelB){};
 
     double GetEncoderRawTicks() const override;
     double GetEncoderTickVelocity() const override;
+    // double GetAbsoluteEncoderPosition() const override;
 
     std::shared_ptr<sim::SimCapableEncoder> MakeSimEncoder() override;
    private:
@@ -58,6 +65,8 @@ namespace wom {
 
     double GetEncoderRawTicks() const override;
     double GetEncoderTickVelocity() const override;
+    // double GetAbsoluteEncoderPosition() const override;
+
 
     std::shared_ptr<sim::SimCapableEncoder> MakeSimEncoder() override;
    protected:
@@ -75,6 +84,8 @@ namespace wom {
 
     double GetEncoderRawTicks() const override;
     double GetEncoderTickVelocity() const override;
+    // double GetAbsoluteEncoderPosition() const override;
+
 
     std::shared_ptr<sim::SimCapableEncoder> MakeSimEncoder() override;
    private:
@@ -87,6 +98,8 @@ namespace wom {
    
     double GetEncoderRawTicks() const override;
     double GetEncoderTickVelocity() const override;
+    // double GetAbsoluteEncoderPosition() const override;
+
 
     std::shared_ptr<sim::SimCapableEncoder> MakeSimEncoder() override;
    private: 
@@ -99,6 +112,8 @@ namespace wom {
 
     double GetEncoderRawTicks() const override;
     double GetEncoderTickVelocity() const override;
+    // double GetAbsoluteEncoderPosition() const override;
+
 
     std::shared_ptr<sim::SimCapableEncoder> MakeSimEncoder() override;
    private: 
@@ -111,11 +126,13 @@ namespace wom {
 
       double GetEncoderRawTicks() const override;
       double GetEncoderTickVelocity() const override;
+      double GetAbsoluteEncoderPosition();
+
 
       const double constantValue = 0.0;
 
       std::shared_ptr<sim::SimCapableEncoder> MakeSimEncoder() override;
     private: 
-      CANCoder _canEncoder;
+      CANCoder *_canEncoder;
   };
 }  // namespace wom

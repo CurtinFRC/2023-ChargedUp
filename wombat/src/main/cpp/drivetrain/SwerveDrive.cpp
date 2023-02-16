@@ -108,8 +108,12 @@ void SwerveModule::OnUpdate(units::second_t dt) {
 }
 
 double SwerveModule::GetCancoderPosition() {
-  return std::fmod(_config.canEncoder->GetPosition()  + _offset, 360);
+  return (_config.turnMotor.encoder->GetEncoderPosition().value());
 }
+
+// double SwerveModule::GetCancoderAbsolutePosition() {
+//   // return _config.turnMotor.encoder.
+// }
 
 void SwerveModule::SetAccelerationLimit(units::meters_per_second_squared_t limit){
   _currentAccelerationLimit = limit;
@@ -129,9 +133,9 @@ void SwerveModule::SetIdle() {
 void SwerveModule::SetZeroing(units::second_t dt) {
   // units::degree_t startPosDeg = startingPos * 1_deg;
   // units::radian_t startingPosRad = startPosDeg.value() * (3.141592 / 180) * 1_rad;
-  // SetPID(-startingPosRad, 0_mps, dt);
+  SetPID(0_rad, 0_mps, dt);
   // SetPID(60_deg, 0_mps, dt);
-  // _state = SwerveModuleState::kPID;
+  _state = SwerveModuleState::kPID;
   //working
   // SetPID(-startingPos * 1_rad, 0_mps, dt);
 }

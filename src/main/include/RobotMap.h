@@ -63,12 +63,6 @@ struct RobotMap {
     wpi::array<WPI_TalonFX*, 4> driveMotors{
       new WPI_TalonFX(2), new WPI_TalonFX(4), new WPI_TalonFX(8), new WPI_TalonFX(6)
     };
-    //   wpi::array<WPI_TalonFX*, 4> turnMotors{
-    //   new WPI_TalonFX(1), new WPI_TalonFX(3), new WPI_TalonFX(4), new WPI_TalonFX(6)
-    // };
-    // wpi::array<WPI_TalonFX*, 4> driveMotors{
-    //   new WPI_TalonFX(5), new WPI_TalonFX(8), new WPI_TalonFX(2), new WPI_TalonFX(7)
-    // };
 
     wpi::array<wom::SwerveModuleConfig, 4> moduleConfigs{
       wom::SwerveModuleConfig{ // dimensions are assuming perfect square robot 1m^2 area
@@ -81,7 +75,7 @@ struct RobotMap {
         wom::Gearbox{
           new wom::MotorVoltageController(turnMotors[0]),
           // new wom::TalonFXEncoder(turnMotors[0], 12.8),
-          new wom::CanEncoder(19, 4095, 10.8),
+          new wom::CanEncoder(19, 4096, 12.8),
           // new CANCoder(19);
           wom::DCMotor::Falcon500(1).WithReduction(12.8)
         },
@@ -98,7 +92,7 @@ struct RobotMap {
         wom::Gearbox{
           new wom::MotorVoltageController(turnMotors[1]),
           // new wom::TalonFXEncoder  (turnMotors[1], 12.8),
-          new wom::CanEncoder(17, 4095, 10.8),
+          new wom::CanEncoder(17, 4096, 12.8),
           // new CANCoder(18);
           wom::DCMotor::Falcon500(1).WithReduction(12.8)
         },
@@ -115,7 +109,7 @@ struct RobotMap {
         wom::Gearbox{
           new wom::MotorVoltageController(turnMotors[2]),
           // new wom::TalonFXEncoder(turnMotors[2], 12.8),
-          new wom::CanEncoder(18, 4095, 10.8),
+          new wom::CanEncoder(18, 4096, 12.8),
           // new CANCoder(17);
           wom::DCMotor::Falcon500(1).WithReduction(12.8)
         },
@@ -132,7 +126,7 @@ struct RobotMap {
         wom::Gearbox{
           new wom::MotorVoltageController(turnMotors[3]),
           // new wom::TalonFXEncoder(turnMotors[3], 12.8),
-          new wom::CanEncoder(16, 4095, 10.8),
+          new wom::CanEncoder(16, 4096, 12.8),
           wom::DCMotor::Falcon500(1).WithReduction(12.8)
         },
         &backLeftCancoder,
@@ -262,7 +256,7 @@ struct RobotMap {
 
       Arm() {
         //sets the ofset for the encoder so it reads the right value
-        leftEncoder.SetEncoderOffset(0_deg);
+        // leftEncoder.SetEncoderOffset(0_deg);
         //inverts the motor so that it goes in the right direction while using RAW controlls
         leftArmMotor.SetInverted(true);
         rightArmMotor.SetInverted(false);

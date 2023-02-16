@@ -22,10 +22,17 @@ void ManualDrivebase::OnStart(units::second_t dt) {
 void ManualDrivebase::OnTick(units::second_t deltaTime) {
   // if (
 
-  // if (_driverController->GetAButton()) {
-    // _swerveDrivebase->SetZeroing();
-  // }
-  // ) {
+  if (_driverController->GetAButtonReleased()) {
+    if (isZero) {
+      isZero = false;
+    } else {
+      isZero = true;
+    }
+  } 
+
+  if (isZero) {
+    _swerveDrivebase->SetZeroing();
+  } else {
     double l_x = wom::spow2(-wom::deadzone(_driverController->GetLeftY(), driverDeadzone));  // GetLeftY due to x being where y should be on field
     double l_y = wom::spow2(-wom::deadzone(_driverController->GetLeftX(), driverDeadzone));
     double r_x = wom::spow2(-wom::deadzone(_driverController->GetRightX(), turningDeadzone));
@@ -46,7 +53,7 @@ void ManualDrivebase::OnTick(units::second_t deltaTime) {
       });
     }
     _swerveDriveTable->GetEntry("isFieldOrientated").SetBoolean(isFieldOrientated);
-  // }  
+  }
 }
 
 DrivebasePoseBehaviour::DrivebasePoseBehaviour(

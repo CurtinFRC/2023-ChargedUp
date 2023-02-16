@@ -24,6 +24,16 @@ void Robot::RobotInit() {
 
   map.swerveBase.gyro.Reset();
 
+  // map.swerveBase.moduleConfigs[0].turnMotor.encoder->ZeroEncoder();
+  // map.swerveBase.moduleConfigs[1].turnMotor.encoder->ZeroEncoder();
+  // map.swerveBase.moduleConfigs[2].turnMotor.encoder->ZeroEncoder();
+  // map.swerveBase.moduleConfigs[3].turnMotor.encoder->ZeroEncoder();
+
+  map.swerveBase.moduleConfigs[0].turnMotor.encoder->SetEncoderOffset(2.4743_rad);
+  map.swerveBase.moduleConfigs[1].turnMotor.encoder->SetEncoderOffset(2.9774567_rad);
+  map.swerveBase.moduleConfigs[2].turnMotor.encoder->SetEncoderOffset(2.0862_rad);
+  map.swerveBase.moduleConfigs[3].turnMotor.encoder->SetEncoderOffset(4.9486_rad);
+
   swerve = new wom::SwerveDrive(map.swerveBase.config, frc::Pose2d());
   BehaviourScheduler::GetInstance()->Register(swerve);
   swerve->SetDefaultBehaviour([this]() {
@@ -67,6 +77,8 @@ void Robot::RobotPeriodic() {
   // double BackRightPosition = std::fmod(map.swerveBase.backRightCancoder.GetPosition(), 360);
   // double BackLeftPosition = std::fmod(map.swerveBase.backLeftCancoder.GetPosition(), 360);
 
+  // std::cout << "JHJKDGKGK" << map.swerveBase.moduleConfigs[0].turnMotor.encoder->GetAbsoluteEncoderPosition() << std::endl;
+
   double FrontRightPosition = swerve->GetModuleCANPosition(0);
   double FrontLeftPosition  = swerve->GetModuleCANPosition(1);
   double BackRightPosition = swerve->GetModuleCANPosition(2);
@@ -77,21 +89,22 @@ void Robot::RobotPeriodic() {
   double rawBackRight = map.swerveBase.backRightCancoder.GetPosition();
   double rawBackLeft = map.swerveBase.backLeftCancoder.GetPosition();
 
-  map.swerveTable.swerveDriveTable->GetEntry("raw front left").SetDouble(rawFrontLeft);
-  map.swerveTable.swerveDriveTable->GetEntry("raw front right").SetDouble(rawFrontRight);
-  map.swerveTable.swerveDriveTable->GetEntry("raw back left").SetDouble(rawBackLeft);
-  map.swerveTable.swerveDriveTable->GetEntry("raw back right").SetDouble(rawBackRight);
+  // map.swerveTable.swerveDriveTable->GetEntry("raw front left").SetDouble(rawFrontLeft);
+  // map.swerveTable.swerveDriveTable->GetEntry("raw front right").SetDouble(rawFrontRight);
+  // map.swerveTable.swerveDriveTable->GetEntry("raw back left").SetDouble(rawBackLeft);
+  // map.swerveTable.swerveDriveTable->GetEntry("raw back right").SetDouble(rawBackRight);
 
+  // map.swerveTable.swerveDriveTable->GetEntry("frontLeftCancoder").SetDouble(FrontLeftPosition* (3.141592 / 180));
+  // map.swerveTable.swerveDriveTable->GetEntry("frontRightCancoder").SetDouble(FrontRightPosition* (3.141592 / 180));
+  // map.swerveTable.swerveDriveTable->GetEntry("backRightCancoder").SetDouble(BackRightPosition* (3.141592 / 180));
+  // map.swerveTable.swerveDriveTable->GetEntry("backLeftCancoder").SetDouble(BackLeftPosition * (3.141592 / 180));
 
-  map.swerveTable.swerveDriveTable->GetEntry("frontLeftCancoder").SetDouble(FrontLeftPosition);
-  map.swerveTable.swerveDriveTable->GetEntry("frontRightCancoder").SetDouble(FrontRightPosition);
-  map.swerveTable.swerveDriveTable->GetEntry("backRightCancoder").SetDouble(BackRightPosition);
-  map.swerveTable.swerveDriveTable->GetEntry("backLeftCancoder").SetDouble(BackLeftPosition);
+  // map.swerveTable.swerveDriveTable->GetEntry("frontLeftEncoder").SetDouble(map.swerveBase.moduleConfigs[0].turnMotor.encoder->GetAbsoluteEncoderPosition());
 
-  map.swerveTable.swerveDriveTable->GetEntry("frontLeftEncoder").SetDouble(std::fmod(map.swerveBase.moduleConfigs[0].turnMotor.encoder->GetEncoderPosition().convert<units::degree>().value(), 360) );
-  map.swerveTable.swerveDriveTable->GetEntry("frontRightEncoder").SetDouble(std::fmod(map.swerveBase.moduleConfigs[1].turnMotor.encoder->GetEncoderPosition().convert<units::degree>().value(), 360));
-  map.swerveTable.swerveDriveTable->GetEntry("backRightEncoder").SetDouble(std::fmod(map.swerveBase.moduleConfigs[2].turnMotor.encoder->GetEncoderPosition().convert<units::degree>().value(), 360));
-  map.swerveTable.swerveDriveTable->GetEntry("backLeftEncoder").SetDouble(std::fmod(map.swerveBase.moduleConfigs[3].turnMotor.encoder->GetEncoderPosition().convert<units::degree>().value(), 360));
+  map.swerveTable.swerveDriveTable->GetEntry("frontLeftEncoder").SetDouble(map.swerveBase.moduleConfigs[0].turnMotor.encoder->GetEncoderPosition().value());
+  map.swerveTable.swerveDriveTable->GetEntry("frontRightEncoder").SetDouble(map.swerveBase.moduleConfigs[1].turnMotor.encoder->GetEncoderPosition().value());
+  map.swerveTable.swerveDriveTable->GetEntry("backRightEncoder").SetDouble(map.swerveBase.moduleConfigs[2].turnMotor.encoder->GetEncoderPosition().value());
+  map.swerveTable.swerveDriveTable->GetEntry("backLeftEncoder").SetDouble(map.swerveBase.moduleConfigs[3].turnMotor.encoder->GetEncoderPosition().value());
 
   swerve->OnUpdate(dt);
   armavator->OnUpdate(dt);
