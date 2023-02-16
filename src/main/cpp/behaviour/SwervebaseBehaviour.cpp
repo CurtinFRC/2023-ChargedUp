@@ -58,7 +58,7 @@ void ManualDrivebase::OnTick(units::second_t deltaTime) {
         r_x * 360_deg / 1_s
     });
   }
-}
+} 
 void ManualDrivebase::CalculateRequestedAngle(double joystickX, double joystickY, units::degree_t defaultAngle){
   _requestedAngle = defaultAngle;
   if (joystickX > 0 && joystickY > 0) { // Quadrant 1
