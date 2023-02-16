@@ -150,7 +150,7 @@ namespace wom {
 
     void SetXWheelState();
     void ZeroWheels();
-    
+
     void SetIsFieldRelative(bool value);
     bool GetIsFieldRelative();
 

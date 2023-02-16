@@ -87,7 +87,7 @@ void Robot::TeleopPeriodic() {
   }
   if (map.controllers.driver.GetCPAD_TopPressed()){ // Lock the wheels
     sched->Schedule(make<XDrivebase>(swerve));
-    map.swerveTable.swerveDriveTable->GetEntry("IsX-ed").SetBoolean(false);
+    map.swerveTable.swerveDriveTable->GetEntry("IsX-ed").SetBoolean(true);
   }
   if (map.controllers.driver.GetCPAD_RightPressed()){ // Stop all current behaviours, and return to default (manualDrivebase)
     swerve->GetActiveBehaviour()->Interrupt();
@@ -95,6 +95,13 @@ void Robot::TeleopPeriodic() {
   }
   if (map.controllers.driver.GetLogoButtonPressed()){ // Initiates behaviour for balancing on the chargestation
     sched->Schedule(make<DrivebaseBalance>(swerve, &map.swerveBase.gyro));
+  }
+
+
+
+
+  if (map.controllers.driver.GetLeftBumperPressed()){ // Initiates behaviour for balancing on the chargestation
+    swerve->ResetPose(frc::Pose2d{0_m, 0_m, 0_deg});
   }
 
 }

@@ -241,6 +241,7 @@ void SwerveDrive::OnUpdate(units::second_t dt) {
       _modules[1].ModuleVectorHandler(_target_speed);
       _modules[2].ModuleVectorHandler(_target_speed);
       _modules[3].ModuleVectorHandler(_target_speed);
+      _anglePIDController.SetSetpoint(0_deg);
       break;
   }
 
