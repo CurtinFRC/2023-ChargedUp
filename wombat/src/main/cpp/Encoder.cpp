@@ -104,12 +104,21 @@ double DutyCycleEncoder::GetEncoderTickVelocity() const {
   return 0;
 }
 
-// CanEncoder::CanEncoder(int deviceNumber, double ticksPerRotation, double reduction)
-//   : Encoder(ticksPerRotation, reduction), _canEncoder(deviceNumber) {}
+CanEncoder::CanEncoder(int deviceNumber, double ticksPerRotation, double reduction)
+  : Encoder(ticksPerRotation, reduction), _canEncoder(deviceNumber) {}
 
-// double CanEncoder::GetEncoderTickVelocity() const {
-//   return 0;
-// }
+double CanEncoder::GetEncoderRawTicks() const {
+  // return _canEncoder.GetPosition() * constantValue;
+  // return const_cast<_canEncoder *>(this)->GetPosition();
+  return 100;
+  // return _canEncoder.GetPosition() ? ;
+  // return const_cast<_canEncoder*>(this)->GetPosition();
+}
+
+double CanEncoder::GetEncoderTickVelocity() const {
+  return 0;
+  // return _canEncoder.GetVelocity();
+}
 
 /* SIM */
 #include "frc/simulation/EncoderSim.h"
@@ -182,3 +191,9 @@ std::shared_ptr<sim::SimCapableEncoder> TalonSRXEncoder::MakeSimEncoder() {
 std::shared_ptr<sim::SimCapableEncoder> DutyCycleEncoder::MakeSimEncoder() {
   return nullptr;
 }
+
+std::shared_ptr<sim::SimCapableEncoder> CanEncoder::MakeSimEncoder() {
+  return nullptr;
+}
+
+

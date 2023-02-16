@@ -25,10 +25,10 @@ void SwerveModule::OnStart(double offset, units::second_t dt) {
   _offset = offset;
   _anglePIDController.Reset();
   _velocityPIDController.Reset();
-  _config.turnMotor.encoder->ZeroEncoder();
-  startingPos = GetCancoderPosition();
+  // _config.turnMotor.encoder->ZeroEncoder();
+  // startingPos = GetCancoderPosition();
   // startingPos = 60;
-  std::cout << "starting pos: " << startingPos << std::endl;
+  // std::cout << "starting pos: " << startingPos << std::endl;
   // _config.turnMotor.encoder->ZeroEncoder(); // take out when absolute encoders
 }
 
@@ -127,11 +127,11 @@ void SwerveModule::SetIdle() {
 }
 
 void SwerveModule::SetZeroing(units::second_t dt) {
-  units::degree_t startPosDeg = startingPos * 1_deg;
-  units::radian_t startingPosRad = startPosDeg.value() * (3.141592 / 180) * 1_rad;
+  // units::degree_t startPosDeg = startingPos * 1_deg;
+  // units::radian_t startingPosRad = startPosDeg.value() * (3.141592 / 180) * 1_rad;
   // SetPID(-startingPosRad, 0_mps, dt);
-  SetPID(60_deg, 0_mps, dt);
-  _state = SwerveModuleState::kPID;
+  // SetPID(60_deg, 0_mps, dt);
+  // _state = SwerveModuleState::kPID;
   //working
   // SetPID(-startingPos * 1_rad, 0_mps, dt);
 }

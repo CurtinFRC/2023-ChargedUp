@@ -80,8 +80,8 @@ struct RobotMap {
         },
         wom::Gearbox{
           new wom::MotorVoltageController(turnMotors[0]),
-          new wom::TalonFXEncoder(turnMotors[0], 12.8),
-          // new wom::CanEncoder(19, 4095, 10.8),
+          // new wom::TalonFXEncoder(turnMotors[0], 12.8),
+          new wom::CanEncoder(19, 4095, 10.8),
           // new CANCoder(19);
           wom::DCMotor::Falcon500(1).WithReduction(12.8)
         },
@@ -97,8 +97,8 @@ struct RobotMap {
         },
         wom::Gearbox{
           new wom::MotorVoltageController(turnMotors[1]),
-          new wom::TalonFXEncoder(turnMotors[1], 12.8),
-          // new wom::CanEncoder(18, 4095, 10.8),
+          // new wom::TalonFXEncoder  (turnMotors[1], 12.8),
+          new wom::CanEncoder(17, 4095, 10.8),
           // new CANCoder(18);
           wom::DCMotor::Falcon500(1).WithReduction(12.8)
         },
@@ -114,8 +114,8 @@ struct RobotMap {
         },
         wom::Gearbox{
           new wom::MotorVoltageController(turnMotors[2]),
-          new wom::TalonFXEncoder(turnMotors[2], 12.8),
-          // new wom::CanEncoder(17, 4095, 10.8),
+          // new wom::TalonFXEncoder(turnMotors[2], 12.8),
+          new wom::CanEncoder(18, 4095, 10.8),
           // new CANCoder(17);
           wom::DCMotor::Falcon500(1).WithReduction(12.8)
         },
@@ -131,9 +131,8 @@ struct RobotMap {
         },
         wom::Gearbox{
           new wom::MotorVoltageController(turnMotors[3]),
-          new wom::TalonFXEncoder(turnMotors[3], 12.8),
-          // wom::CanEncoder(16, 4095, 10.8),
-          // new CANCoder(16);
+          // new wom::TalonFXEncoder(turnMotors[3], 12.8),
+          new wom::CanEncoder(16, 4095, 10.8),
           wom::DCMotor::Falcon500(1).WithReduction(12.8)
         },
         &backLeftCancoder,

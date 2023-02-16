@@ -88,10 +88,10 @@ void Robot::RobotPeriodic() {
   map.swerveTable.swerveDriveTable->GetEntry("backRightCancoder").SetDouble(BackRightPosition);
   map.swerveTable.swerveDriveTable->GetEntry("backLeftCancoder").SetDouble(BackLeftPosition);
 
-  map.swerveTable.swerveDriveTable->GetEntry("frontLeftEncoder").SetDouble(map.swerveBase.moduleConfigs[0].turnMotor.encoder->GetEncoderPosition().convert<units::degree>().value());
-  map.swerveTable.swerveDriveTable->GetEntry("frontRightEncoder").SetDouble(map.swerveBase.moduleConfigs[1].turnMotor.encoder->GetEncoderPosition().convert<units::degree>().value());
-  map.swerveTable.swerveDriveTable->GetEntry("backRightEncoder").SetDouble(map.swerveBase.moduleConfigs[2].turnMotor.encoder->GetEncoderPosition().convert<units::degree>().value());
-  map.swerveTable.swerveDriveTable->GetEntry("backLeftEncoder").SetDouble(map.swerveBase.moduleConfigs[3].turnMotor.encoder->GetEncoderPosition().convert<units::degree>().value());
+  map.swerveTable.swerveDriveTable->GetEntry("frontLeftEncoder").SetDouble(std::fmod(map.swerveBase.moduleConfigs[0].turnMotor.encoder->GetEncoderPosition().convert<units::degree>().value(), 360) );
+  map.swerveTable.swerveDriveTable->GetEntry("frontRightEncoder").SetDouble(std::fmod(map.swerveBase.moduleConfigs[1].turnMotor.encoder->GetEncoderPosition().convert<units::degree>().value(), 360));
+  map.swerveTable.swerveDriveTable->GetEntry("backRightEncoder").SetDouble(std::fmod(map.swerveBase.moduleConfigs[2].turnMotor.encoder->GetEncoderPosition().convert<units::degree>().value(), 360));
+  map.swerveTable.swerveDriveTable->GetEntry("backLeftEncoder").SetDouble(std::fmod(map.swerveBase.moduleConfigs[3].turnMotor.encoder->GetEncoderPosition().convert<units::degree>().value(), 360));
 
   swerve->OnUpdate(dt);
   armavator->OnUpdate(dt);

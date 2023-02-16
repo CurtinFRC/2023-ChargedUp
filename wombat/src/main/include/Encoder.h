@@ -105,13 +105,17 @@ namespace wom {
     frc::DutyCycleEncoder _dutyCycleEncoder;
   };
 
-  // class CanEncoder : public Encoder {
-  //   public: 
-  //     CanEncoder(int deviceNumber, double ticksPerRotation = 4095, double reduction = 1);
+  class CanEncoder : public Encoder {
+    public: 
+      CanEncoder(int deviceNumber, double ticksPerRotation = 4095, double reduction = 1);
 
-  //     double GetEncoderTickVelocity() const override;
-  //     std::shared_ptr<sim::SimCapableEncoder> MakeSimEncoder() override;
-  //   private: 
-  //     CANCoder _canEncoder;
-  // };
+      double GetEncoderRawTicks() const override;
+      double GetEncoderTickVelocity() const override;
+
+      const double constantValue = 0.0;
+
+      std::shared_ptr<sim::SimCapableEncoder> MakeSimEncoder() override;
+    private: 
+      CANCoder _canEncoder;
+  };
 }  // namespace wom

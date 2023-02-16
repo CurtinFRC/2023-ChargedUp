@@ -23,7 +23,7 @@ void ManualDrivebase::OnTick(units::second_t deltaTime) {
   // if (
 
   // if (_driverController->GetAButton()) {
-    _swerveDrivebase->SetZeroing();
+    // _swerveDrivebase->SetZeroing();
   // }
   // ) {
     double l_x = wom::spow2(-wom::deadzone(_driverController->GetLeftY(), driverDeadzone));  // GetLeftY due to x being where y should be on field
