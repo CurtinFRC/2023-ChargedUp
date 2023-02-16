@@ -7,8 +7,6 @@
 #include <frc/Compressor.h>
 
 #include "XInputController.h"
-#include <frc/XboxController.h>
-#include <frc/PS4Controller.h>
 
 #include <ctre/Phoenix.h>
 
@@ -26,7 +24,7 @@ struct RobotMap {
   struct Controllers {    
     //sets driver station numbers for the controllers
     wom::PS4Controller driver{0};
-    frc::XboxController codriver{1};
+    wom::XboxController codriver{1};
   };
   Controllers controllers;
 
