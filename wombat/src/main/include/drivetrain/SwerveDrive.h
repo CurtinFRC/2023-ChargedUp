@@ -24,10 +24,10 @@ namespace wom {
   struct SwerveModuleConfig {
     frc::Translation2d position;
 
-    ctre::phoenix::sensors::CANCoder absoluteEncoder;
-
     Gearbox driveMotor;
     Gearbox turnMotor;
+
+    CANCoder *canEncoder;
 
     units::meter_t wheelRadius;
 

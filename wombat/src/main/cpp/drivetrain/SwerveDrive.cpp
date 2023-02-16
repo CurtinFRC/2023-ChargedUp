@@ -117,15 +117,15 @@ void SwerveModule::ModuleVectorHandler(frc::ChassisSpeeds speeds){
 }
 
 
-void SwerveModule::ZeroUsingCanCoder(){
-  double encoderPosition = _config.absoluteEncoder.GetPosition();   // angle is in degrees
-  double wheelRotationDegrees = _config.turnMotor.encoder->GetEncoderPosition().convert<units::degree>().value();   // angle is in degrees
-  double rotationAmount = 0 - encoderPosition;   // angle is in degrees
-  if (encoderPosition > 180){
-    rotationAmount += 360;
-  }
-  _anglePIDController.SetSetpoint(1_deg * (wheelRotationDegrees + rotationAmount));
-}
+// void SwerveModule::ZeroUsingCanCoder(){
+//   double encoderPosition = _config.absoluteEncoder.GetPosition();   // angle is in degrees
+//   double wheelRotationDegrees = _config.turnMotor.encoder->GetEncoderPosition().convert<units::degree>().value();   // angle is in degrees
+//   double rotationAmount = 0 - encoderPosition;   // angle is in degrees
+//   if (encoderPosition > 180){
+//     rotationAmount += 360;
+//   }
+//   _anglePIDController.SetSetpoint(1_deg * (wheelRotationDegrees + rotationAmount));
+// }
 
 
 units::meters_per_second_t SwerveModule::GetSpeed() const {
@@ -266,9 +266,9 @@ void SwerveDrive::SetXWheelState(){
   _state = SwerveDriveState::kXWheels;
 }
 void SwerveDrive::ZeroWheels(){
-  for (auto mod = _modules.begin(); mod < _modules.end(); mod++) {
-    mod->ZeroUsingCanCoder();
-  }
+  // for (auto mod = _modules.begin(); mod < _modules.end(); mod++) {
+  //   mod->ZeroUsingCanCoder();
+  // }
 }
 
 void SwerveDrive::OnStart() {

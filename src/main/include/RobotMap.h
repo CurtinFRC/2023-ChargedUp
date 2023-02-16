@@ -14,17 +14,21 @@
 #include <frc/DoubleSolenoid.h>
 #include <units/length.h>
 
+
+#include "Encoder.h"
+
 // #include "DriverController.h"
 
 #include <iostream>
 #include <string>
+
 
 struct RobotMap {
 
   struct Controllers {    
     //sets driver station numbers for the controllers
     wom::PS4Controller driver{0};
-    wom::XboxController codriver{1};
+    frc::XboxController codriver{1};
   };
   Controllers controllers;
 
@@ -40,6 +44,12 @@ struct RobotMap {
 
   //stores nessesary info for swerve
   struct SwerveBase{
+    
+    CANCoder frontLeftCancoder{19};
+    CANCoder frontRightCancoder{17};
+    CANCoder backLeftCancoder{16};
+    CANCoder backRightCancoder{18};
+
     wom::NavX gyro;
     wpi::array<WPI_TalonFX*, 4> turnMotors{
       new WPI_TalonFX(6), new WPI_TalonFX(4), new WPI_TalonFX(3), new WPI_TalonFX(1)
@@ -50,7 +60,6 @@ struct RobotMap {
     wpi::array<wom::SwerveModuleConfig, 4> moduleConfigs{ 
       wom::SwerveModuleConfig{ // front left module
         frc::Translation2d(10.761_in, 9.455_in),
-        ctre::phoenix::sensors::CANCoder(99),
         wom::Gearbox{
           new wom::MotorVoltageController(driveMotors[0]),
           new wom::TalonFXEncoder(driveMotors[0], 6.75),
@@ -58,14 +67,15 @@ struct RobotMap {
         },
         wom::Gearbox{
           new wom::MotorVoltageController(turnMotors[0]),
-          new wom::TalonFXEncoder(turnMotors[0], 12.8),
+          // new wom::TalonFXEncoder(turnMotors[0], 12.8),
+          new wom::CanEncoder(19, 4095, 10.8),
           wom::DCMotor::Falcon500(1).WithReduction(12.8)
         },
+        &frontLeftCancoder,
         4_in / 2
       },
       wom::SwerveModuleConfig{ // front right module
         frc::Translation2d(10.761_in, -9.455_in),
-        ctre::phoenix::sensors::CANCoder(99),
         wom::Gearbox{
           new wom::MotorVoltageController(driveMotors[1]),
           new wom::TalonFXEncoder(driveMotors[1], 6.75),
@@ -73,14 +83,14 @@ struct RobotMap {
         },
         wom::Gearbox{
           new wom::MotorVoltageController(turnMotors[1]),
-          new wom::TalonFXEncoder(turnMotors[1], 12.8),
+          new wom::CanEncoder(17, 4095, 10.8),
           wom::DCMotor::Falcon500(1).WithReduction(12.8)
         },
+        &frontRightCancoder,
         4_in / 2
       },
       wom::SwerveModuleConfig{ // back left module
         frc::Translation2d(-10.761_in, 9.455_in),
-        ctre::phoenix::sensors::CANCoder(99),
         wom::Gearbox{
           new wom::MotorVoltageController(driveMotors[2]),
           new wom::TalonFXEncoder(driveMotors[2], 6.75),
@@ -88,14 +98,14 @@ struct RobotMap {
         },
         wom::Gearbox{
           new wom::MotorVoltageController(turnMotors[2]),
-          new wom::TalonFXEncoder(turnMotors[2], 12.8),
+          new wom::CanEncoder(18, 4095, 10.8),
           wom::DCMotor::Falcon500(1).WithReduction(12.8)
         },
+        &backRightCancoder,
         4_in / 2
       },
       wom::SwerveModuleConfig{ // back right module
         frc::Translation2d(-10.761_in, -9.455_in),
-        ctre::phoenix::sensors::CANCoder(99),
         wom::Gearbox{
           new wom::MotorVoltageController(driveMotors[3]),
           new wom::TalonFXEncoder(driveMotors[3], 6.75),
@@ -103,9 +113,10 @@ struct RobotMap {
         },
         wom::Gearbox{
           new wom::MotorVoltageController(turnMotors[3]),
-          new wom::TalonFXEncoder(turnMotors[3], 12.8),
+          new wom::CanEncoder(16, 4095, 10.8),
           wom::DCMotor::Falcon500(1).WithReduction(12.8)
         },
+        &backLeftCancoder,
         4_in / 2
       },
     };
