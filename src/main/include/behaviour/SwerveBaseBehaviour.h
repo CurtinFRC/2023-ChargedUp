@@ -3,8 +3,7 @@
 #include "drivetrain/SwerveDrive.h"
 #include "behaviour/Behaviour.h"
 #include <ctre/Phoenix.h>
-#include <frc/XboxController.h>
-#include <frc/PS4Controller.h>
+#include "XInputController.h"
 #include <networktables/NetworkTableInstance.h>
 #include "PID.h"
 
@@ -24,11 +23,18 @@ class ManualDrivebase : public behaviour::Behaviour{
   ManualDrivebase(wom::SwerveDrive *swerveDrivebase, wom::Controller *driverController);
 
   void OnTick(units::second_t deltaTime) override;
+  double AngleActivationFunction(double angleOffset);
+  /**
+   * @brief This function handles all of the logic behind the tangent function, to be able to calculate an angle between 0 andd 360 degrees, inclusively
+  */
+  void CalculateRequestedAngle(double joystickX, double joystickY, units::degree_t defaultAngle);
   void OnStart();
   
  private:
   wom::SwerveDrive *_swerveDrivebase;
   wom::Controller *_driverController;
+
+  units::degree_t _requestedAngle;
 
   const double driverDeadzone = 0.08;
   const double turningDeadzone = 0.1;

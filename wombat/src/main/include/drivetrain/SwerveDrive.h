@@ -43,6 +43,13 @@ namespace wom {
     void OnUpdate(units::second_t dt);
     void OnStart();
 
+    /**
+     * @brief This function acts to aid the robot matching the joystick's angle
+     * @param speeds
+     * Contains the xVelocity, yVelocity and the rotationalSpeed that the robot will be moving in
+    */
+    void ModuleVectorHandler(frc::ChassisSpeeds speeds);
+
     void SetIdle();
     void SetPID(units::radian_t angle, units::meters_per_second_t speed, units::second_t dt);
   
@@ -101,7 +108,8 @@ namespace wom {
     kPose,
     kIndividualTuning,
     kTuning,
-    kXWheels
+    kXWheels,
+    kFRVelocityRotationLock
   };
 
   struct FieldRelativeSpeeds {
@@ -128,6 +136,10 @@ namespace wom {
     void OnUpdate(units::second_t dt);
     void OnStart();
 
+    /**
+     * @brief This function switches the state to handle the robot's rotation matching that of the joystick
+    */
+    void SetRotationLockVelocity(FieldRelativeSpeeds speeds);
     void SetIdle();
     void SetVelocity(frc::ChassisSpeeds speeds);
     void SetFieldRelativeVelocity(FieldRelativeSpeeds speeds);
@@ -141,8 +153,6 @@ namespace wom {
     
     void SetIsFieldRelative(bool value);
     bool GetIsFieldRelative();
-
-    void SetFieldRelativeRotationLockVelocity(FieldRelativeSpeeds speeds, units::degree_t requestedRotation);
 
     void SetAccelerationLimit(units::meters_per_second_squared_t limit);
 
@@ -161,6 +171,7 @@ namespace wom {
     std::vector<SwerveModule> _modules;
 
     units::degree_t _requestedAngle;
+    FieldRelativeSpeeds _requestedSpeeds;
 
     frc::ChassisSpeeds _target_speed;
     FieldRelativeSpeeds _target_fr_speeds;

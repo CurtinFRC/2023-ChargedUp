@@ -7,6 +7,8 @@
 #include "ControlUtil.h"
 
 #include "XInputController.h"
+#include <frc/XboxController.h>
+#include <frc/PS4Controller.h>
 
 // #include <units/units.h>
 
@@ -30,40 +32,26 @@ void ManualDrivebase::OnTick(units::second_t deltaTime) {
   double r_y = wom::spow2(-wom::deadzone(_driverController->GetRightX(), turningDeadzone));
   
   if (_swerveDrivebase->GetIsFieldRelative()) {  // Field Relative Controls
-    /*_swerveDrivebase->SetFieldRelativeVelocity(wom::FieldRelativeSpeeds{
-        xVelocity * maxMovementMagnitude,
-        yVelocity * maxMovementMagnitude,
-        r_x * 360_deg / 1_s
-    });*/ 
-    
     frc::Pose2d currentPose = _swerveDrivebase->GetPose();
     units::degree_t currentAngle = currentPose.Rotation().Degrees();
-    units::degree_t requestedAngle = currentAngle;
+    CalculateRequestedAngle(r_x, r_y, currentAngle);    
+    
+    // // Calculates the new x and y positions to drive to
+    // units::meter_t newX = currentPose.X() - xVelocity * maxMovementMagnitude * deltaTime;
+    // units::meter_t newY = currentPose.Y() - yVelocity * maxMovementMagnitude * deltaTime;
+    // _swerveDrivebase->SetPose(frc::Pose2d(newX, newY, requestedAngle));
 
-    // Handles all of the logic for getting the angle
-    if (r_x > 0 && r_y > 0) { // Quadrant 1
-      requestedAngle = (1_rad * atan2(r_y, r_x));
-    } else if (r_x < 0 && r_y > 0) { // Quadrant 2
-      requestedAngle = 180_deg - (1_rad * atan2(r_y, r_x));
-    } else if (r_x < 0 && r_y < 0) { // Quadrant 3
-      requestedAngle = 180_deg + (1_rad * atan2(r_y, r_x));
-    } else if (r_x > 0 && r_y < 0) { // Quadrant 4
-      requestedAngle = 360_deg - (1_rad * atan2(r_y, r_x));
-    }
-    if (r_x == 0) {
-      if (r_y > 0){   requestedAngle = 90_deg;   }
-      else if (r_y < 0){   requestedAngle = 270_deg;   }
-    }
-    if (r_y == 0){
-      if (r_x > 0){   requestedAngle = 0_deg;   }
-      else if (r_x < 0){   requestedAngle = 180_deg;   }
-    }
-    // Calculates the new x and y positions to drive to
-    units::meter_t newX = currentPose.X() - xVelocity * maxMovementMagnitude * deltaTime;
-    units::meter_t newY = currentPose.Y() - yVelocity * maxMovementMagnitude * deltaTime;
-    _swerveDrivebase->SetPose(frc::Pose2d(newX, newY, requestedAngle));
+    
+    double rotationalVelocity = AngleActivationFunction(std::fmod(_requestedAngle.value() - currentAngle.value() + 180, 360) - 180);
+    // rotationalVelocity = AngleActivationFunction(  (requestedAngle - currentAngle + 180) % 360 - 180  )
 
-  } else {  // Robot Relative Controls
+    _swerveDrivebase->SetRotationLockVelocity(wom::FieldRelativeSpeeds{
+      xVelocity * maxMovementMagnitude,
+      yVelocity * maxMovementMagnitude,
+      rotationalVelocity * 360_deg / 1_s
+    });
+  }
+  else {  // Robot Relative Controls
     _swerveDrivebase->SetVelocity(frc::ChassisSpeeds{
         xVelocity * maxMovementMagnitude,
         yVelocity * maxMovementMagnitude,
@@ -71,6 +59,29 @@ void ManualDrivebase::OnTick(units::second_t deltaTime) {
     });
   }
 }
+void ManualDrivebase::CalculateRequestedAngle(double joystickX, double joystickY, units::degree_t defaultAngle){
+  _requestedAngle = defaultAngle;
+  if (joystickX > 0 && joystickY > 0) { // Quadrant 1
+    _requestedAngle = (1_rad * atan2(joystickY, joystickX));
+  } else if (joystickX < 0 && joystickY > 0) { // Quadrant 2
+    _requestedAngle = 180_deg - (1_rad * atan2(joystickY, joystickX));
+  } else if (joystickX < 0 && joystickY < 0) { // Quadrant 3
+    _requestedAngle = 180_deg + (1_rad * atan2(joystickY, joystickX));
+  } else if (joystickX > 0 && joystickY < 0) { // Quadrant 4
+    _requestedAngle = 360_deg - (1_rad * atan2(joystickY, joystickX));
+  } if (joystickX == 0) {
+    if (joystickY > 0){   _requestedAngle = 90_deg;   }
+    else if (joystickY < 0){   _requestedAngle = 270_deg;   }
+  } if (joystickY == 0){
+    if (joystickX > 0){   _requestedAngle = 0_deg;   }
+    else if (joystickX < 0){   _requestedAngle = 180_deg;   }
+  }
+  // else, default to currentAngle
+}
+double ManualDrivebase::AngleActivationFunction(double angleOffset){
+  return 1 / (1 + exp(4.0 * angleOffset / 90.0)) - 0.5;
+}
+
 
 
 
@@ -124,7 +135,8 @@ AlignDrivebaseToNearestGrid::AlignDrivebaseToNearestGrid(wom::SwerveDrive *swerv
 void AlignDrivebaseToNearestGrid::OnStart(){
   frc::Pose2d currentPose = _swerveDrivebase->GetPose();
   units::degree_t alignAngle = 0_deg;
-  if (90 < std::fmod(currentPose.Rotation().Degrees().value(), 360) <= 270){   alignAngle = 180_deg;   }
+  double angle = std::fmod(currentPose.Rotation().Degrees().value(), 360);
+  if (90 < angle && angle <= 270){   alignAngle = 180_deg;   }
 
   frc::Pose2d *nearestGrid = _gridPoses[0];
 

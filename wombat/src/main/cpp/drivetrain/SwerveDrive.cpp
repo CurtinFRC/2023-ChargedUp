@@ -105,6 +105,18 @@ void SwerveModule::SetPID(units::radian_t angle, units::meters_per_second_t spee
   _velocityPIDController.SetSetpoint(speed);
 }
 
+void SwerveModule::ModuleVectorHandler(frc::ChassisSpeeds speeds){
+  units::meters_per_second_t xVelocityComponent = 1_mps * (speeds.vx.value() + speeds.omega.value() * _config.position.X().value());
+  units::meters_per_second_t yVelocityComponent = 1_mps * (speeds.vy.value() + speeds.omega.value() * _config.position.Y().value());
+
+  units::meters_per_second_t velocity = 1_mps * sqrt(pow(xVelocityComponent.value(), 2) + pow(yVelocityComponent.value(), 2));
+  units::degree_t angle = 1_rad * atan2(yVelocityComponent.value(), xVelocityComponent.value());
+
+  _anglePIDController.SetSetpoint(angle);
+  _velocityPIDController.SetSetpoint(velocity);
+}
+
+
 void SwerveModule::ZeroUsingCanCoder(){
   double encoderPosition = _config.absoluteEncoder.GetPosition();   // angle is in degrees
   double wheelRotationDegrees = _config.turnMotor.encoder->GetEncoderPosition().convert<units::degree>().value();   // angle is in degrees
@@ -223,6 +235,13 @@ void SwerveDrive::OnUpdate(units::second_t dt) {
       _modules[2].SetPID(315_deg, 0_mps, dt);
       _modules[3].SetPID(225_deg, 0_mps, dt);
       break;
+    case SwerveDriveState::kFRVelocityRotationLock:
+      _target_speed = _requestedSpeeds.ToChassisSpeeds(GetPose().Rotation().Radians());
+      _modules[0].ModuleVectorHandler(_target_speed);
+      _modules[1].ModuleVectorHandler(_target_speed);
+      _modules[2].ModuleVectorHandler(_target_speed);
+      _modules[3].ModuleVectorHandler(_target_speed);
+      break;
   }
 
   for (auto mod = _modules.begin(); mod < _modules.end(); mod++) {
@@ -261,6 +280,10 @@ void SwerveDrive::OnStart() {
   }
 }
 
+void SwerveDrive::SetRotationLockVelocity(FieldRelativeSpeeds speeds){
+  _state = SwerveDriveState::kFRVelocityRotationLock;
+  _requestedSpeeds = speeds;
+}
 
 void SwerveDrive::SetIdle() {
   _state = SwerveDriveState::kIdle;
