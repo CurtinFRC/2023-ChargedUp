@@ -137,12 +137,13 @@ void XDrivebase::OnTick(units::second_t deltaTime) {   _swerveDrivebase->SetXWhe
 AlignDrivebaseToNearestGrid::AlignDrivebaseToNearestGrid(wom::SwerveDrive *swerveDrivebase, std::vector<frc::Pose2d*> gridPoses) : _swerveDrivebase(swerveDrivebase), _gridPoses(gridPoses) {   Controls(swerveDrivebase);   }
 
 void AlignDrivebaseToNearestGrid::OnStart(){
-  frc::Pose2d currentPose = _swerveDrivebase->GetPose();
   units::degree_t alignAngle = 0_deg;
+  frc::Pose2d currentPose = _swerveDrivebase->GetPose();
   double angle = std::fmod(currentPose.Rotation().Degrees().value(), 360);
   if (90 < angle && angle <= 270){   alignAngle = 180_deg;   }
 
   frc::Pose2d *nearestGrid = _gridPoses[0];
+
 
   for (frc::Pose2d *pose : _gridPoses) {
     frc::Pose2d difference = currentPose.RelativeTo(*pose);
