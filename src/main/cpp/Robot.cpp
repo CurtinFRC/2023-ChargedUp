@@ -2,7 +2,6 @@
 #include "behaviour/BehaviourScheduler.h"
 #include "behaviour/Behaviour.h"
 #include "behaviour/SwerveBaseBehaviour.h"
-#include "behaviour/VisionBehaviour.h"
 
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <frc/event/BooleanEvent.h>
@@ -17,12 +16,18 @@ using namespace behaviour;
 static units::second_t lastPeriodic;
 
 void Robot::RobotInit() {
+
   lastPeriodic = wom::now();
 
   map.swerveBase.gyro.Reset();
 
-  swerve = new wom::SwerveDrive(map.swerveBase.config, frc::Pose2d());
 
+  map.swerveBase.moduleConfigs[0].turnMotor.encoder->SetEncoderOffset(2.4743_rad);
+  map.swerveBase.moduleConfigs[1].turnMotor.encoder->SetEncoderOffset(2.9774567_rad);
+  map.swerveBase.moduleConfigs[2].turnMotor.encoder->SetEncoderOffset(2.0862_rad);
+  map.swerveBase.moduleConfigs[3].turnMotor.encoder->SetEncoderOffset(4.9486_rad);
+
+  swerve = new wom::SwerveDrive(map.swerveBase.config, frc::Pose2d());
   BehaviourScheduler::GetInstance()->Register(swerve);
   swerve->SetDefaultBehaviour([this]() {
     return make<ManualDrivebase>(swerve, &map.controllers.driver);
@@ -42,6 +47,11 @@ void Robot::RobotPeriodic() {
   loop.Poll();
   BehaviourScheduler::GetInstance()->Tick();
 
+  map.swerveTable.swerveDriveTable->GetEntry("frontLeftEncoder").SetDouble(map.swerveBase.moduleConfigs[0].turnMotor.encoder->GetEncoderPosition().value());
+  map.swerveTable.swerveDriveTable->GetEntry("frontRightEncoder").SetDouble(map.swerveBase.moduleConfigs[1].turnMotor.encoder->GetEncoderPosition().value());
+  map.swerveTable.swerveDriveTable->GetEntry("backRightEncoder").SetDouble(map.swerveBase.moduleConfigs[2].turnMotor.encoder->GetEncoderPosition().value());
+  map.swerveTable.swerveDriveTable->GetEntry("backLeftEncoder").SetDouble(map.swerveBase.moduleConfigs[3].turnMotor.encoder->GetEncoderPosition().value());
+
   swerve->OnUpdate(dt);
 
   auto visionPose = vision->OnUpdate(dt);
@@ -51,7 +61,10 @@ void Robot::RobotPeriodic() {
 }
 
 void Robot::AutonomousInit() {
-  swerve->OnStart();
+  auto dt = wom::now() - lastPeriodic;
+  lastPeriodic = wom::now();
+
+  swerve->OnStart(dt);
   swerve->ResetPose(frc::Pose2d());
   BehaviourScheduler *sched = BehaviourScheduler::GetInstance();
   sched->Schedule(Single(Drivebase{swerve, &map.swerveBase.gyro}, true, StartingConfig::Top, EndingConfig::Dock));
@@ -60,13 +73,14 @@ void Robot::AutonomousInit() {
 void Robot::AutonomousPeriodic() { }
 
 void Robot::TeleopInit() {
+  auto dt = wom::now() - lastPeriodic;
+  lastPeriodic = wom::now();
+
   loop.Clear();
   sched = BehaviourScheduler::GetInstance();
   sched->InterruptAll(); // removes all previously scheduled behaviours
 
-  swerve->OnStart();
-  swerve->ZeroWheels();
-  swerve->OnStart();
+  swerve->OnStart(dt);
 
 }
 
@@ -96,15 +110,11 @@ void Robot::TeleopPeriodic() {
   if (map.controllers.driver.GetLogoButtonPressed()){ // Initiates behaviour for balancing on the chargestation
     sched->Schedule(make<DrivebaseBalance>(swerve, &map.swerveBase.gyro));
   }
-
-
-
-
   if (map.controllers.driver.GetLeftBumperPressed()){ // Initiates behaviour for balancing on the chargestation
     swerve->ResetPose(frc::Pose2d{0_m, 0_m, 0_deg});
   }
-
 }
+
 
 void Robot::DisabledInit() { }
 void Robot::DisabledPeriodic() { }

@@ -28,7 +28,7 @@ class ManualDrivebase : public behaviour::Behaviour{
    * @brief This function handles all of the logic behind the tangent function, to be able to calculate an angle between 0 andd 360 degrees, inclusively
   */
   void CalculateRequestedAngle(double joystickX, double joystickY, units::degree_t defaultAngle);
-  void OnStart();
+  void OnStart(units::second_t dt);
   
  private:
   wom::SwerveDrive *_swerveDrivebase;
@@ -39,6 +39,9 @@ class ManualDrivebase : public behaviour::Behaviour{
   const double driverDeadzone = 0.08;
   const double turningDeadzone = 0.1;
   const units::meters_per_second_t maxMovementMagnitude = 6.5_ft / 1_s;
+
+  bool isFieldOrientated = true;
+  bool isZero = false;
 
   std::shared_ptr<nt::NetworkTable> _swerveDriveTable = nt::NetworkTableInstance::GetDefault().GetTable("swerve");
 

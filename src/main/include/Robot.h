@@ -41,9 +41,7 @@ class Robot : public frc::TimedRobot {
   
   RobotMap map;
   wom::SwerveDrive *swerve;
-  bool intakeSol = false;
-  bool gripperSol = false;
   Vision *vision;
   behaviour::BehaviourScheduler *sched;
-  //SwerveModuleTest *swerveModule;
+  
 };

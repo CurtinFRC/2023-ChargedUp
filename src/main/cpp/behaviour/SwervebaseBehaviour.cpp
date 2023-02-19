@@ -19,44 +19,48 @@ ManualDrivebase::ManualDrivebase(wom::SwerveDrive *swerveDrivebase, wom::Control
   Controls(swerveDrivebase);
 }
 
-void ManualDrivebase::OnStart() {
+void ManualDrivebase::OnStart(units::second_t dt) {
+  _swerveDrivebase->OnStart(dt);
   _swerveDrivebase->SetAccelerationLimit(6_mps_sq);
   std::cout << "Manual Drivebase Start" << std::endl;
 }
 
 void ManualDrivebase::OnTick(units::second_t deltaTime) {
-  double xVelocity = wom::spow2(-wom::deadzone(_driverController->GetLeftY(), driverDeadzone));  // GetLeftY due to x being where y should be on field
-  double yVelocity = wom::spow2(-wom::deadzone(_driverController->GetLeftX(), driverDeadzone));
+  if (_driverController->GetLeftTrigger()) {
+    isZero = !isZero;
+  } 
 
-  double r_x = wom::spow2(-wom::deadzone(_driverController->GetRightX(), turningDeadzone));
-  double r_y = wom::spow2(-wom::deadzone(_driverController->GetRightX(), turningDeadzone));
-  
-  if (_swerveDrivebase->GetIsFieldRelative()) {  // Field Relative Controls
-    frc::Pose2d currentPose = _swerveDrivebase->GetPose();
-    units::degree_t currentAngle = currentPose.Rotation().Degrees();
-    CalculateRequestedAngle(r_x, r_y, currentAngle);    
-    
-    // // Calculates the new x and y positions to drive to
-    // units::meter_t newX = currentPose.X() - xVelocity * maxMovementMagnitude * deltaTime;
-    // units::meter_t newY = currentPose.Y() - yVelocity * maxMovementMagnitude * deltaTime;
-    // _swerveDrivebase->SetPose(frc::Pose2d(newX, newY, requestedAngle));
-
-    
-    double rotationalVelocity = AngleActivationFunction(std::fmod(_requestedAngle.value() - currentAngle.value() + 180, 360) - 180);
-    // rotationalVelocity = AngleActivationFunction(  (requestedAngle - currentAngle + 180) % 360 - 180  )
-
-    _swerveDrivebase->SetRotationLockVelocity(wom::FieldRelativeSpeeds{
-      xVelocity * maxMovementMagnitude,
-      yVelocity * maxMovementMagnitude,
-      rotationalVelocity * 360_deg / 1_s
-    });
+  if (isZero) {
+    _swerveDrivebase->SetZeroing();
   }
-  else {  // Robot Relative Controls
-    _swerveDrivebase->SetVelocity(frc::ChassisSpeeds{
+  else {
+    double xVelocity = wom::spow2(-wom::deadzone(_driverController->GetLeftY(), driverDeadzone));  // GetLeftY due to x being where y should be on field
+    double yVelocity = wom::spow2(-wom::deadzone(_driverController->GetLeftX(), driverDeadzone));
+
+    double r_x = wom::spow2(-wom::deadzone(_driverController->GetRightX(), turningDeadzone));
+    double r_y = wom::spow2(-wom::deadzone(_driverController->GetRightX(), turningDeadzone));
+
+    if (_swerveDrivebase->GetIsFieldRelative()) {  // Field Relative Controls
+      frc::Pose2d currentPose = _swerveDrivebase->GetPose();
+      units::degree_t currentAngle = currentPose.Rotation().Degrees();
+      CalculateRequestedAngle(r_x, r_y, currentAngle);
+
+      // rotationalVelocity = AngleActivationFunction(  (requestedAngle - currentAngle + 180) % 360 - 180  )
+      double rotationalVelocity = AngleActivationFunction(std::fmod(_requestedAngle.value() - currentAngle.value() + 180, 360) - 180);
+      
+      _swerveDrivebase->SetRotationLockVelocity(wom::FieldRelativeSpeeds{
         xVelocity * maxMovementMagnitude,
         yVelocity * maxMovementMagnitude,
-        r_x * 360_deg / 1_s
-    });
+        rotationalVelocity * 360_deg / 1_s
+      });
+    }
+    else {  // Robot Relative Controls
+      _swerveDrivebase->SetVelocity(frc::ChassisSpeeds{
+          xVelocity * maxMovementMagnitude,
+          yVelocity * maxMovementMagnitude,
+          r_x * 360_deg / 1_s
+      });
+    }
   }
 } 
 void ManualDrivebase::CalculateRequestedAngle(double joystickX, double joystickY, units::degree_t defaultAngle){

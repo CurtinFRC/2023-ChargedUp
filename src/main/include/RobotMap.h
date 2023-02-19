@@ -1,7 +1,9 @@
 #pragma once
+
 #include "VoltageController.h"
 #include "Gyro.h"
 #include "Vision.h"
+#include "behaviour/VisionBehaviour.h"
 
 #include <ctre/phoenix/motorcontrol/can/WPI_TalonFX.h>
 #include <frc/Compressor.h>
@@ -17,8 +19,6 @@
 
 #include "Encoder.h"
 
-// #include "DriverController.h"
-
 #include <iostream>
 #include <string>
 
@@ -29,6 +29,7 @@ struct RobotMap {
     //sets driver station numbers for the controllers
     wom::PS4Controller driver{0};
     frc::XboxController codriver{1};
+    frc::XboxController tester{2};
   };
   Controllers controllers;
 
@@ -44,7 +45,6 @@ struct RobotMap {
 
   //stores nessesary info for swerve
   struct SwerveBase{
-    
     CANCoder frontLeftCancoder{19};
     CANCoder frontRightCancoder{17};
     CANCoder backLeftCancoder{16};
@@ -52,12 +52,13 @@ struct RobotMap {
 
     wom::NavX gyro;
     wpi::array<WPI_TalonFX*, 4> turnMotors{
-      new WPI_TalonFX(6), new WPI_TalonFX(4), new WPI_TalonFX(3), new WPI_TalonFX(1)
+      new WPI_TalonFX(1), new WPI_TalonFX(3), new WPI_TalonFX(7), new WPI_TalonFX(5)
     };
     wpi::array<WPI_TalonFX*, 4> driveMotors{
-      new WPI_TalonFX(7), new WPI_TalonFX(2), new WPI_TalonFX(8), new WPI_TalonFX(5)
-    };    
-    wpi::array<wom::SwerveModuleConfig, 4> moduleConfigs{ 
+      new WPI_TalonFX(2), new WPI_TalonFX(4), new WPI_TalonFX(8), new WPI_TalonFX(6)
+    };
+
+    wpi::array<wom::SwerveModuleConfig, 4> moduleConfigs{
       wom::SwerveModuleConfig{ // front left module
         frc::Translation2d(10.761_in, 9.455_in),
         wom::Gearbox{
@@ -67,8 +68,7 @@ struct RobotMap {
         },
         wom::Gearbox{
           new wom::MotorVoltageController(turnMotors[0]),
-          // new wom::TalonFXEncoder(turnMotors[0], 12.8),
-          new wom::CanEncoder(19, 4095, 10.8),
+          new wom::CanEncoder(19, 4096, 12.8),
           wom::DCMotor::Falcon500(1).WithReduction(12.8)
         },
         &frontLeftCancoder,
@@ -83,7 +83,7 @@ struct RobotMap {
         },
         wom::Gearbox{
           new wom::MotorVoltageController(turnMotors[1]),
-          new wom::CanEncoder(17, 4095, 10.8),
+          new wom::CanEncoder(17, 4096, 12.8),
           wom::DCMotor::Falcon500(1).WithReduction(12.8)
         },
         &frontRightCancoder,
@@ -98,7 +98,7 @@ struct RobotMap {
         },
         wom::Gearbox{
           new wom::MotorVoltageController(turnMotors[2]),
-          new wom::CanEncoder(18, 4095, 10.8),
+          new wom::CanEncoder(18, 4096, 12.8),
           wom::DCMotor::Falcon500(1).WithReduction(12.8)
         },
         &backRightCancoder,
@@ -113,7 +113,7 @@ struct RobotMap {
         },
         wom::Gearbox{
           new wom::MotorVoltageController(turnMotors[3]),
-          new wom::CanEncoder(16, 4095, 10.8),
+          new wom::CanEncoder(16, 4096, 12.8),
           wom::DCMotor::Falcon500(1).WithReduction(12.8)
         },
         &backLeftCancoder,
@@ -124,8 +124,8 @@ struct RobotMap {
     // Setting the PID path and values to be used for SwerveDrive and SwerveModules
     wom::SwerveModule::angle_pid_conf_t anglePID {
       "/drivetrain/pid/angle/config",
-      10.5_V / 180_deg,
-      0.75_V / (100_deg * 1_s),
+      11_V / 180_deg,
+      0.0_V / (100_deg * 1_s),
       0_V / (100_deg / 1_s),
       1_deg,
       0.5_deg / 1_s
@@ -214,9 +214,10 @@ struct RobotMap {
   };
 
   SwerveGridPoses swerveGridPoses;
-  
+
+
   struct SwerveTable {
     std::shared_ptr<nt::NetworkTable> swerveDriveTable = nt::NetworkTableInstance::GetDefault().GetTable("swerve");
-  };
-  SwerveTable swerveTable;
+  }; SwerveTable swerveTable;
+
 };

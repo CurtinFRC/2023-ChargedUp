@@ -33,7 +33,7 @@ void Arm::OnUpdate(units::second_t dt) {
     case ArmState::kAngle:
       {
         units::newton_meter_t torque = 9.81_m / 1_s / 1_s * _config.armLength * units::math::cos(angle + _config.angleOffset) * (0.5 * _config.armMass + _config.loadMass);
-        units::volt_t feedforward = _config.gearbox.motor.Voltage(torque, 0_rad/ 1_s);
+        units::volt_t feedforward = _config.leftGearbox.motor.Voltage(torque, 0_rad/ 1_s);
         voltage = _pid.Calculate(angle, dt, feedforward);
       }
       break;
@@ -49,7 +49,10 @@ void Arm::OnUpdate(units::second_t dt) {
   // ) {
   //   voltage = 0_V;
   // }
-  _config.gearbox.transmission->SetVoltage(voltage);
+  voltage *= 0.2;
+
+  _config.leftGearbox.transmission->SetVoltage(voltage);
+  _config.rightGearbox.transmission->SetVoltage(voltage);
 
   _table->GetEntry("angle").SetDouble(angle.convert<units::degree>().value());
   _config.WriteNT(_table->GetSubTable("config"));
@@ -74,11 +77,11 @@ ArmConfig &Arm::GetConfig() {
 }
 
 units::radian_t Arm::GetAngle() const {
-  return _config.gearbox.encoder->GetEncoderPosition();
+  return _config.leftGearbox.encoder->GetEncoderPosition();
 }
 
 units::radians_per_second_t Arm::MaxSpeed() const {
-  return _config.gearbox.motor.Speed(0_Nm, 12_V);
+  return _config.leftGearbox.motor.Speed(0_Nm, 12_V);
 }
 
 bool Arm::IsStable() const {

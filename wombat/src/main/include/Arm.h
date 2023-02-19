@@ -15,7 +15,8 @@ namespace wom {
   struct ArmConfig {
     std::string path;
 
-    wom::Gearbox gearbox;
+    wom::Gearbox leftGearbox;
+    wom::Gearbox rightGearbox;
     wom::PIDConfig<units::radian, units::volt> pidConfig;
 
     units::kilogram_t armMass;
