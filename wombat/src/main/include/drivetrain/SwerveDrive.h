@@ -17,6 +17,7 @@
 
 namespace wom {
   enum class SwerveModuleState {
+    kZeroing,
     kIdle, 
     kPID
   };
@@ -27,7 +28,7 @@ namespace wom {
     Gearbox driveMotor;
     Gearbox turnMotor;
 
-    // CANCoder *canEncoder;
+    CANCoder *canEncoder;
 
     units::meter_t wheelRadius;
 
@@ -43,9 +44,11 @@ namespace wom {
     void OnUpdate(units::second_t dt);
     void OnStart();
 
+    void SetZero(units::second_t dt);
     void SetIdle();
     void SetPID(units::radian_t angle, units::meters_per_second_t speed, units::second_t dt);
-  
+    void SetZero();  
+
     void SetAccelerationLimit(units::meters_per_second_squared_t limit);
 
 
@@ -101,7 +104,8 @@ namespace wom {
     kIndividualTuning,
     kTuning,
     kXWheels,
-    kModuleTurn
+    kModuleTurn,
+    kZeroing
   };
 
   struct FieldRelativeSpeeds {
@@ -135,6 +139,7 @@ namespace wom {
     bool IsAtSetPose();
     void SetIndividualTuning(int mod, units::radian_t angle, units::meters_per_second_t speed);
     void SetTuning(units::radian_t angle, units::meters_per_second_t speed);
+    void SetZero();
 
     void SetXWheelState();
 

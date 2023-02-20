@@ -77,10 +77,11 @@ struct RobotMap {
         },
         wom::Gearbox{
           new wom::MotorVoltageController(turnMotors[0]),
-          new wom::TalonFXEncoder(turnMotors[0], 12.8),
+          // new wom::TalonFXEncoder(turnMotors[0], 12.8),
+          new wom::CanEncoder(19, 4096, 12.8),
           wom::DCMotor::Falcon500(1).WithReduction(12.8)
         },
-        // &frontLeftCancoder,
+        &frontLeftCancoder,
         4_in / 2
       },
       wom::SwerveModuleConfig{ // dimensions are assuming perfect square robot 1m^2 area
@@ -92,10 +93,11 @@ struct RobotMap {
         },
         wom::Gearbox{
           new wom::MotorVoltageController(turnMotors[1]),
-          new wom::TalonFXEncoder(turnMotors[1], 12.8),
+          // new wom::TalonFXEncoder(turnMotors[1], 12.8),
+          new wom::CanEncoder(17, 4096, 12.8),
           wom::DCMotor::Falcon500(1).WithReduction(12.8)
         },
-        // &frontRightCancoder,
+        &frontRightCancoder,
         4_in / 2
       },
       wom::SwerveModuleConfig{ // dimensions are assuming perfect square robot 1m^2 area
@@ -107,10 +109,11 @@ struct RobotMap {
         },
         wom::Gearbox{
           new wom::MotorVoltageController(turnMotors[2]),
-          new wom::TalonFXEncoder(turnMotors[2], 12.8),
+          // new wom::TalonFXEncoder(turnMotors[2], 12.8),
+          new wom::CanEncoder(16, 4096, 12.8),
           wom::DCMotor::Falcon500(1).WithReduction(12.8)
         },
-        // &backRightCancoder,
+        &backRightCancoder,
         4_in / 2
       },
       wom::SwerveModuleConfig{ // dimensions are assuming perfect square robot 1m^2 area
@@ -122,10 +125,11 @@ struct RobotMap {
         },
         wom::Gearbox{
           new wom::MotorVoltageController(turnMotors[3]),
-          new wom::TalonFXEncoder(turnMotors[3], 12.8),
+          // new wom::TalonFXEncoder(turnMotors[3], 12.8),
+          new wom::CanEncoder(18, 4096, 12.8),
           wom::DCMotor::Falcon500(1).WithReduction(12.8)
         },
-        // &backLeftCancoder,
+        &backLeftCancoder,
         4_in / 2
       },
     };

@@ -19,26 +19,43 @@ void ManualDrivebase::OnStart() {
 }
 
 void ManualDrivebase::OnTick(units::second_t deltaTime) {
-  double l_x = wom::spow2(-wom::deadzone(_driverController->GetLeftY(), driverDeadzone));  // GetLeftY due to x being where y should be on field
-  double l_y = wom::spow2(-wom::deadzone(_driverController->GetLeftX(), driverDeadzone));
-  double r_x = wom::spow2(-wom::deadzone(_driverController->GetRightX(), turningDeadzone));
+  // _swerveDrivebase->SetZero();
+if (_driverController->GetAButtonReleased()) {
+    if (isZero) {
+      isZero = false;
+    } else {
+      isZero = true;
+    }
+  } 
 
-  if (_driverController->GetYButtonPressed()) {  isFieldOrientated = !isFieldOrientated;  }
+  if (isZero) {
+    _swerveDrivebase->SetZero();
+  } else {
+    double l_x = wom::spow2(-wom::deadzone(_driverController->GetLeftY(), 0.15));  // GetLeftY due to x being where y should be on field
+    double l_y = wom::spow2(-wom::deadzone(_driverController->GetLeftX(), 0.3));
+    double r_x = wom::spow2(-wom::deadzone(_driverController->GetRightX(), 0.15));
 
-  if (isFieldOrientated) {  // Field Relative Controls
-    _swerveDrivebase->SetFieldRelativeVelocity(wom::FieldRelativeSpeeds{
-        l_x * maxMovementMagnitude,
-        l_y * maxMovementMagnitude,
-        r_x * 360_deg / 1_s
-    });
-  } else {  // Robot Relative Controls
-    _swerveDrivebase->SetVelocity(frc::ChassisSpeeds{
-        l_x * maxMovementMagnitude,
-        l_y * maxMovementMagnitude,
-        r_x * 360_deg / 1_s
-    });
+    if (_driverController->GetYButtonPressed()) {  isFieldOrientated = !isFieldOrientated;  }
+
+    // std::cout << "X value: " << l_x << "Y value: " << l_y << std::endl;
+
+    if (isFieldOrientated) {  // Field Relative Controls
+      _swerveDrivebase->SetFieldRelativeVelocity(wom::FieldRelativeSpeeds{
+          l_x * maxMovementMagnitude,
+          l_y * maxMovementMagnitude,
+          // 0_ft / 1_s,
+          r_x * 360_deg / 1_s
+      });
+    } else {  // Robot Relative Controls
+      _swerveDrivebase->SetVelocity(frc::ChassisSpeeds{
+          l_x * maxMovementMagnitude,
+          l_y * maxMovementMagnitude,
+          // 0_ft / 1_s,
+          r_x * 360_deg / 1_s
+      });
+    }
+    _swerveDriveTable->GetEntry("isFieldOrientated").SetBoolean(isFieldOrientated);
   }
-  _swerveDriveTable->GetEntry("isFieldOrientated").SetBoolean(isFieldOrientated);
 }
 
 DrivebasePoseBehaviour::DrivebasePoseBehaviour(
