@@ -214,16 +214,15 @@ void ArmavatorManualBehaviour::OnTick(units::second_t dt) {
     );
   } else {
     if (wom::deadzone(_codriver.GetLeftY())) {
-      _manualSetpoint.angle += (_codriver.GetLeftY() * 1_deg);
+      _manualSetpoint.angle += (_codriver.GetLeftY() * 1_deg * 0.1);
     }
 
     if (wom::deadzone(_codriver.GetRightY())) {
-      _manualSetpoint.height += (_codriver.GetRightY() * 1_m);
+      _manualSetpoint.height += (_codriver.GetRightY() * 1_m * 0.1);
     }
 
     std::cout << _manualSetpoint.angle.convert<units::degree>().value() << std::endl;
     std::cout << _manualSetpoint.height.convert<units::meter>().value() << std::endl;
-    // _manualSetpoint.height = startHeight;
 
     _armavator->SetPosition(_manualSetpoint);
   }

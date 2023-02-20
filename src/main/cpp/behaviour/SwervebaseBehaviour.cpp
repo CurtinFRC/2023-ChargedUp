@@ -39,7 +39,7 @@ void ManualDrivebase::OnTick(units::second_t deltaTime) {
     });
   }
   _swerveDriveTable->GetEntry("isFieldOrientated").SetBoolean(isFieldOrientated);
-  }
+}
 
 DrivebasePoseBehaviour::DrivebasePoseBehaviour(
     wom::SwerveDrive *swerveDrivebase, frc::Pose2d pose, bool hold)

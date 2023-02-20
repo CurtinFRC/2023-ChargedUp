@@ -27,6 +27,8 @@ namespace wom {
     Gearbox driveMotor;
     Gearbox turnMotor;
 
+    // CANCoder *canEncoder;
+
     units::meter_t wheelRadius;
 
     void WriteNT(std::shared_ptr<nt::NetworkTable> table) const;

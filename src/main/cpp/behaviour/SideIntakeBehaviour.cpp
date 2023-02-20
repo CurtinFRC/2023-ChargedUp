@@ -9,15 +9,7 @@ SideIntakeBehaviour::SideIntakeBehaviour(SideIntake *sideIntake, frc::XboxContro
 void SideIntakeBehaviour::OnStart() {}
 
 void SideIntakeBehaviour::OnTick(units::second_t dt) {
-  if (_codriver.GetLeftTriggerAxis() > 0.05) {
-    _intakeSpeed = _codriver.GetLeftTriggerAxis();
-  } else if (_codriver.GetRightTriggerAxis() > 0.05){
-    _intakeSpeed = _codriver.GetRightTriggerAxis() * -1;
-  } else {
-    _intakeSpeed = 0;
-  }
-
-  if (_codriver.GetAButtonReleased()) {
+  if (_codriver.GetBButtonPressed()) {
     if (_intakeReleased) {
       _intakeReleased = false;
     } else {
@@ -25,7 +17,7 @@ void SideIntakeBehaviour::OnTick(units::second_t dt) {
     }
   }
 
-  if (_codriver.GetXButtonReleased()) {
+  if (_codriver.GetXButtonPressed()) {
     if (_intakeGrapper) {
       _intakeGrapper = false;
     } else {
@@ -34,24 +26,24 @@ void SideIntakeBehaviour::OnTick(units::second_t dt) {
   }
 
   if (_intakeReleased) {
-    if (_intakeGrapper) {
-      if (_intakeSpeed > 0.05) {
-        sideIntake->SetIntakingWide();
-      } else if (_intakeSpeed < -0.05) {
-        sideIntake->SetOutakingWide();
-      } else {
-        sideIntake->SetWide();
-      }
-    } else {
-      if (_intakeSpeed > 0.05) {
-        sideIntake->SetIntakingClosed();
-      } else if (_intakeSpeed < -0.05) {
-        sideIntake->SetOutakingClosed();
-      } else {
-        sideIntake->SetClosed();
-      }
-    }
+    sideIntake->SetStow();
   } else {
-    sideIntake->SetStowed();
+    sideIntake->SetDeploy();
+  }
+
+  if (_intakeGrapper) {
+    sideIntake->SetClose();
+  } else {
+    sideIntake->SetOpen();
+  }
+
+  // std::cout << sideIntake->GetState() << std::endl;
+
+  if (wom::deadzone(_codriver.GetRightTriggerAxis())) {
+    sideIntake->SetVoltage(_codriver.GetRightTriggerAxis() * 10_V);
+  } else if (wom::deadzone(_codriver.GetLeftTriggerAxis())) {
+    sideIntake->SetVoltage(_codriver.GetLeftTriggerAxis() * -10_V);
+  } else {
+    sideIntake->SetVoltage(0_V);
   }
 }

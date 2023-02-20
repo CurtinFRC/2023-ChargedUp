@@ -1,8 +1,8 @@
 #include "Armavator.h"
 
 //Armavator configeration
-Armavator::Armavator(wom::Gearbox &armGearbox, wom::Gearbox &elevatorGearbox, ArmavatorConfig &config)
-: _armGearbox(armGearbox), _elevatorGearbox(elevatorGearbox), _config(config) {
+Armavator::Armavator(wom::Gearbox &leftArmGearbox, wom::Gearbox &rightArmGearbox , wom::Gearbox &rightElevatorGearbox ,wom::Gearbox &leftElevatorGearbox, ArmavatorConfig &config)
+: _leftArmGearbox(leftArmGearbox), _rightArmGearbox(rightArmGearbox), _rightElevatorGearbox(rightElevatorGearbox), _leftElevatorGearbox(leftElevatorGearbox),_config(config) {
   arm = new wom::Arm(config.arm);
   elevator = new wom::Elevator(config.elevator);
 }
@@ -10,6 +10,14 @@ Armavator::Armavator(wom::Gearbox &armGearbox, wom::Gearbox &elevatorGearbox, Ar
 Armavator::~Armavator() {
   free(arm);
   free(elevator);
+}
+
+void Armavator::OnStart() {
+  _config.elevator.leftGearbox.encoder->ZeroEncoder();
+  _config.elevator.rightGearbox.encoder->ZeroEncoder();
+
+  _config.arm.leftGearbox.encoder->SetEncoderPosition(90_deg);
+  _config.arm.rightGearbox.encoder->SetEncoderPosition(90_deg);
 }
 
 //Instructions for when the program updates (seconds delta time)

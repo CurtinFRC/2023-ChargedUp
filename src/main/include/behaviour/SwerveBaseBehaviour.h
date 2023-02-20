@@ -6,10 +6,7 @@
 #include <frc/XboxController.h>
 #include <networktables/NetworkTableInstance.h>
 #include "PID.h"
-
 #include <vector>
-
-// ArmavatorPosition Armavator::GetCurrentPosition()
 
 class ManualDrivebase : public behaviour::Behaviour{
  public:

@@ -26,7 +26,8 @@ namespace wom {
   //creates infromation that is used in the config
   struct ElevatorConfig {
     std::string path;
-    wom::Gearbox gearbox;
+    wom::Gearbox leftGearbox;
+    wom::Gearbox rightGearbox;
     frc::DigitalInput *topSensor;
     frc::DigitalInput *bottomSensor;
     units::meter_t radius;
