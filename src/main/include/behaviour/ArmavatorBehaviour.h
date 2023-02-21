@@ -76,5 +76,5 @@ class ArmavatorManualBehaviour : public behaviour::Behaviour {
 
   units::meter_t startHeight; 
 
-  bool rawControl = false;
+  bool rawControl = true;
 };

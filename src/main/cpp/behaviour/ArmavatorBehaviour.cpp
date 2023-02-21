@@ -193,37 +193,50 @@ ArmavatorManualBehaviour::ArmavatorManualBehaviour(Armavator *armavator, frc::Xb
 }
 
 void ArmavatorManualBehaviour::OnStart() {
-  startHeight = _armavator->GetCurrentPosition().height;
-  _manualSetpoint = _armavator->GetCurrentPosition();
+  // startHeight = _armavator->GetCurrentPosition().height;
+  // _manualSetpoint = _armavator->GetCurrentPosition();
+
+  // startHeight = 0_m;
+  // std::cout << "AHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH"<< std::endl;
+  _manualSetpoint = {0_m, 90_deg};
+  // _manualSetpoint = {_armavator->elevator->GetConfig().leftGearbox.encoder->GetEncoderPosition() * _armavator->elevator->GetConfig().radius, _armavator->arm->GetConfig().leftGearbox.encoder->GetEncoderPosition()};
 }
+
+// _config.radius
 
 void ArmavatorManualBehaviour::OnTick(units::second_t dt) {
 
-  if (_codriver.GetBButtonReleased()) {
+  if (_codriver.GetAButtonPressed()) {
     if (rawControl) {
       rawControl = false;
     } else {
       rawControl = true;
     }
   }
- 
+
   if (rawControl) {
-    _armavator->SetManual(
-      -_codriver.GetLeftY() * 9_V,
-      -_codriver.GetRightY() * 9_V
-    );
+    double armPower = wom::deadzone(_codriver.GetLeftY());
+    double elePower = wom::deadzone(_codriver.GetRightY());
+    _armavator->SetManual(armPower * 11_V, elePower * 8_V);
+
   } else {
     if (wom::deadzone(_codriver.GetLeftY())) {
-      _manualSetpoint.angle += (_codriver.GetLeftY() * 1_deg * 0.1);
+      _manualSetpoint.angle -= (_codriver.GetLeftY() * 1_deg * 0.4);
     }
 
     if (wom::deadzone(_codriver.GetRightY())) {
-      _manualSetpoint.height += (_codriver.GetRightY() * 1_m * 0.1);
+      _manualSetpoint.height -= (_codriver.GetRightY() * 1_m * 0.4);
     }
 
-    std::cout << _manualSetpoint.angle.convert<units::degree>().value() << std::endl;
-    std::cout << _manualSetpoint.height.convert<units::meter>().value() << std::endl;
-
+    _manualSetpoint = {0_m, 90_deg};
     _armavator->SetPosition(_manualSetpoint);
+    // _armavator->SetPosition(_manualSetpoint);
   }
+
+
+  // std::cout << "arm angle setpoint: " <<_manualSetpoint.angle.convert<units::degree>().value() << std::endl;
+  // std::cout << "elevator height setpoint: " << _manualSetpoint.height.convert<units::meter>().value() << std::endl;
+  // units::radian_t armPos = _armavator->arm->GetConfig().leftGearbox.encoder->GetEncoderPosition(); 
+  // std::cout << "arm pos: " << armPos.value() << std::endl;
+  // std::cout << "elevator pos: " << _armavator->elevator->GetConfig().leftGearbox.encoder->GetEncoderPosition().value() << std::endl;
 }

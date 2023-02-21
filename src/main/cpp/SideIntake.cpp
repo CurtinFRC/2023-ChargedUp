@@ -8,6 +8,57 @@ SideIntake::SideIntake(SideIntakeConfig config) : _config(config) {}
 void SideIntake::OnUpdate(units::second_t dt) {
   units::volt_t voltage = 0_V;
 
+  // switch (_state) {
+  // case SideIntakeState::kIdle:
+  //   voltage = 0_V;
+  //   break;
+
+  // case SideIntakeState::kStowed:
+  //   _config.claspSolenoid->Set(frc::DoubleSolenoid::Value::kReverse);
+  //   _config.deploySolenoid->Set(frc::DoubleSolenoid::Value::kReverse);
+  //   voltage = 0_V;
+  //   break;
+
+  // case SideIntakeState::kIntakingWide:
+  //   _config.claspSolenoid->Set(frc::DoubleSolenoid::Value::kForward);
+  //   _config.deploySolenoid->Set(frc::DoubleSolenoid::Value::kReverse);
+
+  //   voltage = 10_V;
+  //   break;
+
+  // case SideIntakeState::kOuttakingWide:
+  //   _config.claspSolenoid->Set(frc::DoubleSolenoid::Value::kForward);
+  //   _config.deploySolenoid->Set(frc::DoubleSolenoid::Value::kReverse);
+
+  //   voltage = -10_V;
+  //   break;
+
+  // case SideIntakeState::kIntakingClosed:
+  //   _config.claspSolenoid->Set(frc::DoubleSolenoid::Value::kForward);
+  //   _config.deploySolenoid->Set(frc::DoubleSolenoid::Value::kForward);
+
+  //   voltage = 10_V;
+  //   break;
+
+  // case SideIntakeState::kOutakingClosed:
+  //   _config.claspSolenoid->Set(frc::DoubleSolenoid::Value::kForward);
+  //   _config.deploySolenoid->Set(frc::DoubleSolenoid::Value::kForward);
+
+  //   voltage = -10_V;
+  //   break;
+
+  // case SideIntakeState::kWide:
+  //   _config.claspSolenoid->Set(frc::DoubleSolenoid::Value::kForward);
+  //   _config.deploySolenoid->Set(frc::DoubleSolenoid::Value::kReverse);
+  //   voltage = 0_V;
+  //   break;
+  // case SideIntakeState::kClosed:
+  //   _config.claspSolenoid->Set(frc::DoubleSolenoid::Value::kForward);
+  //   _config.deploySolenoid->Set(frc::DoubleSolenoid::Value::kForward);
+  //   voltage = 0_V;
+  //   break;
+  // }
+
   switch (_actuationState) {
     case IntakeActuationState::kDeployed:
       _config.deploySolenoid->Set(frc::DoubleSolenoid::Value::kReverse);
