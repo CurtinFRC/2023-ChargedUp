@@ -277,6 +277,8 @@ struct RobotMap {
       wom::CANSparkMaxEncoder leftEncoder{&leftElevatorMotor, 14/60};
       wom::CANSparkMaxEncoder rightEncoder{&rightElevatorMotor, 14/60};
 
+      // rev::SparkMaxRelativeEncoder m_encoder = leftElevatorMotor.GetEncoder();
+
       //creates an instance of the gearbox used for the elevator
       wom::Gearbox leftGearbox {
         &leftMotorGroup,
