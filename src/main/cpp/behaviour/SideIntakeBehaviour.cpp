@@ -25,7 +25,7 @@ void SideIntakeBehaviour::OnTick(units::second_t dt) {
     }
   }
 
-  if (_codriver.GetXButtonPressed()) {
+  if (_codriver.GetLeftBumperPressed()) {
     if (_intakeGrapper) {
       _intakeGrapper = false;
     } else {
@@ -47,10 +47,10 @@ void SideIntakeBehaviour::OnTick(units::second_t dt) {
 
   // std::cout << sideIntake->GetState() << std::endl;
 
-  if (wom::deadzone(_codriver.GetRightTriggerAxis())) {
-    sideIntake->SetVoltage(_codriver.GetRightTriggerAxis() * 10_V);
+  if (wom::deadzone(_codriver.GetXButton())) {
+    sideIntake->SetVoltage(1 * -10_V);
   } else if (wom::deadzone(_codriver.GetLeftTriggerAxis())) {
-    sideIntake->SetVoltage(_codriver.GetLeftTriggerAxis() * -10_V);
+    sideIntake->SetVoltage(_codriver.GetLeftTriggerAxis() * 10_V);
   } else {
     sideIntake->SetVoltage(0_V);
   }
