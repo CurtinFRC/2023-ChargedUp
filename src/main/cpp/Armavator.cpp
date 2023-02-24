@@ -16,12 +16,14 @@ void Armavator::OnStart() {
   _config.elevator.leftGearbox.encoder->ZeroEncoder();
   _config.elevator.rightGearbox.encoder->ZeroEncoder();
 
-  _config.arm.leftGearbox.encoder->SetEncoderPosition(90_deg);
-  _config.arm.rightGearbox.encoder->SetEncoderPosition(90_deg);
+  _config.arm.leftGearbox.encoder->SetEncoderPosition(350_deg);
+  _config.arm.rightGearbox.encoder->SetEncoderPosition(350_deg);
+  std::cout << "STARTING" << std::endl;
 }
 
 //Instructions for when the program updates (seconds delta time)
 void Armavator::OnUpdate(units::second_t dt) {
+  std::cout << "ON UPDATE" << std::endl;
   units::volt_t voltage{0};
 
   switch(_state) {

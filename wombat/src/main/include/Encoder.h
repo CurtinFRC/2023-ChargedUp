@@ -28,12 +28,13 @@ namespace wom {
     void SetReduction(double reduction);
 
     units::radian_t GetEncoderPosition();
+    double GetEncoderDistance();
     units::radians_per_second_t GetEncoderAngularVelocity();   // rad/s
 
     virtual std::shared_ptr<sim::SimCapableEncoder> MakeSimEncoder() = 0;
+    double _reduction = 1.0;
    private:
     double _encoderTicksPerRotation;
-    double _reduction = 1.0;
     units::radian_t _offset = 0_rad;
     int _type = 0;
   };

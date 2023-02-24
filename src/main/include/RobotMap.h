@@ -212,8 +212,8 @@ struct RobotMap {
     //stores nessesary info for arm
     struct Arm {
       //creates the motor used for the arm as well as the port it is plugged in
-      rev::CANSparkMax leftArmMotor{11, rev::CANSparkMax::MotorType::kBrushless};
-      rev::CANSparkMax rightArmMotor{12, rev::CANSparkMax::MotorType::kBrushless};
+      rev::CANSparkMax leftArmMotor{11, rev::CANSparkMax::MotorType::kBrushless}; //11
+      rev::CANSparkMax rightArmMotor{12, rev::CANSparkMax::MotorType::kBrushless}; //12
 
       //create the motor group used for the arm
       wom::MotorVoltageController leftMotorGroup = wom::MotorVoltageController::Group(leftArmMotor);
@@ -221,8 +221,8 @@ struct RobotMap {
       
       // wom::DigitalEncoder encoder{0, 1, 2048};
       //sets the type sof encoder that is used up
-      wom::CANSparkMaxEncoder leftEncoder{&leftArmMotor};
-      wom::CANSparkMaxEncoder rightEncoder{&rightArmMotor};
+      wom::CANSparkMaxEncoder leftEncoder{&leftArmMotor, 100};
+      wom::CANSparkMaxEncoder rightEncoder{&rightArmMotor, 100};
 
       //creates an instance of the arm gearbox
       wom::Gearbox leftGearbox {
@@ -264,31 +264,30 @@ struct RobotMap {
     };
     Arm arm;
 
-    ////stores nessesary info for elevator
     struct Elevator {
       //creates instances of the motors used for the elevator as well as what ports they are plugged in to
-      rev::CANSparkMax leftElevatorMotor{9, rev::CANSparkMax::MotorType::kBrushless};
-      rev::CANSparkMax rightElevatorMotor{10, rev::CANSparkMax::MotorType::kBrushless};
+      rev::CANSparkMax leftElevatorMotor{9, rev::CANSparkMax::MotorType::kBrushless}; //9
+      rev::CANSparkMax rightElevatorMotor{10, rev::CANSparkMax::MotorType::kBrushless}; //10
 
       //creates the motor group that can be used to set voltage
       wom::MotorVoltageController leftMotorGroup = wom::MotorVoltageController::Group(leftElevatorMotor);
       wom::MotorVoltageController rightMotorGroup = wom::MotorVoltageController::Group(rightElevatorMotor);
 
       //creates an instance of the encoder that will be used for the elevator
-      wom::CANSparkMaxEncoder leftEncoder{&leftElevatorMotor};
-      wom::CANSparkMaxEncoder rightEncoder{&rightElevatorMotor};
+      wom::CANSparkMaxEncoder leftEncoder{&leftElevatorMotor, 14/60};
+      wom::CANSparkMaxEncoder rightEncoder{&rightElevatorMotor, 14/60};
 
       //creates an instance of the gearbox used for the elevator
       wom::Gearbox leftGearbox {
         &leftMotorGroup,
         &leftEncoder,
-        wom::DCMotor::NEO(1).WithReduction(10)
+        wom::DCMotor::NEO(1).WithReduction(14/60)
       };
 
       wom::Gearbox rightGearbox {
         &rightMotorGroup,
         &rightEncoder,
-        wom::DCMotor::NEO(1).WithReduction(10)
+        wom::DCMotor::NEO(1).WithReduction(14/60)
       };
 
       //creates the elevator config information to use
@@ -298,15 +297,15 @@ struct RobotMap {
         rightGearbox,
         nullptr,
         nullptr,
-        65_mm / 2,
+        48.26_mm / 2,
         armMass + loadMass + carriageMass,
-        1.33_m,
-        0.28_m,
-        0.28_m, // an obvious way to say: CHANGE THIS
+        1_m,
+        0_m,
+        0_m,
         {
           //creates the pid for the elevator to remove error
           "/armavator/elevator/pid/config",
-          4_V / 1_m
+          2_V / 1_m
         }
       };
 

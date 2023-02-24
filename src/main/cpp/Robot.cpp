@@ -134,7 +134,9 @@ void Robot::TeleopInit() {
 }
 
 void Robot::TeleopPeriodic() {
-  if (map.controllers.driver.GetXButtonPressed()) {
+  // std::cout << "Elevator reading: " << map.armavator.arm.leftEncoder
+
+  if (map.controllers.driver.GetXButtonReleased()) {
     if (compressorToggle) {
       compressorToggle = false;
     } else {
@@ -144,8 +146,10 @@ void Robot::TeleopPeriodic() {
 
   if (compressorToggle) {
     map.controlSystem.pcmCompressor.EnableDigital();
+      std::cout << "compressor true" << std::endl;
   } else {
     map.controlSystem.pcmCompressor.Disable();
+      std::cout << "compressor false" << std::endl;
   }
 
   map.armTable.armManualTable->GetEntry("armSetpoint").SetDouble(_armSetpoint.convert<units::degree>().value());
@@ -159,3 +163,5 @@ void Robot::DisabledPeriodic() {}
 
 void Robot::TestInit() { }
 void Robot::TestPeriodic() { }
+
+
