@@ -21,9 +21,8 @@ SwerveModule::SwerveModule(std::string path, SwerveModuleConfig config, SwerveMo
   _anglePIDController.SetWrap(360_deg);
 }
 
-
-void SwerveModule::OnStart(double offset, units::second_t dt) {
-  _offset = offset;
+void SwerveModule::OnStart() {
+  //_offset = offset;
   _anglePIDController.Reset();
   _velocityPIDController.Reset();
 }
@@ -33,11 +32,6 @@ void SwerveModule::OnUpdate(units::second_t dt) {
   units::volt_t turnVoltage{0};
 
   switch(_state) {
-    case SwerveModuleState::kZeroing:
-    {
-
-    }
-      break;
     case SwerveModuleState::kIdle:
       driveVoltage = 0_V;
       turnVoltage = 0_V;
@@ -68,9 +62,9 @@ void SwerveModule::OnUpdate(units::second_t dt) {
   _config.WriteNT(_table->GetSubTable("config"));
 }
 
-double SwerveModule::GetCancoderPosition() {
-  return (_config.turnMotor.encoder->GetEncoderPosition().value());
-}
+// double SwerveModule::GetCancoderPosition() {
+//   return (_config.turnMotor.encoder->GetEncoderPosition().value());
+// }
 
 void SwerveModule::SetAccelerationLimit(units::meters_per_second_squared_t limit){
   _currentAccelerationLimit = limit;
@@ -86,15 +80,13 @@ void SwerveModule::SetIdle() {
   _state = SwerveModuleState::kIdle;
 }
 
-void SwerveModule::SetZeroing(units::second_t dt) {
+void SwerveModule::SetZero(units::second_t dt) {
   SetPID(0_rad, 0_mps, dt);
   _state = SwerveModuleState::kPID;
 }
 
 void SwerveModule::SetPID(units::radian_t angle, units::meters_per_second_t speed, units::second_t dt) {
   _state = SwerveModuleState::kPID;
-
-
   // @liam start added
   double diff = std::fmod((_anglePIDController.GetSetpoint() - angle).convert<units::degree>().value(), 360);
   if (std::abs(diff) >= 90) {
@@ -179,9 +171,9 @@ frc::ChassisSpeeds FieldRelativeSpeeds::ToChassisSpeeds(const units::radian_t ro
 
 void SwerveDrive::OnUpdate(units::second_t dt) {
   switch (_state) {
-    case SwerveDriveState::kZeroing: 
+    case SwerveDriveState::kZeroing:
       for (auto mod = _modules.begin(); mod < _modules.end(); mod++) {
-        mod->SetZeroing(dt);
+        mod->SetZero(dt);
       }
       break;
     case SwerveDriveState::kIdle:
@@ -198,12 +190,14 @@ void SwerveDrive::OnUpdate(units::second_t dt) {
       [[fallthrough]];
     case SwerveDriveState::kFieldRelativeVelocity:
       _target_speed = _target_fr_speeds.ToChassisSpeeds(GetPose().Rotation().Radians());
+      // std::cout << "vx = " << _target_speed.vx.value() << " vy = " << _target_fr_speeds.vy.value() << std::endl;
       [[fallthrough]];
     case SwerveDriveState::kVelocity:
       {
         auto target_states = _kinematics.ToSwerveModuleStates(_target_speed);
         for (size_t i = 0; i < _modules.size(); i++) {
           _modules[i].SetPID(target_states[i].angle.Radians(), target_states[i].speed, dt);
+          // std::cout << "module " << i << ": " << target_states[i].angle.Radians().value() << std::endl;
         }
       }
       break;
@@ -258,20 +252,20 @@ void SwerveDrive::SetZeroing() {
   _state = SwerveDriveState::kZeroing;
 }
 
-double SwerveDrive::GetModuleCANPosition(int mod) {
-  return _modules[mod].GetCancoderPosition();
-}
+// double SwerveDrive::GetModuleCANPosition(int mod) {
+//   return _modules[mod].GetCancoderPosition();
+// }
 
 
-void SwerveDrive::OnStart(units::second_t dt) {
+void SwerveDrive::OnStart() {
   _xPIDController.Reset();
   _yPIDController.Reset();
   _anglePIDController.Reset();
 
-  _modules[0].OnStart(frontLeftEncoderOffset, dt); //front left
-  _modules[1].OnStart(frontRightEncoderOffset, dt); //front right
-  _modules[2].OnStart(backRightEncoderOffset, dt); //back right 
-  _modules[3].OnStart(backLeftEncoderOffset, dt); //back left
+  _modules[0].OnStart(); //front left
+  _modules[1].OnStart(); //front right
+  _modules[2].OnStart(); //back right 
+  _modules[3].OnStart(); //back left
 
 }
 
@@ -304,7 +298,6 @@ void SwerveDrive::SetIndividualTuning(int mod, units::radian_t angle, units::met
 }
 
 void SwerveDrive::SetTuning(units::radian_t angle, units::meters_per_second_t speed) {
-  
   _angle = angle;
   _speed = speed;
   _state = SwerveDriveState::kTuning;
@@ -343,6 +336,10 @@ frc::Pose2d SwerveDrive::GetPose() {
 
 void SwerveDrive::AddVisionMeasurement(frc::Pose2d pose, units::second_t timestamp) {
   _poseEstimator.AddVisionMeasurement(pose, timestamp);
+}
+
+void SwerveDrive::SetZero() {
+  _state = SwerveDriveState::kZeroing;
 }
 
 /* SIMULATION */

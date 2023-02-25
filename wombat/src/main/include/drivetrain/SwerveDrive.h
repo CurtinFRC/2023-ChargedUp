@@ -42,7 +42,7 @@ namespace wom {
 
     SwerveModule(std::string path, SwerveModuleConfig config, angle_pid_conf_t anglePID, velocity_pid_conf_t velocityPID);
     void OnUpdate(units::second_t dt);
-    void OnStart(double offset, units::second_t dt);
+    void OnStart();
 
     /**
      * @brief This function acts to aid the robot matching the joystick's angle
@@ -51,11 +51,14 @@ namespace wom {
     */
     void ModuleVectorHandler(frc::ChassisSpeeds speeds);
 
+    void SetZero(units::second_t dt);
     void SetIdle();
     void SetPID(units::radian_t angle, units::meters_per_second_t speed, units::second_t dt);
-    void SetZeroing(units::second_t dt);
+    void SetZero();  
 
-    double GetCancoderPosition();
+
+    //double GetCancoderPosition(); // from liam's
+
 
     void SetAccelerationLimit(units::meters_per_second_squared_t limit);
 
@@ -118,6 +121,7 @@ namespace wom {
     kIndividualTuning,
     kTuning,
     kXWheels,
+    kModuleTurn,
     kFRVelocityRotationLock
   };
 
@@ -143,7 +147,7 @@ namespace wom {
     SwerveDrive(SwerveDriveConfig config, frc::Pose2d initialPose);
 
     void OnUpdate(units::second_t dt);
-    void OnStart(units::second_t dt);
+    void OnStart();
 
     /**
      * @brief This function switches the state to handle the robot's rotation matching that of the joystick
@@ -159,8 +163,9 @@ namespace wom {
     bool IsAtSetPose();
     void SetIndividualTuning(int mod, units::radian_t angle, units::meters_per_second_t speed);
     void SetTuning(units::radian_t angle, units::meters_per_second_t speed);
+    void SetZero();
 
-    double GetModuleCANPosition(int mod);
+    // double GetModuleCANPosition(int mod);  // from liam's
 
     void SetXWheelState();
 

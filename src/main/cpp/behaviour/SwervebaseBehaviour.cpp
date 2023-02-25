@@ -20,7 +20,7 @@ ManualDrivebase::ManualDrivebase(wom::SwerveDrive *swerveDrivebase, wom::Control
 }
 
 void ManualDrivebase::OnStart(units::second_t dt) {
-  _swerveDrivebase->OnStart(dt);
+  _swerveDrivebase->OnStart();
   _swerveDrivebase->SetAccelerationLimit(6_mps_sq);
   std::cout << "Manual Drivebase Start" << std::endl;
 }

@@ -16,7 +16,7 @@ Elevator::Elevator(ElevatorConfig config)
   : _config(config), _state(ElevatorState::kIdle),
   _pid{config.path + "/pid", config.pid},
   _table(nt::NetworkTableInstance::GetDefault().GetTable(config.path)) {
-  _config.leftGearbox.encoder->SetEncoderPosition(_config.initialHeight / _config.radius * 1_rad);
+  // _config.leftGearbox.encoder->SetEncoderPosition(_config.initialHeight / _config.radius * 1_rad);
 }
 
 
@@ -41,21 +41,21 @@ void Elevator::OnUpdate(units::second_t dt) {
     break;
   }
 
-  // Top sensor detector
-  if(_config.topSensor != nullptr) {
-    if(_config.topSensor->Get()) {
-      _config.leftGearbox.encoder->SetEncoderPosition(_config.maxHeight / _config.radius * 1_rad);
-      //voltage = 0_V;
-    }
-  }
+  // Top Sensor Detector
+  // if(_config.topSensor != nullptr) {
+  //   if(_config.topSensor->Get()) {
+  //     _config.leftGearbox.encoder->SetEncoderPosition(_config.maxHeight / _config.radius * 1_rad);
+  //     //voltage = 0_V;
+  //   }
+  // }
 
-  //Bottom Sensor Detection
-  if (_config.bottomSensor != nullptr) {
-    if (_config.bottomSensor->Get()) {
-      _config.leftGearbox.encoder->SetEncoderPosition(_config.minHeight / _config.radius * 1_rad);
-      //voltage = 0_V;
-    }
-  }
+  // //Bottom Sensor Detection
+  // if (_config.bottomSensor != nullptr) {
+  //   if (_config.bottomSensor->Get()) {
+  //     _config.leftGearbox.encoder->SetEncoderPosition(_config.minHeight / _config.radius * 1_rad);
+  //     //voltage = 0_V;
+  //   }
+  // }
 
   // Set voltage to motors...
   voltage *= 0.5;
@@ -89,7 +89,8 @@ ElevatorState Elevator::GetState() const {
 }
 
 units::meter_t Elevator::GetHeight() const {
-  return _config.leftGearbox.encoder->GetEncoderPosition().value() * _config.radius;
+  std::cout << "elevator position"<< _config.rightGearbox.encoder->GetEncoderTicks() << std::endl;
+  return _config.rightGearbox.encoder->GetEncoderDistance() * 1_m;
 }
 
 units::meters_per_second_t Elevator::MaxSpeed() const {

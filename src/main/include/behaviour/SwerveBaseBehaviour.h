@@ -6,7 +6,6 @@
 #include "XInputController.h"
 #include <networktables/NetworkTableInstance.h>
 #include "PID.h"
-
 #include <vector>
 
 /**
