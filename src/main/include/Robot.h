@@ -46,17 +46,12 @@ class Robot : public frc::TimedRobot {
   behaviour::BehaviourScheduler *sched;
   
   //SwerveModuleTest *swerveModule;
-  SideIntake *sideIntake;
-  Gripper *gripper;
+  // SideIntake *sideIntake;
+  // Gripper *gripper;
 
   bool compressorToggle = false;
 
   units::meter_t _elevatorSetpoint = 0_m;
   units::radian_t _armSetpoint = 0_deg;
 
-  const units::meters_per_second_t highSensitivityDriveSpeed = 6.5_ft / 1_s;
-  const units::meters_per_second_t lowSensitivityDriveSpeed = 3.25_ft / 1_s;
-
-  const units::radians_per_second_t highSensitivityRotateSpeed = 360_deg / 1_s;
-  const units::radians_per_second_t lowSensitivityRotateSpeed = 90_deg / 1_s;
 };

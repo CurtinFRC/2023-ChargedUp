@@ -152,7 +152,8 @@ namespace wom {
     /**
      * @brief This function switches the state to handle the robot's rotation matching that of the joystick
     */
-    void SetRotationLockVelocity(FieldRelativeSpeeds speeds);
+    void RotateMatchJoystick(units::radian_t joystickAngle, FieldRelativeSpeeds speeds);
+    
     void SetIdle();
 
     void SetZeroing();

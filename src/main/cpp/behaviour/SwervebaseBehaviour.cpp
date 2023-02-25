@@ -25,7 +25,21 @@ void ManualDrivebase::OnStart(units::second_t dt) {
   std::cout << "Manual Drivebase Start" << std::endl;
 }
 
+
+
+
+
 void ManualDrivebase::OnTick(units::second_t deltaTime) {
+  if (_driverController->GetLeftBumperPressed()){
+    maxMovementMagnitude = highSensitivityDriveSpeed;
+    maxRotationMagnitude = highSensitivityRotateSpeed;
+  }
+  if (_driverController->GetRightBumperPressed()){
+    maxMovementMagnitude = lowSensitivityDriveSpeed;
+    maxRotationMagnitude = lowSensitivityRotateSpeed;
+  }
+
+
   if (_driverController->GetLeftTrigger()) {
     isZero = !isZero;
   } 
@@ -37,28 +51,31 @@ void ManualDrivebase::OnTick(units::second_t deltaTime) {
     double xVelocity = wom::spow2(-wom::deadzone(_driverController->GetLeftY(), driverDeadzone));  // GetLeftY due to x being where y should be on field
     double yVelocity = wom::spow2(-wom::deadzone(_driverController->GetLeftX(), driverDeadzone));
 
-    double r_x = wom::spow2(-wom::deadzone(_driverController->GetRightX(), turningDeadzone));
-    double r_y = wom::spow2(-wom::deadzone(_driverController->GetRightX(), turningDeadzone));
+    double r_x = wom::spow2(wom::deadzone(_driverController->GetRightX(), turningDeadzone));
+    double r_y = wom::spow2(wom::deadzone(_driverController->GetRightY(), turningDeadzone));
 
     if (_swerveDrivebase->GetIsFieldRelative()) {  // Field Relative Controls
       frc::Pose2d currentPose = _swerveDrivebase->GetPose();
       units::degree_t currentAngle = currentPose.Rotation().Degrees();
       CalculateRequestedAngle(r_x, r_y, currentAngle);
 
-      // rotationalVelocity = AngleActivationFunction(  (requestedAngle - currentAngle + 180) % 360 - 180  )
-      double rotationalVelocity = AngleActivationFunction(std::fmod(_requestedAngle.value() - currentAngle.value() + 180, 360) - 180);
-      
-      _swerveDrivebase->SetRotationLockVelocity(wom::FieldRelativeSpeeds{
+      // _swerveDrivebase->RotateMatchJoystick(_requestedAngle, wom::FieldRelativeSpeeds{
+      //   xVelocity * maxMovementMagnitude,
+      //   yVelocity * maxMovementMagnitude,
+      //   r_x * maxRotationMagnitude
+      // });
+
+      _swerveDrivebase->SetFieldRelativeVelocity(wom::FieldRelativeSpeeds{
         xVelocity * maxMovementMagnitude,
         yVelocity * maxMovementMagnitude,
-        rotationalVelocity * 360_deg / 1_s
+        r_x * maxRotationMagnitude
       });
     }
     else {  // Robot Relative Controls
       _swerveDrivebase->SetVelocity(frc::ChassisSpeeds{
           xVelocity * maxMovementMagnitude,
           yVelocity * maxMovementMagnitude,
-          r_x * 360_deg / 1_s
+          r_x * maxRotationMagnitude
       });
     }
   }
@@ -81,9 +98,6 @@ void ManualDrivebase::CalculateRequestedAngle(double joystickX, double joystickY
     else if (joystickX < 0){   _requestedAngle = 180_deg;   }
   }
   // else, default to currentAngle
-}
-double ManualDrivebase::AngleActivationFunction(double angleOffset){
-  return 1 / (1 + exp(4.0 * angleOffset / 90.0)) - 0.5;
 }
 
 

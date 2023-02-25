@@ -38,7 +38,13 @@ void Robot::RobotInit() {
   swerve->SetDefaultBehaviour([this]() {
     return make<ManualDrivebase>(swerve, &map.controllers.driver);
   });
-
+  
+  armavator = new Armavator(map.armavator.arm.leftGearbox, map.armavator.arm.rightGearbox, map.armavator.elevator.rightGearbox, map.armavator.elevator.leftGearbox, map.armavator.config);
+  BehaviourScheduler::GetInstance()->Register(armavator);
+  armavator->SetDefaultBehaviour([this]() {
+    return make<ArmavatorManualBehaviour>(armavator, map.controllers.codriver);
+  });
+  
   vision = new Vision(&map.vision.config);
   BehaviourScheduler::GetInstance()->Register(vision);
   vision->SetDefaultBehaviour([this]() {
@@ -53,16 +59,16 @@ void Robot::RobotPeriodic() {
   loop.Poll();
   BehaviourScheduler::GetInstance()->Tick();
 
-  map.swerveTable.swerveDriveTable->GetEntry("frontLeftEncoder").SetDouble(map.swerveBase.moduleConfigs[0].turnMotor.encoder->GetEncoderPosition().value());
-  map.swerveTable.swerveDriveTable->GetEntry("frontRightEncoder").SetDouble(map.swerveBase.moduleConfigs[1].turnMotor.encoder->GetEncoderPosition().value());
-  map.swerveTable.swerveDriveTable->GetEntry("backRightEncoder").SetDouble(map.swerveBase.moduleConfigs[2].turnMotor.encoder->GetEncoderPosition().value());
-  map.swerveTable.swerveDriveTable->GetEntry("backLeftEncoder").SetDouble(map.swerveBase.moduleConfigs[3].turnMotor.encoder->GetEncoderPosition().value());
+  // map.swerveTable.swerveDriveTable->GetEntry("frontLeftEncoder").SetDouble(map.swerveBase.moduleConfigs[0].turnMotor.encoder->GetEncoderPosition().value());
+  // map.swerveTable.swerveDriveTable->GetEntry("frontRightEncoder").SetDouble(map.swerveBase.moduleConfigs[1].turnMotor.encoder->GetEncoderPosition().value());
+  // map.swerveTable.swerveDriveTable->GetEntry("backRightEncoder").SetDouble(map.swerveBase.moduleConfigs[2].turnMotor.encoder->GetEncoderPosition().value());
+  // map.swerveTable.swerveDriveTable->GetEntry("backLeftEncoder").SetDouble(map.swerveBase.moduleConfigs[3].turnMotor.encoder->GetEncoderPosition().value());
 
   swerve->OnUpdate(dt);
 
   // map.armTable.armManualTable->GetEntry("arm").SetDouble(map.armavator.arm.motor.GetSupplyCurrent());
   // map.armTable.armManualTable->GetEntry("elv").SetDouble(map.armavator.elevator.motor.GetSupplyCurrent());
-  // armavator->OnUpdate(dt);
+  armavator->OnUpdate(dt);
   // map.intakeTable.intakeTable->GetEntry("state").SetString(sideIntake->GetState());
   // sideIntake->OnUpdate(dt);
 
@@ -73,20 +79,19 @@ void Robot::RobotPeriodic() {
   //   swerve->AddVisionMeasurement(visionPose.value().first.ToPose2d(), visionPose.value().second);
   // }
 
-  map.swerveTable.swerveDriveTable->GetEntry("frontLeftEncoder").SetDouble(map.swerveBase.moduleConfigs[0].turnMotor.encoder->GetEncoderPosition().value());
-  map.swerveTable.swerveDriveTable->GetEntry("frontRightEncoder").SetDouble(map.swerveBase.moduleConfigs[1].turnMotor.encoder->GetEncoderPosition().value());
-  map.swerveTable.swerveDriveTable->GetEntry("backLeftEncoder").SetDouble(map.swerveBase.moduleConfigs[2].turnMotor.encoder->GetEncoderPosition().value());
-  map.swerveTable.swerveDriveTable->GetEntry("backRightEncoder").SetDouble(map.swerveBase.moduleConfigs[3].turnMotor.encoder->GetEncoderPosition().value());
+  // map.swerveTable.swerveDriveTable->GetEntry("frontLeftEncoder").SetDouble(map.swerveBase.moduleConfigs[0].turnMotor.encoder->GetEncoderPosition().value());
+  // map.swerveTable.swerveDriveTable->GetEntry("frontRightEncoder").SetDouble(map.swerveBase.moduleConfigs[1].turnMotor.encoder->GetEncoderPosition().value());
+  // map.swerveTable.swerveDriveTable->GetEntry("backLeftEncoder").SetDouble(map.swerveBase.moduleConfigs[2].turnMotor.encoder->GetEncoderPosition().value());
+  // map.swerveTable.swerveDriveTable->GetEntry("backRightEncoder").SetDouble(map.swerveBase.moduleConfigs[3].turnMotor.encoder->GetEncoderPosition().value());
 
-  std::optional<units::meter_t> distance = map.gripper.gamepiecePresence.GetDistance();
-  if (distance.has_value())
-    nt::NetworkTableInstance::GetDefault().GetTable("TOF")->GetEntry("distance").SetDouble(distance.value().value());
-  else
-    nt::NetworkTableInstance::GetDefault().GetTable("TOF")->GetEntry("distance").SetDouble(-1);
+  // std::optional<units::meter_t> distance = map.gripper.gamepiecePresence.GetDistance();
+  // if (distance.has_value())
+  //   nt::NetworkTableInstance::GetDefault().GetTable("TOF")->GetEntry("distance").SetDouble(distance.value().value());
+  // else
+  //   nt::NetworkTableInstance::GetDefault().GetTable("TOF")->GetEntry("distance").SetDouble(-1);
 
-  armavator->OnUpdate(dt);
-  sideIntake->OnUpdate(dt);
-  gripper->OnUpdate(dt);
+  // sideIntake->OnUpdate(dt);
+  // gripper->OnUpdate(dt);
 }
 
 void Robot::AutonomousInit() {
@@ -130,38 +135,38 @@ void Robot::TeleopPeriodic() {
   }
   if (map.controllers.driver.GetCPAD_TopPressed()){ // Lock the wheels
     sched->Schedule(make<XDrivebase>(swerve));
-    map.swerveTable.swerveDriveTable->GetEntry("IsX-ed").SetBoolean(true);
+    // map.swerveTable.swerveDriveTable->GetEntry("IsX-ed").SetBoolean(true);
   }
   if (map.controllers.driver.GetCPAD_RightPressed()){ // Stop all current behaviours, and return to default (manualDrivebase)
     swerve->GetActiveBehaviour()->Interrupt();
-    map.swerveTable.swerveDriveTable->GetEntry("IsX-ed").SetBoolean(false);
+    // map.swerveTable.swerveDriveTable->GetEntry("IsX-ed").SetBoolean(false);
   }
   if (map.controllers.driver.GetLogoButtonPressed()){ // Initiates behaviour for balancing on the chargestation
     sched->Schedule(make<DrivebaseBalance>(swerve, &map.swerveBase.gyro));
   }
-  if (map.controllers.driver.GetLeftBumperPressed()){ // Initiates behaviour for balancing on the chargestation
-    swerve->ResetPose(frc::Pose2d{0_m, 0_m, 0_deg});
-  }
+  // if (map.controllers.driver.GetLeftBumperPressed()){
+  //   swerve->ResetPose(frc::Pose2d{0_m, 0_m, 0_deg});
+  // }
   // std::cout << "Elevator reading: " << map.armavator.arm.leftEncoder
 
-  if (map.controllers.codriver.GetXButtonPressed()) {
-    if (compressorToggle) {
-      compressorToggle = false;
-    } else {
-      compressorToggle = true;
-    }
-  } 
+  // if (map.controllers.codriver.GetXButtonPressed()) {
+  //   if (compressorToggle) {
+  //     compressorToggle = false;
+  //   } else {
+  //     compressorToggle = true;
+  //   }
+  // } 
 
-  if (compressorToggle) {
-    map.controlSystem.pcmCompressor.EnableDigital();
-      std::cout << "compressor true" << std::endl;
-  } else {
-    map.controlSystem.pcmCompressor.Disable();
-      std::cout << "compressor false" << std::endl;
-  }
+  // if (compressorToggle) {
+  //   map.controlSystem.pcmCompressor.EnableDigital();
+  //     std::cout << "compressor true" << std::endl;
+  // } else {
+  //   map.controlSystem.pcmCompressor.Disable();
+  //     std::cout << "compressor false" << std::endl;
+  // }
 
-  map.armTable.armManualTable->GetEntry("armSetpoint").SetDouble(_armSetpoint.convert<units::degree>().value());
-  map.armTable.armManualTable->GetEntry("elevatorSetpoint").SetDouble(_elevatorSetpoint.convert<units::meter>().value());
+  // map.armTable.armManualTable->GetEntry("armSetpoint").SetDouble(_armSetpoint.convert<units::degree>().value());
+  // map.armTable.armManualTable->GetEntry("elevatorSetpoint").SetDouble(_elevatorSetpoint.convert<units::meter>().value());
 }
 
 

@@ -22,7 +22,6 @@ class ManualDrivebase : public behaviour::Behaviour{
   ManualDrivebase(wom::SwerveDrive *swerveDrivebase, wom::Controller *driverController);
 
   void OnTick(units::second_t deltaTime) override;
-  double AngleActivationFunction(double angleOffset);
   /**
    * @brief This function handles all of the logic behind the tangent function, to be able to calculate an angle between 0 andd 360 degrees, inclusively
   */
@@ -37,7 +36,15 @@ class ManualDrivebase : public behaviour::Behaviour{
 
   const double driverDeadzone = 0.08;
   const double turningDeadzone = 0.1;
-  const units::meters_per_second_t maxMovementMagnitude = 6.5_ft / 1_s;
+
+  units::meters_per_second_t maxMovementMagnitude = 6.5_ft / 1_s;
+  units::radians_per_second_t maxRotationMagnitude = 360_deg / 1_s;
+
+  const units::meters_per_second_t highSensitivityDriveSpeed = 6.5_ft / 1_s;
+  const units::meters_per_second_t lowSensitivityDriveSpeed = 3.25_ft / 1_s;
+
+  const units::radians_per_second_t highSensitivityRotateSpeed = 360_deg / 1_s;
+  const units::radians_per_second_t lowSensitivityRotateSpeed = 90_deg / 1_s;
 
   bool isFieldOrientated = true;
   bool isZero = false;

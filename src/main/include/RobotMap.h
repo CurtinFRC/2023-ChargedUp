@@ -43,14 +43,14 @@ struct RobotMap {
   };
   Controllers controllers;
 
-  struct ControlSystem {
-    frc::Compressor pcmCompressor{1, frc::PneumaticsModuleType::CTREPCM};
-  }; ControlSystem controlSystem;
+  // struct ControlSystem {
+  //   frc::Compressor pcmCompressor{1, frc::PneumaticsModuleType::CTREPCM};
+  // }; ControlSystem controlSystem;
 
-  struct GripTest {
-    // rev::CANSparkMax gripper{19, rev::CANSparkMax::MotorType::kBrushless};
-    VictorSPX gripper{18};
-  }; GripTest grTest;
+  // struct GripTest {
+  //   // rev::CANSparkMax gripper{19, rev::CANSparkMax::MotorType::kBrushless};
+  //   VictorSPX gripper{18};
+  // }; GripTest grTest;
 
   //stores nessesary info for vision
   struct Vision {
@@ -366,57 +366,57 @@ struct RobotMap {
     };
   }; Armavator armavator;
 
-  //creates the arm and swerve instances for network tables on shuffleboard
-  struct ArmTable {
-    std::shared_ptr<nt::NetworkTable> armManualTable = nt::NetworkTableInstance::GetDefault().GetTable("armManual");
-  }; ArmTable armTable;
+  // //creates the arm and swerve instances for network tables on shuffleboard
+  // struct ArmTable {
+  //   std::shared_ptr<nt::NetworkTable> armManualTable = nt::NetworkTableInstance::GetDefault().GetTable("armManual");
+  // }; ArmTable armTable;
 
-  struct SwerveTable {
-    std::shared_ptr<nt::NetworkTable> swerveDriveTable = nt::NetworkTableInstance::GetDefault().GetTable("swerve");
-  }; SwerveTable swerveTable;
+  // struct SwerveTable {
+  //   std::shared_ptr<nt::NetworkTable> swerveDriveTable = nt::NetworkTableInstance::GetDefault().GetTable("swerve");
+  // }; SwerveTable swerveTable;
 
-  struct IntakeTable {
-    std::shared_ptr<nt::NetworkTable> intakeTable = nt::NetworkTableInstance::GetDefault().GetTable("intake");
-  }; IntakeTable intakeTable;
+  // struct IntakeTable {
+  //   std::shared_ptr<nt::NetworkTable> intakeTable = nt::NetworkTableInstance::GetDefault().GetTable("intake");
+  // }; IntakeTable intakeTable;
 
-  struct SideIntakeSystem {
-    WPI_VictorSPX leftIntakeMotor{13};
-    WPI_VictorSPX rightIntakeMotor{14};
+  // struct SideIntakeSystem {
+  //   WPI_VictorSPX leftIntakeMotor{13};
+  //   WPI_VictorSPX rightIntakeMotor{14};
 
-    wom::MotorVoltageController leftMotorGroup = wom::MotorVoltageController::Group(leftIntakeMotor);
-    wom::MotorVoltageController rightMotorGroup = wom::MotorVoltageController::Group(rightIntakeMotor);
+  //   wom::MotorVoltageController leftMotorGroup = wom::MotorVoltageController::Group(leftIntakeMotor);
+  //   wom::MotorVoltageController rightMotorGroup = wom::MotorVoltageController::Group(rightIntakeMotor);
 
-    wom::Gearbox leftGearbox {
-      &leftMotorGroup,
-      nullptr,
-      wom::DCMotor::Bag(1).WithReduction(10)
-    };
+  //   wom::Gearbox leftGearbox {
+  //     &leftMotorGroup,
+  //     nullptr,
+  //     wom::DCMotor::Bag(1).WithReduction(10)
+  //   };
 
-    wom::Gearbox rightGearbox {
-      &rightMotorGroup,
-      nullptr,
-      wom::DCMotor::Bag(1).WithReduction(10)
-    };
+  //   wom::Gearbox rightGearbox {
+  //     &rightMotorGroup,
+  //     nullptr,
+  //     wom::DCMotor::Bag(1).WithReduction(10)
+  //   };
 
-    frc::DoubleSolenoid claspSolenoid{2, frc::PneumaticsModuleType::REVPH, 1, 2};
-    frc::DoubleSolenoid deploySolenoid{2, frc::PneumaticsModuleType::REVPH, 0, 3};
+  //   frc::DoubleSolenoid claspSolenoid{2, frc::PneumaticsModuleType::REVPH, 1, 2};
+  //   frc::DoubleSolenoid deploySolenoid{2, frc::PneumaticsModuleType::REVPH, 0, 3};
 
-    SideIntakeConfig config{
-      &claspSolenoid,
-      &deploySolenoid,
-      &rightGearbox,
-      &leftGearbox
-    };
-  }; 
-  SideIntakeSystem sideIntake;
+  //   SideIntakeConfig config{
+  //     &claspSolenoid,
+  //     &deploySolenoid,
+  //     &rightGearbox,
+  //     &leftGearbox
+  //   };
+  // }; 
+  // SideIntakeSystem sideIntake;
 
-  struct GripperSystem {
-    wom::MotorVoltageController gripperMotor{ new WPI_VictorSPX(15)};
+  // struct GripperSystem {
+  //   wom::MotorVoltageController gripperMotor{ new WPI_VictorSPX(15)};
 
-    TOF gamepiecePresence{frc::I2C::Port::kMXP};
+  //   TOF gamepiecePresence{frc::I2C::Port::kMXP};
 
-    GripperConfig config{
-      &gripperMotor
-    };
-  }; GripperSystem gripper;
+  //   GripperConfig config{
+  //     &gripperMotor
+  //   };
+  // }; GripperSystem gripper;
 };

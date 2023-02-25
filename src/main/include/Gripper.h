@@ -1,39 +1,39 @@
-#pragma once 
+// #pragma once 
 
-#include "behaviour/HasBehaviour.h"
-#include <string>
-#include <units/math.h>
-#include <units/velocity.h>
-#include <units/charge.h>
-// #include "MotorVoltageController.h"
-#include "Gearbox.h"
+// #include "behaviour/HasBehaviour.h"
+// #include <string>
+// #include <units/math.h>
+// #include <units/velocity.h>
+// #include <units/charge.h>
+// // #include "MotorVoltageController.h"
+// #include "Gearbox.h"
 
 
-struct GripperConfig {
-  wom::MotorVoltageController *gripperMotor;
-};
+// struct GripperConfig {
+//   wom::MotorVoltageController *gripperMotor;
+// };
 
-enum class GripperState {
-  kIdle,
-  kIntaking,
-  kOutaking,
-  kHolding
-};
+// enum class GripperState {
+//   kIdle,
+//   kIntaking,
+//   kOutaking,
+//   kHolding
+// };
 
-class Gripper : public behaviour::HasBehaviour {
- public: 
-  Gripper(GripperConfig config);
+// class Gripper : public behaviour::HasBehaviour {
+//  public: 
+//   Gripper(GripperConfig config);
 
-  void OnUpdate(units::second_t dt);
+//   void OnUpdate(units::second_t dt);
 
-  void SetIdle();
-  void SetIntaking();
-  void SetOutaking();
-  void SetHolding();
+//   void SetIdle();
+//   void SetIntaking();
+//   void SetOutaking();
+//   void SetHolding();
 
-  std::string GetState();
+//   std::string GetState();
 
- private: 
-  GripperConfig _config;
-  GripperState _state = GripperState::kIdle;
-};
+//  private: 
+//   GripperConfig _config;
+//   GripperState _state = GripperState::kIdle;
+// };
