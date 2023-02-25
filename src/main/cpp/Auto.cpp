@@ -18,6 +18,7 @@ AutoPathDetails GetAutoPathingDetails(Drivebase drivebase, StartingConfig startC
     autoPathingDetails.endPathing = adjustmentPathing;
   };
 
+
   switch (startConfig){
     case StartingConfig::Top:
       if (blueAlliance){  definedPoses.poseSet = definedPoses.top_Blue;  break;  }
