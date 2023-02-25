@@ -371,9 +371,9 @@ struct RobotMap {
   //   std::shared_ptr<nt::NetworkTable> armManualTable = nt::NetworkTableInstance::GetDefault().GetTable("armManual");
   // }; ArmTable armTable;
 
-  // struct SwerveTable {
-  //   std::shared_ptr<nt::NetworkTable> swerveDriveTable = nt::NetworkTableInstance::GetDefault().GetTable("swerve");
-  // }; SwerveTable swerveTable;
+  struct SwerveTable {
+    std::shared_ptr<nt::NetworkTable> swerveDriveTable = nt::NetworkTableInstance::GetDefault().GetTable("swerve");
+  }; SwerveTable swerveTable;
 
   // struct IntakeTable {
   //   std::shared_ptr<nt::NetworkTable> intakeTable = nt::NetworkTableInstance::GetDefault().GetTable("intake");

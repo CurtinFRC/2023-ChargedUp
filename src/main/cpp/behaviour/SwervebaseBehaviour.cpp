@@ -30,13 +30,22 @@ void ManualDrivebase::OnStart(units::second_t dt) {
 
 
 void ManualDrivebase::OnTick(units::second_t deltaTime) {
+
+
+
+  int individualTuningModNum = 0;
+
   if (_driverController->GetLeftBumperPressed()){
-    maxMovementMagnitude = highSensitivityDriveSpeed;
-    maxRotationMagnitude = highSensitivityRotateSpeed;
+    // maxMovementMagnitude = highSensitivityDriveSpeed;
+    // maxRotationMagnitude = highSensitivityRotateSpeed;
+
+    _swerveDrivebase->SetIndividualTuning(individualTuningModNum, 0_deg, 0_mps);
+
   }
   if (_driverController->GetRightBumperPressed()){
-    maxMovementMagnitude = lowSensitivityDriveSpeed;
-    maxRotationMagnitude = lowSensitivityRotateSpeed;
+    // maxMovementMagnitude = lowSensitivityDriveSpeed;
+    // maxRotationMagnitude = lowSensitivityRotateSpeed;
+    _swerveDrivebase->SetIndividualTuning(individualTuningModNum, 90_deg, 0_mps);
   }
 
 

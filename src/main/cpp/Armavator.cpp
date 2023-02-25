@@ -18,6 +18,7 @@ void Armavator::OnStart() {
 
   _config.arm.leftGearbox.encoder->SetEncoderPosition(350_deg);
   _config.arm.rightGearbox.encoder->SetEncoderPosition(350_deg);
+  _state = ArmavatorState::kManual;
   std::cout << "STARTING" << std::endl;
 }
 
