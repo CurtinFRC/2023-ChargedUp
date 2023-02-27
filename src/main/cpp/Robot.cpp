@@ -22,9 +22,13 @@ void Robot::RobotInit() {
   lastPeriodic = wom::now();
 
   // map.swerveBase.moduleConfigs[0].turnMotor.encoder->SetEncoderOffset(1.5232429_rad);
+  map.swerveBase.moduleConfigs[0].turnMotor.encoder->SetEncoderOffset(5.02685_rad); 
   // map.swerveBase.moduleConfigs[1].turnMotor.encoder->SetEncoderOffset(2.2488158_rad);
-  // map.swerveBase.moduleConfigs[2].turnMotor.encoder->SetEncoderOffset(4.445476_rad); //wrong
+  map.swerveBase.moduleConfigs[1].turnMotor.encoder->SetEncoderOffset(5.8567_rad);
+  // map.swerveBase.moduleConfigs[2].turnMotor.encoder->SetEncoderOffset(4.445476_rad);
+  map.swerveBase.moduleConfigs[2].turnMotor.encoder->SetEncoderOffset(0.943398_rad);
   // map.swerveBase.moduleConfigs[3].turnMotor.encoder->SetEncoderOffset(2.0800779_rad);
+  map.swerveBase.moduleConfigs[3].turnMotor.encoder->SetEncoderOffset(5.24628_rad);
 
 
   map.swerveBase.gyro.Reset();

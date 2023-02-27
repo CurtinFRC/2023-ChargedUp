@@ -102,3 +102,17 @@ void ArmavatorManualBehaviour::OnTick(units::second_t dt) {
   // std::cout << "arm pos: " << armPos.value() << std::endl;
   // std::cout << "elevator pos: " << _armavator->elevator->GetConfig().leftGearbox.encoder->GetEncoderPosition().value() << std::endl;
 }
+
+
+
+/**
+ * @Anna Todo list:
+ * - swerve offset tuning (make sure it drives straight)
+ * - tune swerve PID 
+ * - tune elevator PID 
+ * - controller doing PID setpoint not raw 
+ * - arm encoder read out, should be 0 - 360 
+ * - arm encoder zeroing 
+ * - 
+ * 
+*/

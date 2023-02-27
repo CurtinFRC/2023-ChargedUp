@@ -86,7 +86,7 @@ ArmConfig &Arm::GetConfig() {
 }
 
 units::radian_t Arm::GetAngle() const {
-  return _config.leftGearbox.encoder->GetEncoderPosition();
+  return _config.armEncoder.GetPosition() / 100 * 360 * 1_deg;
 }
 
 units::radians_per_second_t Arm::MaxSpeed() const {

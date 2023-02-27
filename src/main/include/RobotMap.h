@@ -219,14 +219,20 @@ struct RobotMap {
       rev::CANSparkMax leftArmMotor{11, rev::CANSparkMax::MotorType::kBrushless}; //11
       rev::CANSparkMax rightArmMotor{12, rev::CANSparkMax::MotorType::kBrushless}; //12
 
+      rev::CANSparkMax leftPretendArmMotor{20, rev::CANSparkMax::MotorType::kBrushless};
+      rev::CANSparkMax rightPretendArmMotor{21, rev::CANSparkMax::MotorType::kBrushless};
+
       //create the motor group used for the arm
       wom::MotorVoltageController leftMotorGroup = wom::MotorVoltageController::Group(leftArmMotor);
       wom::MotorVoltageController rightMotorGroup = wom::MotorVoltageController::Group(rightArmMotor);
       
       // wom::DigitalEncoder encoder{0, 1, 2048};
       //sets the type sof encoder that is used up
-      wom::CANSparkMaxEncoder leftEncoder{&leftArmMotor, 100};
-      wom::CANSparkMaxEncoder rightEncoder{&rightArmMotor, 100};
+      wom::CANSparkMaxEncoder leftEncoder{&leftPretendArmMotor, 100};
+      wom::CANSparkMaxEncoder rightEncoder{&rightPretendArmMotor, 100};
+
+      rev::SparkMaxRelativeEncoder leftOtherArmEncoder = leftArmMotor.GetEncoder();
+      rev::SparkMaxRelativeEncoder rightOtherArmEncoder = rightArmMotor.GetEncoder();
 
       //creates an instance of the arm gearbox
       wom::Gearbox leftGearbox {
@@ -248,6 +254,7 @@ struct RobotMap {
         "/armavator/arm",
         leftGearbox,
         rightGearbox,
+        leftOtherArmEncoder,
         wom::PIDConfig<units::radian, units::volts>(
           "/armavator/arm/pid/config",
           10_V / 250_deg
