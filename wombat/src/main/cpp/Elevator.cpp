@@ -25,7 +25,7 @@ Elevator::Elevator(ElevatorConfig config)
 void Elevator::OnUpdate(units::second_t dt) {
   units::volt_t voltage{0};
 
-  units::meter_t height = GetHeight();
+  units::meter_t height = GetElevatorEncoderPos() * 1_m;
 
   //creates a network table instance for height
   _table->GetEntry("height").SetDouble(height.value());
@@ -40,8 +40,14 @@ void Elevator::OnUpdate(units::second_t dt) {
     break;
     case ElevatorState::kPID:
       {
-        auto feedforward = _config.leftGearbox.motor.Voltage((_config.mass * 9.81_mps_sq) * _config.radius, 0_rad_per_s);
+        units::volt_t feedforward = _config.rightGearbox.motor.Voltage((_config.mass * 9.81_mps_sq) * _config.radius, 0_rad_per_s);
+        std::cout << "feed forward" << feedforward.value() << std::endl;
+        feedforward = 1.2_V;
+        // voltage = _pid.Calculate(height, dt, feedforward);
         voltage = _pid.Calculate(height, dt, feedforward);
+        if (voltage > 6_V) {
+          voltage = 6_V;
+        }
       }
     break;
     case ElevatorState::kRaw:
@@ -68,6 +74,7 @@ void Elevator::OnUpdate(units::second_t dt) {
   // Set voltage to motors...
   voltage *= 0.5;
   _config.leftGearbox.transmission->SetVoltage(voltage);
+  _config.rightGearbox.transmission->SetVoltage(voltage);
 }
 
 //defines information needed for the functions and connects the states to their respective function
@@ -103,9 +110,14 @@ ElevatorState Elevator::GetState() const {
   return _state;
 }
 
+double Elevator::GetElevatorEncoderPos() {
+  return _config.elevatorEncoder.GetPosition() * 14/60 * 2 * 3.1415 * 0.02225;
+}
+
 units::meter_t Elevator::GetHeight() const {
-  std::cout << "elevator position"<< _config.rightGearbox.encoder->GetEncoderTicks() << std::endl;
-  return _config.rightGearbox.encoder->GetEncoderDistance() * 1_m;
+  // std::cout << "elevator position"<< _config.rightGearbox.encoder->GetEncoderTicks() << std::endl;
+  // return _config.rightGearbox.encoder->GetEncoderDistance() * 1_m;
+  return _config.elevatorEncoder.GetPosition() * 14/60 * 2 * 3.1415 * 0.02225 * 1_m;
 }
 
 units::meters_per_second_t Elevator::MaxSpeed() const {

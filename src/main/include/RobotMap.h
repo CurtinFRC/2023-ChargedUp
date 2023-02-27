@@ -275,15 +275,19 @@ struct RobotMap {
       rev::CANSparkMax leftElevatorMotor{9, rev::CANSparkMax::MotorType::kBrushless}; //9
       rev::CANSparkMax rightElevatorMotor{10, rev::CANSparkMax::MotorType::kBrushless}; //10
 
+      rev::CANSparkMax leftPretendElevatorMotor{18, rev::CANSparkMax::MotorType::kBrushless}; //10
+      rev::CANSparkMax rightPretendElevatorMotor{19, rev::CANSparkMax::MotorType::kBrushless}; //10
+
       //creates the motor group that can be used to set voltage
       wom::MotorVoltageController leftMotorGroup = wom::MotorVoltageController::Group(leftElevatorMotor);
       wom::MotorVoltageController rightMotorGroup = wom::MotorVoltageController::Group(rightElevatorMotor);
 
       //creates an instance of the encoder that will be used for the elevator
-      wom::CANSparkMaxEncoder leftEncoder{&leftElevatorMotor, 14/60};
-      wom::CANSparkMaxEncoder rightEncoder{&rightElevatorMotor, 14/60};
-      // rev::SparkMaxRelativeEncoder leftEncoder= leftElevatorMotor.GetEncoder();
-      // rev::SparkMaxRelativeEncoder rightEncoder= leftElevatorMotor.GetEncoder();
+      wom::CANSparkMaxEncoder leftEncoder{&leftPretendElevatorMotor, 14/60};
+      wom::CANSparkMaxEncoder rightEncoder{&rightPretendElevatorMotor, 14/60};
+
+      rev::SparkMaxRelativeEncoder leftOtherEncoder= leftElevatorMotor.GetEncoder();
+      rev::SparkMaxRelativeEncoder rightOtherEncoder= rightElevatorMotor.GetEncoder();
 
       //creates an instance of the gearbox used for the elevator
       wom::Gearbox leftGearbox {
@@ -305,6 +309,7 @@ struct RobotMap {
         "/armavator/elevator",
         leftGearbox,
         rightGearbox,
+        leftOtherEncoder,
         nullptr,
         nullptr,
         48.26_mm / 2,
@@ -315,7 +320,7 @@ struct RobotMap {
         {
           //creates the pid for the elevator to remove error
           "/armavator/elevator/pid/config",
-          2_V / 1_m
+          5_V / 1_m
         }
       };
 

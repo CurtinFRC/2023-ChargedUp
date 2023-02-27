@@ -21,10 +21,10 @@ static units::second_t lastPeriodic;
 void Robot::RobotInit() {
   lastPeriodic = wom::now();
 
-  map.swerveBase.moduleConfigs[0].turnMotor.encoder->SetEncoderOffset(1.5232429_rad);
-  map.swerveBase.moduleConfigs[1].turnMotor.encoder->SetEncoderOffset(2.2488158_rad);
-  map.swerveBase.moduleConfigs[2].turnMotor.encoder->SetEncoderOffset(4.445476_rad);
-  map.swerveBase.moduleConfigs[3].turnMotor.encoder->SetEncoderOffset(2.0800779_rad);
+  // map.swerveBase.moduleConfigs[0].turnMotor.encoder->SetEncoderOffset(1.5232429_rad);
+  // map.swerveBase.moduleConfigs[1].turnMotor.encoder->SetEncoderOffset(2.2488158_rad);
+  // map.swerveBase.moduleConfigs[2].turnMotor.encoder->SetEncoderOffset(4.445476_rad); //wrong
+  // map.swerveBase.moduleConfigs[3].turnMotor.encoder->SetEncoderOffset(2.0800779_rad);
 
 
   map.swerveBase.gyro.Reset();
@@ -151,6 +151,12 @@ void Robot::TeleopPeriodic() {
     map.controlSystem.pcmCompressor.Disable();
       std::cout << "compressor false" << std::endl;
   }
+
+  std::cout << "module 0: " << map.swerveBase.moduleConfigs[0].turnMotor.encoder->GetEncoderPosition().value() << std::endl;
+  std::cout << "module 1: " << map.swerveBase.moduleConfigs[1].turnMotor.encoder->GetEncoderPosition().value() << std::endl;
+  std::cout << "module 2: " << map.swerveBase.moduleConfigs[2].turnMotor.encoder->GetEncoderPosition().value() << std::endl;
+  std::cout << "module 3: " << map.swerveBase.moduleConfigs[3].turnMotor.encoder->GetEncoderPosition().value() << std::endl;
+
 
   map.armTable.armManualTable->GetEntry("armSetpoint").SetDouble(_armSetpoint.convert<units::degree>().value());
   map.armTable.armManualTable->GetEntry("elevatorSetpoint").SetDouble(_elevatorSetpoint.convert<units::meter>().value());

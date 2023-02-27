@@ -38,6 +38,7 @@ void Arm::OnUpdate(units::second_t dt) {
       {
         units::newton_meter_t torque = 9.81_m / 1_s / 1_s * _config.armLength * units::math::cos(angle + _config.angleOffset) * (0.5 * _config.armMass + _config.loadMass);
         units::volt_t feedforward = _config.leftGearbox.motor.Voltage(torque, 0_rad/ 1_s);
+        // std::cout << "feedforward" << feedforward.value() << std::endl;
         voltage = _pid.Calculate(angle, dt, feedforward);
       }
       break;
@@ -53,7 +54,8 @@ void Arm::OnUpdate(units::second_t dt) {
   // ) {
   //   voltage = 0_V;
   // }
-  voltage *= 0.2;
+
+  voltage *= 0.4;
 
   _config.leftGearbox.transmission->SetVoltage(voltage);
   _config.rightGearbox.transmission->SetVoltage(voltage);

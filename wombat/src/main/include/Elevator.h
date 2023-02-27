@@ -28,6 +28,7 @@ namespace wom {
     std::string path;
     wom::Gearbox leftGearbox;
     wom::Gearbox rightGearbox;
+    rev::SparkMaxRelativeEncoder elevatorEncoder;
     frc::DigitalInput *topSensor;
     frc::DigitalInput *bottomSensor;
     units::meter_t radius;
@@ -52,6 +53,8 @@ namespace wom {
     void SetPID(units::meter_t height);
     void SetIdle();
     void SetRaw(units::volt_t voltage);
+
+    double GetElevatorEncoderPos();
 
     ElevatorConfig &GetConfig();
     
