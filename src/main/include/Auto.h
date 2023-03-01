@@ -6,6 +6,18 @@
 
 class DefinedPoses {
  public:
+   struct CollectPath {
+    frc::Pose2d startingFromPos;
+    frc::Pose2d retrievePiece1Pos;
+    frc::Pose2d returnPiece1Pos;
+    frc::Pose2d retrievePiece2Pos;
+    frc::Pose2d returnPiece2Pos;
+    frc::Pose2d retrievePiece3Pos;
+    frc::Pose2d returnPiece3Pos;
+    frc::Pose2d retrievePiece4Pos;
+    frc::Pose2d returnPiece4Pos;
+  };
+
   struct Poses {
     frc::Pose2d startPos;
     frc::Pose2d dock_LineUp_Pos;
@@ -13,61 +25,9 @@ class DefinedPoses {
     frc::Pose2d stealPos;
     frc::Pose2d taxiPos;
     frc::Pose2d subStationWaitPos;
+    CollectPath collectPath;
   };
   Poses poseSet{};
-
-  Poses top_Blue {
-    {72.055_in, 196.3_in, 0_deg}, // startPos
-    {83.607_in, 139.388_in, 0_deg}, // dock_LineUp_Pos
-    {122.808_in, 139.286_in, 0_deg}, // dockPos
-    {287.887_in, 180.555_in, 0_deg}, // stealPos
-    {171.061_in, 195.748_in, 0_deg}, // taxiPos
-
-    {291.192_in, 246.31_in, 0_deg}  // subStationWaitPOs
-  };
-  Poses middle_Blue {
-    {72.043_in, 86.608_in, 0_deg}, // startPos
-    {83.629_in, 107.795_in, 0_deg}, // dock_LineUp_Pos
-    {122.407_in, 107.992_in, 0_deg}, // dockPos
-
-    {0_m, 0_m, 0_deg}, // stealPos
-    {0_m, 0_m, 0_deg}, // taxiPos
-    {0_m, 0_m, 0_deg}  // subStationWaitPOs
-  };
-  Poses bottom_Blue {
-    {72.061_in, 20.208_in, 0_deg}, // startPos
-    {82.138_in, 76.783_in, 0_deg}, // dock_LineUp_Pos
-    {124.158_in, 75.594_in, 0_deg}, // dockPos
-    {288.932_in, 35.832_in, 0_deg}, // stealPos
-    {221.744_in, 17.986_in, 0_deg}, // taxiPos
-
-    {0_m, 0_m, 0_deg}  // subStationWaitPOs
-  };
-
-  Poses top_Red {
-    {0_m, 0_m, 0_deg}, // startPos
-    {0_m, 0_m, 0_deg}, // dock_LineUp_Pos
-    {0_m, 0_m, 0_deg}, // dockPos
-    {0_m, 0_m, 0_deg}, // stealPos
-    {0_m, 0_m, 0_deg}, // taxiPos
-    {0_m, 0_m, 0_deg}  // subStationWaitPOs
-  };
-  Poses middle_Red {
-    {0_m, 0_m, 0_deg}, // startPos
-    {0_m, 0_m, 0_deg}, // dock_LineUp_Pos
-    {0_m, 0_m, 0_deg}, // dockPos
-    {0_m, 0_m, 0_deg}, // stealPos
-    {0_m, 0_m, 0_deg}, // taxiPos
-    {0_m, 0_m, 0_deg}  // subStationWaitPos
-  };
-  Poses bottom_Red {
-    {0_m, 0_m, 0_deg}, // startPos
-    {0_m, 0_m, 0_deg}, // dock_LineUp_Pos
-    {0_m, 0_m, 0_deg}, // dockPos
-    {0_m, 0_m, 0_deg}, // stealPos
-    {0_m, 0_m, 0_deg}, // taxiPos
-    {0_m, 0_m, 0_deg}  // subStationWaitPOs
-  };
 
   struct GamePiecePoses {
     frc::Pose2d gamePiece1Pos;  // the bottom-most game piece
@@ -75,23 +35,6 @@ class DefinedPoses {
     frc::Pose2d gamePiece3Pos;  // the top-middle game piece
     frc::Pose2d gamePiece4Pos;  // the top-most game piece
   };
-  GamePiecePoses gamePiecePoses{};
-
-  GamePiecePoses blueGamePiecePoses {
-    {278.389_in, 36.185_in, 0_deg},  // the bottom-most game piece
-    {278.389_in, 84.185_in, 0_deg},  // the bottom-middle game piece
-    {278.389_in, 132.185_in, 0_deg},  // the top-middle game piece
-    {278.389_in, 180.185_in, 0_deg}  // the top-most game piece
-  };
-
-  GamePiecePoses redGamePiecePoses {
-    {0_m, 0_m, 0_deg},  // the bottom-most game piece
-    {0_m, 0_m, 0_deg},  // the bottom-middle game piece
-    {0_m, 0_m, 0_deg},  // the top-middle game piece
-    {0_m, 0_m, 0_deg}  // the top-most game piece
-  };
-
-
 
   struct AlliancePoses {
     Poses topPoses{};
@@ -107,7 +50,18 @@ class DefinedPoses {
       {122.808_in, 139.286_in, 0_deg}, // dockPos
       {287.887_in, 180.555_in, 0_deg}, // stealPos
       {171.061_in, 195.748_in, 0_deg}, // taxiPos
-      {291.192_in, 246.31_in, 0_deg}  // subStationWaitPos
+      {291.192_in, 246.31_in, 0_deg},  // subStationWaitPos
+      {  /*  Collect Path - START  */
+        {0_in, 0_in, 0_deg}, // startingFromPos
+        {0_in, 0_in, 0_deg}, // retrievePiece1Pos
+        {0_in, 0_in, 0_deg}, // returnPiece1Pos
+        {0_in, 0_in, 0_deg}, // retrievePiece2Pos
+        {0_in, 0_in, 0_deg}, // returnPiece2Pos
+        {0_in, 0_in, 0_deg}, // retrievePiece3Pos
+        {0_in, 0_in, 0_deg}, // returnPiece3Pos
+        {0_in, 0_in, 0_deg}, // retrievePiece4Pos
+        {0_in, 0_in, 0_deg} // returnPiece4Pos
+      }  /*  Collect Path - END  */
     }, /*  Top Poses - END  */
     {  /*  Middle Poses - START  */
       {72.043_in, 86.608_in, 0_deg}, // startPos
@@ -116,7 +70,8 @@ class DefinedPoses {
 
       {0_m, 0_m, 0_deg}, // stealPos
       {0_m, 0_m, 0_deg}, // taxiPos
-      {0_m, 0_m, 0_deg}  // subStationWaitPos
+      {0_m, 0_m, 0_deg},  // subStationWaitPos
+
     }, /*  Middle Poses - END  */
     {  /*  Bottom Poses - START  */
       {72.061_in, 20.208_in, 0_deg}, // startPos
@@ -125,7 +80,18 @@ class DefinedPoses {
       {288.932_in, 35.832_in, 0_deg}, // stealPos
       {221.744_in, 17.986_in, 0_deg}, // taxiPos
 
-      {0_m, 0_m, 0_deg}  // subStationWaitPos
+      {0_m, 0_m, 0_deg},  // subStationWaitPos
+      {  /*  Collect Path - START  */
+        {0_in, 0_in, 0_deg}, // startingFromPos
+        {0_in, 0_in, 0_deg}, // retrievePiece1Pos
+        {0_in, 0_in, 0_deg}, // returnPiece1Pos
+        {0_in, 0_in, 0_deg}, // retrievePiece2Pos
+        {0_in, 0_in, 0_deg}, // returnPiece2Pos
+        {0_in, 0_in, 0_deg}, // retrievePiece3Pos
+        {0_in, 0_in, 0_deg}, // returnPiece3Pos
+        {0_in, 0_in, 0_deg}, // retrievePiece4Pos
+        {0_in, 0_in, 0_deg} // returnPiece4Pos
+      }  /*  Collect Path - END  */
     }, /*  Bottom Poses - END  */
     {  /*  Game Piece Poses - START  */
       {278.389_in, 36.185_in, 0_deg},  // the bottom-most game piece
@@ -168,7 +134,7 @@ class DefinedPoses {
     }  /* Game Piece Poses - END  */
   };
 
-
+  AlliancePoses alliancePoses;
 };
 
 
