@@ -51,6 +51,8 @@ namespace wom {
     void SetAngle(units::radian_t angle);
     void SetRaw(units::volt_t voltage);
 
+    void SetArmSpeedLimit(double limit); //units, what are they?? 
+
     ArmConfig &GetConfig();
 
     units::radian_t GetAngle() const;
@@ -64,6 +66,8 @@ namespace wom {
     wom::PIDController<units::radian, units::volt> _pid;
     
     std::shared_ptr<nt::NetworkTable> _table;
+
+    double armLimit = 0.4;
 
     units::volt_t _voltage{0};
   };

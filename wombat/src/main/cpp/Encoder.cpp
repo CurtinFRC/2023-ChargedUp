@@ -15,9 +15,11 @@ void Encoder::ZeroEncoder() {
   _offset = GetEncoderRawTicks() * 1_rad;
 }
 
-void Encoder::SetEncoderPosition(units::radian_t position) {
-  units::radian_t offset_turns = position - GetEncoderPosition();
-  _offset = -offset_turns;
+void Encoder::SetEncoderPosition(units::degree_t position) {
+  // units::radian_t offset_turns = position - GetEncoderPosition();
+  units::degree_t offset = position - (GetEncoderRawTicks() * 360 * 1_deg);
+  _offset = offset;
+  // _offset = -offset_turns;
 }
 
 void Encoder::SetEncoderOffset(units::radian_t offset) {

@@ -108,7 +108,7 @@ namespace wom {
       _stableVel = _velFilter.Calculate(deriv);
 
       auto out = config.kp * error + config.ki * _integralSum + config.kd * deriv + feedforward;
-      std::cout << "Out value" << out.value() << std::endl;
+      // std::cout << "Out value" << out.value() << std::endl;
 
       _table->GetEntry("pv").SetDouble(pv.value());
       _table->GetEntry("dt").SetDouble(dt.value());

@@ -55,7 +55,18 @@ void Arm::OnUpdate(units::second_t dt) {
   //   voltage = 0_V;
   // }
 
-  voltage *= 0.4;
+  voltage *= armLimit;
+
+
+
+  // units::newton_meter_t torqueLimit = 10_kg * 1.4_m * 6_mps_sq;
+  // units::volt_t voltageMax = _config.leftGearbox.motor.Voltage(torqueLimit, _config.leftGearbox.encoder->GetEncoderAngularVelocity());
+  // units::volt_t voltageMin = _config.leftGearbox.motor.Voltage(-torqueLimit, _config.leftGearbox.encoder->GetEncoderAngularVelocity());
+
+  // voltage = units::math::max(units::math::min(voltage, voltageMax), voltageMin);
+
+  // std::cout << "voltage: " << voltage.value() << std::endl;
+
 
   _config.leftGearbox.transmission->SetVoltage(voltage);
   _config.rightGearbox.transmission->SetVoltage(voltage);
@@ -63,6 +74,10 @@ void Arm::OnUpdate(units::second_t dt) {
   //creates network table instances for the angle and config of the arm
   _table->GetEntry("angle").SetDouble(angle.convert<units::degree>().value());
   _config.WriteNT(_table->GetSubTable("config"));
+}
+
+void Arm::SetArmSpeedLimit(double limit) {
+  armLimit = limit;
 }
 
 //defines information needed for the functions and connects the states to their respective function

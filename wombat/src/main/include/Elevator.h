@@ -55,6 +55,7 @@ namespace wom {
     void SetRaw(units::volt_t voltage);
 
     double GetElevatorEncoderPos();
+    void SetElevatorSpeedLimit(double limit);
 
     ElevatorConfig &GetConfig();
     
@@ -70,6 +71,7 @@ namespace wom {
 
     ElevatorConfig _config;
     ElevatorState _state;
+    double speedLimit = 0.5;
 
     PIDController<units::meter, units::volt> _pid;
 

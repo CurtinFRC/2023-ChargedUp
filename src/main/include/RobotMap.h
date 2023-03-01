@@ -26,9 +26,6 @@
 #include <string>
 
 struct RobotMap {
-  struct Fuck {
-  }; Fuck fuck;
-    // rev::CANSparkMax m_motor{11, rev::CANSparkMax::MotorType::kBrushless};
 
   struct Controllers {  
     //sets driver station numbers for the controllers
@@ -140,8 +137,8 @@ struct RobotMap {
 
     wom::SwerveModule::angle_pid_conf_t anglePID {
       "/drivetrain/pid/angle/config",
-      10.5_V / 180_deg,
-      0.75_V / (100_deg * 1_s),
+      14_V / 180_deg,
+      0.0_V / (100_deg * 1_s),
       0_V / (100_deg / 1_s),
       1_deg,
       0.5_deg / 1_s
@@ -178,7 +175,7 @@ struct RobotMap {
       &gyro,
       poseAnglePID, 
       posePositionPID,
-      10_kg, // robot mass (estimate rn)
+      60_kg, // robot mass (estimate rn)
       {0.1, 0.1, 0.1},
       {0.9, 0.9, 0.9}
     };  
@@ -219,8 +216,8 @@ struct RobotMap {
       rev::CANSparkMax leftArmMotor{11, rev::CANSparkMax::MotorType::kBrushless}; //11
       rev::CANSparkMax rightArmMotor{12, rev::CANSparkMax::MotorType::kBrushless}; //12
 
-      rev::CANSparkMax leftPretendArmMotor{20, rev::CANSparkMax::MotorType::kBrushless};
-      rev::CANSparkMax rightPretendArmMotor{21, rev::CANSparkMax::MotorType::kBrushless};
+      rev::CANSparkMax leftPretendArmMotor{28, rev::CANSparkMax::MotorType::kBrushless};
+      rev::CANSparkMax rightPretendArmMotor{29, rev::CANSparkMax::MotorType::kBrushless};
 
       //create the motor group used for the arm
       wom::MotorVoltageController leftMotorGroup = wom::MotorVoltageController::Group(leftArmMotor);
@@ -230,6 +227,9 @@ struct RobotMap {
       //sets the type sof encoder that is used up
       wom::CANSparkMaxEncoder leftEncoder{&leftPretendArmMotor, 100};
       wom::CANSparkMaxEncoder rightEncoder{&rightPretendArmMotor, 100};
+
+      // wom::CANSparkMaxEncoder leftEncoder{&leftArmMotor, 100};
+      // wom::CANSparkMaxEncoder rightEncoder{&rightArmMotor, 100};
 
       rev::SparkMaxRelativeEncoder leftOtherArmEncoder = leftArmMotor.GetEncoder();
       rev::SparkMaxRelativeEncoder rightOtherArmEncoder = rightArmMotor.GetEncoder();
@@ -257,7 +257,7 @@ struct RobotMap {
         leftOtherArmEncoder,
         wom::PIDConfig<units::radian, units::volts>(
           "/armavator/arm/pid/config",
-          10_V / 250_deg
+          12_V / 25_deg
         ),
         5_kg, 
         5_kg,
@@ -282,8 +282,8 @@ struct RobotMap {
       rev::CANSparkMax leftElevatorMotor{9, rev::CANSparkMax::MotorType::kBrushless}; //9
       rev::CANSparkMax rightElevatorMotor{10, rev::CANSparkMax::MotorType::kBrushless}; //10
 
-      rev::CANSparkMax leftPretendElevatorMotor{18, rev::CANSparkMax::MotorType::kBrushless}; //10
-      rev::CANSparkMax rightPretendElevatorMotor{19, rev::CANSparkMax::MotorType::kBrushless}; //10
+      rev::CANSparkMax leftPretendElevatorMotor{25, rev::CANSparkMax::MotorType::kBrushless}; //10
+      rev::CANSparkMax rightPretendElevatorMotor{26, rev::CANSparkMax::MotorType::kBrushless}; //10
 
       //creates the motor group that can be used to set voltage
       wom::MotorVoltageController leftMotorGroup = wom::MotorVoltageController::Group(leftElevatorMotor);
@@ -327,7 +327,7 @@ struct RobotMap {
         {
           //creates the pid for the elevator to remove error
           "/armavator/elevator/pid/config",
-          5_V / 1_m
+          18_V / 1_m //16V
         }
       };
 

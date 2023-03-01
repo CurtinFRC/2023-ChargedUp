@@ -7,6 +7,7 @@
 #include <units/angle.h>
 #include <units/length.h>
 #include <iostream>
+#include <frc/event/EventLoop.h>
 #include "ControlUtil.h"
 
 class ArmavatorGoToPositionBehaviour : public behaviour::Behaviour {
@@ -71,10 +72,12 @@ class ArmavatorManualBehaviour : public behaviour::Behaviour {
  private: 
   Armavator *_armavator;
   ArmavatorPosition _manualSetpoint;
+  ArmavatorPosition _setpointValue;
 
   frc::XboxController &_codriver;
 
   units::meter_t startHeight; 
+  frc::EventLoop *loop;
 
   bool rawControl = true;
 };

@@ -21,15 +21,10 @@ static units::second_t lastPeriodic;
 void Robot::RobotInit() {
   lastPeriodic = wom::now();
 
-  // map.swerveBase.moduleConfigs[0].turnMotor.encoder->SetEncoderOffset(1.5232429_rad);
-  map.swerveBase.moduleConfigs[0].turnMotor.encoder->SetEncoderOffset(5.02685_rad); 
-  // map.swerveBase.moduleConfigs[1].turnMotor.encoder->SetEncoderOffset(2.2488158_rad);
-  map.swerveBase.moduleConfigs[1].turnMotor.encoder->SetEncoderOffset(5.8567_rad);
-  // map.swerveBase.moduleConfigs[2].turnMotor.encoder->SetEncoderOffset(4.445476_rad);
-  map.swerveBase.moduleConfigs[2].turnMotor.encoder->SetEncoderOffset(0.943398_rad);
-  // map.swerveBase.moduleConfigs[3].turnMotor.encoder->SetEncoderOffset(2.0800779_rad);
-  map.swerveBase.moduleConfigs[3].turnMotor.encoder->SetEncoderOffset(5.24628_rad);
-
+  map.swerveBase.moduleConfigs[0].turnMotor.encoder->SetEncoderOffset(4.1877_rad);
+  map.swerveBase.moduleConfigs[1].turnMotor.encoder->SetEncoderOffset(1.40025_rad);
+  map.swerveBase.moduleConfigs[2].turnMotor.encoder->SetEncoderOffset(1.61221_rad);
+  map.swerveBase.moduleConfigs[3].turnMotor.encoder->SetEncoderOffset(0.584498_rad);
 
   map.swerveBase.gyro.Reset();
 
@@ -46,21 +41,6 @@ void Robot::RobotInit() {
   vision->SetDefaultBehaviour([this]() {
     return make<VisionBehaviour>(vision, swerve, &map.controllers.codriver);
   });
-
-
-  //creates an instance of the armavator that can be used
-  // armavator = new Armavator(map.armavator.arm.gearbox, map.armavator.elevator.gearbox, map.armavator.config);
-  // BehaviourScheduler::GetInstance()->Register(armavator);
-  // armavator->SetDefaultBehaviour([this]() {
-  //   //sets default behaviour class
-  //   return make<ArmavatorManualBehaviour>(armavator, map.controllers.codriver);
-  // });
-
-  // gripper = new Gripper(map.gripper.config);
-  // BehaviourScheduler::GetInstance()->Register(gripper);
-  // gripper->SetDefaultBehaviour([this]() {
-  //   return make<GripperBehaviour>(gripper, map.controllers.codriver);
-  // });
 
   armavator = new Armavator(map.armavator.arm.leftGearbox, map.armavator.arm.rightGearbox, map.armavator.elevator.rightGearbox, map.armavator.elevator.leftGearbox, map.armavator.config);
   BehaviourScheduler::GetInstance()->Register(armavator);
@@ -150,20 +130,20 @@ void Robot::TeleopPeriodic() {
 
   if (compressorToggle) {
     map.controlSystem.pcmCompressor.EnableDigital();
-      std::cout << "compressor true" << std::endl;
+      // std::cout << "compressor true" << std::endl;
   } else {
     map.controlSystem.pcmCompressor.Disable();
-      std::cout << "compressor false" << std::endl;
+      // std::cout << "compressor false" << std::endl;
   }
 
-  std::cout << "module 0: " << map.swerveBase.moduleConfigs[0].turnMotor.encoder->GetEncoderPosition().value() << std::endl;
-  std::cout << "module 1: " << map.swerveBase.moduleConfigs[1].turnMotor.encoder->GetEncoderPosition().value() << std::endl;
-  std::cout << "module 2: " << map.swerveBase.moduleConfigs[2].turnMotor.encoder->GetEncoderPosition().value() << std::endl;
-  std::cout << "module 3: " << map.swerveBase.moduleConfigs[3].turnMotor.encoder->GetEncoderPosition().value() << std::endl;
+  // std::cout << "module 0: " << map.swerveBase.moduleConfigs[0].turnMotor.encoder->GetEncoderPosition().value() << std::endl;
+  // std::cout << "module 1: " << map.swerveBase.moduleConfigs[1].turnMotor.encoder->GetEncoderPosition().value() << std::endl;
+  // std::cout << "module 2: " << map.swerveBase.moduleConfigs[2].turnMotor.encoder->GetEncoderPosition().value() << std::endl;
+  // std::cout << "module 3: " << map.swerveBase.moduleConfigs[3].turnMotor.encoder->GetEncoderPosition().value() << std::endl;
 
 
-  map.armTable.armManualTable->GetEntry("armSetpoint").SetDouble(_armSetpoint.convert<units::degree>().value());
-  map.armTable.armManualTable->GetEntry("elevatorSetpoint").SetDouble(_elevatorSetpoint.convert<units::meter>().value());
+  // map.armTable.armManualTable->GetEntry("armSetpoint").SetDouble(armavator->_manualSetpoint.angle.value());
+  // map.armTable.armManualTable->GetEntry("elevatorSetpoint").SetDouble(armavator->_manualSetpoint.height.value());
 }
 
 void Robot::DisabledInit() { 

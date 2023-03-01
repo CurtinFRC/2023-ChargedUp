@@ -41,7 +41,7 @@ void Elevator::OnUpdate(units::second_t dt) {
     case ElevatorState::kPID:
       {
         units::volt_t feedforward = _config.rightGearbox.motor.Voltage((_config.mass * 9.81_mps_sq) * _config.radius, 0_rad_per_s);
-        std::cout << "feed forward" << feedforward.value() << std::endl;
+        // std::cout << "feed forward" << feedforward.value() << std::endl;
         feedforward = 1.2_V;
         // voltage = _pid.Calculate(height, dt, feedforward);
         voltage = _pid.Calculate(height, dt, feedforward);
@@ -72,7 +72,7 @@ void Elevator::OnUpdate(units::second_t dt) {
   // }
 
   // Set voltage to motors...
-  voltage *= 0.5;
+  voltage *= speedLimit;
   _config.leftGearbox.transmission->SetVoltage(voltage);
   _config.rightGearbox.transmission->SetVoltage(voltage);
 }
@@ -87,6 +87,10 @@ void Elevator::SetManual(units::volt_t voltage) {
 void Elevator::SetPID(units::meter_t height) {
   _state = ElevatorState::kPID;
   _pid.SetSetpoint(height);
+}
+
+void Elevator::SetElevatorSpeedLimit(double limit) {
+  speedLimit = limit;
 }
 
 void Elevator::SetIdle() {
