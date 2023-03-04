@@ -82,7 +82,7 @@ class DefinedPoses {
       // {221.744_in, 17.986_in, 0_deg}, // taxiPos
 
 
-
+      // the following are just for testing without vision
       {0_in, 0_in, 0_deg}, // startPos
       {10.077_in, 60.575_in, 0_deg}, // dock_LineUp_Pos
       {52.097_in, 60.575_in, 0_deg}, // dockPos
@@ -112,34 +112,59 @@ class DefinedPoses {
 
   AlliancePoses redAlliancePoses{
     {  // Top Poses - START  */
-      {0_m, 0_m, 0_deg}, // startPos
-      {0_m, 0_m, 0_deg}, // dock_LineUp_Pos
-      {0_m, 0_m, 0_deg}, // dockPos
-      {0_m, 0_m, 0_deg}, // stealPos
-      {0_m, 0_m, 0_deg}, // taxiPos
-      {0_m, 0_m, 0_deg}  // subStationWaitPos
+      {72.055_in, 196.3_in, 0_deg}, // startPos
+      {83.607_in, 139.388_in, 0_deg}, // dock_LineUp_Pos
+      {122.808_in, 139.286_in, 0_deg}, // dockPos
+      {287.887_in, 180.555_in, 0_deg}, // stealPos
+      {171.061_in, 195.748_in, 0_deg}, // taxiPos
+      {291.192_in, 246.31_in, 0_deg},  // subStationWaitPos
+      {  /*  Collect Path - START  */
+        {72.055_in, 196.3_in, 0_deg}, // startingFromPos
+        {278.389_in, 180.185_in, 0_deg}, // retrievePiece1Pos
+        {132.81_in, 156.185_in, 0_deg}, // returnPiece1Pos
+        {278.389_in, 132.185_in, 0_deg}, // retrievePiece2Pos
+        {132.81_in, 108.185_in, 0_deg}, // returnPiece2Pos
+        {278.389_in, 84.185_in, 0_deg}, // retrievePiece3Pos
+        {132.81_in, 60.185_in, 0_deg}, // returnPiece3Pos
+        {278.389_in, 36.185_in, 0_deg}, // retrievePiece4Pos
+        {132.81_in, 36.185_in, 0_deg} // returnPiece4Pos
+      }  /*  Collect Path - END  */
     }, /*  Top Poses - END  */
     {  /*  Middle Poses - START  */
-      {0_m, 0_m, 0_deg}, // startPos
-      {0_m, 0_m, 0_deg}, // dock_LineUp_Pos
-      {0_m, 0_m, 0_deg}, // dockPos
+      {72.043_in, 86.608_in, 0_deg}, // startPos
+      {83.629_in, 107.795_in, 0_deg}, // dock_LineUp_Pos
+      {122.407_in, 107.992_in, 0_deg}, // dockPos
+
       {0_m, 0_m, 0_deg}, // stealPos
       {0_m, 0_m, 0_deg}, // taxiPos
-      {0_m, 0_m, 0_deg}  // subStationWaitPos
+      {0_m, 0_m, 0_deg},  // subStationWaitPos
+
     }, /*  Middle Poses - END  */
     {  /*  Bottom Poses - START  */
-      {0_m, 0_m, 0_deg}, // startPos
-      {0_m, 0_m, 0_deg}, // dock_LineUp_Pos
-      {0_m, 0_m, 0_deg}, // dockPos
-      {0_m, 0_m, 0_deg}, // stealPos
-      {0_m, 0_m, 0_deg}, // taxiPos
-      {0_m, 0_m, 0_deg}  // subStationWaitPos
+      {72.061_in, 20.208_in, 0_deg}, // startPos
+      {82.138_in, 76.783_in, 0_deg}, // dock_LineUp_Pos
+      {124.158_in, 75.594_in, 0_deg}, // dockPos
+      {288.932_in, 35.832_in, 0_deg}, // stealPos
+      {221.744_in, 17.986_in, 0_deg}, // taxiPos
+
+      {0_m, 0_m, 0_deg},  // subStationWaitPos
+      {  /*  Collect Path - START  */
+        {72.061_in, 20.208_in, 0_deg}, // startingFromPos
+        {278.389_in, 36.185_in, 0_deg}, // retrievePiece1Pos
+        {132.81_in, 60.185_in, 0_deg}, // returnPiece1Pos
+        {278.389_in, 84.185_in, 0_deg}, // retrievePiece2Pos
+        {132.81_in, 108.185_in, 0_deg}, // returnPiece2Pos
+        {278.389_in, 132.185_in, 0_deg}, // retrievePiece3Pos
+        {132.81_in, 156.185_in, 0_deg}, // returnPiece3Pos
+        {278.389_in, 180.185_in, 0_deg}, // retrievePiece4Pos
+        {132.81_in, 180.185_in, 0_deg} // returnPiece4Pos
+      }  /*  Collect Path - END  */
     }, /*  Bottom Poses - END  */
     {  /*  Game Piece Poses - START  */
-      {0_m, 0_m, 0_deg},  // the bottom-most game piece
-      {0_m, 0_m, 0_deg},  // the bottom-middle game piece
-      {0_m, 0_m, 0_deg},  // the top-middle game piece
-      {0_m, 0_m, 0_deg}  // the top-most game piece
+      {278.389_in, 36.185_in, 0_deg},  // the bottom-most game piece
+      {278.389_in, 84.185_in, 0_deg},  // the bottom-middle game piece
+      {278.389_in, 132.185_in, 0_deg},  // the top-middle game piece
+      {278.389_in, 180.185_in, 0_deg}  // the top-most game piece
     }  /* Game Piece Poses - END  */
   };
 
@@ -166,8 +191,14 @@ enum EndingConfig {
   Steal,
   Collect,
   PrepareManual, // get rdy to go collect from substation
-  Taxi
+  Taxi,
+  CollectDock
 };
+
+/*
+for CollectDock, could move the Collect out of the switch statement
+we can treat it like an else condition, and then we do if (collect) and if (collectDock), both using same variable names
+*/
 
 AutoPathDetails GetAutoPathingDetails(Drivebase drivebase, StartingConfig startConfig, EndingConfig endConfig, bool blueAlliance, int calledFromID, std::vector<frc::Pose2d> adjustmentPoses = {});
 

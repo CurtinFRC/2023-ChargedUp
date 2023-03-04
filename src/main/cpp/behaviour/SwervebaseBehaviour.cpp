@@ -26,9 +26,6 @@ void ManualDrivebase::OnStart(units::second_t dt) {
 }
 
 void ManualDrivebase::OnTick(units::second_t deltaTime) {
-
-  int individualTuningModNum = 0;
-
   if (_driverController->GetLeftBumperPressed()){
     maxMovementMagnitude = highSensitivityDriveSpeed;
     maxRotationMagnitude = highSensitivityRotateSpeed;
@@ -53,22 +50,30 @@ void ManualDrivebase::OnTick(units::second_t deltaTime) {
     double r_x = wom::spow2(-wom::deadzone(_driverController->GetRightX(), turningDeadzone));
     double r_y = wom::spow2(-wom::deadzone(_driverController->GetRightY(), turningDeadzone));
 
+
+
+    double turnX = _driverController->GetRightX();   double turnY = _driverController->GetRightY();
+    double num = sqrt(turnX * turnX + turnY * turnY);
+    if (num < turningDeadzone) {
+      turnX = 0;  turnY = 0;
+    }
+
     if (_swerveDrivebase->GetIsFieldRelative()) {  // Field Relative Controls
       frc::Pose2d currentPose = _swerveDrivebase->GetPose();
       units::degree_t currentAngle = currentPose.Rotation().Degrees();
-      CalculateRequestedAngle(r_x, r_y, currentAngle);
+      CalculateRequestedAngle(turnX, turnY, currentAngle);
 
-      // _swerveDrivebase->RotateMatchJoystick(_requestedAngle, wom::FieldRelativeSpeeds{
-      //   xVelocity * maxMovementMagnitude,
-      //   yVelocity * maxMovementMagnitude,
-      //   r_x * maxRotationMagnitude
-      // });
-
-      _swerveDrivebase->SetFieldRelativeVelocity(wom::FieldRelativeSpeeds{
+      _swerveDrivebase->RotateMatchJoystick(_requestedAngle, wom::FieldRelativeSpeeds{
         xVelocity * maxMovementMagnitude,
         yVelocity * maxMovementMagnitude,
         r_x * maxRotationMagnitude
       });
+
+      // _swerveDrivebase->SetFieldRelativeVelocity(wom::FieldRelativeSpeeds{
+      //   xVelocity * maxMovementMagnitude,
+      //   yVelocity * maxMovementMagnitude,
+      //   r_x * maxRotationMagnitude
+      // });
     }
     else {  // Robot Relative Controls
       _swerveDrivebase->SetVelocity(frc::ChassisSpeeds{

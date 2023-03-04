@@ -83,6 +83,7 @@ AutoPathDetails GetAutoPathingDetails(Drivebase drivebase, StartingConfig startC
         endPathing = make<DrivebasePoseBehaviour>(drivebase.swerve, definedPoses.poseSet.stealPos);
       break;
   }
+
   autoPathingDetails.endPathing = autoPathingDetails.endPathing << endPathing;
   return autoPathingDetails;
 }
