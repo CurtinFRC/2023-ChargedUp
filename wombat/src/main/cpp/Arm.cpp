@@ -5,6 +5,7 @@
 using namespace frc;
 using namespace wom;
 
+//creates network table instatnce on shuffleboard
 void ArmConfig::WriteNT(std::shared_ptr<nt::NetworkTable> table) {
   table->GetEntry("armMass").SetDouble(armMass.value());
   table->GetEntry("loadMass").SetDouble(loadMass.value());
@@ -15,18 +16,21 @@ void ArmConfig::WriteNT(std::shared_ptr<nt::NetworkTable> table) {
   table->GetEntry("angleOffset").SetDouble(initialAngle.convert<units::degree>().value());
 }
 
+//arm config is used
 Arm::Arm(ArmConfig config)
   : _config(config),
     _pid(config.path + "/pid", config.pidConfig),
     _table(nt::NetworkTableInstance::GetDefault().GetTable(config.path))
 {
-  // _config.gearbox.encoder->SetEncoderPosition(_config.initialAngle);
 }
 
+//the loop that allows the information to be used
 void Arm::OnUpdate(units::second_t dt) {
+  //sets the voltage and gets the current angle
   units::volt_t voltage = 0_V;
   auto angle = GetAngle();
 
+  //sets usable infromation for each state
   switch (_state) {
     case ArmState::kIdle:
       break;
@@ -34,6 +38,7 @@ void Arm::OnUpdate(units::second_t dt) {
       {
         units::newton_meter_t torque = 9.81_m / 1_s / 1_s * _config.armLength * units::math::cos(angle + _config.angleOffset) * (0.5 * _config.armMass + _config.loadMass);
         units::volt_t feedforward = _config.leftGearbox.motor.Voltage(torque, 0_rad/ 1_s);
+        // std::cout << "feedforward" << feedforward.value() << std::endl;
         voltage = _pid.Calculate(angle, dt, feedforward);
       }
       break;
@@ -44,19 +49,38 @@ void Arm::OnUpdate(units::second_t dt) {
 
   // if (
   //   (((_config.minAngle + _config.angleOffset) < 75_deg && units::math::abs(_pid.GetSetpoint() - _config.minAngle) <= 1_deg)
-  //    || ((_config.maxAngle + _config.angleOffset) > 105_deg && units::math::abs(_pid.GetSetpoint() - _config.maxAngle) <= 1_deg)) && 
+    //  || ((_config.maxAngle + _config.angleOffset) > 105_deg && units::math::abs(_pid.GetSetpoint() - _config.maxAngle) <= 1_deg)) && 
   //   units::math::abs(_pid.GetError()) <= 1_deg
   // ) {
   //   voltage = 0_V;
   // }
-  voltage *= 0.2;
+
+  voltage *= armLimit;
+
+
+
+  // units::newton_meter_t torqueLimit = 10_kg * 1.4_m * 6_mps_sq;
+  // units::volt_t voltageMax = _config.leftGearbox.motor.Voltage(torqueLimit, _config.leftGearbox.encoder->GetEncoderAngularVelocity());
+  // units::volt_t voltageMin = _config.leftGearbox.motor.Voltage(-torqueLimit, _config.leftGearbox.encoder->GetEncoderAngularVelocity());
+
+  // voltage = units::math::max(units::math::min(voltage, voltageMax), voltageMin);
+
+  // std::cout << "voltage: " << voltage.value() << std::endl;
+
 
   _config.leftGearbox.transmission->SetVoltage(voltage);
   _config.rightGearbox.transmission->SetVoltage(voltage);
 
+  //creates network table instances for the angle and config of the arm
   _table->GetEntry("angle").SetDouble(angle.convert<units::degree>().value());
   _config.WriteNT(_table->GetSubTable("config"));
 }
+
+void Arm::SetArmSpeedLimit(double limit) {
+  armLimit = limit;
+}
+
+//defines information needed for the functions and connects the states to their respective function
 
 void Arm::SetIdle() {
   _state = ArmState::kIdle;
@@ -77,7 +101,7 @@ ArmConfig &Arm::GetConfig() {
 }
 
 units::radian_t Arm::GetAngle() const {
-  return _config.leftGearbox.encoder->GetEncoderPosition();
+  return _config.armEncoder.GetPosition() / 100 * 360 * 1_deg;
 }
 
 units::radians_per_second_t Arm::MaxSpeed() const {

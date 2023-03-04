@@ -25,27 +25,17 @@ void ManualDrivebase::OnStart(units::second_t dt) {
   std::cout << "Manual Drivebase Start" << std::endl;
 }
 
-
-
-
-
 void ManualDrivebase::OnTick(units::second_t deltaTime) {
-
-
 
   int individualTuningModNum = 0;
 
   if (_driverController->GetLeftBumperPressed()){
-    // maxMovementMagnitude = highSensitivityDriveSpeed;
-    // maxRotationMagnitude = highSensitivityRotateSpeed;
-
-    _swerveDrivebase->SetIndividualTuning(individualTuningModNum, 0_deg, 0_mps);
-
+    maxMovementMagnitude = highSensitivityDriveSpeed;
+    maxRotationMagnitude = highSensitivityRotateSpeed;
   }
   if (_driverController->GetRightBumperPressed()){
-    // maxMovementMagnitude = lowSensitivityDriveSpeed;
-    // maxRotationMagnitude = lowSensitivityRotateSpeed;
-    _swerveDrivebase->SetIndividualTuning(individualTuningModNum, 90_deg, 0_mps);
+    maxMovementMagnitude = lowSensitivityDriveSpeed;
+    maxRotationMagnitude = lowSensitivityRotateSpeed;
   }
 
 
@@ -60,8 +50,8 @@ void ManualDrivebase::OnTick(units::second_t deltaTime) {
     double xVelocity = wom::spow2(-wom::deadzone(_driverController->GetLeftY(), driverDeadzone));  // GetLeftY due to x being where y should be on field
     double yVelocity = wom::spow2(-wom::deadzone(_driverController->GetLeftX(), driverDeadzone));
 
-    double r_x = wom::spow2(wom::deadzone(_driverController->GetRightX(), turningDeadzone));
-    double r_y = wom::spow2(wom::deadzone(_driverController->GetRightY(), turningDeadzone));
+    double r_x = wom::spow2(-wom::deadzone(_driverController->GetRightX(), turningDeadzone));
+    double r_y = wom::spow2(-wom::deadzone(_driverController->GetRightY(), turningDeadzone));
 
     if (_swerveDrivebase->GetIsFieldRelative()) {  // Field Relative Controls
       frc::Pose2d currentPose = _swerveDrivebase->GetPose();

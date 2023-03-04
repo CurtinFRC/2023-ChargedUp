@@ -19,7 +19,7 @@ namespace wom {
     virtual double    GetEncoderTickVelocity() const = 0;  // ticks/s
     virtual void      ZeroEncoder();
 
-    void SetEncoderPosition(units::radian_t position);
+    void SetEncoderPosition(units::degree_t position);
     void SetEncoderOffset(units::radian_t offset);
 
     double  GetEncoderTicks() const;

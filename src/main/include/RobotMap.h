@@ -37,20 +37,19 @@ struct RobotMap {
 
   struct Controllers {    
     //sets driver station numbers for the controllers
-    wom::PS4Controller driver{0};
+    wom::XboxController driver{0};
     frc::XboxController codriver{1};
-    frc::XboxController tester{2};
   };
   Controllers controllers;
 
-  // struct ControlSystem {
-  //   frc::Compressor pcmCompressor{1, frc::PneumaticsModuleType::CTREPCM};
-  // }; ControlSystem controlSystem;
+struct ControlSystem {
+    frc::Compressor pcmCompressor{2, frc::PneumaticsModuleType::REVPH};
+  }; ControlSystem controlSystem;
 
-  // struct GripTest {
-  //   // rev::CANSparkMax gripper{19, rev::CANSparkMax::MotorType::kBrushless};
-  //   VictorSPX gripper{18};
-  // }; GripTest grTest;
+  struct GripTest {
+    // rev::CANSparkMax gripper{19, rev::CANSparkMax::MotorType::kBrushless};
+    VictorSPX gripper{18};
+  }; GripTest grTest;
 
   //stores nessesary info for vision
   struct Vision {
@@ -144,7 +143,7 @@ struct RobotMap {
     // Setting the PID path and values to be used for SwerveDrive and SwerveModules
     wom::SwerveModule::angle_pid_conf_t anglePID {
       "/drivetrain/pid/angle/config",
-      11_V / 180_deg,
+      14_V / 180_deg,
       0.0_V / (100_deg * 1_s),
       0_V / (100_deg / 1_s),
       1_deg,
@@ -159,7 +158,7 @@ struct RobotMap {
       180_deg / 1_s / 45_deg,
       wom::SwerveDriveConfig::pose_angle_conf_t::ki_t{0.1},
       0_deg / 1_deg,
-      3_deg,
+      10_deg,
       10_deg / 1_s
     };
     wom::SwerveDriveConfig::pose_position_conf_t posePositionPID{
@@ -180,7 +179,7 @@ struct RobotMap {
       &gyro,
       poseAnglePID, 
       posePositionPID,
-      10_kg, // robot mass (estimate rn)
+      60_kg, // robot mass (estimate rn)
       {0.1, 0.1, 0.1},
       {0.9, 0.9, 0.9}
     };  
@@ -248,25 +247,36 @@ struct RobotMap {
       rev::CANSparkMax leftArmMotor{11, rev::CANSparkMax::MotorType::kBrushless}; //11
       rev::CANSparkMax rightArmMotor{12, rev::CANSparkMax::MotorType::kBrushless}; //12
 
+      rev::CANSparkMax leftPretendArmMotor{28, rev::CANSparkMax::MotorType::kBrushless};
+      rev::CANSparkMax rightPretendArmMotor{29, rev::CANSparkMax::MotorType::kBrushless};
+
       //create the motor group used for the arm
       wom::MotorVoltageController leftMotorGroup = wom::MotorVoltageController::Group(leftArmMotor);
       wom::MotorVoltageController rightMotorGroup = wom::MotorVoltageController::Group(rightArmMotor);
       
       // wom::DigitalEncoder encoder{0, 1, 2048};
       //sets the type sof encoder that is used up
-      wom::CANSparkMaxEncoder leftEncoder{&leftArmMotor, 100};
-      wom::CANSparkMaxEncoder rightEncoder{&rightArmMotor, 100};
+      wom::CANSparkMaxEncoder leftEncoder{&leftPretendArmMotor, 100};
+      wom::CANSparkMaxEncoder rightEncoder{&rightPretendArmMotor, 100};
+
+      // wom::CANSparkMaxEncoder leftEncoder{&leftArmMotor, 100};
+      // wom::CANSparkMaxEncoder rightEncoder{&rightArmMotor, 100};
+
+      rev::SparkMaxRelativeEncoder leftOtherArmEncoder = leftArmMotor.GetEncoder();
+      rev::SparkMaxRelativeEncoder rightOtherArmEncoder = rightArmMotor.GetEncoder();
 
       //creates an instance of the arm gearbox
       wom::Gearbox leftGearbox {
         &leftMotorGroup,
         &leftEncoder,
+        // nullptr,
         wom::DCMotor::NEO(1).WithReduction(100)
       };
 
       wom::Gearbox rightGearbox {
         &rightMotorGroup,
         &rightEncoder,
+        // nullptr,
         wom::DCMotor::NEO(1).WithReduction(100)
       };
 
@@ -275,9 +285,10 @@ struct RobotMap {
         "/armavator/arm",
         leftGearbox,
         rightGearbox,
+        leftOtherArmEncoder,
         wom::PIDConfig<units::radian, units::volts>(
           "/armavator/arm/pid/config",
-          10_V / 250_deg
+          12_V / 25_deg
         ),
         5_kg, 
         5_kg,
@@ -302,24 +313,32 @@ struct RobotMap {
       rev::CANSparkMax leftElevatorMotor{9, rev::CANSparkMax::MotorType::kBrushless}; //9
       rev::CANSparkMax rightElevatorMotor{10, rev::CANSparkMax::MotorType::kBrushless}; //10
 
+      rev::CANSparkMax leftPretendElevatorMotor{25, rev::CANSparkMax::MotorType::kBrushless}; //10
+      rev::CANSparkMax rightPretendElevatorMotor{26, rev::CANSparkMax::MotorType::kBrushless}; //10
+
       //creates the motor group that can be used to set voltage
       wom::MotorVoltageController leftMotorGroup = wom::MotorVoltageController::Group(leftElevatorMotor);
       wom::MotorVoltageController rightMotorGroup = wom::MotorVoltageController::Group(rightElevatorMotor);
 
       //creates an instance of the encoder that will be used for the elevator
-      wom::CANSparkMaxEncoder leftEncoder{&leftElevatorMotor, 14/60};
-      wom::CANSparkMaxEncoder rightEncoder{&rightElevatorMotor, 14/60};
+      wom::CANSparkMaxEncoder leftEncoder{&leftPretendElevatorMotor, 14/60};
+      wom::CANSparkMaxEncoder rightEncoder{&rightPretendElevatorMotor, 14/60};
+
+      rev::SparkMaxRelativeEncoder leftOtherEncoder= leftElevatorMotor.GetEncoder();
+      rev::SparkMaxRelativeEncoder rightOtherEncoder= rightElevatorMotor.GetEncoder();
 
       //creates an instance of the gearbox used for the elevator
       wom::Gearbox leftGearbox {
         &leftMotorGroup,
         &leftEncoder,
+        // nullptr,
         wom::DCMotor::NEO(1).WithReduction(14/60)
       };
 
       wom::Gearbox rightGearbox {
         &rightMotorGroup,
         &rightEncoder,
+        // nullptr,
         wom::DCMotor::NEO(1).WithReduction(14/60)
       };
 
@@ -328,6 +347,7 @@ struct RobotMap {
         "/armavator/elevator",
         leftGearbox,
         rightGearbox,
+        leftOtherEncoder,
         nullptr,
         nullptr,
         48.26_mm / 2,
@@ -338,7 +358,7 @@ struct RobotMap {
         {
           //creates the pid for the elevator to remove error
           "/armavator/elevator/pid/config",
-          2_V / 1_m
+          18_V / 1_m //16V
         }
       };
 
@@ -366,57 +386,57 @@ struct RobotMap {
     };
   }; Armavator armavator;
 
-  // //creates the arm and swerve instances for network tables on shuffleboard
-  // struct ArmTable {
-  //   std::shared_ptr<nt::NetworkTable> armManualTable = nt::NetworkTableInstance::GetDefault().GetTable("armManual");
-  // }; ArmTable armTable;
+  //creates the arm and swerve instances for network tables on shuffleboard
+  struct ArmTable {
+    std::shared_ptr<nt::NetworkTable> armManualTable = nt::NetworkTableInstance::GetDefault().GetTable("armManual");
+  }; ArmTable armTable;
 
   struct SwerveTable {
     std::shared_ptr<nt::NetworkTable> swerveDriveTable = nt::NetworkTableInstance::GetDefault().GetTable("swerve");
   }; SwerveTable swerveTable;
 
-  // struct IntakeTable {
-  //   std::shared_ptr<nt::NetworkTable> intakeTable = nt::NetworkTableInstance::GetDefault().GetTable("intake");
-  // }; IntakeTable intakeTable;
+  struct IntakeTable {
+    std::shared_ptr<nt::NetworkTable> intakeTable = nt::NetworkTableInstance::GetDefault().GetTable("intake");
+  }; IntakeTable intakeTable;
 
-  // struct SideIntakeSystem {
-  //   WPI_VictorSPX leftIntakeMotor{13};
-  //   WPI_VictorSPX rightIntakeMotor{14};
+  struct SideIntakeSystem {
+    WPI_VictorSPX leftIntakeMotor{13};
+    WPI_VictorSPX rightIntakeMotor{14};
 
-  //   wom::MotorVoltageController leftMotorGroup = wom::MotorVoltageController::Group(leftIntakeMotor);
-  //   wom::MotorVoltageController rightMotorGroup = wom::MotorVoltageController::Group(rightIntakeMotor);
+    wom::MotorVoltageController leftMotorGroup = wom::MotorVoltageController::Group(leftIntakeMotor);
+    wom::MotorVoltageController rightMotorGroup = wom::MotorVoltageController::Group(rightIntakeMotor);
 
-  //   wom::Gearbox leftGearbox {
-  //     &leftMotorGroup,
-  //     nullptr,
-  //     wom::DCMotor::Bag(1).WithReduction(10)
-  //   };
+    wom::Gearbox leftGearbox {
+      &leftMotorGroup,
+      nullptr,
+      wom::DCMotor::Bag(1).WithReduction(10)
+    };
 
-  //   wom::Gearbox rightGearbox {
-  //     &rightMotorGroup,
-  //     nullptr,
-  //     wom::DCMotor::Bag(1).WithReduction(10)
-  //   };
+    wom::Gearbox rightGearbox {
+      &rightMotorGroup,
+      nullptr,
+      wom::DCMotor::Bag(1).WithReduction(10)
+    };
 
-  //   frc::DoubleSolenoid claspSolenoid{2, frc::PneumaticsModuleType::REVPH, 1, 2};
-  //   frc::DoubleSolenoid deploySolenoid{2, frc::PneumaticsModuleType::REVPH, 0, 3};
+    frc::DoubleSolenoid claspSolenoid{2, frc::PneumaticsModuleType::REVPH, 1, 2};
+    frc::DoubleSolenoid deploySolenoid{2, frc::PneumaticsModuleType::REVPH, 0, 3};
 
-  //   SideIntakeConfig config{
-  //     &claspSolenoid,
-  //     &deploySolenoid,
-  //     &rightGearbox,
-  //     &leftGearbox
-  //   };
-  // }; 
-  // SideIntakeSystem sideIntake;
+    SideIntakeConfig config{
+      &claspSolenoid,
+      &deploySolenoid,
+      &rightGearbox,
+      &leftGearbox
+    };
+  }; 
+  SideIntakeSystem sideIntake;
 
-  // struct GripperSystem {
-  //   wom::MotorVoltageController gripperMotor{ new WPI_VictorSPX(15)};
+  struct GripperSystem {
+    wom::MotorVoltageController gripperMotor{ new WPI_VictorSPX(15)};
 
-  //   TOF gamepiecePresence{frc::I2C::Port::kMXP};
+    TOF gamepiecePresence{frc::I2C::Port::kMXP};
 
-  //   GripperConfig config{
-  //     &gripperMotor
-  //   };
-  // }; GripperSystem gripper;
+    GripperConfig config{
+      &gripperMotor
+    };
+  }; GripperSystem gripper;
 };

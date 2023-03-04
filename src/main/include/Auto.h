@@ -43,6 +43,7 @@ class DefinedPoses {
     GamePiecePoses gamePiecePoses{};
   };
 
+
   AlliancePoses blueAlliancePoses{
     {  // Top Poses - START  */
       {72.055_in, 196.3_in, 0_deg}, // startPos
@@ -52,15 +53,15 @@ class DefinedPoses {
       {171.061_in, 195.748_in, 0_deg}, // taxiPos
       {291.192_in, 246.31_in, 0_deg},  // subStationWaitPos
       {  /*  Collect Path - START  */
-        {0_in, 0_in, 0_deg}, // startingFromPos
-        {0_in, 0_in, 0_deg}, // retrievePiece1Pos
-        {0_in, 0_in, 0_deg}, // returnPiece1Pos
-        {0_in, 0_in, 0_deg}, // retrievePiece2Pos
-        {0_in, 0_in, 0_deg}, // returnPiece2Pos
-        {0_in, 0_in, 0_deg}, // retrievePiece3Pos
-        {0_in, 0_in, 0_deg}, // returnPiece3Pos
-        {0_in, 0_in, 0_deg}, // retrievePiece4Pos
-        {0_in, 0_in, 0_deg} // returnPiece4Pos
+        {72.055_in, 196.3_in, 0_deg}, // startingFromPos
+        {278.389_in, 180.185_in, 0_deg}, // retrievePiece1Pos
+        {132.81_in, 156.185_in, 0_deg}, // returnPiece1Pos
+        {278.389_in, 132.185_in, 0_deg}, // retrievePiece2Pos
+        {132.81_in, 108.185_in, 0_deg}, // returnPiece2Pos
+        {278.389_in, 84.185_in, 0_deg}, // retrievePiece3Pos
+        {132.81_in, 60.185_in, 0_deg}, // returnPiece3Pos
+        {278.389_in, 36.185_in, 0_deg}, // retrievePiece4Pos
+        {132.81_in, 36.185_in, 0_deg} // returnPiece4Pos
       }  /*  Collect Path - END  */
     }, /*  Top Poses - END  */
     {  /*  Middle Poses - START  */
@@ -74,23 +75,31 @@ class DefinedPoses {
 
     }, /*  Middle Poses - END  */
     {  /*  Bottom Poses - START  */
-      {72.061_in, 20.208_in, 0_deg}, // startPos
-      {82.138_in, 76.783_in, 0_deg}, // dock_LineUp_Pos
-      {124.158_in, 75.594_in, 0_deg}, // dockPos
+      // {72.061_in, 20.208_in, 0_deg}, // startPos
+      // {82.138_in, 76.783_in, 0_deg}, // dock_LineUp_Pos
+      // {124.158_in, 75.594_in, 0_deg}, // dockPos
+      // {288.932_in, 35.832_in, 0_deg}, // stealPos
+      // {221.744_in, 17.986_in, 0_deg}, // taxiPos
+
+
+
+      {0_in, 0_in, 0_deg}, // startPos
+      {10.077_in, 60.575_in, 0_deg}, // dock_LineUp_Pos
+      {52.097_in, 60.575_in, 0_deg}, // dockPos
       {288.932_in, 35.832_in, 0_deg}, // stealPos
       {221.744_in, 17.986_in, 0_deg}, // taxiPos
 
       {0_m, 0_m, 0_deg},  // subStationWaitPos
       {  /*  Collect Path - START  */
-        {0_in, 0_in, 0_deg}, // startingFromPos
-        {0_in, 0_in, 0_deg}, // retrievePiece1Pos
-        {0_in, 0_in, 0_deg}, // returnPiece1Pos
-        {0_in, 0_in, 0_deg}, // retrievePiece2Pos
-        {0_in, 0_in, 0_deg}, // returnPiece2Pos
-        {0_in, 0_in, 0_deg}, // retrievePiece3Pos
-        {0_in, 0_in, 0_deg}, // returnPiece3Pos
-        {0_in, 0_in, 0_deg}, // retrievePiece4Pos
-        {0_in, 0_in, 0_deg} // returnPiece4Pos
+        {72.061_in, 20.208_in, 0_deg}, // startingFromPos
+        {278.389_in, 36.185_in, 0_deg}, // retrievePiece1Pos
+        {132.81_in, 60.185_in, 0_deg}, // returnPiece1Pos
+        {278.389_in, 84.185_in, 0_deg}, // retrievePiece2Pos
+        {132.81_in, 108.185_in, 0_deg}, // returnPiece2Pos
+        {278.389_in, 132.185_in, 0_deg}, // retrievePiece3Pos
+        {132.81_in, 156.185_in, 0_deg}, // returnPiece3Pos
+        {278.389_in, 180.185_in, 0_deg}, // retrievePiece4Pos
+        {132.81_in, 180.185_in, 0_deg} // returnPiece4Pos
       }  /*  Collect Path - END  */
     }, /*  Bottom Poses - END  */
     {  /*  Game Piece Poses - START  */

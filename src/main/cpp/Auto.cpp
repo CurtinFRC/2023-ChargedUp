@@ -42,8 +42,8 @@ AutoPathDetails GetAutoPathingDetails(Drivebase drivebase, StartingConfig startC
   switch (endConfig) {
     case EndingConfig::Dock:
         {
-        auto wait_until1 = make<DrivebasePoseBehaviour>(drivebase.swerve, definedPoses.poseSet.dock_LineUp_Pos) | make<WaitTime>(3_s); // because PID
-        auto wait_until2 = make<DrivebasePoseBehaviour>(drivebase.swerve, definedPoses.poseSet.dockPos) | make<WaitTime>(2_s); // because PID
+        auto wait_until1 = make<DrivebasePoseBehaviour>(drivebase.swerve, definedPoses.poseSet.dock_LineUp_Pos); // because PID
+        auto wait_until2 = make<DrivebasePoseBehaviour>(drivebase.swerve, definedPoses.poseSet.dockPos); // because PID
         endPathing = wait_until1 << wait_until2 << make<DrivebaseBalance>(drivebase.swerve, drivebase.gyro);
       break;}
     case EndingConfig::PrepareManual:
@@ -63,16 +63,16 @@ AutoPathDetails GetAutoPathingDetails(Drivebase drivebase, StartingConfig startC
         auto drive9 = make<DrivebasePoseBehaviour>(drivebase.swerve, definedPoses.poseSet.collectPath.returnPiece3Pos) | make<WaitTime>(2_s); // because PID;
         auto drive10 = make<DrivebasePoseBehaviour>(drivebase.swerve, definedPoses.poseSet.collectPath.retrievePiece4Pos) | make<WaitTime>(2_s); // because PID;
         auto drive11 = make<DrivebasePoseBehaviour>(drivebase.swerve, definedPoses.poseSet.collectPath.returnPiece4Pos) | make<WaitTime>(2_s); // because PID;
-        if (calledFromID == 2){
+        if (calledFromID == 2){  // if double
           endPathing = drive1 << drive2 << drive3 << drive4 << drive5;
         }
-        else if (calledFromID == 3){
+        else if (calledFromID == 3){  // if triple
           endPathing = drive1 << drive2 << drive3 << drive4 << drive5 << drive6 << drive7;
         }
-        else if (calledFromID == 4){
+        else if (calledFromID == 4){  // if quadruple
           endPathing = drive1 << drive2 << drive3 << drive4 << drive5 << drive6 << drive7 << drive8 << drive9;
         }
-        else if (calledFromID == 5){
+        else if (calledFromID == 5){  // if quintuple
           endPathing = drive1 << drive2 << drive3 << drive4 << drive5 << drive6 << drive7 << drive8 << drive9 << drive10 << drive11;
         }}
       break;

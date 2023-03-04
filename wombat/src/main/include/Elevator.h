@@ -25,6 +25,7 @@ namespace wom {
     std::string path;
     wom::Gearbox leftGearbox;
     wom::Gearbox rightGearbox;
+    rev::SparkMaxRelativeEncoder elevatorEncoder;
     frc::DigitalInput *topSensor;
     frc::DigitalInput *bottomSensor;
     units::meter_t radius;
@@ -50,6 +51,9 @@ namespace wom {
 
     units::volt_t GetRaw();
 
+    double GetElevatorEncoderPos();
+    void SetElevatorSpeedLimit(double limit);
+
     ElevatorConfig &GetConfig();
     
     bool IsStable() const;
@@ -63,6 +67,7 @@ namespace wom {
 
     ElevatorConfig _config;
     ElevatorState _state;
+    double speedLimit = 0.5;
 
     PIDController<units::meter, units::volt> _pid;
 
