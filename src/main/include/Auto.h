@@ -93,6 +93,7 @@ class DefinedPoses {
       {124.158_in, 106.783_in, 0_deg}, // dockPos
       {288.932_in, 35.832_in, 0_deg}, // stealPos
       {221.744_in, 17.986_in, 0_deg}, // taxiPos
+      {278.389_in, 36.185_in, 0_deg},  // subStationWaitPos
 
 
       // the following are just for testing without vision
@@ -102,7 +103,6 @@ class DefinedPoses {
       // {288.932_in, 35.832_in, 0_deg}, // stealPos
       // {221.744_in, 17.986_in, 0_deg}, // taxiPos
 
-      {0_m, 0_m, 0_deg},  // subStationWaitPos
       {  /*  Collect Path - START  */
         {72.061_in, 20.208_in, 0_deg}, // startingFromPos
         {278.389_in, 36.185_in, 0_deg}, // retrievePiece1Pos

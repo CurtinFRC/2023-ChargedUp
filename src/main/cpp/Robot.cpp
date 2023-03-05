@@ -99,7 +99,7 @@ void Robot::AutonomousInit() {
   swerve->ResetPose(frc::Pose2d(72.061_in, 20.208_in, 0_deg));
   // swerve->ResetPose(frc::Pose2d());
   BehaviourScheduler *sched = BehaviourScheduler::GetInstance();
-  sched->Schedule(Double(Drivebase{swerve, &map.swerveBase.gyro}, true, StartingConfig::Bottom, EndingConfig::Dock));
+  sched->Schedule(Double(Drivebase{swerve, &map.swerveBase.gyro}, true, StartingConfig::Bottom, EndingConfig::PrepareManual));
  }
 
 void Robot::AutonomousPeriodic() {
