@@ -111,7 +111,7 @@ class DrivebaseBalance : public behaviour::Behaviour{
 
   wom::SwerveDriveConfig::balance_conf_t balancePIDConfig{
     "swerve/balancePID/",
-    0.7_mps / 10_deg,
+    46_mps / 1000_deg,
     wom::SwerveDriveConfig::balance_conf_t::ki_t{0.00},
     wom::SwerveDriveConfig::balance_conf_t::kd_t{0}
   };

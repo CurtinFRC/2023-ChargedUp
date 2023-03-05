@@ -96,6 +96,7 @@ void Robot::RobotPeriodic() {
 
 void Robot::AutonomousInit() {
   swerve->OnStart();
+  // swerve->ResetPose(frc::Pose2d(72.061_in, 20.208_in, 0_deg));
   swerve->ResetPose(frc::Pose2d());
   BehaviourScheduler *sched = BehaviourScheduler::GetInstance();
   sched->Schedule(Single(Drivebase{swerve, &map.swerveBase.gyro}, true, StartingConfig::Bottom, EndingConfig::Dock));
@@ -138,7 +139,7 @@ void Robot::TeleopPeriodic() {
     swerve->GetActiveBehaviour()->Interrupt();
     // map.swerveTable.swerveDriveTable->GetEntry("IsX-ed").SetBoolean(false);
   }
-  if (map.controllers.driver.GetLogoButtonPressed()){ // Initiates behaviour for balancing on the chargestation
+  if (map.controllers.driver.GetCPAD_LeftPressed()){ // Initiates behaviour for balancing on the chargestation
     sched->Schedule(make<DrivebaseBalance>(swerve, &map.swerveBase.gyro));
   }
   if (map.controllers.driver.GetLeftTrigger() > 0.5){

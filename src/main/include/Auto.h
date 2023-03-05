@@ -84,8 +84,8 @@ class DefinedPoses {
 
       // the following are just for testing without vision
       {0_in, 0_in, 0_deg}, // startPos
-      {10.077_in, 60.575_in, 0_deg}, // dock_LineUp_Pos
-      {52.097_in, 60.575_in, 0_deg}, // dockPos
+      {10.077_in, 93.55_in, 0_deg}, // dock_LineUp_Pos
+      {61.097_in, 93.55_in, 0_deg}, // dockPos
       {288.932_in, 35.832_in, 0_deg}, // stealPos
       {221.744_in, 17.986_in, 0_deg}, // taxiPos
 

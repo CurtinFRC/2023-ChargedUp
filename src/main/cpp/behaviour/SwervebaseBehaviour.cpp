@@ -63,17 +63,17 @@ void ManualDrivebase::OnTick(units::second_t deltaTime) {
       units::degree_t currentAngle = currentPose.Rotation().Degrees();
       CalculateRequestedAngle(turnX, turnY, currentAngle);
 
-      _swerveDrivebase->RotateMatchJoystick(_requestedAngle, wom::FieldRelativeSpeeds{
-        xVelocity * maxMovementMagnitude,
-        yVelocity * maxMovementMagnitude,
-        r_x * maxRotationMagnitude
-      });
-
-      // _swerveDrivebase->SetFieldRelativeVelocity(wom::FieldRelativeSpeeds{
+      // _swerveDrivebase->RotateMatchJoystick(_requestedAngle, wom::FieldRelativeSpeeds{
       //   xVelocity * maxMovementMagnitude,
       //   yVelocity * maxMovementMagnitude,
       //   r_x * maxRotationMagnitude
       // });
+
+      _swerveDrivebase->SetFieldRelativeVelocity(wom::FieldRelativeSpeeds{
+        xVelocity * maxMovementMagnitude,
+        yVelocity * maxMovementMagnitude,
+        r_x * maxRotationMagnitude
+      });
     }
     else {  // Robot Relative Controls
       _swerveDrivebase->SetVelocity(frc::ChassisSpeeds{
@@ -133,8 +133,8 @@ void DrivebaseBalance::OnTick(units::second_t deltaTime) {
   units::meters_per_second_t sidewaysMotorSpeed = sidwaysBalancePID.Calculate(-_gyro->GetRoll(), deltaTime);
   _swerveDrivebase->SetVelocity(frc::ChassisSpeeds{
     // units::math::min(units::math::max(lateralMotorSpeed, -0.8), 0.8),
-    lateralMotorSpeed,
-    sidewaysMotorSpeed,
+    -lateralMotorSpeed,
+    -sidewaysMotorSpeed,
     0_deg / 1_s
   });
 
