@@ -42,8 +42,8 @@ AutoPathDetails GetAutoPathingDetails(Drivebase drivebase, StartingConfig startC
   switch (endConfig) {
     case EndingConfig::Dock:
         {
-        auto wait_until1 = make<DrivebasePoseBehaviour>(drivebase.swerve, definedPoses.poseSet.dock_LineUp_Pos); // because PID
-        auto wait_until2 = make<DrivebasePoseBehaviour>(drivebase.swerve, definedPoses.poseSet.dockPos); // because PID
+        auto wait_until1 = make<DrivebasePoseBehaviour>(drivebase.swerve, definedPoses.poseSet.dock_LineUp_Pos) | make<WaitTime>(3_s); // because PID
+        auto wait_until2 = make<DrivebasePoseBehaviour>(drivebase.swerve, definedPoses.poseSet.dockPos) | make<WaitTime>(3_s); // because PID
         endPathing = wait_until1 << wait_until2 << make<DrivebaseBalance>(drivebase.swerve, drivebase.gyro);
       break;}
     case EndingConfig::PrepareManual:
@@ -52,28 +52,26 @@ AutoPathDetails GetAutoPathingDetails(Drivebase drivebase, StartingConfig startC
     case EndingConfig::Collect:
         {// The Collect assumes that we start with a held game piece, that held game piece will be the only one for SINGLE, hence no swerve motion will take place
         if (calledFromID == 1){   break;   }   // If SINGLE, do nothing
-        auto drive1 = make<DrivebasePoseBehaviour>(drivebase.swerve, definedPoses.poseSet.dock_LineUp_Pos) | make<WaitTime>(3_s); // because PID
-        auto drive2 = make<DrivebasePoseBehaviour>(drivebase.swerve, definedPoses.poseSet.dockPos) | make<WaitTime>(2_s); // because PID
-        auto drive3 = make<DrivebasePoseBehaviour>(drivebase.swerve, definedPoses.poseSet.collectPath.startingFromPos) | make<WaitTime>(2_s); // because PID;
-        auto drive4 = make<DrivebasePoseBehaviour>(drivebase.swerve, definedPoses.poseSet.collectPath.retrievePiece1Pos) | make<WaitTime>(2_s); // because PID;
-        auto drive5 = make<DrivebasePoseBehaviour>(drivebase.swerve, definedPoses.poseSet.collectPath.returnPiece1Pos) | make<WaitTime>(2_s); // because PID;
-        auto drive6 = make<DrivebasePoseBehaviour>(drivebase.swerve, definedPoses.poseSet.collectPath.retrievePiece2Pos) | make<WaitTime>(2_s); // because PID;
-        auto drive7 = make<DrivebasePoseBehaviour>(drivebase.swerve, definedPoses.poseSet.collectPath.returnPiece2Pos) | make<WaitTime>(2_s); // because PID;
-        auto drive8 = make<DrivebasePoseBehaviour>(drivebase.swerve, definedPoses.poseSet.collectPath.retrievePiece3Pos) | make<WaitTime>(2_s); // because PID;
-        auto drive9 = make<DrivebasePoseBehaviour>(drivebase.swerve, definedPoses.poseSet.collectPath.returnPiece3Pos) | make<WaitTime>(2_s); // because PID;
-        auto drive10 = make<DrivebasePoseBehaviour>(drivebase.swerve, definedPoses.poseSet.collectPath.retrievePiece4Pos) | make<WaitTime>(2_s); // because PID;
-        auto drive11 = make<DrivebasePoseBehaviour>(drivebase.swerve, definedPoses.poseSet.collectPath.returnPiece4Pos) | make<WaitTime>(2_s); // because PID;
+        auto drive1 = make<DrivebasePoseBehaviour>(drivebase.swerve, definedPoses.poseSet.collectPath.startingFromPos) | make<WaitTime>(6_s); // because PID;
+        auto drive2 = make<DrivebasePoseBehaviour>(drivebase.swerve, definedPoses.poseSet.collectPath.retrievePiece1Pos) | make<WaitTime>(6_s); // because PID;
+        auto drive3 = make<DrivebasePoseBehaviour>(drivebase.swerve, definedPoses.poseSet.collectPath.returnPiece1Pos) | make<WaitTime>(6_s); // because PID;
+        auto drive4 = make<DrivebasePoseBehaviour>(drivebase.swerve, definedPoses.poseSet.collectPath.retrievePiece2Pos) | make<WaitTime>(6_s); // because PID;
+        auto drive5 = make<DrivebasePoseBehaviour>(drivebase.swerve, definedPoses.poseSet.collectPath.returnPiece2Pos) | make<WaitTime>(6_s); // because PID;
+        auto drive6 = make<DrivebasePoseBehaviour>(drivebase.swerve, definedPoses.poseSet.collectPath.retrievePiece3Pos) | make<WaitTime>(6_s); // because PID;
+        auto drive7 = make<DrivebasePoseBehaviour>(drivebase.swerve, definedPoses.poseSet.collectPath.returnPiece3Pos) | make<WaitTime>(6_s); // because PID;
+        auto drive8 = make<DrivebasePoseBehaviour>(drivebase.swerve, definedPoses.poseSet.collectPath.retrievePiece4Pos) | make<WaitTime>(6_s); // because PID;
+        auto drive9 = make<DrivebasePoseBehaviour>(drivebase.swerve, definedPoses.poseSet.collectPath.returnPiece4Pos) | make<WaitTime>(6_s); // because PID;
         if (calledFromID == 2){  // if double
-          endPathing = drive1 << drive2 << drive3 << drive4 << drive5;
+          endPathing = drive1 << drive2 << drive3;
         }
         else if (calledFromID == 3){  // if triple
-          endPathing = drive1 << drive2 << drive3 << drive4 << drive5 << drive6 << drive7;
+          endPathing = drive1 << drive2 << drive3 << drive4 << drive5;
         }
         else if (calledFromID == 4){  // if quadruple
-          endPathing = drive1 << drive2 << drive3 << drive4 << drive5 << drive6 << drive7 << drive8 << drive9;
+          endPathing = drive1 << drive2 << drive3 << drive4 << drive5 << drive6 << drive7;
         }
         else if (calledFromID == 5){  // if quintuple
-          endPathing = drive1 << drive2 << drive3 << drive4 << drive5 << drive6 << drive7 << drive8 << drive9 << drive10 << drive11;
+          endPathing = drive1 << drive2 << drive3 << drive4 << drive5 << drive6 << drive7 << drive8 << drive9;
         }}
       break;
     case EndingConfig::Taxi:
@@ -107,10 +105,13 @@ std::shared_ptr<Behaviour> Single(Drivebase drivebase, bool blueAlliance, Starti
 
 std::shared_ptr<Behaviour> Double(Drivebase drivebase, bool blueAlliance, StartingConfig startConfig, EndingConfig endConfig){
   AutoPathDetails autoPathDetails = GetAutoPathingDetails(drivebase, startConfig, endConfig, blueAlliance, 2);
+  auto drive1 = make<DrivebasePoseBehaviour>(drivebase.swerve, definedPoses.poseSet.collectPath.startingFromPos) | make<WaitTime>(6_s); // because PID;
+  auto drive2 = make<DrivebasePoseBehaviour>(drivebase.swerve, definedPoses.poseSet.collectPath.retrievePiece1Pos) | make<WaitTime>(6_s); // because PID;
+
   return
     make<DrivebasePoseBehaviour>(drivebase.swerve, autoPathDetails.startPos)
-    << make<DrivebasePoseBehaviour>(drivebase.swerve, frc::Pose2d{224_in, 0_m, 0_deg})
-    << make<DrivebasePoseBehaviour>(drivebase.swerve, frc::Pose2d{0_m, 0_m, 0_deg})
+    << make<DrivebasePoseBehaviour>(drivebase.swerve, definedPoses.poseSet.collectPath.retrievePiece1Pos)
+    << make<DrivebasePoseBehaviour>(drivebase.swerve, definedPoses.alliancePoses.gridPoses.innerGrid1)
     << autoPathDetails.endPathing;
 }
 
@@ -135,5 +136,12 @@ std::shared_ptr<Behaviour> Triple(Drivebase drivebase, bool blueAlliance, Starti
 }
 
 std::shared_ptr<Behaviour> Quad(Drivebase drivebase, bool blueAlliance, StartingConfig startConfig, EndingConfig endConfig){
-  return make<WaitTime>(1_s);
+  AutoPathDetails autoPathDetails = GetAutoPathingDetails(drivebase, startConfig, endConfig, blueAlliance, 4);
+  return
+    make<DrivebasePoseBehaviour>(drivebase.swerve, autoPathDetails.startPos)
+    // << make<DrivebasePoseBehaviour>(drivebase.swerve, frc::Pose2d{224_in, 0_m, 0_deg})
+    // << make<DrivebasePoseBehaviour>(drivebase.swerve, frc::Pose2d{0_m, 0_m, 0_deg})
+    << autoPathDetails.endPathing;
 }
+
+
