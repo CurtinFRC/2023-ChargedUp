@@ -12,7 +12,7 @@ void GripperBehaviour::OnStart() {
 void GripperBehaviour::OnTick(units::second_t dt) {
 
   if (_codriver.GetRightTriggerAxis() > 0.2) {
-    gripper->SetOutaking();
+    gripper->SetOutaking(_codriver.GetRightTriggerAxis());
   } else if (_codriver.GetRightBumper()) {
     gripper->SetIntaking();
   } else {

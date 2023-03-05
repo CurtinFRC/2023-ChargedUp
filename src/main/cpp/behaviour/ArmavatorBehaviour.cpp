@@ -1,6 +1,53 @@
 #include "behaviour/ArmavatorBehaviour.h"
 #include <frc/smartdashboard/SmartDashboard.h>
 
+
+ArmavatorGoToAutoSetpoint::ArmavatorGoToAutoSetpoint(Armavator *armavator, units::meter_t height, units::degree_t angle) 
+  : _armavator(armavator), _height(height), _angle(angle) {
+    // Controls(Armavator);
+}
+
+void ArmavatorGoToAutoSetpoint::OnStart() {
+  std::cout << "intake + armavator auto setpoint routines start" << std::endl;
+}
+
+void ArmavatorGoToAutoSetpoint::OnTick(units::second_t dt) {
+  ArmavatorPosition pos = {_height, _angle};
+
+  _armavator->SetPosition(pos);
+
+
+//   switch (_setpoint) {
+//   case ArmavatorAutoSetpointEnum::kInIntake:
+//     _setpointValue = {-60};
+//     break;
+//   case ArmavatorAutoSetpointEnum::kTravel:
+
+//     break;
+//   case ArmavatorAutoSetpointEnum::kFrontMidPlace:
+
+//     break;
+//   case ArmavatorAutoSetpointEnum::kFrontLowPlace:
+
+//     break;
+//   case ArmavatorAutoSetpointEnum::kBackHighPlace:
+
+//     break;
+//   case ArmavatorAutoSetpointEnum::kBackMidPlace:
+
+//     break;
+//   case ArmavatorAutoSetpointEnum::kBackLowPlace:
+
+//     break;
+//   case ArmavatorAutoSetpointEnum::kWaitToCollect:
+
+//     break;
+//   }
+
+
+//   _armavator->SetPosition(_setpointValue);
+}
+
 //Constructs class
 ArmavatorGoToPositionBehaviour::ArmavatorGoToPositionBehaviour(Armavator *armavator, ArmavatorPosition setpoint)
 : _armavator(armavator), _setpoint(setpoint) {
@@ -85,7 +132,7 @@ void ArmavatorManualBehaviour::OnTick(units::second_t dt) {
   }
 
   if (rawControl) {
-    double armPower = wom::deadzone(_codriver.GetLeftY());
+    double armPower = -wom::deadzone(_codriver.GetLeftY());
     double elePower = -wom::deadzone(_codriver.GetRightY());
     _armavator->SetManual(armPower * 11_V, elePower * 8_V);
     _manualSetpoint = {_armavator->GetCurrentPosition().height, _armavator->GetCurrentPosition().angle};
@@ -128,7 +175,129 @@ void ArmavatorManualBehaviour::OnTick(units::second_t dt) {
       std::cout << "GO TO armavator POS 4 " << std::endl;
       _armavator->SetSpeedValues(0.35, 0.07);
     } else{
+      units::meter_t height = _armavator->GetCurrentPosition().height;
+      units::degree_t angle = _armavator->GetCurrentPosition().angle;
       _armavator->SetSpeedValues(0.5, 0.3);
+
+      // if (_manualSetpoint.height > 1_m) {
+      //   //to high 
+      // } else if (_manualSetpoint.height < 0.01_m){
+      //   //to low
+      // } else {
+      //   //just right 
+      //   _manualSetpoint.height -= (wom::deadzone(_codriver.GetRightY(), 0.15) * 1_m * 0.05);
+      // }
+
+      // if (_manualSetpoint.angle < -60_deg) {
+      //   //too far 
+      // } else if (_manualSetpoint.angle > 265_deg) {
+      //   //too far
+      // } else {
+      //   //just right 
+      //   if (_manualSetpoint.height >= (42.343 * pow((angle / 1_deg), -1.053) * 1_m)) {
+      //     _manualSetpoint.angle = (35.067 / pow((height / 1_m), 0.9496676)) * 1_deg;
+      //     if (_codriver.GetLeftY() > 0) {
+      //       _manualSetpoint.angle -= (wom::deadzone(_codriver.GetLeftY(), 0.15) * 1_deg * 3);
+      //     }
+      //   } else {
+      //     _manualSetpoint.angle -= (wom::deadzone(_codriver.GetLeftY(), 0.15) * 1_deg * 3);
+      //   }
+      // }
+
+
+      // if (height > (42.343 * pow((angle / 1_deg), -1.053) * 1_m) || height > 1_m) {
+      //   if ((42.343 * pow((angle / 1_deg), -1.053) * 1_m) < 1_m) {
+      //     _manualSetpoint.height = 42.343 * pow((angle / 1_deg), -1.053) * 1_m;
+      //   } else {
+      //     _manualSetpoint.height = 1_m;
+      //   }
+      // } else if (height < 0.01_m){
+      //   _manualSetpoint.height = 0.01_m;
+      // } else {
+      //   _manualSetpoint.height -= (wom::deadzone(_codriver.GetRightY(), 0.15) * 1_m * 0.05);
+      // }
+
+      // if (angle <= 90_deg) {
+      //   if (angle > (35.067 / pow((height / 1_m), 0.9496676)) * 1_deg) {
+      //     _manualSetpoint.angle = (35.067 / pow((height / 1_m), 0.9496676)) * 1_deg;
+      //   } else if (angle < -60_deg) {
+      //     _manualSetpoint.angle = -60_deg;
+      //   } else {
+      //     _manualSetpoint.angle -= (wom::deadzone(_codriver.GetLeftY(), 0.15) * 1_deg * 3);
+      //   }
+      // } else if (angle > 90_deg) {
+      //   // if (angle > 265_deg) {
+      //   //   angle = 265_deg;
+      //   // } else {
+      //   //   _manualSetpoint.angle -= (wom::deadzone(_codriver.GetLeftY(), 0.15) * 1_deg * 3);
+      //   // }
+      //   if (angle > 265_deg) {
+      //     _manualSetpoint.angle = 265_deg;
+      //   } else if (angle > ((35.067 / pow((height / 1_m), 0.9496676))) * 1_deg) {
+      //     _manualSetpoint.angle = (35.067 / pow((height / 1_m), 0.9496676)) * 1_deg;
+      //   } else {
+      //     _manualSetpoint.angle -= (wom::deadzone(_codriver.GetLeftY(), 0.15) * 1_deg * 3);
+      //   }
+      // }
+
+
+
+      // if (_manualSetpoint.height > 0.95_m) {
+      //   _manualSetpoint.height = 0.95_m;
+      // } else if (_manualSetpoint.height < 0.01_m) {
+      //   _manualSetpoint.height = 0.01_m;
+      // } else {
+      //   if (_manualSetpoint.height > (-0.0137 * (_manualSetpoint.angle/1_deg) + 1.2301) * 1_m) {
+      //     if (_codriver.GetRightY() < -0.15) {
+      //       _manualSetpoint.height -= (wom::deadzone(_codriver.GetRightY(), 0.15) * 1_m * 0.05);
+      //     } else {
+      //       _manualSetpoint.height = ((-0.0137 * (_manualSetpoint.angle / 1_deg)) + 1.2301) * 1_m;
+      //     }
+      //   } else {
+      //     _manualSetpoint.height -= (wom::deadzone(_codriver.GetRightY(), 0.15) * 1_m * 0.05);
+      //   }
+      // }
+    
+      // if (_manualSetpoint.angle > 265_deg) {
+      //   _manualSetpoint.angle = 265_deg;
+      // } else if (_manualSetpoint.angle < -60_deg) {
+      //   _manualSetpoint.angle = -60_deg;
+      // } else {
+      //   if (_manualSetpoint.angle > 90) {
+      //     //2nd quad 
+
+      //     if (_manualSetpoint.angle > 180 - (1/137 * (12301 - 10000 * _manualSetpoint.height))) {
+      //       if (_codriver.GetLeftY() > 0.15) {
+      //         _manualSetpoint.angle = 1/137 * (12301 - 10000 * _manualSetpoint.height);
+      //       } else {
+      //         _manualSetpoint.angle -= (wom::deadzone(_codriver.GetLeftY(), 0.15) * 1_deg * 3);
+      //       }
+      //     }
+          
+      //   } else { 
+      //     //1st quad 
+      //     if (_manualSetpoint.angle > 1/137 * (12301 - 10000 * _manualSetpoint.height)) {
+      //       if (_codriver.GetLeftY() < -0.15) {
+      //         _manualSetpoint.angle = 1/137 * (12301 - 10000 * _manualSetpoint.height);
+      //       } else {
+      //         _manualSetpoint.angle -= (wom::deadzone(_codriver.GetLeftY(), 0.15) * 1_deg * 3);
+      //       }
+      //     }
+      //   }
+      //   _manualSetpoint.angle -= (wom::deadzone(_codriver.GetLeftY(), 0.15) * 1_deg * 3);
+      // }
+
+      //  if (_manualSetpoint.angle > 265_deg) {
+      //   _manualSetpoint.angle = 265_deg;
+      // } else if (_manualSetpoint.angle < -60_deg) {
+      //   _manualSetpoint.angle = -60_deg;
+      // } else {
+      //   _manualSetpoint.angle -= (wom::deadzone(_codriver.GetLeftY(), 0.15) * 1_deg * 3);
+      // }
+
+
+
+      
       if (_manualSetpoint.height > 0.95_m) {
         _manualSetpoint.height = 0.95_m;
       } else if (_manualSetpoint.height < 0.01_m) {
@@ -144,8 +313,6 @@ void ArmavatorManualBehaviour::OnTick(units::second_t dt) {
       } else {
         _manualSetpoint.angle -= (wom::deadzone(_codriver.GetLeftY(), 0.15) * 1_deg * 3);
       }
-
-      // _manualSetpoint = {0.1_m, 70_deg};
 
       _armavator->SetPosition(_manualSetpoint);
     }

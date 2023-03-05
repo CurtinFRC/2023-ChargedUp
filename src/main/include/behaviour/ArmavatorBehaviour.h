@@ -10,6 +10,33 @@
 #include <frc/event/EventLoop.h>
 #include "ControlUtil.h"
 
+enum class ArmavatorAutoSetpointEnum {
+  kInIntake,
+  kTravel,
+  kFrontMidPlace,
+  kFrontLowPlace, 
+  kBackHighPlace, 
+  kBackMidPlace, 
+  kBackLowPlace,
+  kWaitToCollect
+};
+
+class ArmavatorGoToAutoSetpoint : public behaviour::Behaviour {
+ public: 
+  ArmavatorGoToAutoSetpoint(Armavator *armavator, units::meter_t height, units::degree_t angle);
+
+  void OnStart();
+  void OnTick(units::second_t dt) override;
+ private: 
+  Armavator *_armavator;
+
+  units::degree_t _angle;
+  units::meter_t _height;
+  // ArmavatorAutoSetpointEnum _setpoint;
+
+  // ArmavatorPosition _setpointValue;
+};
+
 class ArmavatorGoToPositionBehaviour : public behaviour::Behaviour {
  public:
    using grid_t = ArmavatorConfig::grid_t;

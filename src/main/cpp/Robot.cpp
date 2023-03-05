@@ -10,6 +10,7 @@
 #include <units/math.h>
 #include <networktables/NetworkTableInstance.h>
 
+#include <cameraserver/CameraServer.h>
 
 #include "Auto.h"
 
@@ -21,10 +22,20 @@ static units::second_t lastPeriodic;
 void Robot::RobotInit() {
   lastPeriodic = wom::now();
 
-  map.swerveBase.moduleConfigs[0].turnMotor.encoder->SetEncoderOffset(4.1877_rad);
-  map.swerveBase.moduleConfigs[1].turnMotor.encoder->SetEncoderOffset(1.40025_rad);
-  map.swerveBase.moduleConfigs[2].turnMotor.encoder->SetEncoderOffset(1.61221_rad);
-  map.swerveBase.moduleConfigs[3].turnMotor.encoder->SetEncoderOffset(0.584498_rad);
+  cs::UsbCamera camera = CameraServer::StartAutomaticCapture(0);
+  camera.SetResolution(640, 480);
+  cs::CvSink cvSink = frc::CameraServer::GetVideo();
+  cs::CvSource outputStream = frc::CameraServer::PutVideo("Rectangle", 640, 480);
+
+  map.swerveBase.moduleConfigs[0].turnMotor.encoder->SetEncoderOffset(4.131_rad);
+  map.swerveBase.moduleConfigs[1].turnMotor.encoder->SetEncoderOffset(1.329_rad);
+  map.swerveBase.moduleConfigs[2].turnMotor.encoder->SetEncoderOffset(1.646_rad);
+  map.swerveBase.moduleConfigs[3].turnMotor.encoder->SetEncoderOffset(0.5558_rad);
+
+  // map.swerveBase.moduleConfigs[0].turnMotor.encoder->SetEncoderOffset(0_rad);
+  // map.swerveBase.moduleConfigs[1].turnMotor.encoder->SetEncoderOffset(0_rad);
+  // map.swerveBase.moduleConfigs[2].turnMotor.encoder->SetEncoderOffset(0_rad);
+  // map.swerveBase.moduleConfigs[3].turnMotor.encoder->SetEncoderOffset(0_rad);
 
   map.swerveBase.gyro.Reset();
 
@@ -103,14 +114,17 @@ void Robot::AutonomousInit() {
   swerve->OnStart();
   swerve->ResetPose(frc::Pose2d());
   BehaviourScheduler *sched = BehaviourScheduler::GetInstance();
-  sched->Schedule(Drive(swerve, &map.swerveBase.gyro));
+  sched->Schedule(SubsystemTestPlace(armavator));
  }
 
 void Robot::AutonomousPeriodic() { }
 
 void Robot::TeleopInit() {
   loop.Clear();
-  BehaviourScheduler *sched = BehaviourScheduler::GetInstance();
+  // BehaviourScheduler *sched = BehaviourScheduler::GetInstance();
+  // sched->InterruptAll(); // removes all previously scheduled behaviours
+
+  sched = BehaviourScheduler::GetInstance();
   sched->InterruptAll(); // removes all previously scheduled behaviours
 
   swerve->OnStart();
@@ -134,6 +148,18 @@ void Robot::TeleopPeriodic() {
   } else {
     map.controlSystem.pcmCompressor.Disable();
       // std::cout << "compressor false" << std::endl;
+  }
+
+  if (map.controllers.driver.GetCPAD_TopPressed()){ // Lock the wheels
+    sched->Schedule(make<XDrivebase>(swerve));
+    // map.swerveTable.swerveDriveTable->GetEntry("IsX-ed").SetBoolean(true);
+  }
+  if (map.controllers.driver.GetCPAD_RightPressed()){ // Stop all current behaviours, and return to default (manualDrivebase)
+    swerve->GetActiveBehaviour()->Interrupt();
+    // map.swerveTable.swerveDriveTable->GetEntry("IsX-ed").SetBoolean(false);
+  }
+  if (map.controllers.driver.GetCPAD_LeftPressed()){ // Initiates behaviour for balancing on the chargestation
+    sched->Schedule(make<DrivebaseBalance>(swerve, &map.swerveBase.gyro));
   }
 
   // std::cout << "module 0: " << map.swerveBase.moduleConfigs[0].turnMotor.encoder->GetEncoderPosition().value() << std::endl;

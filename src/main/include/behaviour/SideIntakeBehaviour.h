@@ -6,6 +6,20 @@
 #include "behaviour/Behaviour.h"
 #include "SideIntake.h"
 
+class SideIntakeAutoBehaviour : public behaviour::Behaviour {
+ public:
+  SideIntakeAutoBehaviour(SideIntake *sideIntake, bool actuation, bool hands, double speed);
+
+  void OnStart();
+  void OnTick(units::second_t dt) override;
+
+ private:
+  SideIntake *sideIntake;
+  bool _actuation;
+  bool _hands;
+  double _speed;
+};
+
 class SideIntakeBehaviour : public behaviour::Behaviour {
  public:
   SideIntakeBehaviour(SideIntake *sideIntake, frc::XboxController &codriver);

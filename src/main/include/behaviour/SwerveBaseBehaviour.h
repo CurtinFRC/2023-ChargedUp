@@ -20,10 +20,17 @@ class ManualDrivebase : public behaviour::Behaviour{
   frc::XboxController *_driverController;
   const double driverDeadzone = 0.08;
   const double turningDeadzone = 0.1;
-  const units::meters_per_second_t maxMovementMagnitude = 6.5_ft / 1_s;
+  units::radians_per_second_t maxRotationMagnitude = 360_deg / 1_s;
+  units::meters_per_second_t maxMovementMagnitude = 16_ft / 1_s;
 
   bool isFieldOrientated = true;
   bool isZero = false;
+
+  units::meters_per_second_t highSensitivityDriveSpeed = 16_ft / 1_s;
+  units::meters_per_second_t lowSensitivityDriveSpeed = 3.25_ft / 1_s;
+
+  units::radians_per_second_t highSensitivityRotateSpeed = 360_deg / 1_s;
+  units::radians_per_second_t lowSensitivityRotateSpeed = 90_deg / 1_s;
 
 
   std::shared_ptr<nt::NetworkTable> _swerveDriveTable = nt::NetworkTableInstance::GetDefault().GetTable("swerve");

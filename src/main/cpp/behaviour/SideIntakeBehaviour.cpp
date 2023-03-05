@@ -2,6 +2,34 @@
 
 #include <iostream>
 
+SideIntakeAutoBehaviour::SideIntakeAutoBehaviour(SideIntake *sideIntake, bool actuation, bool hands, double speed) : sideIntake(sideIntake), _actuation(actuation), _hands(hands), _speed(speed) {
+  Controls(sideIntake);
+}
+
+void SideIntakeAutoBehaviour::OnStart() {
+
+}
+
+void SideIntakeAutoBehaviour::OnTick(units::second_t dt) {
+  // if (_actuation) {
+  //   sideIntake->SetStow();
+  // } else {
+  //   sideIntake->SetDeploy();
+  // }
+
+  // if (_hands) {
+  //   sideIntake->SetClose();
+  // } else {
+  //   sideIntake->SetOpen();
+  // }
+
+  // if (_speed != 0) {
+  //   sideIntake->SetVoltage(_speed * 10_V);
+  // }
+
+}
+
+
 SideIntakeBehaviour::SideIntakeBehaviour(SideIntake *sideIntake, frc::XboxController &codriver): sideIntake(sideIntake), _codriver(codriver) {
   Controls(sideIntake);
 }
