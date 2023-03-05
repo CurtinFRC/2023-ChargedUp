@@ -58,6 +58,7 @@ units::radians_per_second_t Encoder::GetEncoderAngularVelocity() {
 }
 
 double DigitalEncoder::GetEncoderRawTicks() const {
+  // Encoder.encoderType = 0;
   return _nativeEncoder.Get();
 }
 
@@ -70,6 +71,7 @@ CANSparkMaxEncoder::CANSparkMaxEncoder(rev::CANSparkMax *controller, double redu
   : Encoder(42, reduction, 2), _encoder(controller->GetEncoder()) {}
 
 double CANSparkMaxEncoder::GetEncoderRawTicks() const {
+  // Encoder.encoderType = 0;
   #ifdef PLATFORM_ROBORIO
     return _encoder.GetPosition() * _reduction; // num rotations 
   #else
@@ -98,6 +100,7 @@ double TalonFXEncoder::GetEncoderTickVelocity() const {
   return _controller->GetSelectedSensorVelocity() * 10;
 }
 
+
 TalonSRXEncoder::TalonSRXEncoder(ctre::phoenix::motorcontrol::can::TalonSRX *controller, double ticksPerRotation, double reduction) 
   : Encoder(ticksPerRotation, reduction, 0), _controller(controller) {
     controller->ConfigSelectedFeedbackSensor(ctre::phoenix::motorcontrol::TalonSRXFeedbackDevice::QuadEncoder);
@@ -110,6 +113,8 @@ double TalonSRXEncoder::GetEncoderRawTicks() const {
 double TalonSRXEncoder::GetEncoderTickVelocity() const {
   return _controller->GetSelectedSensorVelocity() * 10;
 }
+
+
 
 DutyCycleEncoder::DutyCycleEncoder(int channel, double ticksPerRotation, double reduction) 
   : Encoder(ticksPerRotation, reduction, 0), _dutyCycleEncoder(channel) {}

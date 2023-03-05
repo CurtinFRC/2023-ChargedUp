@@ -112,7 +112,7 @@ std::shared_ptr<Behaviour> Double(Drivebase drivebase, bool blueAlliance, Starti
   return
     make<DrivebasePoseBehaviour>(drivebase.swerve, autoPathDetails.startPos)
     << make<DrivebasePoseBehaviour>(drivebase.swerve, definedPoses.poseSet.collectPath.retrievePiece1Pos)
-    << make<DrivebasePoseBehaviour>(drivebase.swerve, definedPoses.alliancePoses.gridPoses.innerGrid1)
+    << make<DrivebasePoseBehaviour>(drivebase.swerve, definedPoses.alliancePoses.gridPoses.outerGrid3)
     << autoPathDetails.endPathing;
 }
 
@@ -144,22 +144,12 @@ std::shared_ptr<Behaviour> Quad(Drivebase drivebase, bool blueAlliance, Starting
     // << make<DrivebasePoseBehaviour>(drivebase.swerve, frc::Pose2d{0_m, 0_m, 0_deg})
     << autoPathDetails.endPathing;
 }
-//cone is already in gripper at this point 
-std::shared_ptr<behaviour::Behaviour> SubsystemTestPlace(Armavator *armavator) {
-  return 
-    make<WaitTime>(1_s)
-    << make<ArmavatorGoToAutoSetpoint>(armavator, 0.8_m, -40_deg)
-    // << wait_until
-    << make<WaitTime>(5_s)
-    << make<ArmavatorGoToAutoSetpoint>(armavator, 0.7_m, -10_deg)
-    << make<WaitTime>(1_s)
-    << make<ArmavatorGoToAutoSetpoint>(armavator, 0.6_m, 0_deg);
-    // << make<ArmavatorGoToPositionBehaviour(armavator, pos);
-    // << make<ArmavatorGoToAutoSetpoint(armavator)
-    // << make<WaitTime>(0.3_s);
-    // << make<ArmavatorGoToPositionBehaviour(armavator, {0_deg, 0.8_m})
-    // << make<WaitTime>(0.3_s)
-    // << make<ArmavatorGoToPositionBehaviour(armavator, {90_deg, 0.3_m})
-    // << make<WaitTime>(0.3_s)
-    // << make<ArmavatorGoToPositionBehaviour(armavator, {160_deg, 0.4_m});
+
+std::shared_ptr<Behaviour> Quintuple(Drivebase drivebase, bool blueAlliance, StartingConfig startConfig, EndingConfig endConfig){
+  AutoPathDetails autoPathDetails = GetAutoPathingDetails(drivebase, startConfig, endConfig, blueAlliance, 5);
+  return
+    make<DrivebasePoseBehaviour>(drivebase.swerve, autoPathDetails.startPos)
+    // << make<DrivebasePoseBehaviour>(drivebase.swerve, frc::Pose2d{224_in, 0_m, 0_deg})
+    // << make<DrivebasePoseBehaviour>(drivebase.swerve, frc::Pose2d{0_m, 0_m, 0_deg})
+    << autoPathDetails.endPathing;
 }

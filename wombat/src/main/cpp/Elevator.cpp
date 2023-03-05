@@ -6,14 +6,12 @@
 
 using namespace wom;
 
-//creates network table instatnce on shuffleboard
 void ElevatorConfig::WriteNT(std::shared_ptr<nt::NetworkTable> table) {
   table->GetEntry("radius").SetDouble(radius.value());
   table->GetEntry("mass").SetDouble(mass.value());
   table->GetEntry("maxHeight").SetDouble(maxHeight.value());
 }
 
-//elevator config is used
 Elevator::Elevator(ElevatorConfig config)
   : _config(config), _state(ElevatorState::kIdle),
   _pid{config.path + "/pid", config.pid},
@@ -21,16 +19,13 @@ Elevator::Elevator(ElevatorConfig config)
   // _config.leftGearbox.encoder->SetEncoderPosition(_config.initialHeight / _config.radius * 1_rad);
 }
 
-//the loop that allows the information to be used
+
 void Elevator::OnUpdate(units::second_t dt) {
   units::volt_t voltage{0};
 
   units::meter_t height = GetElevatorEncoderPos() * 1_m;
 
-  //creates a network table instance for height
-  _table->GetEntry("height").SetDouble(height.value());
 
-  //sets usable infromation for each state
   switch(_state) {
     case ElevatorState::kIdle:
       voltage = 0_V;
@@ -49,9 +44,6 @@ void Elevator::OnUpdate(units::second_t dt) {
           voltage = 6_V;
         }
       }
-    break;
-    case ElevatorState::kRaw:
-      voltage = _voltage;
     break;
   }
 
@@ -77,8 +69,6 @@ void Elevator::OnUpdate(units::second_t dt) {
   _config.rightGearbox.transmission->SetVoltage(voltage);
 }
 
-//defines information needed for the functions and connects the states to their respective function
-
 void Elevator::SetManual(units::volt_t voltage) {
   _state = ElevatorState::kManual;
   _setpointManual = voltage;
@@ -95,11 +85,6 @@ void Elevator::SetElevatorSpeedLimit(double limit) {
 
 void Elevator::SetIdle() {
   _state = ElevatorState::kIdle;
-}
-
-void Elevator::SetRaw(units::volt_t voltage) {
-  _state = ElevatorState::kRaw;
-  _voltage = voltage;
 }
 
 ElevatorConfig &Elevator::GetConfig() {

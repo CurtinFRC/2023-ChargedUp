@@ -1,5 +1,5 @@
-#pragma once 
-//Hazzer was here :]
+#pragma once
+
 #include "Gearbox.h"
 #include "Gyro.h"
 #include "behaviour/HasBehaviour.h"
@@ -44,13 +44,23 @@ namespace wom {
     void OnUpdate(units::second_t dt);
     void OnStart();
 
+    /**
+     * @brief This function acts to aid the robot matching the joystick's angle
+     * @param speeds
+     * Contains the xVelocity, yVelocity and the rotationalSpeed that the robot will be moving in
+    */
+    void ModuleVectorHandler(frc::ChassisSpeeds speeds);
+
     void SetZero(units::second_t dt);
     void SetIdle();
     void SetPID(units::radian_t angle, units::meters_per_second_t speed, units::second_t dt);
     void SetZero();  
 
-    void SetAccelerationLimit(units::meters_per_second_squared_t limit);
 
+    //double GetCancoderPosition(); // from liam's
+
+
+    void SetAccelerationLimit(units::meters_per_second_squared_t limit);
 
     // frc::SwerveModuleState GetState();
     frc::SwerveModulePosition GetPosition() const;
@@ -60,15 +70,21 @@ namespace wom {
 
     const SwerveModuleConfig &GetConfig() const;
 
+    PIDController<units::radians, units::volt> _anglePIDController;
    private:
     SwerveModuleConfig _config;
     SwerveModuleState _state;
 
-    PIDController<units::radians, units::volt> _anglePIDController;
+    bool _hasZeroedEncoder = false; 
+    bool _hasZeroed = false;
+
     PIDController<units::meters_per_second, units::volt> _velocityPIDController;
 
     std::shared_ptr<nt::NetworkTable> _table;
 
+    double startingPos;
+
+    double _offset;
     units::meters_per_second_squared_t _currentAccelerationLimit = 6_mps / 1_s;
   };
 
@@ -97,6 +113,7 @@ namespace wom {
   };
 
   enum class SwerveDriveState {
+    kZeroing,
     kIdle, 
     kVelocity,
     kFieldRelativeVelocity,
@@ -105,7 +122,7 @@ namespace wom {
     kTuning,
     kXWheels,
     kModuleTurn,
-    kZeroing
+    kFRVelocityRotationLock
   };
 
   struct FieldRelativeSpeeds {
@@ -132,7 +149,15 @@ namespace wom {
     void OnUpdate(units::second_t dt);
     void OnStart();
 
+    /**
+     * @brief This function switches the state to handle the robot's rotation matching that of the joystick
+    */
+    void RotateMatchJoystick(units::radian_t joystickAngle, FieldRelativeSpeeds speeds);
+    
     void SetIdle();
+
+    void SetZeroing();
+
     void SetVelocity(frc::ChassisSpeeds speeds);
     void SetFieldRelativeVelocity(FieldRelativeSpeeds speeds);
     void SetPose(frc::Pose2d pose);
@@ -141,7 +166,12 @@ namespace wom {
     void SetTuning(units::radian_t angle, units::meters_per_second_t speed);
     void SetZero();
 
+    // double GetModuleCANPosition(int mod);  // from liam's
+
     void SetXWheelState();
+
+    void SetIsFieldRelative(bool value);
+    bool GetIsFieldRelative();
 
     void SetAccelerationLimit(units::meters_per_second_squared_t limit);
 
@@ -159,6 +189,9 @@ namespace wom {
     SwerveDriveState _state = SwerveDriveState::kIdle;
     std::vector<SwerveModule> _modules;
 
+    units::degree_t _requestedAngle;
+    FieldRelativeSpeeds _requestedSpeeds;
+
     frc::ChassisSpeeds _target_speed;
     FieldRelativeSpeeds _target_fr_speeds;
 
@@ -171,9 +204,16 @@ namespace wom {
 
     std::shared_ptr<nt::NetworkTable> _table;
 
+    bool _isFieldRelative = true;
+
     int _mod;
     units::radian_t _angle;
     units::meters_per_second_t _speed;
+
+    double frontLeftEncoderOffset = -143.26171875;
+    double frontRightEncoderOffset = 167.87109375;
+    double backLeftEncoderOffset = -316.669921875;
+    double backRightEncoderOffset = -119.619140625;
   };
 
   namespace sim {

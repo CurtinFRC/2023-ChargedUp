@@ -1,40 +1,48 @@
 #pragma once
+
 #include "VoltageController.h"
-#include "Arm.h"
-#include "Elevator.h"
-#include "Armavator.h"
-#include "SideIntake.h"
 #include "Gyro.h"
-#include "behaviour/ArmavatorBehaviour.h"
 #include "Vision.h"
-#include "Gripper.h"
 #include "behaviour/VisionBehaviour.h"
-#include "TOF.h"
 
 #include <ctre/phoenix/motorcontrol/can/WPI_TalonFX.h>
 #include <frc/Compressor.h>
-#include <frc/XboxController.h>
+
+#include "XInputController.h"
+
 #include <ctre/Phoenix.h>
-#include <frc/DoubleSolenoid.h>
 
 #include "drivetrain/SwerveDrive.h"
 #include <frc/DoubleSolenoid.h>
 #include <units/length.h>
-#include <units/angle.h>
+
+
+#include "Encoder.h"
 
 #include <iostream>
 #include <string>
 
+#include "Arm.h"
+#include "Elevator.h"
+#include "Armavator.h"
+#include "SideIntake.h"
+#include "behaviour/ArmavatorBehaviour.h"
+#include "Gripper.h"
+#include "TOF.h"
+#include <frc/XboxController.h>
+#include <units/angle.h>
+
+
 struct RobotMap {
 
-  struct Controllers {  
+  struct Controllers {    
     //sets driver station numbers for the controllers
     frc::XboxController driver{0};
     frc::XboxController codriver{1};
   };
   Controllers controllers;
 
-  struct ControlSystem {
+struct ControlSystem {
     frc::Compressor pcmCompressor{2, frc::PneumaticsModuleType::REVPH};
   }; ControlSystem controlSystem;
 
@@ -54,6 +62,7 @@ struct RobotMap {
   };
   Vision vision;
 
+  //stores nessesary info for swerve
   struct SwerveBase{
     CANCoder frontLeftCancoder{19};
     CANCoder frontRightCancoder{17};
@@ -69,8 +78,8 @@ struct RobotMap {
     };
 
     wpi::array<wom::SwerveModuleConfig, 4> moduleConfigs{
-      wom::SwerveModuleConfig{ // dimensions are assuming perfect square robot 1m^2 area
-        frc::Translation2d(0.3_m, 0.3_m),
+      wom::SwerveModuleConfig{ // front left module
+        frc::Translation2d(10.761_in, 9.455_in),
         wom::Gearbox{
           new wom::MotorVoltageController(driveMotors[0]),
           new wom::TalonFXEncoder(driveMotors[0], 6.75),
@@ -78,15 +87,14 @@ struct RobotMap {
         },
         wom::Gearbox{
           new wom::MotorVoltageController(turnMotors[0]),
-          // new wom::TalonFXEncoder(turnMotors[0], 12.8),
           new wom::CanEncoder(19, 4096, 12.8),
           wom::DCMotor::Falcon500(1).WithReduction(12.8)
         },
         &frontLeftCancoder,
         4_in / 2
       },
-      wom::SwerveModuleConfig{ // dimensions are assuming perfect square robot 1m^2 area
-        frc::Translation2d(0.3_m, -0.3_m),
+      wom::SwerveModuleConfig{ // front right module
+        frc::Translation2d(10.761_in, -9.455_in),
         wom::Gearbox{
           new wom::MotorVoltageController(driveMotors[1]),
           new wom::TalonFXEncoder(driveMotors[1], 6.75),
@@ -94,15 +102,14 @@ struct RobotMap {
         },
         wom::Gearbox{
           new wom::MotorVoltageController(turnMotors[1]),
-          // new wom::TalonFXEncoder(turnMotors[1], 12.8),
           new wom::CanEncoder(17, 4096, 12.8),
           wom::DCMotor::Falcon500(1).WithReduction(12.8)
         },
         &frontRightCancoder,
         4_in / 2
       },
-      wom::SwerveModuleConfig{ // dimensions are assuming perfect square robot 1m^2 area
-        frc::Translation2d(-0.3_m, 0.3_m),
+      wom::SwerveModuleConfig{ // back left module
+        frc::Translation2d(-10.761_in, 9.455_in),
         wom::Gearbox{
           new wom::MotorVoltageController(driveMotors[2]),
           new wom::TalonFXEncoder(driveMotors[2], 6.75),
@@ -110,15 +117,14 @@ struct RobotMap {
         },
         wom::Gearbox{
           new wom::MotorVoltageController(turnMotors[2]),
-          // new wom::TalonFXEncoder(turnMotors[2], 12.8),
           new wom::CanEncoder(16, 4096, 12.8),
           wom::DCMotor::Falcon500(1).WithReduction(12.8)
         },
         &backRightCancoder,
         4_in / 2
       },
-      wom::SwerveModuleConfig{ // dimensions are assuming perfect square robot 1m^2 area
-        frc::Translation2d(-0.3_m, -0.3_m),
+      wom::SwerveModuleConfig{ // back right module
+        frc::Translation2d(-10.761_in, -9.455_in),
         wom::Gearbox{
           new wom::MotorVoltageController(driveMotors[3]),
           new wom::TalonFXEncoder(driveMotors[3], 6.75),
@@ -126,7 +132,6 @@ struct RobotMap {
         },
         wom::Gearbox{
           new wom::MotorVoltageController(turnMotors[3]),
-          // new wom::TalonFXEncoder(turnMotors[3], 12.8),
           new wom::CanEncoder(18, 4096, 12.8),
           wom::DCMotor::Falcon500(1).WithReduction(12.8)
         },
@@ -135,6 +140,7 @@ struct RobotMap {
       },
     };
 
+    // Setting the PID path and values to be used for SwerveDrive and SwerveModules
     wom::SwerveModule::angle_pid_conf_t anglePID {
       "/drivetrain/pid/angle/config",
       14_V / 180_deg,
@@ -142,13 +148,10 @@ struct RobotMap {
       0_V / (100_deg / 1_s),
       1_deg,
       0.5_deg / 1_s
-
-      // 1_rad
     };
     wom::SwerveModule::velocity_pid_conf_t velocityPID{
       "/drivetrain/pid/velocity/config",
       //  12_V / 4_mps // webers per metre
-
     };
     wom::SwerveDriveConfig::pose_angle_conf_t poseAnglePID {
       "/drivetrain/pid/pose/angle/config",
@@ -161,13 +164,14 @@ struct RobotMap {
     wom::SwerveDriveConfig::pose_position_conf_t posePositionPID{
       "/drivetrain/pid/pose/position/config",
       3_mps / 1_m,
-      wom::SwerveDriveConfig::pose_position_conf_t::ki_t{0.1},
+      wom::SwerveDriveConfig::pose_position_conf_t::ki_t{0.15},
       0_m / 1_m,
       20_cm, 
       10_cm / 1_s,
-      10_cm,
+      10_cm
     };
 
+    // the config for the whole swerve drive
     wom::SwerveDriveConfig config{
       "/drivetrain",
       anglePID, velocityPID,
@@ -180,27 +184,54 @@ struct RobotMap {
       {0.9, 0.9, 0.9}
     };  
 
+    // current limiting and setting idle mode of modules to brake mode
     SwerveBase() {
       for (size_t i = 0; i < 4; i++) {
         turnMotors[i]->ConfigSupplyCurrentLimit(SupplyCurrentLimitConfiguration(true, 15, 15, 0));
-        driveMotors[i]->SetNeutralMode(NeutralMode::Brake); // [Potential Issue]
-        turnMotors[i]->SetNeutralMode(NeutralMode::Brake); // [Potential Issue]
+        driveMotors[i]->SetNeutralMode(NeutralMode::Brake);
+        turnMotors[i]->SetNeutralMode(NeutralMode::Brake);
         driveMotors[i]->SetInverted(true);
       }
     }
-  }; SwerveBase swerveBase;
+  };
+  SwerveBase swerveBase;
 
   struct SwerveGridPoses { // positions to place the items
-    frc::Pose2d innerGrid1 = frc::Pose2d(0.1_m, 0.1_m, 0_deg); // Closest grid position to the Wall
-    frc::Pose2d innerGrid2 = frc::Pose2d(0.5_m, 0_m, 0_deg); // Middle of Inner Grid
-    frc::Pose2d innerGrid3 = frc::Pose2d(0.5_m, -0.5_m, 0_deg); // Centremost Inner Grid position
-    frc::Pose2d centreGrid1 = frc::Pose2d(0_m, 0.5_m, 0_deg); // The non central grid on the Inner Grid side
-    frc::Pose2d centreGrid2 = frc::Pose2d(0_m, 0_m, 216_deg); // The middle most grid 
-    frc::Pose2d centreGrid3 = frc::Pose2d(0_m, -0.5_m, 0_deg); // The non central grid on the Outer Grid side
-    frc::Pose2d outerGrid1 = frc::Pose2d(-0.5_m, 0.5_m, 0_deg); // Centremost outer grid position
-    frc::Pose2d outerGrid2 = frc::Pose2d(1_m, 0_m, 0_deg); // Middle of Outer Grid
-    frc::Pose2d outerGrid3 = frc::Pose2d(-0.5_m, -0.5_m, 0_deg); // Closest grid position to enemy Loading Zone
+    frc::Pose2d innerGrid1; // Closest grid position to the Wall
+    frc::Pose2d innerGrid2; // Middle of Inner Grid
+    frc::Pose2d innerGrid3; // Centremost Inner Grid position
+    frc::Pose2d centreGrid1; // The non central grid on the Inner Grid side
+    frc::Pose2d centreGrid2; // The middle most grid
+    frc::Pose2d centreGrid3; // The non central grid on the Outer Grid side
+    frc::Pose2d outerGrid1; // Centremost outer grid position
+    frc::Pose2d outerGrid2; // Middle of Outer Grid
+    frc::Pose2d outerGrid3; // Closest grid position to enemy Loading Zone
   };
+
+  SwerveGridPoses bluePoses{ // grid poses for blue
+    frc::Pose2d(20.185_in, 20.208_in, 0_deg),
+    frc::Pose2d(42.2_in, 20.208_in, 0_deg),
+    frc::Pose2d(64.185_in, 20.208_in, 0_deg),
+    frc::Pose2d(86.078_in, 20.208_in, 0_deg),
+    frc::Pose2d(108.131_in, 20.208_in, 216_deg),
+    frc::Pose2d(130.185_in, 20.208_in, 0_deg),
+    frc::Pose2d(152.185_in, 20.208_in, 0_deg),
+    frc::Pose2d(174.170_in, 20.208_in, 0_deg),
+    frc::Pose2d(196.185_in, 20.208_in, 0_deg)
+  };
+  // TO BE DONE BELOW!!!!!!!!!!!!!!!!!
+  SwerveGridPoses redPoses{ // grid poses for red
+    frc::Pose2d(20.185_in, 20.208_in, 0_deg),
+    frc::Pose2d(42.2_in, 20.208_in, 0_deg),
+    frc::Pose2d(64.185_in, 20.208_in, 0_deg),
+    frc::Pose2d(86.078_in, 20.208_in, 0_deg),
+    frc::Pose2d(108.131_in, 20.208_in, 216_deg),
+    frc::Pose2d(130.185_in, 20.208_in, 0_deg),
+    frc::Pose2d(152.185_in, 20.208_in, 0_deg),
+    frc::Pose2d(174.170_in, 20.208_in, 0_deg),
+    frc::Pose2d(196.185_in, 20.208_in, 0_deg)
+  };
+
   SwerveGridPoses swerveGridPoses;
 
 

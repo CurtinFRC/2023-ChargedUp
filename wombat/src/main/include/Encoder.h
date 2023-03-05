@@ -31,6 +31,8 @@ namespace wom {
     double GetEncoderDistance();
     units::radians_per_second_t GetEncoderAngularVelocity();   // rad/s
 
+    int encoderType = 0;
+
     virtual std::shared_ptr<sim::SimCapableEncoder> MakeSimEncoder() = 0;
     double _reduction = 1.0;
    private:
@@ -61,6 +63,7 @@ namespace wom {
     double GetEncoderRawTicks() const override;
     double GetEncoderTickVelocity() const override;
 
+
     std::shared_ptr<sim::SimCapableEncoder> MakeSimEncoder() override;
    protected:
     rev::SparkMaxRelativeEncoder _encoder;
@@ -78,6 +81,7 @@ namespace wom {
     double GetEncoderRawTicks() const override;
     double GetEncoderTickVelocity() const override;
 
+
     std::shared_ptr<sim::SimCapableEncoder> MakeSimEncoder() override;
    private:
     ctre::phoenix::motorcontrol::can::TalonFX *_controller;
@@ -90,6 +94,7 @@ namespace wom {
     double GetEncoderRawTicks() const override;
     double GetEncoderTickVelocity() const override;
 
+
     std::shared_ptr<sim::SimCapableEncoder> MakeSimEncoder() override;
    private: 
     ctre::phoenix::motorcontrol::can::TalonSRX *_controller;
@@ -101,6 +106,7 @@ namespace wom {
 
     double GetEncoderRawTicks() const override;
     double GetEncoderTickVelocity() const override;
+
 
     std::shared_ptr<sim::SimCapableEncoder> MakeSimEncoder() override;
    private: 
