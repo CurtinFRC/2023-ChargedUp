@@ -60,8 +60,8 @@ class DefinedPoses {
   AlliancePoses blueAlliancePoses{
     {  // Top Poses - START  */
       {72.055_in, 196.3_in, 0_deg}, // startPos
-      {83.607_in, 139.388_in, 0_deg}, // dock_LineUp_Pos
-      {122.808_in, 139.286_in, 0_deg}, // dockPos
+      {92.138_in, 106.783_in, 0_deg}, // dock_LineUp_Pos
+      {124.158_in, 106.783_in, 0_deg}, // dockPos
       {287.887_in, 180.555_in, 0_deg}, // stealPos
       {171.061_in, 195.748_in, 0_deg}, // taxiPos
       {291.192_in, 246.31_in, 0_deg},  // subStationWaitPos
@@ -79,8 +79,8 @@ class DefinedPoses {
     }, /*  Top Poses - END  */
     {  /*  Middle Poses - START  */
       {72.043_in, 86.608_in, 0_deg}, // startPos
-      {83.629_in, 107.795_in, 0_deg}, // dock_LineUp_Pos
-      {122.407_in, 107.992_in, 0_deg}, // dockPos
+      {76.629_in, 107.795_in, 0_deg}, // dock_LineUp_Pos
+      {132.407_in, 107.992_in, 0_deg}, // dockPos
 
       {0_m, 0_m, 0_deg}, // stealPos
       {0_m, 0_m, 0_deg}, // taxiPos
@@ -108,11 +108,11 @@ class DefinedPoses {
         {278.389_in, 36.185_in, 0_deg}, // retrievePiece1Pos
         {200.81_in, 60.185_in, 0_deg}, // returnPiece1Pos
         {278.389_in, 84.185_in, 0_deg}, // retrievePiece2Pos
-        {132.81_in, 108.185_in, 0_deg}, // returnPiece2Pos
-        {200.389_in, 132.185_in, 0_deg}, // retrievePiece3Pos
-        {132.81_in, 156.185_in, 0_deg}, // returnPiece3Pos
-        {200.389_in, 180.185_in, 0_deg}, // retrievePiece4Pos
-        {132.81_in, 180.185_in, 0_deg} // returnPiece4Pos
+        {200.81_in, 108.185_in, 0_deg}, // returnPiece2Pos
+        {278.389_in, 132.185_in, 0_deg}, // retrievePiece3Pos
+        {200.81_in, 156.185_in, 0_deg}, // returnPiece3Pos
+        {278.389_in, 180.185_in, 0_deg}, // retrievePiece4Pos
+        {200.81_in, 180.185_in, 0_deg} // returnPiece4Pos
       }  /*  Collect Path - END  */
     }, /*  Bottom Poses - END  */
     {  /*  Game Piece Poses - START  */
@@ -121,7 +121,7 @@ class DefinedPoses {
       {278.389_in, 132.185_in, 0_deg},  // the top-middle game piece
       {278.389_in, 180.185_in, 0_deg}  // the top-most game piece
     },  /* Game Piece Poses - END  */
-    {
+    {  /* Grid Positions - START */
       {72.061_in, 20.208_in, 0_deg},
       {72.061_in, 42.2_in, 0_deg},
       {72.061_in, 64.185_in, 0_deg},
@@ -131,7 +131,7 @@ class DefinedPoses {
       {72.061_in, 152.185_in, 0_deg},
       {72.061_in, 174.170_in, 0_deg},
       {72.061_in, 196.185_in, 0_deg}
-    }
+    }  /* Grid Positions - START */
   };
 
   AlliancePoses redAlliancePoses{
@@ -240,3 +240,5 @@ std::shared_ptr<behaviour::Behaviour> Double(Drivebase drivebase, bool blueAllia
 std::shared_ptr<behaviour::Behaviour> Triple(Drivebase drivebase, bool blueAlliance, StartingConfig startConfig, EndingConfig endConfig);
 
 std::shared_ptr<behaviour::Behaviour> Quad(Drivebase drivebase, bool blueAlliance, StartingConfig startConfig, EndingConfig endConfig);
+
+std::shared_ptr<behaviour::Behaviour> Quintuple(Drivebase drivebase, bool blueAlliance, StartingConfig startConfig, EndingConfig endConfig);

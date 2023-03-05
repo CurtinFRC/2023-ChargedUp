@@ -111,7 +111,7 @@ std::shared_ptr<Behaviour> Double(Drivebase drivebase, bool blueAlliance, Starti
   return
     make<DrivebasePoseBehaviour>(drivebase.swerve, autoPathDetails.startPos)
     << make<DrivebasePoseBehaviour>(drivebase.swerve, definedPoses.poseSet.collectPath.retrievePiece1Pos)
-    << make<DrivebasePoseBehaviour>(drivebase.swerve, definedPoses.alliancePoses.gridPoses.innerGrid1)
+    << make<DrivebasePoseBehaviour>(drivebase.swerve, definedPoses.alliancePoses.gridPoses.outerGrid3)
     << autoPathDetails.endPathing;
 }
 
@@ -144,4 +144,11 @@ std::shared_ptr<Behaviour> Quad(Drivebase drivebase, bool blueAlliance, Starting
     << autoPathDetails.endPathing;
 }
 
-
+std::shared_ptr<Behaviour> Quintuple(Drivebase drivebase, bool blueAlliance, StartingConfig startConfig, EndingConfig endConfig){
+  AutoPathDetails autoPathDetails = GetAutoPathingDetails(drivebase, startConfig, endConfig, blueAlliance, 5);
+  return
+    make<DrivebasePoseBehaviour>(drivebase.swerve, autoPathDetails.startPos)
+    // << make<DrivebasePoseBehaviour>(drivebase.swerve, frc::Pose2d{224_in, 0_m, 0_deg})
+    // << make<DrivebasePoseBehaviour>(drivebase.swerve, frc::Pose2d{0_m, 0_m, 0_deg})
+    << autoPathDetails.endPathing;
+}
