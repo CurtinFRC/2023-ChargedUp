@@ -288,7 +288,11 @@ struct ControlSystem {
         leftOtherArmEncoder,
         wom::PIDConfig<units::radian, units::volts>(
           "/armavator/arm/pid/config",
-          12_V / 25_deg
+          13_V / 25_deg,
+          0.1_V / (1_deg * 1_s),
+          0_V / (1_deg / 1_s),
+          3_deg,
+          0.5_deg / 1_s
         ),
         5_kg, 
         5_kg,
@@ -358,7 +362,11 @@ struct ControlSystem {
         {
           //creates the pid for the elevator to remove error
           "/armavator/elevator/pid/config",
-          18_V / 1_m //16V
+          19_V / 1_m, //16V
+          0.3_V / (1_m * 1_s),
+          0_V / (1_m / 1_s),
+          0.1_m,
+          0.05_m / 1_s
         }
       };
 

@@ -80,9 +80,9 @@ void ManualDrivebase::OnTick(units::second_t deltaTime) {
     }
 
     if (_swerveDrivebase->GetIsFieldRelative()) {  // Field Relative Controls
-      frc::Pose2d currentPose = _swerveDrivebase->GetPose();
-      units::degree_t currentAngle = currentPose.Rotation().Degrees();
-      CalculateRequestedAngle(turnX, turnY, currentAngle);
+      // frc::Pose2d currentPose = _swerveDrivebase->GetPose();
+      // units::degree_t currentAngle = currentPose.Rotation().Degrees();
+      // CalculateRequestedAngle(turnX, turnY, currentAngle);
 
       // _swerveDrivebase->RotateMatchJoystick(_requestedAngle, wom::FieldRelativeSpeeds{
       //   xVelocity * maxMovementMagnitude,

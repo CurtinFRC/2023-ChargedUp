@@ -4,7 +4,7 @@
 
 ArmavatorGoToAutoSetpoint::ArmavatorGoToAutoSetpoint(Armavator *armavator, units::meter_t height, units::degree_t angle) 
   : _armavator(armavator), _height(height), _angle(angle) {
-    // Controls(Armavator);
+    Controls(armavator);
 }
 
 void ArmavatorGoToAutoSetpoint::OnStart() {
@@ -13,39 +13,12 @@ void ArmavatorGoToAutoSetpoint::OnStart() {
 
 void ArmavatorGoToAutoSetpoint::OnTick(units::second_t dt) {
   ArmavatorPosition pos = {_height, _angle};
+  _armavator->SetSpeedValues(0.35, 0.2);
 
   _armavator->SetPosition(pos);
-
-
-//   switch (_setpoint) {
-//   case ArmavatorAutoSetpointEnum::kInIntake:
-//     _setpointValue = {-60};
-//     break;
-//   case ArmavatorAutoSetpointEnum::kTravel:
-
-//     break;
-//   case ArmavatorAutoSetpointEnum::kFrontMidPlace:
-
-//     break;
-//   case ArmavatorAutoSetpointEnum::kFrontLowPlace:
-
-//     break;
-//   case ArmavatorAutoSetpointEnum::kBackHighPlace:
-
-//     break;
-//   case ArmavatorAutoSetpointEnum::kBackMidPlace:
-
-//     break;
-//   case ArmavatorAutoSetpointEnum::kBackLowPlace:
-
-//     break;
-//   case ArmavatorAutoSetpointEnum::kWaitToCollect:
-
-//     break;
-//   }
-
-
-//   _armavator->SetPosition(_setpointValue);
+  if (_armavator->IsStable()) {
+    SetDone();
+  }
 }
 
 //Constructs class

@@ -3,6 +3,7 @@
 #include "behaviour/Behaviour.h"
 #include "drivetrain/SwerveDrive.h"
 #include "Armavator.h"
+#include "Gripper.h"
 
 
 // class DefinedPoses {
@@ -257,7 +258,7 @@ class DefinedPoses {
     {  // Top Poses - START  */
       {72.055_in, 196.3_in, 0_deg}, // startPos
       {92.138_in, 106.783_in, 0_deg}, // dock_LineUp_Pos
-      {124.158_in, 106.783_in, 0_deg}, // dockPos
+      {160.158_in, 106.783_in, 0_deg}, // dockPos
       {287.887_in, 180.555_in, 0_deg}, // stealPos
       {171.061_in, 195.748_in, 0_deg}, // taxiPos
       {291.192_in, 246.31_in, 0_deg},  // subStationWaitPos
@@ -276,7 +277,7 @@ class DefinedPoses {
     {  /*  Middle Poses - START  */
       {72.043_in, 86.608_in, 0_deg}, // startPos
       {76.629_in, 107.795_in, 0_deg}, // dock_LineUp_Pos
-      {132.407_in, 107.992_in, 0_deg}, // dockPos
+      {190.407_in, 107.992_in, 0_deg}, // dockPos
 
       {0_m, 0_m, 0_deg}, // stealPos
       {0_m, 0_m, 0_deg}, // taxiPos
@@ -286,7 +287,7 @@ class DefinedPoses {
     {  /*  Bottom Poses - START  */
       {72.061_in, 20.208_in, 0_deg}, // startPos
       {92.138_in, 106.783_in, 0_deg}, // dock_LineUp_Pos
-      {124.158_in, 106.783_in, 0_deg}, // dockPos
+      {180.158_in, 106.783_in, 0_deg}, // dockPos
       {288.932_in, 35.832_in, 0_deg}, // stealPos
       {221.744_in, 17.986_in, 0_deg}, // taxiPos
       {278.389_in, 36.185_in, 0_deg},  // subStationWaitPos
@@ -334,7 +335,7 @@ class DefinedPoses {
     {  // Top Poses - START  */
       {72.055_in, 196.3_in, 0_deg}, // startPos
       {83.607_in, 139.388_in, 0_deg}, // dock_LineUp_Pos
-      {122.808_in, 139.286_in, 0_deg}, // dockPos
+      {140.808_in, 139.286_in, 0_deg}, // dockPos
       {287.887_in, 180.555_in, 0_deg}, // stealPos
       {171.061_in, 195.748_in, 0_deg}, // taxiPos
       {291.192_in, 246.31_in, 0_deg},  // subStationWaitPos
@@ -353,7 +354,7 @@ class DefinedPoses {
     {  /*  Middle Poses - START  */
       {72.043_in, 86.608_in, 0_deg}, // startPos
       {83.629_in, 107.795_in, 0_deg}, // dock_LineUp_Pos
-      {122.407_in, 107.992_in, 0_deg}, // dockPos
+      {140.407_in, 107.992_in, 0_deg}, // dockPos
 
       {0_m, 0_m, 0_deg}, // stealPos
       {0_m, 0_m, 0_deg}, // taxiPos
@@ -363,7 +364,7 @@ class DefinedPoses {
     {  /*  Bottom Poses - START  */
       {72.061_in, 20.208_in, 0_deg}, // startPos
       {82.138_in, 76.783_in, 0_deg}, // dock_LineUp_Pos
-      {124.158_in, 75.594_in, 0_deg}, // dockPos
+      {140.158_in, 75.594_in, 0_deg}, // dockPos
       {288.932_in, 35.832_in, 0_deg}, // stealPos
       {221.744_in, 17.986_in, 0_deg}, // taxiPos
 
@@ -427,7 +428,7 @@ AutoPathDetails GetAutoPathingDetails(Drivebase drivebase, StartingConfig startC
 
 std::shared_ptr<behaviour::Behaviour> DockBot(Drivebase drivebase, bool blueAlliance, StartingConfig startConfig, EndingConfig endConfig);
 
-std::shared_ptr<behaviour::Behaviour> Single(Drivebase drivebase, bool blueAlliance, StartingConfig startConfig, EndingConfig endConfig);
+std::shared_ptr<behaviour::Behaviour> Single(Drivebase drivebase, Armavator *armavator , Gripper *gripper, bool blueAlliance, StartingConfig startConfig, EndingConfig endConfig);
 
 std::shared_ptr<behaviour::Behaviour> Double(Drivebase drivebase, bool blueAlliance, StartingConfig startConfig, EndingConfig endConfig);
 

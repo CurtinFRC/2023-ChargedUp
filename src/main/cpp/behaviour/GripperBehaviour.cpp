@@ -1,5 +1,24 @@
 #include "behaviour/GripperBehaviour.h"
 
+GripperAutoBehaviour::GripperAutoBehaviour(Gripper *gripper, int out) : gripper(gripper), _out(out) {
+  Controls(gripper);
+}
+
+void GripperAutoBehaviour::OnStart() {
+
+}
+
+void GripperAutoBehaviour::OnTick(units::second_t dt) {
+  if (_out == 1) {
+    gripper->SetOutaking(0.4);
+  } else if (_out == 2){
+    gripper->SetIntaking();
+  } else if (_out == 3) {
+    gripper->SetIdle();
+    SetDone();
+  }
+}
+
 GripperBehaviour::GripperBehaviour(Gripper *gripper, frc::XboxController &codriver)
   : gripper(gripper), _codriver(codriver) {
     Controls(gripper);
