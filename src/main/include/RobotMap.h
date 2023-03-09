@@ -367,6 +367,12 @@ struct ControlSystem {
           0_V / (1_m / 1_s),
           0.1_m,
           0.05_m / 1_s
+        },
+        {
+          "/armavator/elevator/velocity/pid/config",
+          12_V / (1_m / 1_s),
+          0_V / 1_m,
+          0_V / (1_m / 1_s / 1_s)
         }
       };
 

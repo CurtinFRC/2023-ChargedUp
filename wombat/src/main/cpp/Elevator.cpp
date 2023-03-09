@@ -15,6 +15,7 @@ void ElevatorConfig::WriteNT(std::shared_ptr<nt::NetworkTable> table) {
 Elevator::Elevator(ElevatorConfig config)
   : _config(config), _state(ElevatorState::kIdle),
   _pid{config.path + "/pid", config.pid},
+  _velocityPID{config.path + "/velocityPID", config.velocityPID},
   _table(nt::NetworkTableInstance::GetDefault().GetTable(config.path)) {
   // _config.leftGearbox.encoder->SetEncoderPosition(_config.initialHeight / _config.radius * 1_rad);
 }
@@ -33,6 +34,8 @@ void Elevator::OnUpdate(units::second_t dt) {
     case ElevatorState::kManual:
       voltage = _setpointManual;
     break;
+    case ElevatorState::kVelocity:
+      break;
     case ElevatorState::kPID:
       {
         units::volt_t feedforward = _config.rightGearbox.motor.Voltage((_config.mass * 9.81_mps_sq) * _config.radius, 0_rad_per_s);

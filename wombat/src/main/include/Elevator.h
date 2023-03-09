@@ -19,6 +19,7 @@ namespace wom {
     kIdle, 
     kPID,
     kManual,
+    kVelocity
   };
 
   struct ElevatorConfig {
@@ -34,6 +35,7 @@ namespace wom {
     units::meter_t minHeight;
     units::meter_t initialHeight;
     PIDConfig<units::meter, units::volt> pid;
+    PIDConfig<units::meters_per_second, units::volt> velocityPID;
 
     void WriteNT(std::shared_ptr<nt::NetworkTable> table);
   };
@@ -70,6 +72,7 @@ namespace wom {
     double speedLimit = 0.5;
 
     PIDController<units::meter, units::volt> _pid;
+    PIDController<units::meters_per_second, units::volt> _velocityPID;
 
     std::shared_ptr<nt::NetworkTable> _table;
   };
