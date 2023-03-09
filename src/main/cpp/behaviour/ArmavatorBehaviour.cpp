@@ -287,6 +287,9 @@ void ArmavatorManualBehaviour::OnTick(units::second_t dt) {
         _manualSetpoint.angle -= (wom::deadzone(_codriver.GetLeftY(), 0.15) * 1_deg * 3);
       }
 
+      units::meter_t max_height = 1.6_m - _armavator->arm->GetConfig().armLength * units::math::sin(_manualSetpoint.angle);
+      _manualSetpoint.height = units::math::min(_manualSetpoint.height, max_height);
+
       _armavator->SetPosition(_manualSetpoint);
     }
   }
