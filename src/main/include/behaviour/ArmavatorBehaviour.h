@@ -102,6 +102,7 @@ class ArmavatorManualBehaviour : public behaviour::Behaviour {
   ArmavatorPosition _setpointValue;
 
   frc::XboxController &_codriver;
+  units::degree_t max_diff = 10_deg;
 
   units::meter_t startHeight; 
   frc::EventLoop *loop;

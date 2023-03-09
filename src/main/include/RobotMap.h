@@ -296,7 +296,7 @@ struct ControlSystem {
         ),
         5_kg, 
         5_kg,
-        1_m,
+        1.37_m,
         -90_deg,
         270_deg,
         0_deg

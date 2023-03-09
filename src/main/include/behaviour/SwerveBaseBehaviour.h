@@ -38,10 +38,10 @@ class ManualDrivebase : public behaviour::Behaviour{
   const double driverDeadzone = 0.08;
   const double turningDeadzone = 0.1;
 
-  units::meters_per_second_t maxMovementMagnitude = 6.5_ft / 1_s;
+  units::meters_per_second_t maxMovementMagnitude = 13_ft / 1_s;
   units::radians_per_second_t maxRotationMagnitude = 360_deg / 1_s;
 
-  const units::meters_per_second_t highSensitivityDriveSpeed = 6.5_ft / 1_s;
+  const units::meters_per_second_t highSensitivityDriveSpeed = 13_ft / 1_s;
   const units::meters_per_second_t lowSensitivityDriveSpeed = 3.25_ft / 1_s;
 
   const units::radians_per_second_t highSensitivityRotateSpeed = 360_deg / 1_s;

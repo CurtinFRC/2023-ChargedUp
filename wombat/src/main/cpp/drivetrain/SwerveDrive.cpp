@@ -54,8 +54,12 @@ void SwerveModule::OnUpdate(units::second_t dt) {
   //driveVoltage = units::math::min(driveVoltage, 10_V);
   turnVoltage = units::math::min(turnVoltage, 7_V);
 
-  driveVoltage = units::math::min(units::math::max(driveVoltage, -8_V), 8_V); // was originally 10_V
-  turnVoltage = units::math::min(units::math::max(turnVoltage, -7_V), 7_V);
+  driveVoltage = units::math::min(units::math::max(driveVoltage, -10_V), 10_V); // was originally 10_V
+  std::cout << "drive-voltage: " << driveVoltage.value() << std::endl;
+  units::volt_t turnVoltageMax = 7_V - (driveVoltage * (7_V / 10_V));
+  turnVoltage = units::math::min(units::math::max(turnVoltage, -turnVoltageMax), turnVoltageMax);
+  // turnVoltage = units::math::min(units::math::max(turnVoltage, -7_V), 7_V);
+  std::cout << "turn-voltage-max: " << turnVoltageMax.value() << std::endl;
 
   _config.driveMotor.transmission->SetVoltage(driveVoltage);
   _config.turnMotor.transmission->SetVoltage(turnVoltage);

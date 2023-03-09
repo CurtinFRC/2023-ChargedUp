@@ -99,7 +99,7 @@ std::shared_ptr<Behaviour> DockBot(Drivebase drivebase, bool blueAlliance, Start
 std::shared_ptr<Behaviour> Single(Drivebase drivebase, Armavator *armavator, Gripper *gripper, bool blueAlliance, StartingConfig startConfig, EndingConfig endConfig){
   AutoPathDetails autoPathDetails = GetAutoPathingDetails(drivebase, startConfig, endConfig, blueAlliance, 1);
   return 
-    make<ArmavatorGoToAutoSetpoint>(armavator, 0.9_m, -55_deg)
+    make<ArmavatorGoToAutoSetpoint>(armavator, 0.9_m, -55_deg) //start in starting config
     // << make<WaitTime>(0.01_s)
     << make<ArmavatorGoToAutoSetpoint>(armavator, 0.9_m, -30_deg)
     // << make<WaitTime>(0.01_s)
@@ -108,6 +108,12 @@ std::shared_ptr<Behaviour> Single(Drivebase drivebase, Armavator *armavator, Gri
     << make<ArmavatorGoToAutoSetpoint>(armavator, 0.5_m, 40_deg)
     // << make<WaitTime>(0.01_s)
     << make<ArmavatorGoToAutoSetpoint>(armavator, 0.1_m, 70_deg)
+    // << make<WaitTime>(0.01_s)
+    << make<ArmavatorGoToAutoSetpoint>(armavator, 0_m, 110_deg)
+    // << make<WaitTime>(0.01_s)
+    << make<ArmavatorGoToAutoSetpoint>(armavator, 0.2_m, 120_deg)
+    // << make<WaitTime>(0.01_s)
+    << make<ArmavatorGoToAutoSetpoint>(armavator, 0.6_m, 140_deg)
     // << make<WaitTime>(0.01_s)
     << make<ArmavatorGoToAutoSetpoint>(armavator, 0.6_m, 160_deg)
     // << make<WaitTime>(0.01_s)

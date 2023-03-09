@@ -45,43 +45,43 @@ void SideIntakeBehaviour::OnTick(units::second_t dt) {
   //   sideIntake->SetWide();
   // }
 
-  if (_codriver.GetBButtonPressed()) {
-    if (_intakeReleased) {
-      _intakeReleased = false;
-    } else {
-      _intakeReleased = true;
-    }
-  }
+  // if (_codriver.GetBButtonPressed()) {
+  //   if (_intakeReleased) {
+  //     _intakeReleased = false;
+  //   } else {
+  //     _intakeReleased = true;
+  //   }
+  // }
 
-  if (_codriver.GetLeftBumperPressed()) {
-    if (_intakeGrapper) {
-      _intakeGrapper = false;
-    } else {
-      _intakeGrapper = true;
-    }
-  }
+  // if (_codriver.GetLeftBumperPressed()) {
+  //   if (_intakeGrapper) {
+  //     _intakeGrapper = false;
+  //   } else {
+  //     _intakeGrapper = true;
+  //   }
+  // }
 
-  if (_intakeReleased) {
-    sideIntake->SetStow();
-  } else {
-    sideIntake->SetDeploy();
-  }
+  // if (_intakeReleased) {
+  //   sideIntake->SetStow();
+  // } else {
+  //   sideIntake->SetDeploy();
+  // }
 
-  if (_intakeGrapper) {
-    sideIntake->SetClose();
-  } else {
-    sideIntake->SetOpen();
-  }
+  // if (_intakeGrapper) {
+  //   sideIntake->SetClose();
+  // } else {
+  //   sideIntake->SetOpen();
+  // }
 
   // std::cout << sideIntake->GetState() << std::endl;
 
-  if (wom::deadzone(_codriver.GetXButton())) {
-    sideIntake->SetVoltage(1 * -10_V);
-  } else if (wom::deadzone(_codriver.GetLeftTriggerAxis())) {
-    sideIntake->SetVoltage(_codriver.GetLeftTriggerAxis() * 10_V);
-  } else {
-    sideIntake->SetVoltage(0_V);
-  }
+  // if (wom::deadzone(_codriver.GetXButton())) {
+  //   sideIntake->SetVoltage(1 * -10_V);
+  // } else if (wom::deadzone(_codriver.GetLeftTriggerAxis())) {
+  //   sideIntake->SetVoltage(_codriver.GetLeftTriggerAxis() * 10_V);
+  // } else {
+  //   sideIntake->SetVoltage(0_V);
+  // }
 
   // if (_codriver.GetAButtonReleased()) {
   //   if (_intakeReleased) {
