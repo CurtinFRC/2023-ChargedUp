@@ -35,6 +35,14 @@ void Elevator::OnUpdate(units::second_t dt) {
       voltage = _setpointManual;
     break;
     case ElevatorState::kVelocity:
+      {
+        units::volt_t feedforward = _config.rightGearbox.motor.Voltage((_config.mass * 9.81_mps_sq) * _config.radius, _velocity);
+        // feedforward = 1.2_V;
+        voltage = _pid.Calculate(GetElevatorVelocity(), dt, feedforward);
+        if (voltage > 6_V) {
+          voltage = 6_V;
+        }
+      }
       break;
     case ElevatorState::kPID:
       {
@@ -86,6 +94,11 @@ void Elevator::SetElevatorSpeedLimit(double limit) {
   speedLimit = limit;
 }
 
+void Elevator::SetVelocity(units::meters_per_second_t velocity) {
+  _velocity = velocity;
+  _state = ElevatorState::kVelocity;
+}
+
 void Elevator::SetIdle() {
   _state = ElevatorState::kIdle;
 }
@@ -110,6 +123,10 @@ units::meter_t Elevator::GetHeight() const {
   // std::cout << "elevator position"<< _config.rightGearbox.encoder->GetEncoderTicks() << std::endl;
   // return _config.rightGearbox.encoder->GetEncoderDistance() * 1_m;
   return _config.elevatorEncoder.GetPosition() * 14/60 * 2 * 3.1415 * 0.02225 * 1_m;
+}
+
+units::meters_per_second_t Elevator::GetElevatorVelocity() const {
+  return _config.elevatorEncoder.GetVelocity() / 60_s * 14/60 * 2 * 3.1415 * 0.02225 * 1_m;
 }
 
 units::meters_per_second_t Elevator::MaxSpeed() const {

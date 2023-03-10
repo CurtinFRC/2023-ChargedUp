@@ -71,6 +71,8 @@ namespace wom {
     ElevatorState _state;
     double speedLimit = 0.5;
 
+    units::meters_per_second_t _velocity;
+
     PIDController<units::meter, units::volt> _pid;
     PIDController<units::meters_per_second, units::volt> _velocityPID;
 
