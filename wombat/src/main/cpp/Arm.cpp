@@ -66,8 +66,6 @@ void Arm::OnUpdate(units::second_t dt) {
 
   voltage *= armLimit;
 
-
-
   // units::newton_meter_t torqueLimit = 10_kg * 1.4_m * 6_mps_sq;
   // units::volt_t voltageMax = _config.leftGearbox.motor.Voltage(torqueLimit, _config.leftGearbox.encoder->GetEncoderAngularVelocity());
   // units::volt_t voltageMin = _config.leftGearbox.motor.Voltage(-torqueLimit, _config.leftGearbox.encoder->GetEncoderAngularVelocity());
