@@ -27,10 +27,10 @@ void Robot::RobotInit() {
 
   lastPeriodic = wom::now();
 
-  map.swerveBase.moduleConfigs[0].turnMotor.encoder->SetEncoderOffset(4.131_rad);
-  map.swerveBase.moduleConfigs[1].turnMotor.encoder->SetEncoderOffset(1.329_rad);
-  map.swerveBase.moduleConfigs[2].turnMotor.encoder->SetEncoderOffset(1.646_rad);
-  map.swerveBase.moduleConfigs[3].turnMotor.encoder->SetEncoderOffset(0.5558_rad);
+  map.swerveBase.moduleConfigs[0].turnMotor.encoder->SetEncoderOffset(4.11207_rad);
+  map.swerveBase.moduleConfigs[1].turnMotor.encoder->SetEncoderOffset(1.32638_rad);
+  map.swerveBase.moduleConfigs[2].turnMotor.encoder->SetEncoderOffset(1.67817_rad);
+  map.swerveBase.moduleConfigs[3].turnMotor.encoder->SetEncoderOffset(0.60899_rad);
 
   // map.swerveBase.moduleConfigs[0].turnMotor.encoder->SetEncoderOffset(0_rad);
   // map.swerveBase.moduleConfigs[1].turnMotor.encoder->SetEncoderOffset(0_rad);
@@ -101,7 +101,7 @@ void Robot::AutonomousInit() {
   // swerve->ResetPose(frc::Pose2d());  
   BehaviourScheduler *sched = BehaviourScheduler::GetInstance();
   // sched->Schedule(SubsystemTestPlace(armavator));
-  sched->Schedule(Single(Drivebase{swerve,  &map.swerveBase.gyro}, armavator, gripper, true, StartingConfig::Bottom, EndingConfig::Dock));
+  // sched->Schedule(Single(Drivebase{swerve,  &map.swerveBase.gyro}, armavator, gripper, true, StartingConfig::Bottom, EndingConfig::Dock));
 }
 
 void Robot::AutonomousPeriodic() {

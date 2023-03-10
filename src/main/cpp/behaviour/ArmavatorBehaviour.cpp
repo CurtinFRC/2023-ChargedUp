@@ -13,7 +13,7 @@ void ArmavatorGoToAutoSetpoint::OnStart() {
 
 void ArmavatorGoToAutoSetpoint::OnTick(units::second_t dt) {
   ArmavatorPosition pos = {_height, _angle};
-  _armavator->SetSpeedValues(0.35, 0.2);
+  _armavator->SetSpeedValues(0.5, 0.15);
 
   _armavator->SetPosition(pos);
   if (_armavator->IsStable()) {
@@ -129,8 +129,8 @@ void ArmavatorManualBehaviour::OnTick(units::second_t dt) {
       // _setpointValue.height = 0.1_m;
       // _setpointValue.angle = 30_deg;
 
-      _setpointValue.height = 0.896_m;
-      _setpointValue.angle = 0_deg;
+      _setpointValue.height = 0.86_m;
+      _setpointValue.angle = -7.8_deg;
 
       _armavator->SetPosition(_setpointValue);
       _manualSetpoint = {_armavator->GetCurrentPosition().height, _armavator->GetCurrentPosition().angle};
@@ -143,7 +143,7 @@ void ArmavatorManualBehaviour::OnTick(units::second_t dt) {
       // _setpointValue.angle = 0_deg;
 
       _setpointValue.height = 0.01_m;
-      _setpointValue.angle = 37.4_deg;
+      _setpointValue.angle = 34.1_deg;
 
       _armavator->SetPosition(_setpointValue);
       _manualSetpoint = {_armavator->GetCurrentPosition().height, _armavator->GetCurrentPosition().angle};
@@ -155,7 +155,7 @@ void ArmavatorManualBehaviour::OnTick(units::second_t dt) {
       // _setpointValue.height = 0.5_m;
       // _setpointValue.angle = 180_deg;
 
-      _setpointValue.height = 0.896_m;
+      _setpointValue.height = 0.86_m;
       _setpointValue.angle = -6_deg;
 
       _armavator->SetPosition(_setpointValue);
@@ -175,25 +175,25 @@ void ArmavatorManualBehaviour::OnTick(units::second_t dt) {
       _armavator->SetSpeedValues(0.35, 0.07);
     } else if (_codriver.GetXButton()) {
       //front mid place 
-      _setpointValue.height = 0.15_m;
-      _setpointValue.angle = 30_deg;
+      _setpointValue.height = 0.612_m;
+      _setpointValue.angle = 6.17_deg;
       _armavator->SetPosition(_setpointValue);
       _manualSetpoint = {_armavator->GetCurrentPosition().height, _armavator->GetCurrentPosition().angle};
       std::cout << "GO TO armavator POS 5 " << std::endl;
       _armavator->SetSpeedValues(0.35, 0.07);
     } else if (_codriver.GetYButton()) {
       // 152_deg 0.1814_m back high place 
-      _setpointValue.height = 0.1814_m;
-      _setpointValue.angle = 152_deg;
+      _setpointValue.height = 0.1918_m;
+      _setpointValue.angle = 159.43_deg;
       _armavator->SetPosition(_setpointValue);
       _manualSetpoint = {_armavator->GetCurrentPosition().height, _armavator->GetCurrentPosition().angle};
       std::cout << "GO TO armavator POS 6 " << std::endl;
       _armavator->SetSpeedValues(0.35, 0.07);
 
     } else if (_codriver.GetBButton()) {
-      // 0_m 161_deg
-      _setpointValue.height = 0.0_m;
-      _setpointValue.angle = 161_deg;
+      // ground collect 
+      _setpointValue.height = 0.128_m;
+      _setpointValue.angle = 16.7_deg;
       _armavator->SetPosition(_setpointValue);
       _manualSetpoint = {_armavator->GetCurrentPosition().height, _armavator->GetCurrentPosition().angle};
       std::cout << "GO TO armavator POS 7 " << std::endl;
