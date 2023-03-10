@@ -56,6 +56,12 @@ class ArmavatorGoToPositionBehaviour : public behaviour::Behaviour {
    std::deque<grid_t::GridPathNode<units::second>> _waypoints;
 };
 
+// class ArmavatorGoToVelocityBehaviour : public behaviour::Behaviour {
+//  public: 
+//   ArmavatorGoToVelocityBehaviour(Armavator *armavator)
+//  private:
+// }
+
 // class ArmavatorManualBehaviour : public behaviour::Behaviour {
 //  public:
 //   using grid_t = ArmavatorConfig::grid_t;

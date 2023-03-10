@@ -20,6 +20,7 @@ void ArmConfig::WriteNT(std::shared_ptr<nt::NetworkTable> table) {
 Arm::Arm(ArmConfig config)
   : _config(config),
     _pid(config.path + "/pid", config.pidConfig),
+    _velocityPID(config.path + "/velocityPID", config.velocityConfig),
     _table(nt::NetworkTableInstance::GetDefault().GetTable(config.path))
 {
 }
@@ -33,6 +34,14 @@ void Arm::OnUpdate(units::second_t dt) {
   //sets usable infromation for each state
   switch (_state) {
     case ArmState::kIdle:
+      break;
+    case ArmState::kVelocity:
+      {
+        units::newton_meter_t torque = 9.81_m / 1_s / 1_s * _config.armLength * units::math::cos(angle + _config.angleOffset) * (0.5 * _config.armMass + _config.loadMass);
+        units::volt_t feedforward = _config.leftGearbox.motor.Voltage(torque, _velocityPID.GetSetpoint());
+        // std::cout << "feedforward" << feedforward.value() << std::endl;
+        voltage = _velocityPID.Calculate(GetArmVelocity(), dt, feedforward);
+      }
       break;
     case ArmState::kAngle:
       {
@@ -100,6 +109,11 @@ void Arm::SetAngle(units::radian_t angle) {
   _pid.SetSetpoint(angle);
 }
 
+void Arm::SetVelocity(units::radians_per_second_t velocity) {
+  _state = ArmState::kVelocity;
+  _velocityPID.SetSetpoint(velocity);
+}
+
 ArmConfig &Arm::GetConfig() {
   return _config;
 }
@@ -110,6 +124,10 @@ units::radian_t Arm::GetAngle() const {
 
 units::radians_per_second_t Arm::MaxSpeed() const {
   return _config.leftGearbox.motor.Speed(0_Nm, 12_V);
+}
+
+units::radians_per_second_t Arm::GetArmVelocity() const {
+  return _config.armEncoder.GetVelocity() / 100 * 360 * 1_deg / 60_s;
 }
 
 bool Arm::IsStable() const {

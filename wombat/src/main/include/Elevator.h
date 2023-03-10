@@ -51,6 +51,8 @@ namespace wom {
     void SetIdle();
     void SetRaw();
 
+    void SetVelocity(units::meters_per_second_t velocity);
+
     units::volt_t GetRaw();
 
     double GetElevatorEncoderPos();
@@ -63,6 +65,7 @@ namespace wom {
 
     units::meter_t GetHeight() const;
     units::meters_per_second_t MaxSpeed() const;
+    units::meters_per_second_t GetElevatorVelocity() const;
   
    private:
     units::volt_t _setpointManual{0};

@@ -26,7 +26,7 @@ ArmavatorGoToPositionBehaviour::ArmavatorGoToPositionBehaviour(Armavator *armava
 : _armavator(armavator), _setpoint(setpoint) {
   //tells code that the points are controlled (one point at a time) 
   Controls(armavator);
-};
+}
 
 // Function for OnStart
 void ArmavatorGoToPositionBehaviour::OnStart() {
@@ -199,47 +199,54 @@ void ArmavatorManualBehaviour::OnTick(units::second_t dt) {
       std::cout << "GO TO armavator POS 7 " << std::endl;
       _armavator->SetSpeedValues(0.35, 0.07);
     } else {
-      units::meter_t height = _armavator->GetCurrentPosition().height;
-      units::degree_t angle = _armavator->GetCurrentPosition().angle;
-      _armavator->SetSpeedValues(0.5, 0.3);
+      // units::meter_t height = _armavator->GetCurrentPosition().height;
+      // units::degree_t angle = _armavator->GetCurrentPosition().angle;
+      // _armavator->SetSpeedValues(0.5, 0.3);
 
   
       
-      if (_manualSetpoint.height > 0.95_m) {
-        _manualSetpoint.height = 0.95_m;
-      } else if (_manualSetpoint.height < 0.01_m) {
-        _manualSetpoint.height = 0.01_m;
-      } else {
-        _manualSetpoint.height -= (wom::deadzone(_codriver.GetRightY(), 0.15) * 1_m * 0.05);
-      }
-
-      if (_manualSetpoint.angle > 265_deg) {
-        _manualSetpoint.angle = 265_deg;
-      } else if (_manualSetpoint.angle < -60_deg) {
-        _manualSetpoint.angle = -60_deg;
-      } else {
-         
-        _manualSetpoint.angle -= (wom::deadzone(_codriver.GetLeftY(), 0.15) * 1_deg * 3);
-        // _manualSetpoint.angle = angle - (wom::spow2(wom::deadzone(_codriver.GetLeftY(), 0.3)) * 1_deg * 30);
-      }
-      // units::degree_t trimmed_angle;
-      // units::degree_t max_angle = units::math::asin((height - (1.9_m - 0.51_m)) / (-_armavator->arm->GetConfig().armLength));
-      units::meter_t max_height = (1.9_m - 0.51_m) - _armavator->arm->GetConfig().armLength * units::math::sin(_manualSetpoint.angle);
-      // if (_manualSetpoint.angle < 90_deg) {
-      //   trimmed_angle = units::math::min(max_angle, _manualSetpoint.angle);
-      // } else if (_manualSetpoint.angle >= 90_deg) {
-      //   trimmed_angle = units::math::max(3.1415_rad - max_angle,  _manualSetpoint.angle);
+      // if (_manualSetpoint.height > 0.95_m) {
+      //   _manualSetpoint.height = 0.95_m;
+      // } else if (_manualSetpoint.height < 0.01_m) {
+      //   _manualSetpoint.height = 0.01_m;
+      // } else {
+      //   _manualSetpoint.height -= (wom::deadzone(_codriver.GetRightY(), 0.15) * 1_m * 0.05);
       // }
+
+      // if (_manualSetpoint.angle > 265_deg) {
+      //   _manualSetpoint.angle = 265_deg;
+      // } else if (_manualSetpoint.angle < -60_deg) {
+      //   _manualSetpoint.angle = -60_deg;
+      // } else {
+         
+      //   _manualSetpoint.angle -= (wom::deadzone(_codriver.GetLeftY(), 0.15) * 1_deg * 3);
+      //   // _manualSetpoint.angle = angle - (wom::spow2(wom::deadzone(_codriver.GetLeftY(), 0.3)) * 1_deg * 30);
+      // }
+      // // units::degree_t trimmed_angle;
+      // // units::degree_t max_angle = units::math::asin((height - (1.9_m - 0.51_m)) / (-_armavator->arm->GetConfig().armLength));
+      // units::meter_t max_height = (1.9_m - 0.51_m) - _armavator->arm->GetConfig().armLength * units::math::sin(_manualSetpoint.angle);
+      // // if (_manualSetpoint.angle < 90_deg) {
+      // //   trimmed_angle = units::math::min(max_angle, _manualSetpoint.angle);
+      // // } else if (_manualSetpoint.angle >= 90_deg) {
+      // //   trimmed_angle = units::math::max(3.1415_rad - max_angle,  _manualSetpoint.angle);
+      // // }
       
-      ArmavatorPosition sp{
-        units::math::min(_manualSetpoint.height, max_height),
-        // trimmed_angle
-        _manualSetpoint.angle
-      };
+      // ArmavatorPosition sp{
+      //   units::math::min(_manualSetpoint.height, max_height),
+      //   // trimmed_angle
+      //   _manualSetpoint.angle
+      // };
 
-      // _manualSetpoint.angle = trimmed_angle;
+      // // _manualSetpoint.angle = trimmed_angle;
 
-      _armavator->SetPosition(sp);
+      // _armavator->SetPosition(sp);
+
+      ArmavatorVelocity av;
+
+      av.angleSpeed = wom::spow2(wom::deadzone(_codriver.GetLeftY(), 0.3)) * (90_deg / 1_s);
+      // av.elevatorSpeed = wom::spow2(wom::deadzone(_codriver.GetRightY(), 0.15)) * (0.2_m / 1_s);
+      av.elevatorSpeed = 0_mps;
+      _armavator->SetVelocity(av);
     }
   }
   // std::cout << "arm angle setpoint: " <<_manualSetpoint.angle.convert<units::degree>().value() << std::endl;

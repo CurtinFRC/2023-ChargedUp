@@ -294,6 +294,12 @@ struct ControlSystem {
           3_deg,
           0.5_deg / 1_s
         ),
+        wom::PIDConfig<units::radians_per_second, units::volts>(
+          "/armavator/arm/velocityPID/config",
+          13_V / (25_deg / 1_s),
+          0_V / 25_deg,
+          0_V / (25_deg / 1_s / 1_s)
+        ),
         5_kg, 
         5_kg,
         1.37_m,
