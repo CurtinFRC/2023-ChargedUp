@@ -119,34 +119,34 @@ void Robot::TeleopInit() {
 }
 
 void Robot::TeleopPeriodic() {
-  if (map.controllers.driver.GetYButton()){ // Sets to Field Relative control mode
-    swerve->SetIsFieldRelative(true);
-  }
-  if (map.controllers.driver.GetYButton()){ // Sets to Robot Relative control mode
-    swerve->SetIsFieldRelative(false);
-  }
-  if (map.controllers.driver.GetAButtonPressed()){ // Initiates behaviour for aligning to nearest grid position
-    std::vector<frc::Pose2d*> blueGridPoses = {
-      &map.bluePoses.innerGrid1, &map.bluePoses.innerGrid2, &map.bluePoses.innerGrid3,
-      &map.bluePoses.centreGrid1, &map.bluePoses.centreGrid2, &map.bluePoses.centreGrid3,
-      &map.bluePoses.outerGrid1, &map.bluePoses.outerGrid2, &map.bluePoses.outerGrid3
-    };
-    sched->Schedule(make<AlignDrivebaseToNearestGrid>(swerve, blueGridPoses));
-  }
-  if (map.controllers.driver.GetAButtonPressed()){ // Lock the wheels
-    sched->Schedule(make<XDrivebase>(swerve));
-    // map.swerveTable.swerveDriveTable->GetEntry("IsX-ed").SetBoolean(true);
-  }
-  if (map.controllers.driver.GetAButtonPressed()){ // Stop all current behaviours, and return to default (manualDrivebase)
-    swerve->GetActiveBehaviour()->Interrupt();
-    // map.swerveTable.swerveDriveTable->GetEntry("IsX-ed").SetBoolean(false);
-  }
-  if (map.controllers.driver.GetAButtonPressed()){ // Initiates behaviour for balancing on the chargestation
-    sched->Schedule(make<DrivebaseBalance>(swerve, &map.swerveBase.gyro));
-  }
-  if (map.controllers.driver.GetLeftTriggerAxis() > 0.5){
-    swerve->ResetPose({72.061_in, 20.208_in, 0_deg});
-  }
+  // if (map.controllers.driver.GetYButton()){ // Sets to Field Relative control mode
+  //   swerve->SetIsFieldRelative(true);
+  // }
+  // if (map.controllers.driver.GetYButton()){ // Sets to Robot Relative control mode
+  //   swerve->SetIsFieldRelative(false);
+  // }
+  // if (map.controllers.driver.GetAButtonPressed()){ // Initiates behaviour for aligning to nearest grid position
+  //   std::vector<frc::Pose2d*> blueGridPoses = {
+  //     &map.bluePoses.innerGrid1, &map.bluePoses.innerGrid2, &map.bluePoses.innerGrid3,
+  //     &map.bluePoses.centreGrid1, &map.bluePoses.centreGrid2, &map.bluePoses.centreGrid3,
+  //     &map.bluePoses.outerGrid1, &map.bluePoses.outerGrid2, &map.bluePoses.outerGrid3
+  //   };
+  //   sched->Schedule(make<AlignDrivebaseToNearestGrid>(swerve, blueGridPoses));
+  // }
+  // if (map.controllers.driver.GetAButtonPressed()){ // Lock the wheels
+  //   sched->Schedule(make<XDrivebase>(swerve));
+  //   // map.swerveTable.swerveDriveTable->GetEntry("IsX-ed").SetBoolean(true);
+  // }
+  // if (map.controllers.driver.GetAButtonPressed()){ // Stop all current behaviours, and return to default (manualDrivebase)
+  //   swerve->GetActiveBehaviour()->Interrupt();
+  //   // map.swerveTable.swerveDriveTable->GetEntry("IsX-ed").SetBoolean(false);
+  // }
+  // if (map.controllers.driver.GetAButtonPressed()){ // Initiates behaviour for balancing on the chargestation
+  //   sched->Schedule(make<DrivebaseBalance>(swerve, &map.swerveBase.gyro));
+  // }
+  // if (map.controllers.driver.GetLeftTriggerAxis() > 0.5){
+  //   swerve->ResetPose({72.061_in, 20.208_in, 0_deg});
+  // }
 
   map.swerveTable.swerveDriveTable->GetEntry("x").SetDouble(swerve->GetPose().X().convert<units::inch>().value());
   map.swerveTable.swerveDriveTable->GetEntry("x").SetDouble(swerve->GetPose().Y().convert<units::inch>().value());
@@ -163,21 +163,21 @@ void Robot::TeleopPeriodic() {
   //   }
   // } 
 
-  if (map.controllers.driver.GetBButtonPressed()) {
-    if (compressorToggle) {
-      compressorToggle = false;
-    } else {
-      compressorToggle = true;
-    }
-  } 
+  // if (map.controllers.driver.GetBButtonPressed()) {
+  //   if (compressorToggle) {
+  //     compressorToggle = false;
+  //   } else {
+  //     compressorToggle = true;
+  //   }
+  // } 
 
-  if (compressorToggle) {
-    map.controlSystem.pcmCompressor.EnableDigital();
-      // std::cout << "compressor true" << std::endl;
-  } else {
-    map.controlSystem.pcmCompressor.Disable();
-      // std::cout << "compressor false" << std::endl;
-  }
+  // if (compressorToggle) {
+  //   map.controlSystem.pcmCompressor.EnableDigital();
+  //     // std::cout << "compressor true" << std::endl;
+  // } else {
+  //   map.controlSystem.pcmCompressor.Disable();
+  //     // std::cout << "compressor false" << std::endl;
+  // }
 }
 
 
