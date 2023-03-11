@@ -15,11 +15,11 @@ using namespace photonlib;
 
 struct VisionConfig {
   //current master version of camera declaration
-  // std::shared_ptr<PhotonCamera> camera;
+  std::shared_ptr<PhotonCamera> camera;
 
   //current version
   // both declaration versions work but you need to use -> for std pointer
-  PhotonCamera camera;
+  // PhotonCamera camera;
 
   units::radian_t fov;
   frc::Transform3d robotToCamera;
@@ -39,18 +39,18 @@ class Vision {
 
     void OnUpdate(units::second_t dt); 
 
-    PhotonPipelineResult getLatestResults(PhotonCamera &camera) {
-      PhotonPipelineResult ppResult = camera.GetLatestResult();
+    PhotonPipelineResult getLatestResults(std::shared_ptr<PhotonCamera> camera) {
+      PhotonPipelineResult ppResult = camera->GetLatestResult();
       return ppResult;
     };
 
-    auto getTargets(PhotonCamera &camera) {
+    auto getTargets(std::shared_ptr<PhotonCamera> camera) {
       PhotonPipelineResult ppResults = getLatestResults(visionConfig.camera);
       auto targets = ppResults.GetTargets();
       return targets;
     };
 
-  PhotonTrackedTarget getBestTarget(PhotonCamera &camera, PhotonPipelineResult result) {
+  PhotonTrackedTarget getBestTarget(std::shared_ptr<PhotonCamera> camera, PhotonPipelineResult result) {
     PhotonTrackedTarget bestTarget = result.GetBestTarget();
     return bestTarget;
   };
@@ -62,7 +62,7 @@ class Vision {
     return pose_result.first;
   };
 
-  auto getPathForBest(PhotonCamera &camera) {
+  auto getPathForBest(std::shared_ptr<PhotonCamera> camera) {
     PhotonPipelineResult getLatestResults(PhotonCamera camera);
     PhotonTrackedTarget getBestTarget(PhotonCamera camera, PhotonPipelineResult ppResult);
     
