@@ -54,7 +54,7 @@ void SwerveModule::OnUpdate(units::second_t dt) {
   //driveVoltage = units::math::min(driveVoltage, 10_V);
   turnVoltage = units::math::min(turnVoltage, 7_V);
 
-  driveVoltage = units::math::min(units::math::max(driveVoltage, -10_V), 10_V); // was originally 10_V
+  driveVoltage = units::math::min(units::math::max(driveVoltage, -_driveModuleVoltageLimit), _driveModuleVoltageLimit); // was originally 10_V
   std::cout << "drive-voltage: " << driveVoltage.value() << std::endl;
   units::volt_t turnVoltageMax = 7_V - (driveVoltage * (7_V / 10_V));
   turnVoltage = units::math::min(units::math::max(turnVoltage, -turnVoltageMax), turnVoltageMax);
@@ -81,6 +81,10 @@ void SwerveDrive::SetAccelerationLimit(units::meters_per_second_squared_t limit)
   for (int motorNumber = 0; motorNumber < 4; motorNumber++){
     _modules[motorNumber].SetAccelerationLimit(limit);
   }
+}
+
+void SwerveModule::SetVoltageLimit(units::volt_t driveModuleVoltageLimit ) {
+  _driveModuleVoltageLimit = driveModuleVoltageLimit;
 }
 
 void SwerveModule::SetIdle() {
@@ -257,6 +261,12 @@ void SwerveDrive::SetXWheelState(){
 
 void SwerveDrive::SetZeroing() {
   _state = SwerveDriveState::kZeroing;
+}
+
+void SwerveDrive::SetVoltageLimit(units::volt_t driveVoltageLimit) {
+  for(auto mod : _modules) {
+    mod.SetVoltageLimit(driveVoltageLimit);
+  }
 }
 
 // double SwerveDrive::GetModuleCANPosition(int mod) {

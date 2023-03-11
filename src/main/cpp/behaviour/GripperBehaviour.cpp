@@ -10,7 +10,7 @@ void GripperAutoBehaviour::OnStart() {
 
 void GripperAutoBehaviour::OnTick(units::second_t dt) {
   if (_out == 1) {
-    gripper->SetOutaking(0.4);
+    gripper->SetOutaking(0.7);
   } else if (_out == 2){
     gripper->SetIntaking();
   } else if (_out == 3) {

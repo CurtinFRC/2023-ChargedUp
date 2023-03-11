@@ -26,6 +26,7 @@ void ManualDrivebase::OnStart(units::second_t dt) {
 }
 
 void ManualDrivebase::OnTick(units::second_t deltaTime) {
+  _swerveDrivebase->SetVoltageLimit(10_V);
 
   if (_driverController->GetBButton()) {
     std::cout << "RESETING POSE" << std::endl;
@@ -131,14 +132,14 @@ void ManualDrivebase::OnTick(units::second_t deltaTime) {
 
 // Code for Drivebase Pose Controls
 DrivebasePoseBehaviour::DrivebasePoseBehaviour(
-    wom::SwerveDrive *swerveDrivebase, frc::Pose2d pose, bool hold)
-    : _swerveDrivebase(swerveDrivebase), _pose(pose), _hold(hold) {
+    wom::SwerveDrive *swerveDrivebase, frc::Pose2d pose, units::volt_t voltageLimit ,bool hold)
+    : _swerveDrivebase(swerveDrivebase), _pose(pose), _voltageLimit(voltageLimit), _hold(hold) {
   Controls(swerveDrivebase);
 }
 void DrivebasePoseBehaviour::OnTick(units::second_t deltaTime) {
   double currentAngle = _swerveDrivebase->GetPose().Rotation().Degrees().value();
   units::degree_t adjustedAngle = 1_deg * (currentAngle - fmod(currentAngle, 360) + _pose.Rotation().Degrees().value());
-
+  _swerveDrivebase->SetVoltageLimit(_voltageLimit);
   _swerveDrivebase->SetPose(frc::Pose2d{_pose.X(), _pose.Y(), adjustedAngle});
 
   if (_swerveDrivebase->IsAtSetPose() && !_hold){   SetDone();   }
