@@ -10,7 +10,7 @@ std::shared_ptr<frc::AprilTagFieldLayout> Get2023Layout() {
 
 //build estimator 
 
-Vision::Vision(VisionConfig config) 
+Vision::Vision(VisionConfig config, std::shared_ptr<PhotonCamera> camera) 
   : visionConfig(config),
   _estimator(
     config.layout,

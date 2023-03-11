@@ -34,9 +34,8 @@ class Vision {
     photonlib::RobotPoseEstimator _estimator;
 
   public :
-    Vision(VisionConfig config);
-    Vision(RobotPoseEstimator estimator);
-
+    Vision(VisionConfig config, RobotPoseEstimator estimator);
+    
     void OnUpdate(units::second_t dt); 
 
     PhotonPipelineResult getLatestResults(std::shared_ptr<PhotonCamera> camera) {
@@ -63,9 +62,11 @@ class Vision {
   };
 
   auto getPathForBest(std::shared_ptr<PhotonCamera> camera) {
-    PhotonPipelineResult getLatestResults(PhotonCamera camera);
-    PhotonTrackedTarget getBestTarget(PhotonCamera camera, PhotonPipelineResult ppResult);
-    
+    PhotonPipelineResult ppResults = getLatestResults(camera);
+    PhotonTrackedTarget bestTarget = getBestTarget(camera, ppResults);
+    auto poseEstimate = estimatePose();
+    auto bestTargetPose = estimatePose();
+    auto unrefinedPath =  - pose_result.first;
 
   };
 
