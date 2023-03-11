@@ -1,8 +1,11 @@
 #pragma once
 
+#include <frc/geometry/Transform3d.h>
 #include <frc/geometry/Pose3d.h>
 #include <photonlib/PhotonCamera.h>
 #include <photonlib/SimPhotonCamera.h>
+#include <photonlib/RobotPoseEstimator.h>
+#include <NTUtil.h>
 
 #include <frc/apriltag/AprilTagFieldLayout.h>
 
@@ -19,7 +22,7 @@ struct VisionConfig {
   PhotonCamera camera;
 
   units::radian_t fov;
-  frc::Pose3d robotToCamera;
+  frc::Transform3d robotToCamera;
   std::shared_ptr<frc::AprilTagFieldLayout> layout;
 
 
@@ -28,9 +31,13 @@ struct VisionConfig {
 class Vision {
   private :
     VisionConfig visionConfig;
+    photonlib::RobotPoseEstimator _estimator;
 
   public :
     Vision(VisionConfig config);
+    Vision(RobotPoseEstimator estimator);
+
+    void OnUpdate(units::second_t dt); 
 
     PhotonPipelineResult getLatestResults(PhotonCamera &camera) {
       PhotonPipelineResult ppResult = camera.GetLatestResult();
@@ -46,6 +53,13 @@ class Vision {
   PhotonTrackedTarget getBestTarget(PhotonCamera &camera, PhotonPipelineResult result) {
     PhotonTrackedTarget bestTarget = result.GetBestTarget();
     return bestTarget;
+  };
+
+  auto estimatePose() {
+    std::pair<frc::Pose3d, units::millisecond_t> pose_result = _estimator.Update();
+    auto table = nt::NetworkTableInstance::GetDefault().GetTable("Vision");
+    wom::WritePose3NT(table, pose_result.first);
+    return pose_result.first;
   };
 
   auto getPathForBest(PhotonCamera &camera) {
