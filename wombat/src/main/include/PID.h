@@ -71,7 +71,7 @@ namespace wom {
         _table(nt::NetworkTableInstance::GetDefault().GetTable(path)) { }
 
     void SetSetpoint(in_t setpoint) {
-      if (std::abs(setpoint.value() - _setpoint.value()) > 0.05 * _setpoint.value()) {
+      if (std::abs(setpoint.value() - _setpoint.value()) > std::abs(0.1 * _setpoint.value())) {
         _iterations = 0;
       }
       _setpoint = setpoint;
@@ -130,8 +130,6 @@ namespace wom {
 
       if (stableThreshOverride.has_value()) stableThresh = stableThreshOverride.value();
       if (velocityThreshOverride.has_value()) stableDerivThresh = velocityThreshOverride.value();
-
-      std::cout << _stablePos.value() << stableThresh.value() << std::endl;
 
       return _iterations > 20
         && std::abs(_stablePos.value()) <= std::abs(stableThresh.value())
