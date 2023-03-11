@@ -6,10 +6,19 @@
 #include <photonlib/SimPhotonCamera.h>
 #include <photonlib/RobotPoseEstimator.h>
 #include <NTUtil.h>
+#include <wpi/json.h>
+
+#include <frc/apriltag/AprilTagFields.h>
 
 #include <frc/apriltag/AprilTagFieldLayout.h>
 
+#include <frc/geometry/Transform3d.h>
+
 using namespace photonlib;
+
+std::shared_ptr<frc::AprilTagFieldLayout> Get2023Layout() {
+  return std::make_shared<frc::AprilTagFieldLayout>(frc::LoadAprilTagLayoutField(frc::AprilTagField::k2023ChargedUp));
+};
 
 // pp stands for photonpipeline in variable naming
 
@@ -22,7 +31,7 @@ struct VisionConfig {
   // PhotonCamera camera;
 
   units::radian_t fov;
-  frc::Transform3d robotToCamera;
+  frc::Transform3d robotToCamera; // assuming this means centre of robot to camera, but UNSURE
   std::shared_ptr<frc::AprilTagFieldLayout> layout;
 
 
@@ -30,11 +39,12 @@ struct VisionConfig {
 
 class Vision {
   private :
+    VisionConfig defaultConfig;
     VisionConfig visionConfig;
-    photonlib::RobotPoseEstimator _estimator;
-
+    RobotPoseEstimator _estimator;
   public :
-    Vision(VisionConfig config, RobotPoseEstimator estimator);
+    // Vision(VisionConfig config, RobotPoseEstimator estimator);
+    Vision(VisionConfig config);
     
     void OnUpdate(units::second_t dt); 
 
@@ -54,7 +64,15 @@ class Vision {
     return bestTarget;
   };
 
-  auto estimatePose() {
+  auto estimatePose(VisionConfig config) {
+  
+    visionConfig = config;
+    _estimator = RobotPoseEstimator{
+      visionConfig.layout,
+      photonlib::AVERAGE_BEST_TARGETS,
+      {std::make_pair(config.camera, config.robotToCamera)}
+    };
+
     std::pair<frc::Pose3d, units::millisecond_t> pose_result = _estimator.Update();
     auto table = nt::NetworkTableInstance::GetDefault().GetTable("Vision");
     wom::WritePose3NT(table, pose_result.first);
@@ -64,10 +82,13 @@ class Vision {
   auto getPathForBest(std::shared_ptr<PhotonCamera> camera) {
     PhotonPipelineResult ppResults = getLatestResults(camera);
     PhotonTrackedTarget bestTarget = getBestTarget(camera, ppResults);
-    auto poseEstimate = estimatePose();
-    auto bestTargetPose = estimatePose();
-    auto unrefinedPath =  - pose_result.first;
-
+    frc::Pose3d poseEstimate = estimatePose(defaultConfig);
+    frc::Transform3d relativeBestTargetPose = bestTarget.GetBestCameraToTarget(); // relative position of target (treating robot position as (0, 0, 0, 0))
+    frc::Pose2d bestTargetPose = frc::Pose2d{
+      frc::Translation2d{poseEstimate.X() + relativeBestTargetPose.X(), poseEstimate.Y() + relativeBestTargetPose.Y()},
+      poseEstimate.Rotation().ToRotation2d()
+    };
+ 
   };
 
 };

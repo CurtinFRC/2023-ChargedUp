@@ -1,27 +1,21 @@
 #include "Vision.h"
 
-#include <wpi/json.h>
 
-#include <frc/apriltag/AprilTagFields.h>
 
-std::shared_ptr<frc::AprilTagFieldLayout> Get2023Layout() {
-  return std::make_shared<frc::AprilTagFieldLayout>(frc::LoadAprilTagLayoutField(frc::AprilTagField::k2023ChargedUp));
-}
+// initializer for estimator
+using map_value_type = std::pair<std::shared_ptr<PhotonCamera>, frc::Transform3d>;
 
-//build estimator 
-
-Vision::Vision(VisionConfig config, std::shared_ptr<PhotonCamera> camera) 
+Vision::Vision(VisionConfig config) 
   : visionConfig(config),
-  _estimator(
+  _estimator(RobotPoseEstimator{
     config.layout,
     photonlib::AVERAGE_BEST_TARGETS,
-    {
-      std::make_pair(config.camera, config.robotToCamera)
+    {std::make_pair(config.camera, config.robotToCamera)}
     }
-  )
-{ }
+  ),
+  defaultConfig(config)
+{ };
 
 void Vision::OnUpdate(units::second_t dt) {
   
 }
-
