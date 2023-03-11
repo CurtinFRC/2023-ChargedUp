@@ -113,7 +113,7 @@ units::radians_per_second_t Arm::MaxSpeed() const {
 }
 
 bool Arm::IsStable() const {
-  return _pid.IsStable();
+  return _pid.IsStable(5_deg);
 }
 
 

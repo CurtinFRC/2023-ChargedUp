@@ -131,6 +131,8 @@ namespace wom {
       if (stableThreshOverride.has_value()) stableThresh = stableThreshOverride.value();
       if (velocityThreshOverride.has_value()) stableDerivThresh = velocityThreshOverride.value();
 
+      std::cout << _stablePos.value() << stableThresh.value() << std::endl;
+
       return _iterations > 20
         && std::abs(_stablePos.value()) <= std::abs(stableThresh.value())
         && (stableDerivThresh.value() < 0 || std::abs(_stableVel.value()) <= stableDerivThresh.value());

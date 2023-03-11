@@ -96,10 +96,18 @@ std::shared_ptr<Behaviour> DockBot(Drivebase drivebase, bool blueAlliance, Start
     << autoPathDetails.endPathing;
 }
 
-std::shared_ptr<Behaviour> ForwardDrive(Drivebase drivebase){
+std::shared_ptr<Behaviour> ForwardDrive(Drivebase drivebase, Armavator *armavator){
   return
-    make<DrivebasePoseBehaviour>(drivebase.swerve, {-0.3_m, 0_m, 0_deg})->WithTimeout(1_s)
-    << make<DrivebasePoseBehaviour>(drivebase.swerve, {2_m, 0_m, 0_deg})->WithTimeout(3_s);
+    // make<DrivebasePoseBehaviour>(drivebase.swerve, frc::Pose2d{-0.4_m, 0_m, 0_deg})->WithTimeout(1_s)
+    make<ArmavatorGoToAutoSetpoint>(armavator, 0.82_m, -50_deg)
+    << make<ArmavatorGoToAutoSetpoint>(armavator, 0.82_m, -30_deg)
+    << make<DrivebasePoseBehaviour>(drivebase.swerve, frc::Pose2d{0.3_m, 0_m, 0_deg})->WithTimeout(1_s)
+    << make<DrivebasePoseBehaviour>(drivebase.swerve, frc::Pose2d{-0.4_m, 0_m, 0_deg})->WithTimeout(1_s)
+    << make<DrivebasePoseBehaviour>(drivebase.swerve, frc::Pose2d{0.5_m, 0_m, 0_deg})->WithTimeout(3_s) //2.5
+    << make<WaitTime>(20_s);
+
+    // make<ArmavatorGoToAutoSetpoint>(armavator, 0.5_m, 40_deg)
+    
 }
 
 std::shared_ptr<Behaviour> Single(Drivebase drivebase, Armavator *armavator, Gripper *gripper, bool blueAlliance, StartingConfig startConfig, EndingConfig endConfig){

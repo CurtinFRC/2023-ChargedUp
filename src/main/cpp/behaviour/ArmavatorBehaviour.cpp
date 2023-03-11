@@ -13,7 +13,7 @@ void ArmavatorGoToAutoSetpoint::OnStart() {
 
 void ArmavatorGoToAutoSetpoint::OnTick(units::second_t dt) {
   ArmavatorPosition pos = {_height, _angle};
-  _armavator->SetSpeedValues(0.5, 0.15);
+  _armavator->SetSpeedValues(0.5, 0.3);
 
   _armavator->SetPosition(pos);
   if (_armavator->IsStable()) {

@@ -437,3 +437,5 @@ std::shared_ptr<behaviour::Behaviour> Triple(Drivebase drivebase, bool blueAllia
 std::shared_ptr<behaviour::Behaviour> Quad(Drivebase drivebase, bool blueAlliance, StartingConfig startConfig, EndingConfig endConfig);
 
 std::shared_ptr<behaviour::Behaviour> Quintuple(Drivebase drivebase, bool blueAlliance, StartingConfig startConfig, EndingConfig endConfig);
+
+std::shared_ptr<behaviour::Behaviour> ForwardDrive(Drivebase drivebase, Armavator *armavator);

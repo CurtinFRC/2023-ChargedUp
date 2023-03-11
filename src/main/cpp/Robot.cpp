@@ -100,7 +100,7 @@ void Robot::AutonomousInit() {
   swerve->ResetPose(frc::Pose2d());
   // swerve->ResetPose(frc::Pose2d());  
   BehaviourScheduler *sched = BehaviourScheduler::GetInstance();
-  sched->Schedule(ForwardDrive(swerve));
+  sched->Schedule(ForwardDrive(Drivebase{swerve, &map.swerveBase.gyro}, armavator));
   // sched->Schedule(Single(Drivebase{swerve,  &map.swerveBase.gyro}, armavator, gripper, true, StartingConfig::Bottom, EndingConfig::Dock));
 }
 
