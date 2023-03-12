@@ -1,5 +1,7 @@
 #pragma once
 
+#include "behaviour/Behaviour.h"
+
 #include <frc/geometry/Transform3d.h>
 #include <frc/geometry/Pose3d.h>
 #include <photonlib/PhotonCamera.h>
@@ -23,12 +25,7 @@ std::shared_ptr<frc::AprilTagFieldLayout> Get2023Layout() {
 // pp stands for photonpipeline in variable naming
 
 struct VisionConfig {
-  //current master version of camera declaration
   std::shared_ptr<PhotonCamera> camera;
-
-  //current version
-  // both declaration versions work but you need to use -> for std pointer
-  // PhotonCamera camera;
 
   units::radian_t fov;
   frc::Transform3d robotToCamera; // assuming this means centre of robot to camera, but UNSURE
@@ -88,8 +85,20 @@ class Vision {
       frc::Translation2d{poseEstimate.X() + relativeBestTargetPose.X(), poseEstimate.Y() + relativeBestTargetPose.Y()},
       poseEstimate.Rotation().ToRotation2d()
     };
- 
+
+    return bestTargetPose;
+
   };
+
+  // class getTargetBehaviour : public behaviour::Behaviour{
+  //   public:
+  //     getTargetBehaviour(wom::SwerveDrive *swerveDrivebase, frc::Pose2d pose);
+  //     void OnTick(units::second_t deltaTime) override;
+
+  //   private:
+  //     wom::SwerveDrive *_swerveDrivebase;
+  //     frc::Pose2d _pose; // storing it directly, so not a pointer
+  // };
 
 };
 
