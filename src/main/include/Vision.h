@@ -1,7 +1,5 @@
 #pragma once
 
-#include "behaviour/Behaviour.h"
-
 #include <frc/geometry/Transform3d.h>
 #include <frc/geometry/Pose3d.h>
 #include <photonlib/PhotonCamera.h>
@@ -9,11 +7,8 @@
 #include <photonlib/RobotPoseEstimator.h>
 #include <NTUtil.h>
 #include <wpi/json.h>
-
 #include <frc/apriltag/AprilTagFields.h>
-
 #include <frc/apriltag/AprilTagFieldLayout.h>
-
 #include <frc/geometry/Transform3d.h>
 
 using namespace photonlib;
@@ -30,8 +25,6 @@ struct VisionConfig {
   units::radian_t fov;
   frc::Transform3d robotToCamera; // assuming this means centre of robot to camera, but UNSURE
   std::shared_ptr<frc::AprilTagFieldLayout> layout;
-
-
 };
 
 class Vision {
@@ -42,6 +35,7 @@ class Vision {
   public :
     // Vision(VisionConfig config, RobotPoseEstimator estimator);
     Vision(VisionConfig config);
+    Vision(RobotPoseEstimator _estimator);
     
     void OnUpdate(units::second_t dt); 
 
@@ -62,7 +56,6 @@ class Vision {
   };
 
   auto estimatePose(VisionConfig config) {
-  
     visionConfig = config;
     _estimator = RobotPoseEstimator{
       visionConfig.layout,
@@ -85,34 +78,8 @@ class Vision {
       frc::Translation2d{poseEstimate.X() + relativeBestTargetPose.X(), poseEstimate.Y() + relativeBestTargetPose.Y()},
       poseEstimate.Rotation().ToRotation2d()
     };
-
     return bestTargetPose;
-
   };
-
-  // class getTargetBehaviour : public behaviour::Behaviour{
-  //   public:
-  //     getTargetBehaviour(wom::SwerveDrive *swerveDrivebase, frc::Pose2d pose);
-  //     void OnTick(units::second_t deltaTime) override;
-
-  //   private:
-  //     wom::SwerveDrive *_swerveDrivebase;
-  //     frc::Pose2d _pose; // storing it directly, so not a pointer
-  // };
-
 };
-
-  // //new other things
-  // PhotonPipelineResult ppResult = camera.GetLatestResult();
-
-  // bool hasTargets = ppResult.HasTargets();
-
-  // //PhotonTrackedTarget targets = ppResult.GetTargets();
-
-  // auto targets = ppResult.GetTargets();
-  
-  // PhotonTrackedTarget target = ppResult.GetBestTarget();
-
-
 
 std::shared_ptr<frc::AprilTagFieldLayout> Get2023Layout();
