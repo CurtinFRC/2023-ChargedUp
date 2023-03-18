@@ -1,7 +1,5 @@
 #include "Vision.h"
 
-
-
 // initializer for estimator
 using map_value_type = std::pair<std::shared_ptr<PhotonCamera>, frc::Transform3d>;
 
