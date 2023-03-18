@@ -33,9 +33,8 @@ class Vision {
     VisionConfig visionConfig;
     RobotPoseEstimator _estimator;
   public :
-    // Vision(VisionConfig config, RobotPoseEstimator estimator);
-    Vision(VisionConfig config);
-    Vision(RobotPoseEstimator _estimator);
+    // Vision(VisionConfig config, RobotPoseEstimator _estimator);
+    Vision(VisionConfig config/*, RobotPoseEstimator _estimator*/);
     
     void OnUpdate(units::second_t dt); 
 
