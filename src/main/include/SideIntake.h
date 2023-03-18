@@ -10,8 +10,8 @@
 struct SideIntakeConfig {
   frc::DoubleSolenoid *claspSolenoid;
   frc::DoubleSolenoid *deploySolenoid;
-  wom::MotorVoltageController *rightIntakeMotor;
-  wom::MotorVoltageController *leftIntakeMotor;
+  wom::Gearbox *rightGearbox;
+  wom::Gearbox *leftGearbox;
 };
 
 enum class SideIntakeState {
@@ -23,6 +23,16 @@ enum class SideIntakeState {
   kWide,
   kClosed,
   kStowed
+};
+
+enum class IntakeActuationState {
+  kStowed,
+  kDeployed
+};
+
+enum class IntakeCloseState {
+  kClosed,
+  kOpen
 };
 
 class SideIntake : public behaviour::HasBehaviour {
@@ -40,13 +50,24 @@ class SideIntake : public behaviour::HasBehaviour {
   void SetClosed();
   void SetWide();
 
+  void SetClose();
+  void SetStow();
+  void SetDeploy();
+  void SetOpen();
+
+  void SetVoltage(units::volt_t voltage);
+
   std::string GetState() const;
 
  private:
   SideIntakeConfig _config;
   SideIntakeState _state = SideIntakeState::kIdle;
+  IntakeActuationState _actuationState;
+  IntakeCloseState _closedState = IntakeCloseState::kOpen;
 
   units::volt_t intakeVoltage = 10_V;
   units::volt_t outtakeVoltage = -7_V;
   units::volt_t holdVoltage = 2_V;
+
+  units::volt_t _voltage;
 };

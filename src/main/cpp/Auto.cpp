@@ -1,226 +1,254 @@
 #include "Auto.h"
-#include "Poses.h"
+// #include "Poses.h"
 
 #include "behaviour/SwerveBaseBehaviour.h"
 #include "behaviour/ArmavatorBehaviour.h"
-
+#include "behaviour/GripperBehaviour.h"
 
 using namespace behaviour;
 
-// std::shared_ptr<behaviour::Behaviour> BlueSinglePiece() {
-//   return (
-//         make<DrivebasePoseBehaviour>(drivetrain, Poses::innerGrid1)
-//         & make<ArmavatorGoToPositionBehaviour>(armavator, { 1_m, 180_deg })
-//       )
-//       <<  make<GripperReleaseBehaviour>(intake)
-//       <<  make<ArmavatorGoToPositionBehaviour>(armavator, {1.3_m, 45_deg})
-//       <<  make<ArmavatorGoToPositionBehaviour>(armavator, {1.0_m, -80_deg})
-//       <<  make<DrivebasePoseBehaviour>(drivetrain, ...);
-
-//   // each action, add a << before, similar to std::cout
-
-// }
-
-
-std::shared_ptr<behaviour::Behaviour> CircularPathing(wom::SwerveDrive *swerve) {
-    return 
-        make<DrivebasePoseBehaviour>(swerve, frc::Pose2d{1_m, 0_m, 0_deg})
-        << make<DrivebasePoseBehaviour>(swerve, frc::Pose2d{2_m, 1_m, 90_deg});
-        // make<DrivebasePoseBehaviour>(swerve, Poses::innerGrid1)
-        // << make<WaitTime>(1_s)
-        // << make<DrivebasePoseBehaviour>(swerve, Poses::innerGrid2)
-        // << make<WaitTime>(1_s)
-        // << make<DrivebasePoseBehaviour>(swerve, Poses::centreGrid2)
-        // << make<WaitTime>(1_s)
-        // << make<DrivebasePoseBehaviour>(swerve, Poses::outerGrid2)
-        // << make<WaitTime>(1_s)
-        // << make<DrivebasePoseBehaviour>(swerve, Poses::outerGrid1);
-}
-
-
-std::shared_ptr<behaviour::Behaviour> Drive(wom::SwerveDrive *swerve, wom::NavX *gyro){
-    auto wait_until2 = make<DrivebasePoseBehaviour>(swerve, frc::Pose2d{0_in, 1.5_m, 0_deg}) | make<WaitTime>(2_s); 
-    return
-    make<WaitTime>(1_s)
-    // << make<DrivebasePoseBehaviour>(swerve, frc::Pose2d{0_in, -1.8_m, 0_deg})
-    // << wait_until2
-    << make<DrivebasePoseBehaviour>(swerve, frc::Pose2d{2_m, 0_m, 0_deg})
-    << make<DrivebaseBalance>(swerve, gyro);
-}
-
-
-
-
-
-
-// std::shared_ptr<behaviour::Behaviour> Dock(wom::SwerveDrive *swerve, bool blueAlliance, enum startPos, enum endPos){
-
-// }
-
-// std::shared_ptr<behaviour::Behaviour> Single(wom::SwerveDrive *swerve, bool blueAlliance, bool dock, enum startPos, enum endPos){
-
-// }
-
-// std::shared_ptr<behaviour::Behaviour> Double(wom::SwerveDrive *swerve, bool blueAlliance, bool dock, enum startPos, enum endPos){
-
-// }
-
-// std::shared_ptr<behaviour::Behaviour> Triple(wom::SwerveDrive *swerve, bool blueAlliance, bool dock, enum startPos, enum endPos){
-
-// }
-
-// std::shared_ptr<behaviour::Behaviour> Quad(wom::SwerveDrive *swerve, bool blueAlliance, bool dock, enum startPos, enum endPos){
-
-// }
-
-
-
-
-
-
-
-
-
-
-// Assuming in auto we only score high
-
-// BLUE
-
-// Docking Only
-std::shared_ptr<behaviour::Behaviour> BLUE_Top_Dock(wom::SwerveDrive *swerve){
-    // assumes Top is in placement position for outergrid_1
-    return
-    /*
-    relative drive frc::Pose2d{0.3_m, -62.39_in, 0_deg}
-    relative drive frc::Pose2d{68.3_in, 0_m, 0_deg}
-    activate swerve balance behaviour
-    */
-    make<WaitTime>(1_s);
-}
-std::shared_ptr<behaviour::Behaviour> BLUE_Middle_Dock(wom::SwerveDrive *swerve){
-    // assumes Middle is in placement position for centregrid_2
-    return
-    /*
-    relative drive frc::Pose2d{68.3_in, 0_m, 0_deg}
-    activate swerve balance behaviour
-    */
-    make<WaitTime>(1_s);
-}
-std::shared_ptr<behaviour::Behaviour> BLUE_Bottom_Dock(wom::SwerveDrive *swerve){
-    // assumes Bottom is in placement position for innergrid_1
-    return
-    /*
-    relative drive frc::Pose2d{0.3_m, 62.39_in, 0_deg}
-    relative drive frc::Pose2d{68.3_in, 0_m, 0_deg}
-    activate swerve balance behaviour
-    */
-    make<WaitTime>(1_s);
-}
-
-// Single Score                 <- We should not need to move for this
-std::shared_ptr<behaviour::Behaviour> BLUE_Single(wom::SwerveDrive *swerve){
-    return
-    /*
-    make<ArmavatorScoreHigh>();
-    */
-    make<WaitTime>(1_s);
-}
-
-// Single Score + Dock          <- We should only be in middle for doing this one
-std::shared_ptr<behaviour::Behaviour> BLUE_Single_Dock(wom::SwerveDrive *swerve){
-    return
-    /*
-    make<ArmavatorScoreHigh>();
-    make<ArmavatorGoToBalancePosition() & relative drive frc::Pose2d{68.3_in, 0_m, 0_deg}
-    activate swerve balance behaviour
-    */
-    make<WaitTime>(1_s);
-}
-
-// Triple Score                 <- We should never be in the middle for doing this one
-std::shared_ptr<behaviour::Behaviour> BLUE_Top_Triple(wom::SwerveDrive *swerve){
-    /*
-    make<ArmavatorScoreHigh>();
-    make<ArmavatorGoToBalancePosition() & drive to centreTopMidGamePiece & deploy intake
-    after a certain amount of driving time, start intaking
-    drive to adjacent inner grid & "(maybe)retract intake" & start moving arm up
-    */
-
-    auto wait_until = make<DrivebasePoseBehaviour>(swerve, frc::Pose2d{224_in, -45_in, 0_deg}) | make<WaitTime>(4_s);
-    auto wait_until2 = make<DrivebasePoseBehaviour>(swerve, frc::Pose2d{0_in, 1.5_m, 0_deg}) | make<WaitTime>(2_s); 
-    return
-    make<WaitTime>(1_s)
-    << make<DrivebasePoseBehaviour>(swerve, frc::Pose2d{224_in, 0_m, 0_deg})
-    << make<DrivebasePoseBehaviour>(swerve, frc::Pose2d{0_m, 0_m, 0_deg})
-
-    << make<DrivebasePoseBehaviour>(swerve, frc::Pose2d{145_in, 0_m, 0_deg})
-    << wait_until
-    << make<DrivebasePoseBehaviour>(swerve, frc::Pose2d{145_in, 0_in, 0_deg})
-    << make<DrivebasePoseBehaviour>(swerve, frc::Pose2d{0_in, 0_in, 0_deg});
-
-    // << make<DrivebasePoseBehaviour>(swerve, frc::Pose2d{0_in, -1_m, 0_deg})
-    // << wait_until2
-    // << make<DrivebasePoseBehaviour>(swerve, frc::Pose2d{1_m, -1_m, 0_deg});
-}
-std::shared_ptr<behaviour::Behaviour> BLUE_Bottom_Triple(wom::SwerveDrive *swerve){
-    return make<WaitTime>(1_s);
-}
-
-// Double Score + Dock          <- We should never be in the middle for doing this one
-std::shared_ptr<behaviour::Behaviour> BLUE_Top_Double_Dock(wom::SwerveDrive *swerve){
-    return make<WaitTime>(1_s);
-}
-std::shared_ptr<behaviour::Behaviour> BLUE_Bottom_Double_Dock(wom::SwerveDrive *swerve){
-    return make<WaitTime>(1_s);
-}
-
-// Double                       <- We should never be in the middle for doing this one
-std::shared_ptr<behaviour::Behaviour> BLUE_Top_Double(wom::SwerveDrive *swerve){
-    return make<WaitTime>(1_s);
-}
-std::shared_ptr<behaviour::Behaviour> BLUE_Bottom_Double(wom::SwerveDrive *swerve){
-    return make<WaitTime>(1_s);
-}
-
-// Quad Collect                 <- We should never be in the middle for doing this one
-std::shared_ptr<behaviour::Behaviour> BLUE_Top_Quad_Collect(wom::SwerveDrive *swerve){
-    return make<WaitTime>(1_s);
-}
-std::shared_ptr<behaviour::Behaviour> BLUE_Bottom_Quad_Collect(wom::SwerveDrive *swerve){
-    return make<WaitTime>(1_s);
-}
-
-
-
-
-
-
-
-
-
-
-
-
+DefinedPoses definedPoses;
 
 
 /*
-FOR docking:
-    drive to one of 3 points,
-    drive towards centre a bit,
-    activate balance behaviour
-
-FOR collecting middle piece, starting from a grid position:
-    drive to middle piece position (might require a straight movement, and then a diagonal, dodging the chargestation)
-        after driving a certain distance (or time) engage intake
-            after driving a certain distance (or time) activate intake
-
-FOR returning to a grid position after collecting from centre:
-    drive to grid position (might require a diagonal, straight then diagonal movement, dodging the chargestation)
-        deploy gripper to grab intaked game object
-            after some time, move up, to avoid intake
-        after a small amount of time disable intake
-        (MAYBE) after a small amount of time retract intake
-
-        
-
+for adding auto behaviours for other systems, add into the autoPathingDetails.endPathing, and between current behaviours
 */
+
+AutoPathDetails GetAutoPathingDetails(Drivebase drivebase, StartingConfig startConfig, EndingConfig endConfig, bool blueAlliance, int calledFromID, std::vector<frc::Pose2d> adjustmentPoses){
+  AutoPathDetails autoPathingDetails;
+  std::shared_ptr<Behaviour> adjustmentPathing;
+  std::shared_ptr<Behaviour> endPathing;
+
+  autoPathingDetails.endPathing = make<WaitTime>(0_ms);
+  for (frc::Pose2d pose : adjustmentPoses) {
+    adjustmentPathing = autoPathingDetails.endPathing << make<DrivebasePoseBehaviour>(drivebase.swerve, pose);
+    autoPathingDetails.endPathing = adjustmentPathing;
+  };
+  if (blueAlliance){  definedPoses.alliancePoses = definedPoses.blueAlliancePoses;  }
+  else{  definedPoses.alliancePoses = definedPoses.redAlliancePoses;  }
+
+  switch (startConfig){
+    case StartingConfig::Top:
+      definedPoses.poseSet = definedPoses.alliancePoses.topPoses;
+     break;
+    case StartingConfig::Middle:
+      definedPoses.poseSet = definedPoses.alliancePoses.middlePoses;
+     break;
+    case StartingConfig::Bottom:
+      definedPoses.poseSet = definedPoses.alliancePoses.bottomPoses;
+     break;
+  }
+
+  autoPathingDetails.startPos = definedPoses.poseSet.startPos;
+
+  switch (endConfig) {
+    case EndingConfig::Dock:
+        {
+        auto wait_until1 = make<DrivebasePoseBehaviour>(drivebase.swerve, definedPoses.poseSet.dock_LineUp_Pos) | make<WaitTime>(3_s); // because PID
+        auto wait_until2 = make<DrivebasePoseBehaviour>(drivebase.swerve, definedPoses.poseSet.dockPos) | make<WaitTime>(3_s); // because PID
+        endPathing = wait_until1 << wait_until2 << make<DrivebaseBalance>(drivebase.swerve, drivebase.gyro);
+      break;}
+    case EndingConfig::PrepareManual:
+        endPathing = make<DrivebasePoseBehaviour>(drivebase.swerve, definedPoses.poseSet.subStationWaitPos);
+      break;
+    case EndingConfig::Collect:
+        {// The Collect assumes that we start with a held game piece, that held game piece will be the only one for SINGLE, hence no swerve motion will take place
+        if (calledFromID == 1){   break;   }   // If SINGLE, do nothing
+        auto drive1 = make<DrivebasePoseBehaviour>(drivebase.swerve, definedPoses.poseSet.collectPath.startingFromPos) | make<WaitTime>(6_s); // because PID;
+        auto drive2 = make<DrivebasePoseBehaviour>(drivebase.swerve, definedPoses.poseSet.collectPath.retrievePiece1Pos) | make<WaitTime>(6_s); // because PID;
+        auto drive3 = make<DrivebasePoseBehaviour>(drivebase.swerve, definedPoses.poseSet.collectPath.returnPiece1Pos) | make<WaitTime>(6_s); // because PID;
+        auto drive4 = make<DrivebasePoseBehaviour>(drivebase.swerve, definedPoses.poseSet.collectPath.retrievePiece2Pos) | make<WaitTime>(6_s); // because PID;
+        auto drive5 = make<DrivebasePoseBehaviour>(drivebase.swerve, definedPoses.poseSet.collectPath.returnPiece2Pos) | make<WaitTime>(6_s); // because PID;
+        auto drive6 = make<DrivebasePoseBehaviour>(drivebase.swerve, definedPoses.poseSet.collectPath.retrievePiece3Pos) | make<WaitTime>(6_s); // because PID;
+        auto drive7 = make<DrivebasePoseBehaviour>(drivebase.swerve, definedPoses.poseSet.collectPath.returnPiece3Pos) | make<WaitTime>(6_s); // because PID;
+        auto drive8 = make<DrivebasePoseBehaviour>(drivebase.swerve, definedPoses.poseSet.collectPath.retrievePiece4Pos) | make<WaitTime>(6_s); // because PID;
+        auto drive9 = make<DrivebasePoseBehaviour>(drivebase.swerve, definedPoses.poseSet.collectPath.returnPiece4Pos) | make<WaitTime>(6_s); // because PID;
+        if (calledFromID == 2){  // if double
+          endPathing = drive1 << drive2 << drive3;
+        }
+        else if (calledFromID == 3){  // if triple
+          endPathing = drive1 << drive2 << drive3 << drive4 << drive5;
+        }
+        else if (calledFromID == 4){  // if quadruple
+          endPathing = drive1 << drive2 << drive3 << drive4 << drive5 << drive6 << drive7;
+        }
+        else if (calledFromID == 5){  // if quintuple
+          endPathing = drive1 << drive2 << drive3 << drive4 << drive5 << drive6 << drive7 << drive8 << drive9;
+        }}
+      break;
+    case EndingConfig::Taxi:
+        endPathing = make<DrivebasePoseBehaviour>(drivebase.swerve, definedPoses.poseSet.taxiPos);
+      break;
+    case EndingConfig::Steal:
+        endPathing = make<DrivebasePoseBehaviour>(drivebase.swerve, definedPoses.poseSet.stealPos);
+      break;
+  }
+
+  autoPathingDetails.endPathing = autoPathingDetails.endPathing << endPathing;
+  return autoPathingDetails;
+}
+
+
+std::shared_ptr<Behaviour> DockBot(Drivebase drivebase, bool blueAlliance, StartingConfig startConfig, EndingConfig endConfig){
+  AutoPathDetails autoPathDetails = GetAutoPathingDetails(drivebase, startConfig, endConfig, blueAlliance, 0);
+  return
+    make<DrivebasePoseBehaviour>(drivebase.swerve, autoPathDetails.startPos)
+    << autoPathDetails.endPathing;
+}
+
+std::shared_ptr<Behaviour> ForwardDrive(Drivebase drivebase, Armavator *armavator){
+  return
+    // make<DrivebasePoseBehaviour>(drivebase.swerve, frc::Pose2d{-0.4_m, 0_m, 0_deg})->WithTimeout(1_s)
+    make<ArmavatorGoToAutoSetpoint>(armavator, 0.9_m, -25_deg)->WithTimeout(2_s)
+    // << make<ArmavatorGoToAutoSetpoint>(armavator, 0.82_m, -30_deg)
+    << make<DrivebasePoseBehaviour>(drivebase.swerve, frc::Pose2d{0.3_m, 0_m, 0_deg})->WithTimeout(1_s)
+    << make<DrivebasePoseBehaviour>(drivebase.swerve, frc::Pose2d{-0.4_m, 0_m, 0_deg})->WithTimeout(1_s)
+    << make<DrivebasePoseBehaviour>(drivebase.swerve, frc::Pose2d{3.5_m, 0_m, 0_deg})->WithTimeout(3_s) //2.5
+    << make<WaitTime>(20_s);
+    // make<ArmavatorGoToAutoSetpoint>(armavator, 0.5_m, 40_deg)
+    
+}
+
+std::shared_ptr<Behaviour> Balence(Drivebase drivebase, Armavator *armavator) {
+  return 
+    make<ArmavatorGoToAutoSetpoint>(armavator, 0.1_m, 90_deg)
+    << make<DrivebasePoseBehaviour>(drivebase.swerve, frc::Pose2d{4_m, 0_m,  0_deg}, 7_V)->Until(make<WaitFor>([drivebase]() {
+      return units::math::abs(drivebase.gyro->GetPitch()) > 10_deg ||  units::math::abs(drivebase.gyro->GetRoll()) > 10_deg;
+    }));
+}
+
+std::shared_ptr<Behaviour> Single(Drivebase drivebase, Armavator *armavator, Gripper *gripper, bool blueAlliance, StartingConfig startConfig, EndingConfig endConfig){
+  AutoPathDetails autoPathDetails = GetAutoPathingDetails(drivebase, startConfig, endConfig, blueAlliance, 1);
+  return 
+    make<ArmavatorGoToAutoSetpoint>(armavator, 0.9_m, -55_deg)->WithTimeout(1_s) //start in starting config
+    // << make<WaitTime>(0.01_s)
+    // << make<ArmavatorGoToAutoSetpoint>(armavator, 0.9_m, 0_deg)->WithTimeout(2_s)
+    // << make<WaitTime>(0.01_s)
+    // << ((
+    << make<DrivebasePoseBehaviour>(Drivebase.swerve, frc::Pose2d{0.1_m, 0_m, 0_deg})->WithTimeout(1_s)
+    << make<ArmavatorGoToAutoSetpoint>(armavator, 0.9_m, 0_deg)
+    << make<ArmavatorGoToAutoSetpoint>(armavator, 0.3_m, 90_deg)
+    << make<ArmavatorGoToAutoSetpoint>(armavator, 0.4_m, 140_deg, 0.4, 0.15)
+    << make<WaitTime>(0.5_s)
+    << make<ArmavatorGoToAutoSetpoint>(armavator, 0.25_m, 160_deg, 0.2, 0.2)
+    // ) | make<GripperAutoBehaviour>(gripper, 2))
+    << make<GripperAutoBehaviour>(gripper, 1)->Until(make<WaitTime>(1_s))
+    << make<GripperAutoBehaviour>(gripper, 3)->Until(make<WaitTime>(1_s))
+    << make<DrivebasePoseBehaviour>(drivebase.swerve, frc::Pose2d{0.3_m, 0_m, 0_deg})->WithTimeout(1_s)
+    << make<ArmavatorGoToAutoSetpoint>(armavator, 0.3_m, 90_deg)
+    << make<DrivebasePoseBehaviour>(drivebase.swerve, frc::Pose2d{4_m, 0_m, 0_deg})->WithTimeout(5_s)
+    // << make<ArmavatorGoToAutoSetpoint>(armavator, 0.5_m, 90_deg, 0.5, 0.15)
+    // << make<ArmavatorGoToAutoSetpoint>(armavator, 0.7_m, 120_deg, 0.5, 0.15)
+    // << make<ArmavatorGoToAutoSetpoint>(armavator, 0.5_m, 140_deg, 0.5, 0.15)
+    // << make<ArmavatorGoToAutoSetpoint>(armavator, 0.7_m, 120_deg, 0.5, 0.2)
+    // << make<WaitTime>(0.01_s)
+    // << make<ArmavatorGoToAutoSetpoint>(armavator, 0.1_m, 120_deg)
+    // << make<WaitTime>(0.01_s)
+    // << make<ArmavatorGoToAutoSetpoint>(armavator, 0.6_m, 130_deg)
+    << make<WaitTime>(10_s);
+    // << make<ArmavatorGoToAutoSetpoint>(armavator, 0_m, 110_deg)
+    // // << make<WaitTime>(0.01_s)
+    // << make<ArmavatorGoToAutoSetpoint>(armavator, 0.2_m, 120_deg)
+    // // << make<WaitTime>(0.01_s)
+    // << make<ArmavatorGoToAutoSetpoint>(armavator, 0.6_m, 140_deg)
+    // // << make<WaitTime>(0.01_s)
+    // << make<ArmavatorGoToAutoSetpoint>(armavator, 0.6_m, 160_deg)
+    // // << make<WaitTime>(0.01_s)
+    // << make<ArmavatorGoToAutoSetpoint>(armavator, 0.20_m, 160_deg)
+
+    // << make<ArmavatorGoToAutoSetpoint>(armavator, 0.2_m, 130_deg)->WithTimeout(4_s)
+
+
+    // // << make<WaitTime>(0.01_s)
+    // << make<GripperAutoBehaviour>(gripper, 1)->Until(make<WaitTime>(1_s))
+    // << make<GripperAutoBehaviour>(gripper, 3)
+    // << make<ArmavatorGoToAutoSetpoint>(armavator, 0.20_m, 120_deg)
+    // // << make<WaitTime>(0.01_s)
+    // << make<ArmavatorGoToAutoSetpoint>(armavator, 0.1_m, 90_deg)
+    // // << make<WaitTime>(0.01_s)
+    // << make<ArmavatorGoToAutoSetpoint>(armavator, 0.0_m, 70_deg);
+    // << make<DrivebasePoseBehaviour>(drivebase.swerve, autoPathDetails.startPos)
+    // << autoPathDetails.endPathing;
+}
+
+
+
+
+//Just drive auto 
+// std::shared_ptr<Behaviour> Single(Drivebase drivebase, Armavator *armavator, bool blueAlliance, StartingConfig startConfig, EndingConfig endConfig){
+//   AutoPathDetails autoPathDetails = GetAutoPathingDetails(drivebase, startConfig, endConfig, blueAlliance, 1);
+//   return 
+//     make<DrivebasePoseBehaviour>(drivebase.swerve, autoPathDetails.startPos)
+//     << autoPathDetails.endPathing
+//     << make<WaitTime>(1_s)
+//     << make<ArmavatorGoToAutoSetpoint>(armavator, 0.3_m, 60_deg);
+// }
+
+std::shared_ptr<Behaviour> Double(Drivebase drivebase, bool blueAlliance, StartingConfig startConfig, EndingConfig endConfig){
+  AutoPathDetails autoPathDetails = GetAutoPathingDetails(drivebase, startConfig, endConfig, blueAlliance, 2);
+  auto drive1 = make<DrivebasePoseBehaviour>(drivebase.swerve, definedPoses.poseSet.collectPath.startingFromPos) | make<WaitTime>(6_s); // because PID;
+  auto drive2 = make<DrivebasePoseBehaviour>(drivebase.swerve, definedPoses.poseSet.collectPath.retrievePiece1Pos) | make<WaitTime>(6_s); // because PID;
+
+  return
+    make<DrivebasePoseBehaviour>(drivebase.swerve, autoPathDetails.startPos)
+    << make<DrivebasePoseBehaviour>(drivebase.swerve, definedPoses.poseSet.collectPath.retrievePiece1Pos)
+    << make<DrivebasePoseBehaviour>(drivebase.swerve, definedPoses.alliancePoses.gridPoses.outerGrid3)
+    << autoPathDetails.endPathing;
+}
+
+std::shared_ptr<Behaviour> Triple(Drivebase drivebase, bool blueAlliance, StartingConfig startConfig, EndingConfig endConfig){
+  AutoPathDetails autoPathDetails = GetAutoPathingDetails(drivebase, startConfig, endConfig, blueAlliance, 3);
+
+  // this function is currently built for testing while starting at (0, 0) due to lack of vision
+  auto wait_until = make<DrivebasePoseBehaviour>(drivebase.swerve, frc::Pose2d{224_in, -45_in, 0_deg}) | make<WaitTime>(3_s);
+  auto wait_until2 = make<DrivebasePoseBehaviour>(drivebase.swerve, frc::Pose2d{0_in, 1.5_m, 0_deg}) | make<WaitTime>(2_s); 
+    
+  return
+    make<DrivebasePoseBehaviour>(drivebase.swerve, autoPathDetails.startPos)
+    << make<DrivebasePoseBehaviour>(drivebase.swerve, frc::Pose2d{224_in, 0_m, 0_deg})
+    << make<DrivebasePoseBehaviour>(drivebase.swerve, frc::Pose2d{0_m, 0_m, 0_deg})
+
+    << make<DrivebasePoseBehaviour>(drivebase.swerve, frc::Pose2d{145_in, 0_m, 0_deg})
+    << wait_until
+    << make<DrivebasePoseBehaviour>(drivebase.swerve, frc::Pose2d{145_in, 0_in, 0_deg})
+    << make<DrivebasePoseBehaviour>(drivebase.swerve, frc::Pose2d{0_in, 0_in, 0_deg})
+
+    << autoPathDetails.endPathing;
+}
+
+std::shared_ptr<Behaviour> Quad(Drivebase drivebase, bool blueAlliance, StartingConfig startConfig, EndingConfig endConfig){
+  AutoPathDetails autoPathDetails = GetAutoPathingDetails(drivebase, startConfig, endConfig, blueAlliance, 4);
+  return
+    make<DrivebasePoseBehaviour>(drivebase.swerve, autoPathDetails.startPos)
+    // << make<DrivebasePoseBehaviour>(drivebase.swerve, frc::Pose2d{224_in, 0_m, 0_deg})
+    // << make<DrivebasePoseBehaviour>(drivebase.swerve, frc::Pose2d{0_m, 0_m, 0_deg})
+    << autoPathDetails.endPathing;
+}
+
+std::shared_ptr<Behaviour> Quintuple(Drivebase drivebase, bool blueAlliance, StartingConfig startConfig, EndingConfig endConfig){
+  AutoPathDetails autoPathDetails = GetAutoPathingDetails(drivebase, startConfig, endConfig, blueAlliance, 5);
+  return
+    make<DrivebasePoseBehaviour>(drivebase.swerve, autoPathDetails.startPos)
+    // << make<DrivebasePoseBehaviour>(drivebase.swerve, frc::Pose2d{224_in, 0_m, 0_deg})
+    // << make<DrivebasePoseBehaviour>(drivebase.swerve, frc::Pose2d{0_m, 0_m, 0_deg})
+    << autoPathDetails.endPathing;
+}
+
+std::shared_ptr<behaviour::Behaviour> SubsystemTestPlace(Armavator *armavator) {
+  return 
+    make<WaitTime>(1_s)
+    << make<ArmavatorGoToAutoSetpoint>(armavator, 0.8_m, -40_deg)
+    // << wait_until
+    << make<WaitTime>(5_s)
+    << make<ArmavatorGoToAutoSetpoint>(armavator, 0.7_m, -10_deg)
+    << make<WaitTime>(1_s)
+    << make<ArmavatorGoToAutoSetpoint>(armavator, 0.6_m, 0_deg);
+    // << make<ArmavatorGoToPositionBehaviour(armavator, pos);
+    // << make<ArmavatorGoToAutoSetpoint(armavator)
+    // << make<WaitTime>(0.3_s);
+    // << make<ArmavatorGoToPositionBehaviour(armavator, {0_deg, 0.8_m})
+    // << make<WaitTime>(0.3_s)
+    // << make<ArmavatorGoToPositionBehaviour(armavator, {90_deg, 0.3_m})
+    // << make<WaitTime>(0.3_s)
+    // << make<ArmavatorGoToPositionBehaviour(armavator, {160_deg, 0.4_m});
+}

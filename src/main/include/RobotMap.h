@@ -1,41 +1,55 @@
 #pragma once
+
 #include "VoltageController.h"
-#include "Arm.h"
-#include "Elevator.h"
-#include "Armavator.h"
-#include "SideIntake.h"
 #include "Gyro.h"
-#include "behaviour/ArmavatorBehaviour.h"
 #include "Vision.h"
-#include "Gripper.h"
 #include "behaviour/VisionBehaviour.h"
-#include "TOF.h"
 
 #include <ctre/phoenix/motorcontrol/can/WPI_TalonFX.h>
 #include <frc/Compressor.h>
-#include <frc/XboxController.h>
+
+#include "XInputController.h"
+
 #include <ctre/Phoenix.h>
-#include <frc/DoubleSolenoid.h>
 
 #include "drivetrain/SwerveDrive.h"
 #include <frc/DoubleSolenoid.h>
 #include <units/length.h>
-#include <units/angle.h>
+
+
+#include "Encoder.h"
 
 #include <iostream>
 #include <string>
 
+#include "Arm.h"
+#include "Elevator.h"
+#include "Armavator.h"
+#include "SideIntake.h"
+#include "behaviour/ArmavatorBehaviour.h"
+#include "Gripper.h"
+#include "TOF.h"
+#include <frc/XboxController.h>
+#include <units/angle.h>
+
+
 struct RobotMap {
-  struct Controllers {  
+
+  struct Controllers {    
     //sets driver station numbers for the controllers
     frc::XboxController driver{0};
     frc::XboxController codriver{1};
   };
   Controllers controllers;
 
-  struct ControlSystem {
-    frc::Compressor pcmCompressor{1, frc::PneumaticsModuleType::CTREPCM};
+struct ControlSystem {
+    frc::Compressor pcmCompressor{2, frc::PneumaticsModuleType::REVPH};
   }; ControlSystem controlSystem;
+
+  struct GripTest {
+    // rev::CANSparkMax gripper{19, rev::CANSparkMax::MotorType::kBrushless};
+    VictorSPX gripper{18};
+  }; GripTest grTest;
 
   //stores nessesary info for vision
   struct Vision {
@@ -48,25 +62,24 @@ struct RobotMap {
   };
   Vision vision;
 
-  ////stores nessesary info for swerve
+  //stores nessesary info for swerve
   struct SwerveBase{
+    CANCoder frontLeftCancoder{19};
+    CANCoder frontRightCancoder{17};
+    CANCoder backLeftCancoder{16};
+    CANCoder backRightCancoder{18};
+
     wom::NavX gyro;
     wpi::array<WPI_TalonFX*, 4> turnMotors{
-      new WPI_TalonFX(6), new WPI_TalonFX(4), new WPI_TalonFX(3), new WPI_TalonFX(1)
+      new WPI_TalonFX(1), new WPI_TalonFX(3), new WPI_TalonFX(5), new WPI_TalonFX(7)
     };
     wpi::array<WPI_TalonFX*, 4> driveMotors{
-      new WPI_TalonFX(7), new WPI_TalonFX(2), new WPI_TalonFX(8), new WPI_TalonFX(5)
+      new WPI_TalonFX(2), new WPI_TalonFX(4), new WPI_TalonFX(6), new WPI_TalonFX(8)
     };
-    //   wpi::array<WPI_TalonFX*, 4> turnMotors{
-    //   new WPI_TalonFX(1), new WPI_TalonFX(3), new WPI_TalonFX(4), new WPI_TalonFX(6)
-    // };
-    // wpi::array<WPI_TalonFX*, 4> driveMotors{
-    //   new WPI_TalonFX(5), new WPI_TalonFX(8), new WPI_TalonFX(2), new WPI_TalonFX(7)
-    // };
 
     wpi::array<wom::SwerveModuleConfig, 4> moduleConfigs{
-      wom::SwerveModuleConfig{ // dimensions are assuming perfect square robot 1m^2 area
-        frc::Translation2d(0.5_m, 0.5_m),
+      wom::SwerveModuleConfig{ // front left module
+        frc::Translation2d(10.761_in, 9.455_in),
         wom::Gearbox{
           new wom::MotorVoltageController(driveMotors[0]),
           new wom::TalonFXEncoder(driveMotors[0], 6.75),
@@ -74,13 +87,14 @@ struct RobotMap {
         },
         wom::Gearbox{
           new wom::MotorVoltageController(turnMotors[0]),
-          new wom::TalonFXEncoder(turnMotors[0], 12.8),
+          new wom::CanEncoder(19, 4096, 12.8),
           wom::DCMotor::Falcon500(1).WithReduction(12.8)
         },
+        &frontLeftCancoder,
         4_in / 2
       },
-      wom::SwerveModuleConfig{ // dimensions are assuming perfect square robot 1m^2 area
-        frc::Translation2d(0.5_m, -0.5_m),
+      wom::SwerveModuleConfig{ // front right module
+        frc::Translation2d(10.761_in, -9.455_in),
         wom::Gearbox{
           new wom::MotorVoltageController(driveMotors[1]),
           new wom::TalonFXEncoder(driveMotors[1], 6.75),
@@ -88,13 +102,14 @@ struct RobotMap {
         },
         wom::Gearbox{
           new wom::MotorVoltageController(turnMotors[1]),
-          new wom::TalonFXEncoder(turnMotors[1], 12.8),
+          new wom::CanEncoder(17, 4096, 12.8),
           wom::DCMotor::Falcon500(1).WithReduction(12.8)
         },
+        &frontRightCancoder,
         4_in / 2
       },
-      wom::SwerveModuleConfig{ // dimensions are assuming perfect square robot 1m^2 area
-        frc::Translation2d(-0.5_m, 0.5_m),
+      wom::SwerveModuleConfig{ // back left module
+        frc::Translation2d(-10.761_in, 9.455_in),
         wom::Gearbox{
           new wom::MotorVoltageController(driveMotors[2]),
           new wom::TalonFXEncoder(driveMotors[2], 6.75),
@@ -102,13 +117,14 @@ struct RobotMap {
         },
         wom::Gearbox{
           new wom::MotorVoltageController(turnMotors[2]),
-          new wom::TalonFXEncoder(turnMotors[2], 12.8),
+          new wom::CanEncoder(16, 4096, 12.8),
           wom::DCMotor::Falcon500(1).WithReduction(12.8)
         },
+        &backRightCancoder,
         4_in / 2
       },
-      wom::SwerveModuleConfig{ // dimensions are assuming perfect square robot 1m^2 area
-        frc::Translation2d(-0.5_m, -0.5_m),
+      wom::SwerveModuleConfig{ // back right module
+        frc::Translation2d(-10.761_in, -9.455_in),
         wom::Gearbox{
           new wom::MotorVoltageController(driveMotors[3]),
           new wom::TalonFXEncoder(driveMotors[3], 6.75),
@@ -116,27 +132,26 @@ struct RobotMap {
         },
         wom::Gearbox{
           new wom::MotorVoltageController(turnMotors[3]),
-          new wom::TalonFXEncoder(turnMotors[3], 12.8),
+          new wom::CanEncoder(18, 4096, 12.8),
           wom::DCMotor::Falcon500(1).WithReduction(12.8)
         },
+        &backLeftCancoder,
         4_in / 2
       },
     };
 
+    // Setting the PID path and values to be used for SwerveDrive and SwerveModules
     wom::SwerveModule::angle_pid_conf_t anglePID {
       "/drivetrain/pid/angle/config",
-      10.5_V / 180_deg,
-      0.75_V / (100_deg * 1_s),
+      14_V / 180_deg,
+      0.0_V / (100_deg * 1_s),
       0_V / (100_deg / 1_s),
       1_deg,
       0.5_deg / 1_s
-
-      // 1_rad
     };
     wom::SwerveModule::velocity_pid_conf_t velocityPID{
       "/drivetrain/pid/velocity/config",
       //  12_V / 4_mps // webers per metre
-
     };
     wom::SwerveDriveConfig::pose_angle_conf_t poseAnglePID {
       "/drivetrain/pid/pose/angle/config",
@@ -149,13 +164,14 @@ struct RobotMap {
     wom::SwerveDriveConfig::pose_position_conf_t posePositionPID{
       "/drivetrain/pid/pose/position/config",
       3_mps / 1_m,
-      wom::SwerveDriveConfig::pose_position_conf_t::ki_t{0.1},
+      wom::SwerveDriveConfig::pose_position_conf_t::ki_t{0.15},
       0_m / 1_m,
       20_cm, 
       10_cm / 1_s,
-      10_cm,
+      10_cm
     };
 
+    // the config for the whole swerve drive
     wom::SwerveDriveConfig config{
       "/drivetrain",
       anglePID, velocityPID,
@@ -163,68 +179,62 @@ struct RobotMap {
       &gyro,
       poseAnglePID, 
       posePositionPID,
-      10_kg, // robot mass (estimate rn)
+      60_kg, // robot mass (estimate rn)
       {0.1, 0.1, 0.1},
       {0.9, 0.9, 0.9}
     };  
 
+    // current limiting and setting idle mode of modules to brake mode
     SwerveBase() {
       for (size_t i = 0; i < 4; i++) {
         turnMotors[i]->ConfigSupplyCurrentLimit(SupplyCurrentLimitConfiguration(true, 15, 15, 0));
-        driveMotors[i]->SetNeutralMode(NeutralMode::Brake); // [Potential Issue]
-        turnMotors[i]->SetNeutralMode(NeutralMode::Brake); // [Potential Issue]
+        driveMotors[i]->SetNeutralMode(NeutralMode::Brake);
+        turnMotors[i]->SetNeutralMode(NeutralMode::Brake);
         driveMotors[i]->SetInverted(true);
       }
     }
-  }; SwerveBase swerveBase;
+  };
+  SwerveBase swerveBase;
 
   struct SwerveGridPoses { // positions to place the items
-    frc::Pose2d innerGrid1 = frc::Pose2d(0.1_m, 0.1_m, 0_deg); // Closest grid position to the Wall
-    frc::Pose2d innerGrid2 = frc::Pose2d(0.5_m, 0_m, 0_deg); // Middle of Inner Grid
-    frc::Pose2d innerGrid3 = frc::Pose2d(0.5_m, -0.5_m, 0_deg); // Centremost Inner Grid position
-    frc::Pose2d centreGrid1 = frc::Pose2d(0_m, 0.5_m, 0_deg); // The non central grid on the Inner Grid side
-    frc::Pose2d centreGrid2 = frc::Pose2d(0_m, 0_m, 216_deg); // The middle most grid 
-    frc::Pose2d centreGrid3 = frc::Pose2d(0_m, -0.5_m, 0_deg); // The non central grid on the Outer Grid side
-    frc::Pose2d outerGrid1 = frc::Pose2d(-0.5_m, 0.5_m, 0_deg); // Centremost outer grid position
-    frc::Pose2d outerGrid2 = frc::Pose2d(1_m, 0_m, 0_deg); // Middle of Outer Grid
-    frc::Pose2d outerGrid3 = frc::Pose2d(-0.5_m, -0.5_m, 0_deg); // Closest grid position to enemy Loading Zone
+    frc::Pose2d innerGrid1; // Closest grid position to the Wall
+    frc::Pose2d innerGrid2; // Middle of Inner Grid
+    frc::Pose2d innerGrid3; // Centremost Inner Grid position
+    frc::Pose2d centreGrid1; // The non central grid on the Inner Grid side
+    frc::Pose2d centreGrid2; // The middle most grid
+    frc::Pose2d centreGrid3; // The non central grid on the Outer Grid side
+    frc::Pose2d outerGrid1; // Centremost outer grid position
+    frc::Pose2d outerGrid2; // Middle of Outer Grid
+    frc::Pose2d outerGrid3; // Closest grid position to enemy Loading Zone
   };
+
+  SwerveGridPoses bluePoses{ // grid poses for blue
+    frc::Pose2d(20.185_in, 20.208_in, 0_deg),
+    frc::Pose2d(42.2_in, 20.208_in, 0_deg),
+    frc::Pose2d(64.185_in, 20.208_in, 0_deg),
+    frc::Pose2d(86.078_in, 20.208_in, 0_deg),
+    frc::Pose2d(108.131_in, 20.208_in, 216_deg),
+    frc::Pose2d(130.185_in, 20.208_in, 0_deg),
+    frc::Pose2d(152.185_in, 20.208_in, 0_deg),
+    frc::Pose2d(174.170_in, 20.208_in, 0_deg),
+    frc::Pose2d(196.185_in, 20.208_in, 0_deg)
+  };
+  // TO BE DONE BELOW!!!!!!!!!!!!!!!!!
+  SwerveGridPoses redPoses{ // grid poses for red
+    frc::Pose2d(20.185_in, 20.208_in, 0_deg),
+    frc::Pose2d(42.2_in, 20.208_in, 0_deg),
+    frc::Pose2d(64.185_in, 20.208_in, 0_deg),
+    frc::Pose2d(86.078_in, 20.208_in, 0_deg),
+    frc::Pose2d(108.131_in, 20.208_in, 216_deg),
+    frc::Pose2d(130.185_in, 20.208_in, 0_deg),
+    frc::Pose2d(152.185_in, 20.208_in, 0_deg),
+    frc::Pose2d(174.170_in, 20.208_in, 0_deg),
+    frc::Pose2d(196.185_in, 20.208_in, 0_deg)
+  };
+
   SwerveGridPoses swerveGridPoses;
 
-  // struct IntakeSystem {
-  //   WPI_TalonSRX rightMotor{98};
-  //   WPI_VictorSPX leftMotor{99};
 
-  //   // wom::MotorVoltageController rightIntake = wom::MotorVoltageController::Group(rightMotor);
-  //   // wom::TalonSr
-
-  //   // wom::Gearbox intakeGearbox  {
-  //   //   &rightIntake,
-  //   //   &
-  //   // };
-
-
-  //   frc::Compressor compressor{1, frc::PneumaticsModuleType::CTREPCM};
-  //   frc::DoubleSolenoid leftSolenoid{1, frc::PneumaticsModuleType::CTREPCM, 0, 1};
-  //   // frc::DoubleSolenoid rightSolenoid{PneumaticsModuleType::CTREPCM, 2};
-  //   frc::DoubleSolenoid gripSolenoid{1, frc::PneumaticsModuleType::CTREPCM, 6, 7};
-
-  // }; IntakeSystem intake;
-
-  // struct GripperSystem {
-  // //   // WPI_TalonSRX leftGrip{89};
-  // //   // WPI_TalonSRX rightGrip{88};
-
-  // //   WPI_TalonSRX leftGrip{16};
-  // //   WPI_TalonSRX rightGrip{17};
-  // // }; GripperSystem gripper;
-  //   WPI_TalonSRX leftGrip{3};
-  //   WPI_TalonSRX rightGrip{4};
-  //   TOF gamepiecePresence{frc::I2C::Port::kMXP};
-
-  // }; GripperSystem gripper;
-
-  //stores nessesary info for Armavator
   struct Armavator {
     //sets up the percieved masses for the load, arm and carraige
     static constexpr units::kilogram_t loadMass = 10_kg;
@@ -234,33 +244,60 @@ struct RobotMap {
     //stores nessesary info for arm
     struct Arm {
       //creates the motor used for the arm as well as the port it is plugged in
-      WPI_TalonSRX motor{15};
+      rev::CANSparkMax leftArmMotor{11, rev::CANSparkMax::MotorType::kBrushless}; //11
+      rev::CANSparkMax rightArmMotor{12, rev::CANSparkMax::MotorType::kBrushless}; //12
+
+      rev::CANSparkMax leftPretendArmMotor{28, rev::CANSparkMax::MotorType::kBrushless};
+      rev::CANSparkMax rightPretendArmMotor{29, rev::CANSparkMax::MotorType::kBrushless};
 
       //create the motor group used for the arm
-      wom::MotorVoltageController motorGroup = wom::MotorVoltageController::Group(motor);
+      wom::MotorVoltageController leftMotorGroup = wom::MotorVoltageController::Group(leftArmMotor);
+      wom::MotorVoltageController rightMotorGroup = wom::MotorVoltageController::Group(rightArmMotor);
       
       // wom::DigitalEncoder encoder{0, 1, 2048};
       //sets the type sof encoder that is used up
-      wom::DutyCycleEncoder encoder{0};
+      wom::CANSparkMaxEncoder leftEncoder{&leftPretendArmMotor, 100};
+      wom::CANSparkMaxEncoder rightEncoder{&rightPretendArmMotor, 100};
+
+      // wom::CANSparkMaxEncoder leftEncoder{&leftArmMotor, 100};
+      // wom::CANSparkMaxEncoder rightEncoder{&rightArmMotor, 100};
+
+      rev::SparkMaxRelativeEncoder leftOtherArmEncoder = leftArmMotor.GetEncoder();
+      rev::SparkMaxRelativeEncoder rightOtherArmEncoder = rightArmMotor.GetEncoder();
 
       //creates an instance of the arm gearbox
-      wom::Gearbox gearbox {
-        &motorGroup,
-        &encoder,
-        wom::DCMotor::CIM(1).WithReduction(100)
+      wom::Gearbox leftGearbox {
+        &leftMotorGroup,
+        &leftEncoder,
+        // nullptr,
+        wom::DCMotor::NEO(1).WithReduction(100)
+      };
+
+      wom::Gearbox rightGearbox {
+        &rightMotorGroup,
+        &rightEncoder,
+        // nullptr,
+        wom::DCMotor::NEO(1).WithReduction(100)
       };
 
       //creates arm config information
       wom::ArmConfig config {
         "/armavator/arm",
-        gearbox,
+        leftGearbox,
+        rightGearbox,
+        leftOtherArmEncoder,
         wom::PIDConfig<units::radian, units::volts>(
           "/armavator/arm/pid/config",
-          18_V / 90_deg
+          10_V / 25_deg,
+          0.1_V / (1_deg * 1_s),
+          0_V / (1_deg / 1_s),
+          5_deg,
+          2_deg / 1_s,
+          10_deg
         ),
         5_kg, 
         5_kg,
-        1_m,
+        1.37_m,
         -90_deg,
         270_deg,
         0_deg
@@ -268,54 +305,76 @@ struct RobotMap {
 
       Arm() {
         //sets the ofset for the encoder so it reads the right value
-        encoder.SetEncoderOffset(-77.6_deg);
+        // leftEncoder.SetEncoderOffset(0_deg);
         //inverts the motor so that it goes in the right direction while using RAW controlls
-        motor.SetInverted(true);
+        leftArmMotor.SetInverted(true);
+        rightArmMotor.SetInverted(false);
       }
     };
     Arm arm;
 
-    ////stores nessesary info for elevator
     struct Elevator {
       //creates instances of the motors used for the elevator as well as what ports they are plugged in to
-      WPI_TalonSRX motor{19};
-      WPI_TalonSRX motor1{18};
+      rev::CANSparkMax leftElevatorMotor{9, rev::CANSparkMax::MotorType::kBrushless}; //9
+      rev::CANSparkMax rightElevatorMotor{10, rev::CANSparkMax::MotorType::kBrushless}; //10
+
+      rev::CANSparkMax leftPretendElevatorMotor{25, rev::CANSparkMax::MotorType::kBrushless}; //10
+      rev::CANSparkMax rightPretendElevatorMotor{26, rev::CANSparkMax::MotorType::kBrushless}; //10
 
       //creates the motor group that can be used to set voltage
-      wom::MotorVoltageController motorGroup = wom::MotorVoltageController::Group(motor, motor1);
+      wom::MotorVoltageController leftMotorGroup = wom::MotorVoltageController::Group(leftElevatorMotor);
+      wom::MotorVoltageController rightMotorGroup = wom::MotorVoltageController::Group(rightElevatorMotor);
 
       //creates an instance of the encoder that will be used for the elevator
-      wom::TalonSRXEncoder encoder{&motor, 40, 10.71};
+      wom::CANSparkMaxEncoder leftEncoder{&leftPretendElevatorMotor, 14/60};
+      wom::CANSparkMaxEncoder rightEncoder{&rightPretendElevatorMotor, 14/60};
+
+      rev::SparkMaxRelativeEncoder leftOtherEncoder= leftElevatorMotor.GetEncoder();
+      rev::SparkMaxRelativeEncoder rightOtherEncoder= rightElevatorMotor.GetEncoder();
 
       //creates an instance of the gearbox used for the elevator
-      wom::Gearbox gearbox {
-        &motorGroup,
-        &encoder,
-        wom::DCMotor::CIM(2).WithReduction(10.71)
+      wom::Gearbox leftGearbox {
+        &leftMotorGroup,
+        &leftEncoder,
+        // nullptr,
+        wom::DCMotor::NEO(1).WithReduction(14/60)
+      };
+
+      wom::Gearbox rightGearbox {
+        &rightMotorGroup,
+        &rightEncoder,
+        // nullptr,
+        wom::DCMotor::NEO(1).WithReduction(14/60)
       };
 
       //creates the elevator config information to use
       wom::ElevatorConfig config {
         "/armavator/elevator",
-        gearbox,
+        leftGearbox,
+        rightGearbox,
+        leftOtherEncoder,
         nullptr,
         nullptr,
-        65_mm / 2,
+        48.26_mm / 2,
         armMass + loadMass + carriageMass,
-        1.33_m,
-        0.28_m,
-        0.28_m, // an obvious way to say: CHANGE THIS
+        1_m,
+        0_m,
+        0_m,
         {
           //creates the pid for the elevator to remove error
           "/armavator/elevator/pid/config",
-          4_V / 1_m
+          19_V / 1_m, //16V
+          0.3_V / (1_m * 1_s),
+          0_V / (1_m / 1_s),
+          0.1_m
+          // 0.05_m / 1_s
         }
       };
 
       //inverts the motor directions so that the arm goes to the right place during RAW control
       Elevator() {
-        motor.SetInverted(true);
-        motor1.SetInverted(true);
+        leftElevatorMotor.SetInverted(false);
+        rightElevatorMotor.SetInverted(true);
       }
     };
     Elevator elevator;
@@ -350,33 +409,43 @@ struct RobotMap {
   }; IntakeTable intakeTable;
 
   struct SideIntakeSystem {
-    wom::MotorVoltageController rightIntakeMotor{new WPI_TalonSRX(9)};
-    wom::MotorVoltageController leftIntakeMotor{new WPI_TalonSRX(10)};
+    WPI_VictorSPX leftIntakeMotor{13};
+    WPI_VictorSPX rightIntakeMotor{14};
 
-    frc::DoubleSolenoid claspSolenoid{1, frc::PneumaticsModuleType::CTREPCM, 2, 3};  // change chanel values // grab pistons
-    frc::DoubleSolenoid deploySolenoid{1, frc::PneumaticsModuleType::CTREPCM, 0, 1};  // change chanel values // move pistons
+    wom::MotorVoltageController leftMotorGroup = wom::MotorVoltageController::Group(leftIntakeMotor);
+    wom::MotorVoltageController rightMotorGroup = wom::MotorVoltageController::Group(rightIntakeMotor);
+
+    wom::Gearbox leftGearbox {
+      &leftMotorGroup,
+      nullptr,
+      wom::DCMotor::Bag(1).WithReduction(10)
+    };
+
+    wom::Gearbox rightGearbox {
+      &rightMotorGroup,
+      nullptr,
+      wom::DCMotor::Bag(1).WithReduction(10)
+    };
+
+    frc::DoubleSolenoid claspSolenoid{2, frc::PneumaticsModuleType::REVPH, 1, 2};
+    frc::DoubleSolenoid deploySolenoid{2, frc::PneumaticsModuleType::REVPH, 0, 3};
 
     SideIntakeConfig config{
       &claspSolenoid,
       &deploySolenoid,
-      &rightIntakeMotor,
-      &leftIntakeMotor
+      &rightGearbox,
+      &leftGearbox
     };
   }; 
   SideIntakeSystem sideIntake;
 
   struct GripperSystem {
-    wom::MotorVoltageController leftGripperMotor{ new WPI_TalonSRX(16)};
-    wom::MotorVoltageController rightGripperMotor{ new WPI_TalonSRX(17)};
-  
-    WPI_TalonSRX leftGrip{3};
-    WPI_TalonSRX rightGrip{4};
+    wom::MotorVoltageController gripperMotor{ new WPI_VictorSPX(15)};
+
     TOF gamepiecePresence{frc::I2C::Port::kMXP};
 
     GripperConfig config{
-      &leftGripperMotor,
-      &rightGripperMotor
+      &gripperMotor
     };
-  
   }; GripperSystem gripper;
 };

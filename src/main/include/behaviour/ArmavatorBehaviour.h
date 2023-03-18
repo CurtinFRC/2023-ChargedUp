@@ -7,7 +7,38 @@
 #include <units/angle.h>
 #include <units/length.h>
 #include <iostream>
+#include <frc/event/EventLoop.h>
 #include "ControlUtil.h"
+
+enum class ArmavatorAutoSetpointEnum {
+  kInIntake,
+  kTravel,
+  kFrontMidPlace,
+  kFrontLowPlace, 
+  kBackHighPlace, 
+  kBackMidPlace, 
+  kBackLowPlace,
+  kWaitToCollect
+};
+
+class ArmavatorGoToAutoSetpoint : public behaviour::Behaviour {
+ public: 
+  ArmavatorGoToAutoSetpoint(Armavator *armavator, units::meter_t height, units::degree_t angle, double elevatorSpeed = 0.5, double armSpeed = 0.3);
+
+  void OnStart();
+  void OnTick(units::second_t dt) override;
+ private: 
+  Armavator *_armavator;
+
+  units::degree_t _angle;
+  units::meter_t _height;
+
+  double _elevatorSpeed;
+  double _armSpeed;
+  // ArmavatorAutoSetpointEnum _setpoint;
+
+  // ArmavatorPosition _setpointValue;
+};
 
 class ArmavatorGoToPositionBehaviour : public behaviour::Behaviour {
  public:
@@ -71,10 +102,13 @@ class ArmavatorManualBehaviour : public behaviour::Behaviour {
  private: 
   Armavator *_armavator;
   ArmavatorPosition _manualSetpoint;
+  ArmavatorPosition _setpointValue;
 
   frc::XboxController &_codriver;
+  units::degree_t max_diff = 10_deg;
 
   units::meter_t startHeight; 
+  frc::EventLoop *loop;
 
-  bool rawControl = false;
+  bool rawControl = true;
 };

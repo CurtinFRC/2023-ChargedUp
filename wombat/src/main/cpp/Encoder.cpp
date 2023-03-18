@@ -1,9 +1,10 @@
 #include "Encoder.h"
+#include <iostream>
 
 using namespace wom;
 
 double Encoder::GetEncoderTicks() const {
-  return GetEncoderRawTicks() - _offset;
+  return GetEncoderRawTicks();
 }
 
 double Encoder::GetEncoderTicksPerRotation() const {
@@ -11,17 +12,20 @@ double Encoder::GetEncoderTicksPerRotation() const {
 }
 
 void Encoder::ZeroEncoder() {
-  _offset = GetEncoderRawTicks();
+  _offset = GetEncoderRawTicks() * 1_rad;
 }
 
-void Encoder::SetEncoderPosition(units::radian_t position) {
-  units::turn_t offset_turns = position - GetEncoderPosition();
-  _offset = -offset_turns.value() * GetEncoderTicksPerRotation();
+void Encoder::SetEncoderPosition(units::degree_t position) {
+  // units::radian_t offset_turns = position - GetEncoderPosition();
+  units::degree_t offset = position - (GetEncoderRawTicks() * 360 * 1_deg);
+  _offset = offset;
+  // _offset = -offset_turns;
 }
 
 void Encoder::SetEncoderOffset(units::radian_t offset) {
-  units::turn_t offset_turns = offset;
-  _offset = offset_turns.value() * GetEncoderTicksPerRotation();
+  _offset = offset;
+  // units::turn_t offset_turns = offset;
+  // _offset = offset_turns.value() * GetEncoderTicksPerRotation();
 }
 
 void Encoder::SetReduction(double reduction) {
@@ -29,8 +33,22 @@ void Encoder::SetReduction(double reduction) {
 }
 
 units::radian_t Encoder::GetEncoderPosition() {
-  units::turn_t n_turns{GetEncoderTicks() / GetEncoderTicksPerRotation()};
-  return n_turns;
+  if (_type == 0) {
+    units::turn_t n_turns{GetEncoderTicks() / GetEncoderTicksPerRotation()};
+    return n_turns;
+  } else if (_type == 2) {
+    units::degree_t pos = GetEncoderTicks() * 1_deg;
+    return pos - _offset;
+  } else {
+    units::degree_t pos = GetEncoderTicks() * 1_deg;
+    return pos - _offset;
+  }
+}
+
+double Encoder::GetEncoderDistance() {
+  return (GetEncoderTicks() /*- _offset.value()*/) * 0.02032;
+  // return (GetEncoderTicks() - _offset.value()) * 2 * 3.141592 * 0.0444754;
+  // return (GetEncoderTicks() - _offset.value());
 }
 
 units::radians_per_second_t Encoder::GetEncoderAngularVelocity() {
@@ -40,6 +58,7 @@ units::radians_per_second_t Encoder::GetEncoderAngularVelocity() {
 }
 
 double DigitalEncoder::GetEncoderRawTicks() const {
+  // Encoder.encoderType = 0;
   return _nativeEncoder.Get();
 }
 
@@ -49,11 +68,12 @@ double DigitalEncoder::GetEncoderTickVelocity() const {
 }
 
 CANSparkMaxEncoder::CANSparkMaxEncoder(rev::CANSparkMax *controller, double reduction)
-  : Encoder(42, reduction), _encoder(controller->GetEncoder()) {}
+  : Encoder(42, reduction, 2), _encoder(controller->GetEncoder()) {}
 
 double CANSparkMaxEncoder::GetEncoderRawTicks() const {
+  // Encoder.encoderType = 0;
   #ifdef PLATFORM_ROBORIO
-    return _encoder.GetPosition() * GetEncoderTicksPerRotation();
+    return _encoder.GetPosition() * _reduction; // num rotations 
   #else
     return _simTicks;
   #endif
@@ -68,7 +88,7 @@ double CANSparkMaxEncoder::GetEncoderTickVelocity() const {
 }
 
 TalonFXEncoder::TalonFXEncoder(ctre::phoenix::motorcontrol::can::TalonFX *controller, double reduction)
-  : Encoder(2048, reduction), _controller(controller) {
+  : Encoder(2048, reduction, 0), _controller(controller) {
     controller->ConfigSelectedFeedbackSensor(ctre::phoenix::motorcontrol::TalonFXFeedbackDevice::IntegratedSensor);
   }
 
@@ -80,8 +100,9 @@ double TalonFXEncoder::GetEncoderTickVelocity() const {
   return _controller->GetSelectedSensorVelocity() * 10;
 }
 
+
 TalonSRXEncoder::TalonSRXEncoder(ctre::phoenix::motorcontrol::can::TalonSRX *controller, double ticksPerRotation, double reduction) 
-  : Encoder(ticksPerRotation, reduction), _controller(controller) {
+  : Encoder(ticksPerRotation, reduction, 0), _controller(controller) {
     controller->ConfigSelectedFeedbackSensor(ctre::phoenix::motorcontrol::TalonSRXFeedbackDevice::QuadEncoder);
   }
 
@@ -93,8 +114,10 @@ double TalonSRXEncoder::GetEncoderTickVelocity() const {
   return _controller->GetSelectedSensorVelocity() * 10;
 }
 
+
+
 DutyCycleEncoder::DutyCycleEncoder(int channel, double ticksPerRotation, double reduction) 
-  : Encoder(ticksPerRotation, reduction), _dutyCycleEncoder(channel) {}
+  : Encoder(ticksPerRotation, reduction, 0), _dutyCycleEncoder(channel) {}
 
 double DutyCycleEncoder::GetEncoderRawTicks() const {
   return _dutyCycleEncoder.Get().value();
@@ -102,6 +125,19 @@ double DutyCycleEncoder::GetEncoderRawTicks() const {
 
 double DutyCycleEncoder::GetEncoderTickVelocity() const {
   return 0;
+}
+
+CanEncoder::CanEncoder(int deviceNumber, double ticksPerRotation, double reduction)
+  : Encoder(ticksPerRotation, reduction, 1) {
+    _canEncoder = new CANCoder(deviceNumber);
+  }
+
+double CanEncoder::GetEncoderRawTicks() const {
+  return _canEncoder->GetAbsolutePosition();
+}
+
+double CanEncoder::GetEncoderTickVelocity() const {
+  return _canEncoder->GetVelocity();
 }
 
 /* SIM */
@@ -173,5 +209,9 @@ std::shared_ptr<sim::SimCapableEncoder> TalonSRXEncoder::MakeSimEncoder() {
 }
 
 std::shared_ptr<sim::SimCapableEncoder> DutyCycleEncoder::MakeSimEncoder() {
+  return nullptr;
+}
+
+std::shared_ptr<sim::SimCapableEncoder> CanEncoder::MakeSimEncoder() {
   return nullptr;
 }

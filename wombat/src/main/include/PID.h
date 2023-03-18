@@ -71,7 +71,7 @@ namespace wom {
         _table(nt::NetworkTableInstance::GetDefault().GetTable(path)) { }
 
     void SetSetpoint(in_t setpoint) {
-      if (std::abs(setpoint.value() - _setpoint.value()) > 0.05 * _setpoint.value()) {
+      if (std::abs(setpoint.value() - _setpoint.value()) > std::abs(0.1 * _setpoint.value())) {
         _iterations = 0;
       }
       _setpoint = setpoint;
@@ -108,8 +108,10 @@ namespace wom {
       _stableVel = _velFilter.Calculate(deriv);
 
       auto out = config.kp * error + config.ki * _integralSum + config.kd * deriv + feedforward;
+      // std::cout << "Out value" << out.value() << std::endl;
 
       _table->GetEntry("pv").SetDouble(pv.value());
+      _table->GetEntry("dt").SetDouble(dt.value());
       _table->GetEntry("setpoint").SetDouble(_setpoint.value());
       _table->GetEntry("error").SetDouble(error.value());
       _table->GetEntry("integralSum").SetDouble(_integralSum.value());
@@ -130,7 +132,7 @@ namespace wom {
       if (velocityThreshOverride.has_value()) stableDerivThresh = velocityThreshOverride.value();
 
       return _iterations > 20
-        && std::abs(_stablePos.value()) <= stableThresh.value()
+        && std::abs(_stablePos.value()) <= std::abs(stableThresh.value())
         && (stableDerivThresh.value() < 0 || std::abs(_stableVel.value()) <= stableDerivThresh.value());
     }
 

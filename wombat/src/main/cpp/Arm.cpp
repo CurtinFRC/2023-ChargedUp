@@ -37,7 +37,8 @@ void Arm::OnUpdate(units::second_t dt) {
     case ArmState::kAngle:
       {
         units::newton_meter_t torque = 9.81_m / 1_s / 1_s * _config.armLength * units::math::cos(angle + _config.angleOffset) * (0.5 * _config.armMass + _config.loadMass);
-        units::volt_t feedforward = _config.gearbox.motor.Voltage(torque, 0_rad/ 1_s);
+        units::volt_t feedforward = _config.leftGearbox.motor.Voltage(torque, 0_rad/ 1_s);
+        // std::cout << "feedforward" << feedforward.value() << std::endl;
         voltage = _pid.Calculate(angle, dt, feedforward);
       }
       break;
@@ -53,11 +54,34 @@ void Arm::OnUpdate(units::second_t dt) {
   // ) {
   //   voltage = 0_V;
   // }
-  _config.gearbox.transmission->SetVoltage(voltage);
+
+  voltage *= armLimit;
+
+
+
+  // units::newton_meter_t torqueLimit = 10_kg * 1.4_m * 6_mps_sq;
+  // units::volt_t voltageMax = _config.leftGearbox.motor.Voltage(torqueLimit, _config.leftGearbox.encoder->GetEncoderAngularVelocity());
+  // units::volt_t voltageMin = _config.leftGearbox.motor.Voltage(-torqueLimit, _config.leftGearbox.encoder->GetEncoderAngularVelocity());
+
+  // voltage = units::math::max(units::math::min(voltage, voltageMax), voltageMin);
+  units::volt_t voltageMin = -5.5_V;
+  units::volt_t voltageMax = 5.5_V;
+  voltage = units::math::max(units::math::min(voltage, voltageMax), voltageMin);
+
+
+  // std::cout << "voltage: " << voltage.value() << std::endl;
+
+
+  _config.leftGearbox.transmission->SetVoltage(voltage);
+  _config.rightGearbox.transmission->SetVoltage(voltage);
 
   //creates network table instances for the angle and config of the arm
   _table->GetEntry("angle").SetDouble(angle.convert<units::degree>().value());
   _config.WriteNT(_table->GetSubTable("config"));
+}
+
+void Arm::SetArmSpeedLimit(double limit) {
+  armLimit = limit;
 }
 
 //defines information needed for the functions and connects the states to their respective function
@@ -81,15 +105,15 @@ ArmConfig &Arm::GetConfig() {
 }
 
 units::radian_t Arm::GetAngle() const {
-  return _config.gearbox.encoder->GetEncoderPosition();
+  return _config.armEncoder.GetPosition() / 100 * 360 * 1_deg;
 }
 
 units::radians_per_second_t Arm::MaxSpeed() const {
-  return _config.gearbox.motor.Speed(0_Nm, 12_V);
+  return _config.leftGearbox.motor.Speed(0_Nm, 12_V);
 }
 
 bool Arm::IsStable() const {
-  return _pid.IsStable();
+  return _pid.IsStable(5_deg);
 }
 
 

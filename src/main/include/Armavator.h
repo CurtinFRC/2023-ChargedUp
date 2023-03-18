@@ -41,9 +41,10 @@ enum class ArmavatorState {
 //the behaviour class information
 class Armavator : public behaviour::HasBehaviour {
  public:
-  Armavator(wom::Gearbox &armGearbox, wom::Gearbox &elevatorGearbox, ArmavatorConfig &config);
+  Armavator(wom::Gearbox &leftArmGearbox, wom::Gearbox &rightArmGearbox, wom::Gearbox &leftElevatorGearbox, wom::Gearbox &rightElevatorGearbox, ArmavatorConfig &config);
   ~Armavator();
 
+  void OnStart();
   void OnUpdate(units::second_t dt);
 
   //sets what infomation is needed for the states
@@ -51,6 +52,7 @@ class Armavator : public behaviour::HasBehaviour {
   void SetPosition(ArmavatorPosition pos);
   void SetZeroing();
   void SetManual(units::volt_t arm, units::volt_t elevator);
+  void SetSpeedValues(double elevatorSpeed, double armSpeed);
 
   ArmavatorPosition GetCurrentPosition() const;
   bool IsStable() const;
@@ -67,7 +69,9 @@ class Armavator : public behaviour::HasBehaviour {
   units::volt_t _rawElevator;
 
   //creates an instance of the gearboxes and config
-  wom::Gearbox &_armGearbox;
-  wom::Gearbox &_elevatorGearbox;
+  wom::Gearbox &_leftArmGearbox;
+  wom::Gearbox &_rightArmGearbox;
+  wom::Gearbox &_leftElevatorGearbox;
+  wom::Gearbox &_rightElevatorGearbox;
   ArmavatorConfig &_config;
 };
