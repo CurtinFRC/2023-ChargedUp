@@ -55,7 +55,7 @@ namespace wom {
     void SetIdle();
     void SetPID(units::radian_t angle, units::meters_per_second_t speed, units::second_t dt);
     void SetZero();  
-
+    void SetVoltageLimit(units::volt_t driveModuleVoltageLimit);
 
     //double GetCancoderPosition(); // from liam's
 
@@ -74,6 +74,7 @@ namespace wom {
    private:
     SwerveModuleConfig _config;
     SwerveModuleState _state;
+    units::volt_t _driveModuleVoltageLimit = 10_V;
 
     bool _hasZeroedEncoder = false; 
     bool _hasZeroed = false;
@@ -165,6 +166,7 @@ namespace wom {
     void SetIndividualTuning(int mod, units::radian_t angle, units::meters_per_second_t speed);
     void SetTuning(units::radian_t angle, units::meters_per_second_t speed);
     void SetZero();
+    void SetVoltageLimit(units::volt_t driveVoltageLimit);
 
     // double GetModuleCANPosition(int mod);  // from liam's
 

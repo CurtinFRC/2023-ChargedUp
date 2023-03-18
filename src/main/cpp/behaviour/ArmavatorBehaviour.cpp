@@ -2,8 +2,8 @@
 #include <frc/smartdashboard/SmartDashboard.h>
 
 
-ArmavatorGoToAutoSetpoint::ArmavatorGoToAutoSetpoint(Armavator *armavator, units::meter_t height, units::degree_t angle) 
-  : _armavator(armavator), _height(height), _angle(angle) {
+ArmavatorGoToAutoSetpoint::ArmavatorGoToAutoSetpoint(Armavator *armavator, units::meter_t height, units::degree_t angle, double elevatorSpeed, double armSpeed) 
+  : _armavator(armavator), _height(height), _angle(angle), _elevatorSpeed(elevatorSpeed), _armSpeed(armSpeed) {
     Controls(armavator);
 }
 
@@ -13,7 +13,7 @@ void ArmavatorGoToAutoSetpoint::OnStart() {
 
 void ArmavatorGoToAutoSetpoint::OnTick(units::second_t dt) {
   ArmavatorPosition pos = {_height, _angle};
-  _armavator->SetSpeedValues(0.5, 0.3);
+  _armavator->SetSpeedValues(_elevatorSpeed, _armSpeed);
 
   _armavator->SetPosition(pos);
   if (_armavator->IsStable()) {
@@ -110,7 +110,11 @@ void ArmavatorManualBehaviour::OnTick(units::second_t dt) {
     _armavator->SetManual(armPower * 11_V, elePower * 8_V);
     _manualSetpoint = {_armavator->GetCurrentPosition().height, _armavator->GetCurrentPosition().angle};
     _armavator->SetSpeedValues(0.5, 0.3);
+    frc::SmartDashboard::PutBoolean("PID mode", false); 
+
   } else {
+    
+    frc::SmartDashboard::PutBoolean("PID mode", true); 
     /**SETPOINTS
      * hold -> 
      * place front mid -> 

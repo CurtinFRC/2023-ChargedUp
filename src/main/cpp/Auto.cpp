@@ -99,50 +99,74 @@ std::shared_ptr<Behaviour> DockBot(Drivebase drivebase, bool blueAlliance, Start
 std::shared_ptr<Behaviour> ForwardDrive(Drivebase drivebase, Armavator *armavator){
   return
     // make<DrivebasePoseBehaviour>(drivebase.swerve, frc::Pose2d{-0.4_m, 0_m, 0_deg})->WithTimeout(1_s)
-    make<ArmavatorGoToAutoSetpoint>(armavator, 0.9_m, -25_deg)
+    make<ArmavatorGoToAutoSetpoint>(armavator, 0.9_m, -25_deg)->WithTimeout(2_s)
     // << make<ArmavatorGoToAutoSetpoint>(armavator, 0.82_m, -30_deg)
     << make<DrivebasePoseBehaviour>(drivebase.swerve, frc::Pose2d{0.3_m, 0_m, 0_deg})->WithTimeout(1_s)
     << make<DrivebasePoseBehaviour>(drivebase.swerve, frc::Pose2d{-0.4_m, 0_m, 0_deg})->WithTimeout(1_s)
-    << make<DrivebasePoseBehaviour>(drivebase.swerve, frc::Pose2d{2.5_m, 0_m, 0_deg})->WithTimeout(6_s) //2.5
+    << make<DrivebasePoseBehaviour>(drivebase.swerve, frc::Pose2d{3.5_m, 0_m, 0_deg})->WithTimeout(3_s) //2.5
     << make<WaitTime>(20_s);
     // make<ArmavatorGoToAutoSetpoint>(armavator, 0.5_m, 40_deg)
     
+}
+
+std::shared_ptr<Behaviour> Balence(Drivebase drivebase, Armavator *armavator) {
+  return 
+    make<ArmavatorGoToAutoSetpoint>(armavator, 0.1_m, 90_deg)
+    << make<DrivebasePoseBehaviour>(drivebase.swerve, frc::Pose2d{4_m, 0_m,  0_deg}, 7_V)->Until(make<WaitFor>([drivebase]() {
+      return units::math::abs(drivebase.gyro->GetPitch()) > 10_deg ||  units::math::abs(drivebase.gyro->GetRoll()) > 10_deg;
+    }));
 }
 
 std::shared_ptr<Behaviour> Single(Drivebase drivebase, Armavator *armavator, Gripper *gripper, bool blueAlliance, StartingConfig startConfig, EndingConfig endConfig){
   AutoPathDetails autoPathDetails = GetAutoPathingDetails(drivebase, startConfig, endConfig, blueAlliance, 1);
   return 
     make<ArmavatorGoToAutoSetpoint>(armavator, 0.9_m, -55_deg)->WithTimeout(1_s) //start in starting config
-    << make<WaitTime>(0.01_s)
+    // << make<WaitTime>(0.01_s)
     // << make<ArmavatorGoToAutoSetpoint>(armavator, 0.9_m, 0_deg)->WithTimeout(2_s)
     // << make<WaitTime>(0.01_s)
-    << make<ArmavatorGoToAutoSetpoint>(armavator, 0.7_m, 0_deg)
-    // << make<WaitTime>(0.01_s)
-    << make<ArmavatorGoToAutoSetpoint>(armavator, 0.5_m, 40_deg)
-    // << make<WaitTime>(0.01_s)
-    << make<ArmavatorGoToAutoSetpoint>(armavator, 0.1_m, 70_deg)
-    // << make<WaitTime>(0.01_s)
-    << make<ArmavatorGoToAutoSetpoint>(armavator, 0_m, 110_deg)
-    // << make<WaitTime>(0.01_s)
-    << make<ArmavatorGoToAutoSetpoint>(armavator, 0.2_m, 120_deg)
-    // << make<WaitTime>(0.01_s)
-    << make<ArmavatorGoToAutoSetpoint>(armavator, 0.6_m, 140_deg)
-    // << make<WaitTime>(0.01_s)
-    << make<ArmavatorGoToAutoSetpoint>(armavator, 0.6_m, 160_deg)
-    // << make<WaitTime>(0.01_s)
-    << make<ArmavatorGoToAutoSetpoint>(armavator, 0.20_m, 160_deg)
-
-    << make<ArmavatorGoToAutoSetpoint>(armavator, 0.2_m, 130_deg)->WithTimeout(4_s)
-
-
-    // << make<WaitTime>(0.01_s)
+    // << ((
+    << make<DrivebasePoseBehaviour>(Drivebase.swerve, frc::Pose2d{0.1_m, 0_m, 0_deg})->WithTimeout(1_s)
+    << make<ArmavatorGoToAutoSetpoint>(armavator, 0.9_m, 0_deg)
+    << make<ArmavatorGoToAutoSetpoint>(armavator, 0.3_m, 90_deg)
+    << make<ArmavatorGoToAutoSetpoint>(armavator, 0.4_m, 140_deg, 0.4, 0.15)
+    << make<WaitTime>(0.5_s)
+    << make<ArmavatorGoToAutoSetpoint>(armavator, 0.25_m, 160_deg, 0.2, 0.2)
+    // ) | make<GripperAutoBehaviour>(gripper, 2))
     << make<GripperAutoBehaviour>(gripper, 1)->Until(make<WaitTime>(1_s))
-    << make<GripperAutoBehaviour>(gripper, 3)
-    << make<ArmavatorGoToAutoSetpoint>(armavator, 0.20_m, 120_deg)
+    << make<GripperAutoBehaviour>(gripper, 3)->Until(make<WaitTime>(1_s))
+    << make<DrivebasePoseBehaviour>(drivebase.swerve, frc::Pose2d{0.3_m, 0_m, 0_deg})->WithTimeout(1_s)
+    << make<ArmavatorGoToAutoSetpoint>(armavator, 0.3_m, 90_deg)
+    << make<DrivebasePoseBehaviour>(drivebase.swerve, frc::Pose2d{4_m, 0_m, 0_deg})->WithTimeout(5_s)
+    // << make<ArmavatorGoToAutoSetpoint>(armavator, 0.5_m, 90_deg, 0.5, 0.15)
+    // << make<ArmavatorGoToAutoSetpoint>(armavator, 0.7_m, 120_deg, 0.5, 0.15)
+    // << make<ArmavatorGoToAutoSetpoint>(armavator, 0.5_m, 140_deg, 0.5, 0.15)
+    // << make<ArmavatorGoToAutoSetpoint>(armavator, 0.7_m, 120_deg, 0.5, 0.2)
     // << make<WaitTime>(0.01_s)
-    << make<ArmavatorGoToAutoSetpoint>(armavator, 0.1_m, 90_deg)
+    // << make<ArmavatorGoToAutoSetpoint>(armavator, 0.1_m, 120_deg)
     // << make<WaitTime>(0.01_s)
-    << make<ArmavatorGoToAutoSetpoint>(armavator, 0.0_m, 70_deg);
+    // << make<ArmavatorGoToAutoSetpoint>(armavator, 0.6_m, 130_deg)
+    << make<WaitTime>(10_s);
+    // << make<ArmavatorGoToAutoSetpoint>(armavator, 0_m, 110_deg)
+    // // << make<WaitTime>(0.01_s)
+    // << make<ArmavatorGoToAutoSetpoint>(armavator, 0.2_m, 120_deg)
+    // // << make<WaitTime>(0.01_s)
+    // << make<ArmavatorGoToAutoSetpoint>(armavator, 0.6_m, 140_deg)
+    // // << make<WaitTime>(0.01_s)
+    // << make<ArmavatorGoToAutoSetpoint>(armavator, 0.6_m, 160_deg)
+    // // << make<WaitTime>(0.01_s)
+    // << make<ArmavatorGoToAutoSetpoint>(armavator, 0.20_m, 160_deg)
+
+    // << make<ArmavatorGoToAutoSetpoint>(armavator, 0.2_m, 130_deg)->WithTimeout(4_s)
+
+
+    // // << make<WaitTime>(0.01_s)
+    // << make<GripperAutoBehaviour>(gripper, 1)->Until(make<WaitTime>(1_s))
+    // << make<GripperAutoBehaviour>(gripper, 3)
+    // << make<ArmavatorGoToAutoSetpoint>(armavator, 0.20_m, 120_deg)
+    // // << make<WaitTime>(0.01_s)
+    // << make<ArmavatorGoToAutoSetpoint>(armavator, 0.1_m, 90_deg)
+    // // << make<WaitTime>(0.01_s)
+    // << make<ArmavatorGoToAutoSetpoint>(armavator, 0.0_m, 70_deg);
     // << make<DrivebasePoseBehaviour>(drivebase.swerve, autoPathDetails.startPos)
     // << autoPathDetails.endPathing;
 }
