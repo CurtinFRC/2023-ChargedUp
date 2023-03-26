@@ -75,9 +75,7 @@ void Arm::OnUpdate(units::second_t dt) {
   units::volt_t voltageMax = 8_V;
   voltage = units::math::max(units::math::min(voltage, voltageMax), voltageMin);
 
-
   // std::cout << "voltage: " << voltage.value() << std::endl;
-
 
   _config.leftGearbox.transmission->SetVoltage(voltage);
   _config.rightGearbox.transmission->SetVoltage(voltage);
