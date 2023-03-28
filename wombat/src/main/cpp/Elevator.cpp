@@ -16,52 +16,57 @@ Elevator::Elevator(ElevatorConfig config)
   : _config(config), _state(ElevatorState::kIdle),
   _pid{config.path + "/pid", config.pid},
   _table(nt::NetworkTableInstance::GetDefault().GetTable(config.path)) {
-  _config.gearbox.encoder->SetEncoderPosition(_config.initialHeight / _config.radius * 1_rad);
+  // _config.leftGearbox.encoder->SetEncoderPosition(_config.initialHeight / _config.radius * 1_rad);
 }
 
 
 void Elevator::OnUpdate(units::second_t dt) {
   units::volt_t voltage{0};
 
-  units::meter_t height = GetHeight();
+  units::meter_t height = GetElevatorEncoderPos() * 1_m;
+
 
   switch(_state) {
     case ElevatorState::kIdle:
       voltage = 0_V;
-      break;
+    break;
     case ElevatorState::kManual:
       voltage = _setpointManual;
-      break;
+    break;
     case ElevatorState::kPID:
       {
-        auto feedforward = _config.gearbox.motor.Voltage((_config.mass * 9.81_mps_sq) * _config.radius, 0_rad_per_s);
+        units::volt_t feedforward = _config.rightGearbox.motor.Voltage((_config.mass * 9.81_mps_sq) * _config.radius, 0_rad_per_s);
+        // std::cout << "feed forward" << feedforward.value() << std::endl;
+        feedforward = 1.2_V;
+        // voltage = _pid.Calculate(height, dt, feedforward);
         voltage = _pid.Calculate(height, dt, feedforward);
-      }
-      break;
-    case ElevatorState::kZeroing:
-      if (!_config.bottomSensor) {
-        std::cout << "No bottom sensor found, can't zero" << std::endl;
-        _state = ElevatorState::kIdle;
-      } else {
-        voltage = -3_V;
-        if (_config.bottomSensor->Get()) {
-          _config.gearbox.encoder->ZeroEncoder();
-          _state = ElevatorState::kIdle;
+        if (voltage > 6_V) {
+          voltage = 6_V;
         }
       }
-      break;
+    break;
   }
 
-  if (_config.bottomSensor && voltage < 0_V && _config.bottomSensor->Get()) {
-    voltage = 0_V;
-  } 
-  if (_config.topSensor && voltage > 0_V && _config.topSensor->Get()) {
-    voltage = 0_V;
-  }
-  _config.gearbox.transmission->SetVoltage(voltage);
+  // Top Sensor Detector
+  // if(_config.topSensor != nullptr) {
+  //   if(_config.topSensor->Get()) {
+  //     _config.leftGearbox.encoder->SetEncoderPosition(_config.maxHeight / _config.radius * 1_rad);
+  //     //voltage = 0_V;
+  //   }
+  // }
 
-  _table->GetEntry("height").SetDouble(height.value());
-  _config.WriteNT(_table->GetSubTable("config"));
+  // //Bottom Sensor Detection
+  // if (_config.bottomSensor != nullptr) {
+  //   if (_config.bottomSensor->Get()) {
+  //     _config.leftGearbox.encoder->SetEncoderPosition(_config.minHeight / _config.radius * 1_rad);
+  //     //voltage = 0_V;
+  //   }
+  // }
+
+  // Set voltage to motors...
+  voltage *= speedLimit;
+  _config.leftGearbox.transmission->SetVoltage(voltage);
+  _config.rightGearbox.transmission->SetVoltage(voltage);
 }
 
 void Elevator::SetManual(units::volt_t voltage) {
@@ -74,12 +79,16 @@ void Elevator::SetPID(units::meter_t height) {
   _pid.SetSetpoint(height);
 }
 
-void Elevator::SetZeroing() {
-  _state = ElevatorState::kZeroing;
+void Elevator::SetElevatorSpeedLimit(double limit) {
+  speedLimit = limit;
 }
 
 void Elevator::SetIdle() {
   _state = ElevatorState::kIdle;
+}
+
+ElevatorConfig &Elevator::GetConfig() {
+  return _config;
 }
 
 bool Elevator::IsStable() const {
@@ -90,44 +99,16 @@ ElevatorState Elevator::GetState() const {
   return _state;
 }
 
+double Elevator::GetElevatorEncoderPos() {
+  return _config.elevatorEncoder.GetPosition() * 14/60 * 2 * 3.1415 * 0.02225;
+}
+
 units::meter_t Elevator::GetHeight() const {
-  return _config.gearbox.encoder->GetEncoderPosition().value() * _config.radius;
+  // std::cout << "elevator position"<< _config.rightGearbox.encoder->GetEncoderTicks() << std::endl;
+  // return _config.rightGearbox.encoder->GetEncoderDistance() * 1_m;
+  return _config.elevatorEncoder.GetPosition() * 14/60 * 2 * 3.1415 * 0.02225 * 1_m;
 }
 
 units::meters_per_second_t Elevator::MaxSpeed() const {
-  return _config.gearbox.motor.Speed((_config.mass * 9.81_mps_sq) * _config.radius, 12_V) / 1_rad * _config.radius;
-}
-
-/* SIMULATION */
-wom::sim::ElevatorSim::ElevatorSim(ElevatorConfig config)
-  : config(config),
-    sim(config.gearbox.motor, 1.0, config.mass, config.radius,
-        0_m, config.maxHeight, true),
-    encoder(config.gearbox.encoder->MakeSimEncoder()),
-    lowerLimit(config.bottomSensor ? new frc::sim::DIOSim(*config.bottomSensor) : nullptr),
-    upperLimit(config.topSensor ? new frc::sim::DIOSim(*config.topSensor) : nullptr),
-    table(nt::NetworkTableInstance::GetDefault().GetTable(config.path + "/sim"))
-  {
-    sim.SetState(Eigen::Vector2d{ config.initialHeight.value(), 0 });
-  }
-
-void wom::sim::ElevatorSim::Update(units::second_t dt) {
-  sim.SetInputVoltage(config.gearbox.transmission->GetEstimatedRealVoltage());
-  sim.Update(dt);
-
-  encoder->SetEncoderTurns(1_rad * (sim.GetPosition() - config.initialHeight) / config.radius);
-  if (lowerLimit) lowerLimit->SetValue(sim.HasHitLowerLimit());
-  if (upperLimit) upperLimit->SetValue(sim.HasHitUpperLimit());
-
-  table->GetEntry("height").SetDouble(sim.GetPosition().value());
-  table->GetEntry("current").SetDouble(sim.GetCurrentDraw().value());
-  table->GetEntry("velocity").SetDouble(sim.GetVelocity().value());
-}
-
-units::meter_t wom::sim::ElevatorSim::GetHeight() const {
-  return sim.GetPosition();
-}
-
-units::ampere_t wom::sim::ElevatorSim::GetCurrent() const {
-  return sim.GetCurrentDraw();
+  return _config.leftGearbox.motor.Speed((_config.mass * 9.81_mps_sq) * _config.radius, 12_V) / 1_rad * _config.radius;
 }

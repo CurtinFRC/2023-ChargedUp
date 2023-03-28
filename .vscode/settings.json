@@ -16,11 +16,8 @@
   },
   "C_Cpp.default.configurationProvider": "vscode-wpilib",
   "files.associations": {
-<<<<<<< HEAD
     "*.ejs": "html",
     "*.tex": "latex",
-    "*.inc": "cpp"
-=======
     "*.inc": "cpp",
     "iosfwd": "cpp",
     "optional": "cpp",
@@ -100,7 +97,26 @@
     "xtr1common": "cpp",
     "xtree": "cpp",
     "xutility": "cpp",
-    "core": "cpp"
->>>>>>> 54778fc2a1ff137399a3206c63f373d99f5495aa
+    "core": "cpp",
+    "any": "cpp",
+    "cfenv": "cpp",
+    "codecvt": "cpp",
+    "coroutine": "cpp",
+    "filesystem": "cpp",
+    "future": "cpp",
+    "numbers": "cpp",
+    "queue": "cpp",
+    "ranges": "cpp",
+    "regex": "cpp",
+    "stack": "cpp",
+    "typeindex": "cpp",
+    "unordered_set": "cpp",
+    "*.tcc": "cpp",
+    "bitset": "cpp",
+    "cwctype": "cpp",
+    "memory_resource": "cpp",
+    "string_view": "cpp",
+    "semaphore": "cpp",
+    "cinttypes": "cpp"
   }
 }

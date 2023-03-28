@@ -15,9 +15,9 @@ namespace wom {
   struct ArmConfig {
     std::string path;
 
-    wom::Gearbox gearbox;
-    frc::DigitalInput *lowerLimitSwitch;
-    frc::DigitalInput *upperLimitSwitch;
+    wom::Gearbox leftGearbox;
+    wom::Gearbox rightGearbox;
+    rev::SparkMaxRelativeEncoder armEncoder;
     wom::PIDConfig<units::radian, units::volt> pidConfig;
 
     units::kilogram_t armMass;
@@ -34,7 +34,7 @@ namespace wom {
   enum class ArmState {
     kIdle,
     kAngle,
-    kZeroing
+    kRaw
   };
 
   class Arm : public behaviour::HasBehaviour {
@@ -45,7 +45,9 @@ namespace wom {
 
     void SetIdle();
     void SetAngle(units::radian_t angle);
-    void SetZeroing();
+    void SetRaw(units::volt_t voltage);
+
+    void SetArmSpeedLimit(double limit); //units, what are they?? 
 
     ArmConfig &GetConfig();
 
@@ -59,31 +61,9 @@ namespace wom {
     wom::PIDController<units::radian, units::volt> _pid;
     
     std::shared_ptr<nt::NetworkTable> _table;
+
+    double armLimit = 0.4;
+
+    units::volt_t _voltage{0};
   };
-
-  /* SIMULATION */
-
-  namespace sim {
-    class ArmSim {
-    public:
-      ArmSim(ArmConfig config);
-
-      void Update(units::second_t dt);
-
-      units::ampere_t GetCurrent() const;
-
-      ArmConfig config;
-
-      units::newton_meter_t torque{0};
-      units::newton_meter_t additionalTorque{0};
-      units::radians_per_second_t velocity{0};
-      units::radian_t angle{0};
-      units::ampere_t current{0};
-
-      std::shared_ptr<SimCapableEncoder> encoder;
-      frc::sim::DIOSim *lowerLimit, *upperLimit;
-
-      std::shared_ptr<nt::NetworkTable> table;
-    };
-  }
-}
+};

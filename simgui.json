@@ -60,6 +60,9 @@
         "open": true
       },
       "drivetrain": {
+        "estimatedPose": {
+          "open": true
+        },
         "modules": {
           "1": {
             "config": {
@@ -78,7 +81,10 @@
               },
               "open": true
             },
-            "open": true
+            "open": true,
+            "position": {
+              "open": true
+            }
           }
         },
         "sim": {
@@ -142,7 +148,7 @@
     "Plot <0>": {
       "plots": [
         {
-          "height": 338,
+          "height": 302,
           "series": [
             {
               "color": [
@@ -189,7 +195,7 @@
               "autoFit": true
             }
           ],
-          "height": 338,
+          "height": 302,
           "series": [
             {
               "color": [
@@ -250,7 +256,7 @@
               "autoFit": true
             }
           ],
-          "height": 338,
+          "height": 302,
           "series": [
             {
               "color": [
@@ -276,7 +282,7 @@
               "autoFit": true
             }
           ],
-          "height": 338,
+          "height": 302,
           "series": [
             {
               "color": [
@@ -371,7 +377,7 @@
               "autoFit": true
             }
           ],
-          "height": 332,
+          "height": 338,
           "series": [
             {
               "color": [
@@ -389,7 +395,7 @@
     "Plot <9>": {
       "plots": [
         {
-          "height": 332,
+          "height": 338,
           "series": [
             {
               "color": [
