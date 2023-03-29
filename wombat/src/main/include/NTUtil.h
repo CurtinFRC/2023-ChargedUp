@@ -57,10 +57,6 @@ namespace wom {
   };
 
   void WritePose2NT(std::shared_ptr<nt::NetworkTable> table, frc::Pose2d pose);
-<<<<<<< HEAD
   void WritePose3NT(std::shared_ptr<nt::NetworkTable> table, frc::Pose3d pose);
-=======
-  void WritePose2NT(std::shared_ptr<nt::NetworkTable> table, frc::Pose3d pose);
->>>>>>> f473d620c7e327dfeb37757cc5a8a3d6c34ac45c
 
 }

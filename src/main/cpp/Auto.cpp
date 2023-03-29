@@ -125,7 +125,7 @@ std::shared_ptr<Behaviour> Single(Drivebase drivebase, Armavator *armavator, Gri
     // << make<ArmavatorGoToAutoSetpoint>(armavator, 0.9_m, 0_deg)->WithTimeout(2_s)
     // << make<WaitTime>(0.01_s)
     // << ((
-    << make<DrivebasePoseBehaviour>(Drivebase.swerve, frc::Pose2d{0.1_m, 0_m, 0_deg})->WithTimeout(1_s)
+    << make<DrivebasePoseBehaviour>(drivebase.swerve, frc::Pose2d{0.1_m, 0_m, 0_deg})->WithTimeout(1_s)
     << make<ArmavatorGoToAutoSetpoint>(armavator, 0.9_m, 0_deg)
     << make<ArmavatorGoToAutoSetpoint>(armavator, 0.3_m, 90_deg)
     << make<ArmavatorGoToAutoSetpoint>(armavator, 0.4_m, 140_deg, 0.4, 0.15)
