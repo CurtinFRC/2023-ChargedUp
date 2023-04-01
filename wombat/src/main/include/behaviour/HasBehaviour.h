@@ -6,7 +6,6 @@
 namespace behaviour {
 class Behaviour;
 class BehaviourScheduler;
-
 /**
  * HasBehaviour is applied to a system that can be controlled by behaviours.
  * This is commonly implemented on shooters, drivetrains, elevators, etc.

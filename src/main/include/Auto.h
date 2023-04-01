@@ -38,17 +38,17 @@
 //     frc::Pose2d gamePiece4Pos;  // the top-most game piece
 //   };
   
-//   struct SwerveGridPoses { // positions to place the items
-//     frc::Pose2d innerGrid1; // Closest grid position to the Wall
-//     frc::Pose2d innerGrid2; // Middle of Inner Grid
-//     frc::Pose2d innerGrid3; // Centremost Inner Grid position
-//     frc::Pose2d centreGrid1; // The non central grid on the Inner Grid side
-//     frc::Pose2d centreGrid2; // The middle most grid
-//     frc::Pose2d centreGrid3; // The non central grid on the Outer Grid side
-//     frc::Pose2d outerGrid1; // Centremost outer grid position
-//     frc::Pose2d outerGrid2; // Middle of Outer Grid
-//     frc::Pose2d outerGrid3; // Closest grid position to enemy Loading Zone
-//   };
+  struct SwerveGridPoses { // positions to place the items
+    frc::Pose2d innerGrid1; // Closest grid position to the Wall
+    frc::Pose2d innerGrid2; // Middle of Inner Grid
+    frc::Pose2d innerGrid3; // Centremost Inner Grid position
+    frc::Pose2d centreGrid1; // The non central grid on the Inner Grid side
+    frc::Pose2d centreGrid2; // The middle most grid
+    frc::Pose2d centreGrid3; // The non central grid on the Outer Grid side
+    frc::Pose2d outerGrid1; // Centremost outer grid position
+    frc::Pose2d outerGrid2; // Middle of Outer Grid
+    frc::Pose2d outerGrid3; // Closest grid position to enemy Loading Zone
+  };
 
 //   struct AlliancePoses {
 //     Poses topPoses{};

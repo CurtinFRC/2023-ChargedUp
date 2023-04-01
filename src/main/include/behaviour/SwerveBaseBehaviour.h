@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Vision.h"
 #include "drivetrain/SwerveDrive.h"
 #include "behaviour/Behaviour.h"
 #include <ctre/Phoenix.h>
@@ -76,7 +77,7 @@ class DrivebasePoseBehaviour : public behaviour::Behaviour{
    * @param deltaTime change in time since the last iteration
    */
   void OnTick(units::second_t deltaTime) override;
- 
+  void OnTickVision(units::second_t deltaTime, VisionConfig _config);
  private:
   wom::SwerveDrive *_swerveDrivebase;
   frc::Pose2d _pose;
