@@ -20,12 +20,10 @@ Elevator::Elevator(ElevatorConfig config)
   // _config.leftGearbox.encoder->SetEncoderPosition(_config.initialHeight / _config.radius * 1_rad);
 }
 
-
 void Elevator::OnUpdate(units::second_t dt) {
   units::volt_t voltage{0};
 
   units::meter_t height = GetElevatorEncoderPos() * 1_m;
-
 
   switch(_state) {
     case ElevatorState::kIdle:
@@ -36,7 +34,7 @@ void Elevator::OnUpdate(units::second_t dt) {
     break;
     case ElevatorState::kVelocity:
       {
-        units::volt_t feedforward = _config.rightGearbox.motor.Voltage((_config.mass * 9.81_mps_sq) * _config.radius, _velocityPID.GetSetpoint() / (14/60 * 2 * 3.1415 * 0.02225 * 1_m) * 1_rad);
+        // units::volt_t feedforward = _config.rightGearbox.motor.Voltage((_config.mass * 9.81_mps_sq) * _config.radius, _velocityPID.GetSetpoint() / (14/60 * 2 * 3.1415 * 0.02225 * 1_m) * 1_rad);
         units::volt_t feedforward = _config.rightGearbox.motor.Voltage(0_Nm, _velocityPID.GetSetpoint() / (14/60 * 2 * 3.1415 * 0.02225 * 1_m) * 1_rad);
         feedforward += 1.2_V;
         voltage = _velocityPID.Calculate(GetElevatorVelocity(), dt, feedforward);

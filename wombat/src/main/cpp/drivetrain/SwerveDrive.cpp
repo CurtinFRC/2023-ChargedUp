@@ -263,7 +263,6 @@ void SwerveDrive::SetZeroing() {
 //   return _modules[mod].GetCancoderPosition();
 // }
 
-
 void SwerveDrive::OnStart() {
   _xPIDController.Reset();
   _yPIDController.Reset();
