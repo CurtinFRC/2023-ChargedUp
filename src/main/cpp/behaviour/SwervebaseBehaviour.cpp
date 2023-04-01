@@ -1,5 +1,5 @@
 #include "behaviour/SwerveBaseBehaviour.h"
-
+#include "behaviour/VisionBehaviour.h"
 #include <units/angular_velocity.h>
 #include <units/charge.h>
 #include <units/moment_of_inertia.h>
@@ -145,14 +145,16 @@ void DrivebasePoseBehaviour::OnTick(units::second_t deltaTime) {
   if (_swerveDrivebase->IsAtSetPose() && !_hold){   SetDone();   }
 }
 
-// void DrivebasePoseBehaviour::OnTickVision(units::second_t deltaTime, VisionConfig _config) {
-//   double currentAngle = _swerveDrivebase->GetPose().Rotation().Degrees().value();
-//   units::degree_t adjustedAngle = 1_deg * (currentAngle - fmod(currentAngle, 360) + _pose.Rotation().Degrees().value());
-//   _swerveDrivebase->SetVoltageLimit(_voltageLimit);
-//   _swerveDrivebase->SetPose(frc::Pose2d{_pose.X(), _pose.Y(), adjustedAngle});
+// VisionBehaviour _visionBehaviour;
 
-//   if (_swerveDrivebase->IsAtSetPoseVision(_config)){   SetDone();   }
-// }
+void DrivebasePoseBehaviour::OnTickVision(units::second_t deltaTime, VisionConfig _config, frc::Pose2d _target) {
+  double currentAngle = _swerveDrivebase->GetPose().Rotation().Degrees().value();
+  units::degree_t adjustedAngle = 1_deg * (currentAngle - fmod(currentAngle, 360) + _pose.Rotation().Degrees().value());
+  _swerveDrivebase->SetVoltageLimit(_voltageLimit);
+  _swerveDrivebase->SetPose(frc::Pose2d{_pose.X(), _pose.Y(), adjustedAngle});
+
+  // if (_visionBehaviour.IsAtSetPoseVision(_config, _target)){   SetDone();   }
+}
 
 
 

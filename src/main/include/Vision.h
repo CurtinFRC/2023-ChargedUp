@@ -31,12 +31,13 @@ struct VisionConfig {
   std::shared_ptr<frc::AprilTagFieldLayout> layout;
 };
 
-class Vision : public behaviour::HasBehaviour {
+class Vision {
   private :
     VisionConfig defaultConfig;
     VisionConfig visionConfig;
     VisionConfig *_config;
     RobotPoseEstimator _estimator;
+    Vision *_vision;
   public :
     Vision(VisionConfig *config);
     
@@ -83,4 +84,7 @@ class Vision : public behaviour::HasBehaviour {
     };
     return bestTargetPose;
   };
+
+  bool IsAtSetPoseVision(VisionConfig _config, frc::Pose2d targetPosition);
+
 };
