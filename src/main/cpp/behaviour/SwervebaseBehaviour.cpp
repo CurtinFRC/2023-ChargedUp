@@ -33,6 +33,34 @@ void ManualDrivebase::OnTick(units::second_t deltaTime) {
     _swerveDrivebase->ResetPose(frc::Pose2d());
   }
 
+
+
+  double joystickSpeedX = (_driverController->GetLeftX() - prevJoystickX) / deltaTime;
+  double JoystickSpeedY = (_driverController->GetLeftY() - prevJoystickY) / deltaTime;
+
+
+  /*
+  
+  if joystick speed > some constant
+    use average
+  else
+    use current joystick positions
+  
+  */
+  if (sqrt(joystickX*joystickX + joystickY*joystickY) > smoothingThreshold){
+    usingJoystickX = (prevPrevJoystickX + prevJoystickX = _driverController->GetLeftX()) / 3;
+    usingJoystickY = (prevPrevJoystickY + prevJoystickY = _driverController->GetLeftY()) / 3;
+  }
+  else {
+    usingJoystickX = _driverController->GetLeftX();
+    usingJoystickY = _driverController->GetLeftY();
+  }
+
+
+
+
+
+  /*   TOGGLE SOLUTION   */
   if (_driverController->GetLeftBumperPressed()){
     maxMovementMagnitude = highSensitivityDriveSpeed;
     maxRotationMagnitude = highSensitivityRotateSpeed;
@@ -41,22 +69,35 @@ void ManualDrivebase::OnTick(units::second_t deltaTime) {
     maxMovementMagnitude = lowSensitivityDriveSpeed;
     maxRotationMagnitude = lowSensitivityRotateSpeed;
   }
+  /*   HOLD SOLUTION   */
+  if (_driverController->GetLeftBumperPressed()){
+    maxMovementMagnitude = highSensitivityDriveSpeed;
+    maxRotationMagnitude = highSensitivityRotateSpeed;
+  }
+  else if (_driverController->GetLeftBumperReleased() & !_driverController->GetRightBumper()){
+    maxMovementMagnitude = defaultDriveSpeed;
+    maxRotationMagnitude = defaultRotateSpeed;
+  }
+  if (_driverController->GetRightBumperPressed()){
+    maxMovementMagnitude = lowSensitivityDriveSpeed;
+    maxRotationMagnitude = lowSensitivityRotateSpeed;
+  }
+  else if (_driverController->GetRightBumperReleased() & !_driverController->GetLeftBumper()){
+    maxMovementMagnitude = defaultDriveSpeed;
+    maxRotationMagnitude = defaultRotateSpeed;
+  }
 
-  //TODO remove
+
   if (_driverController->GetAButtonReleased()) {
-    if (isZero) {
-      isZero = false;
-    } else {
-      isZero = true;
-    }
+    isZero = !isZero;
   } 
 
   if (isZero) {
     _swerveDrivebase->SetZeroing();
   }
   else {
-    double xVelocity = wom::spow2(-wom::deadzone(_driverController->GetLeftY(), driverDeadzone));  // GetLeftY due to x being where y should be on field
-    double yVelocity = wom::spow2(-wom::deadzone(_driverController->GetLeftX(), driverDeadzone));
+    double xVelocity = wom::spow2(-wom::deadzone(usingJoystickY, driverDeadzone));  // GetLeftY due to x being where y should be on field
+    double yVelocity = wom::spow2(-wom::deadzone(usingJoystickX, driverDeadzone));
 
     // double l_x = wom::spow2(-wom::deadzone(_driverController->GetLeftY(), 0.15));  // GetLeftY due to x being where y should be on field
     // if (l_x > 0.15) {
@@ -70,8 +111,8 @@ void ManualDrivebase::OnTick(units::second_t deltaTime) {
     // if (r_x > 0.15) {
     //   r_x = r_x - 0.15;
     // }
-    double r_x = wom::spow2(-wom::deadzone(_driverController->GetRightX(), turningDeadzone));
-    double r_y = wom::spow2(-wom::deadzone(_driverController->GetRightY(), turningDeadzone));
+    double r_x = wom::spow2(-wom::deadzone(usingJoystickX, turningDeadzone));
+    double r_y = wom::spow2(-wom::deadzone(usingJoystickY, turningDeadzone));
 
 
     double turnX = _driverController->GetRightX();   double turnY = _driverController->GetRightY();
@@ -105,6 +146,11 @@ void ManualDrivebase::OnTick(units::second_t deltaTime) {
       });
     }
   }
+
+  prevPrevJoystickX = prevJoystickY;
+  prevPrevJoystickY = prevPrevJoystickY;
+  prevJoystickX = _driverController->GetLeftX();
+  prevJoystickY = _driverController->GetLeftY();
 } 
 
 // void ManualDrivebase::CalculateRequestedAngle(double joystickX, double joystickY, units::degree_t defaultAngle){
@@ -132,7 +178,7 @@ void ManualDrivebase::OnTick(units::second_t deltaTime) {
 
 // Code for Drivebase Pose Controls
 DrivebasePoseBehaviour::DrivebasePoseBehaviour(
-    wom::SwerveDrive *swerveDrivebase, frc::Pose2d pose, units::volt_t voltageLimit ,bool hold)
+    wom::SwerveDrive *swerveDrivebase, frc::Pose2d pose, units::volt_t voltageLimit, bool hold)
     : _swerveDrivebase(swerveDrivebase), _pose(pose), _voltageLimit(voltageLimit), _hold(hold) {
   Controls(swerveDrivebase);
 }

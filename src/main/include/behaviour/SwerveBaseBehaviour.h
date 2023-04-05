@@ -38,14 +38,30 @@ class ManualDrivebase : public behaviour::Behaviour{
   const double driverDeadzone = 0.08;
   const double turningDeadzone = 0.1;
 
-  units::meters_per_second_t maxMovementMagnitude = 13_ft / 1_s;
-  units::radians_per_second_t maxRotationMagnitude = 360_deg / 1_s;
 
-  const units::meters_per_second_t highSensitivityDriveSpeed = 13_ft / 1_s;
+  double prevJoystickX = 0;
+  double prevJoystickY = 0;
+
+  double prevPrevJoystickX = 0;
+  double prevPrevJoystickY = 0;
+
+  double usingJoystickXPos = 0;
+  double usingJoystickYPos = 0;
+
+  double smoothingThreshold = 1; // the speed that the joystick must travel to activate averaging
+
+
   const units::meters_per_second_t lowSensitivityDriveSpeed = 3.25_ft / 1_s;
-
-  const units::radians_per_second_t highSensitivityRotateSpeed = 360_deg / 1_s;
   const units::radians_per_second_t lowSensitivityRotateSpeed = 90_deg / 1_s;
+
+  const units::meters_per_second_t defaultDriveSpeed = 13_ft / 1_s;
+  const units::meters_per_second_t defaultRotateSpeed = 360 / 1_s;
+
+  const units::meters_per_second_t highSensitivityDriveSpeed = 18_ft / 1_s;
+  const units::radians_per_second_t highSensitivityRotateSpeed = 720_deg / 1_s;
+
+  units::meters_per_second_t maxMovementMagnitude = defaultDriveSpeed;
+  units::radians_per_second_t maxRotationMagnitude = defaultRotateSpeed;
 
   bool isFieldOrientated = true;
   bool isZero = false;
