@@ -55,7 +55,7 @@ class ManualDrivebase : public behaviour::Behaviour{
   const units::radians_per_second_t lowSensitivityRotateSpeed = 90_deg / 1_s;
 
   const units::meters_per_second_t defaultDriveSpeed = 13_ft / 1_s;
-  const units::meters_per_second_t defaultRotateSpeed = 360 / 1_s;
+  const units::radians_per_second_t defaultRotateSpeed = 360_deg / 1_s;
 
   const units::meters_per_second_t highSensitivityDriveSpeed = 18_ft / 1_s;
   const units::radians_per_second_t highSensitivityRotateSpeed = 720_deg / 1_s;

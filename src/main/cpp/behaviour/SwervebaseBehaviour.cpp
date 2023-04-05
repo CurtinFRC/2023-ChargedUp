@@ -35,8 +35,8 @@ void ManualDrivebase::OnTick(units::second_t deltaTime) {
 
 
 
-  double joystickSpeedX = (_driverController->GetLeftX() - prevJoystickX) / deltaTime;
-  double JoystickSpeedY = (_driverController->GetLeftY() - prevJoystickY) / deltaTime;
+  double joystickSpeedX = (_driverController->GetLeftX() - prevJoystickX) / deltaTime.value();
+  double JoystickSpeedY = (_driverController->GetLeftY() - prevJoystickY) / deltaTime.value();
 
 
   /*
@@ -47,13 +47,13 @@ void ManualDrivebase::OnTick(units::second_t deltaTime) {
     use current joystick positions
   
   */
-  if (sqrt(joystickX*joystickX + joystickY*joystickY) > smoothingThreshold){
-    usingJoystickX = (prevPrevJoystickX + prevJoystickX = _driverController->GetLeftX()) / 3;
-    usingJoystickY = (prevPrevJoystickY + prevJoystickY = _driverController->GetLeftY()) / 3;
+  if (sqrt(joystickSpeedX*joystickSpeedX + JoystickSpeedY*JoystickSpeedY) > smoothingThreshold){
+    usingJoystickXPos = (prevPrevJoystickX + prevJoystickX + _driverController->GetLeftX()) / 3;
+    usingJoystickYPos = (prevPrevJoystickY + prevJoystickY + _driverController->GetLeftY()) / 3;
   }
   else {
-    usingJoystickX = _driverController->GetLeftX();
-    usingJoystickY = _driverController->GetLeftY();
+    usingJoystickXPos = _driverController->GetLeftX();
+    usingJoystickYPos = _driverController->GetLeftY();
   }
 
 
@@ -96,8 +96,8 @@ void ManualDrivebase::OnTick(units::second_t deltaTime) {
     _swerveDrivebase->SetZeroing();
   }
   else {
-    double xVelocity = wom::spow2(-wom::deadzone(usingJoystickY, driverDeadzone));  // GetLeftY due to x being where y should be on field
-    double yVelocity = wom::spow2(-wom::deadzone(usingJoystickX, driverDeadzone));
+    double xVelocity = wom::spow2(-wom::deadzone(usingJoystickYPos, driverDeadzone));  // GetLeftY due to x being where y should be on field
+    double yVelocity = wom::spow2(-wom::deadzone(usingJoystickXPos, driverDeadzone));
 
     // double l_x = wom::spow2(-wom::deadzone(_driverController->GetLeftY(), 0.15));  // GetLeftY due to x being where y should be on field
     // if (l_x > 0.15) {
@@ -111,8 +111,8 @@ void ManualDrivebase::OnTick(units::second_t deltaTime) {
     // if (r_x > 0.15) {
     //   r_x = r_x - 0.15;
     // }
-    double r_x = wom::spow2(-wom::deadzone(usingJoystickX, turningDeadzone));
-    double r_y = wom::spow2(-wom::deadzone(usingJoystickY, turningDeadzone));
+    double r_x = wom::spow2(-wom::deadzone(usingJoystickXPos, turningDeadzone));
+    double r_y = wom::spow2(-wom::deadzone(usingJoystickYPos, turningDeadzone));
 
 
     double turnX = _driverController->GetRightX();   double turnY = _driverController->GetRightY();
