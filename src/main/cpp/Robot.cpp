@@ -20,19 +20,6 @@ using namespace behaviour;
 static units::second_t lastPeriodic;
 
 void Robot::RobotInit() {
-  frc::SendableChooser<std::string> m_chooser;
-  const std::string kAutoNameDefault = "Default";
-  const std::string kAutoNameCustom = "My Auto";
-
-  std::string m_autoSelected;
-  m_chooser.SetDefaultOption(kAutoNameDefault, kAutoNameDefault);
-  m_chooser.AddOption("h", kAutoNameCustom);
-  frc::SmartDashboard::PutData("Auto Modes", &m_chooser);
-
-  /*
-  https://docs.wpilib.org/en/stable/docs/software/vision-processing/roborio/using-the-cameraserver-on-the-roborio.html
-  he following 4 lines of code were absolutely robbed from this website
-  */
   cs::UsbCamera camera = CameraServer::StartAutomaticCapture();
   camera.SetResolution(640, 480);
   cs::CvSink cvSink = frc::CameraServer::GetVideo();
@@ -40,10 +27,15 @@ void Robot::RobotInit() {
 
   lastPeriodic = wom::now();
 
-  map.swerveBase.moduleConfigs[0].turnMotor.encoder->SetEncoderOffset(4.1877_rad);
-  map.swerveBase.moduleConfigs[1].turnMotor.encoder->SetEncoderOffset(1.40025_rad);
-  map.swerveBase.moduleConfigs[2].turnMotor.encoder->SetEncoderOffset(1.61221_rad);
-  map.swerveBase.moduleConfigs[3].turnMotor.encoder->SetEncoderOffset(0.584498_rad);
+  map.swerveBase.moduleConfigs[0].turnMotor.encoder->SetEncoderOffset(4.11207_rad);
+  map.swerveBase.moduleConfigs[1].turnMotor.encoder->SetEncoderOffset(1.32638_rad);
+  map.swerveBase.moduleConfigs[2].turnMotor.encoder->SetEncoderOffset(1.67817_rad);
+  map.swerveBase.moduleConfigs[3].turnMotor.encoder->SetEncoderOffset(0.60899_rad);
+
+  // map.swerveBase.moduleConfigs[0].turnMotor.encoder->SetEncoderOffset(0_rad);
+  // map.swerveBase.moduleConfigs[1].turnMotor.encoder->SetEncoderOffset(0_rad);
+  // map.swerveBase.moduleConfigs[2].turnMotor.encoder->SetEncoderOffset(0_rad);
+  // map.swerveBase.moduleConfigs[3].turnMotor.encoder->SetEncoderOffset(0_rad);
 
   map.swerveBase.gyro.Reset();
 
@@ -105,11 +97,13 @@ void Robot::RobotPeriodic() {
 
 void Robot::AutonomousInit() {
   swerve->OnStart();
-  swerve->ResetPose(frc::Pose2d(72.061_in, 20.208_in, 0_deg));
-  // swerve->ResetPose(frc::Pose2d());
+  swerve->ResetPose(frc::Pose2d());
+  // swerve->ResetPose(frc::Pose2d());  
   BehaviourScheduler *sched = BehaviourScheduler::GetInstance();
-  sched->Schedule(Quintuple(Drivebase{swerve, &map.swerveBase.gyro}, true, StartingConfig::Bottom, EndingConfig::Collect));
- }
+  // sched->Schedule(ForwardDrive(Drivebase{swerve, &map.swerveBase.gyro}, armavator));
+  sched->Schedule(Single(Drivebase{swerve,  &map.swerveBase.gyro}, armavator, gripper, true, StartingConfig::Bottom, EndingConfig::Dock));
+  // sched->Schedule(Balence(Drivebase{swerve, &map.swerveBase.gyro}, armavator));
+}
 
 void Robot::AutonomousPeriodic() {
   map.swerveTable.swerveDriveTable->GetEntry("x_pos").SetDouble(swerve->GetPose().X().convert<units::inch>().value());
@@ -126,34 +120,34 @@ void Robot::TeleopInit() {
 }
 
 void Robot::TeleopPeriodic() {
-  if (map.controllers.driver.GetMiniLeftButtonPressed()){ // Sets to Field Relative control mode
-    swerve->SetIsFieldRelative(true);
-  }
-  if (map.controllers.driver.GetMiniRightButtonPressed()){ // Sets to Robot Relative control mode
-    swerve->SetIsFieldRelative(false);
-  }
-  if (map.controllers.driver.GetCPAD_BottomPressed()){ // Initiates behaviour for aligning to nearest grid position
-    std::vector<frc::Pose2d*> blueGridPoses = {
-      &map.bluePoses.innerGrid1, &map.bluePoses.innerGrid2, &map.bluePoses.innerGrid3,
-      &map.bluePoses.centreGrid1, &map.bluePoses.centreGrid2, &map.bluePoses.centreGrid3,
-      &map.bluePoses.outerGrid1, &map.bluePoses.outerGrid2, &map.bluePoses.outerGrid3
-    };
-    sched->Schedule(make<AlignDrivebaseToNearestGrid>(swerve, blueGridPoses));
-  }
-  if (map.controllers.driver.GetCPAD_TopPressed()){ // Lock the wheels
-    sched->Schedule(make<XDrivebase>(swerve));
-    // map.swerveTable.swerveDriveTable->GetEntry("IsX-ed").SetBoolean(true);
-  }
-  if (map.controllers.driver.GetCPAD_RightPressed()){ // Stop all current behaviours, and return to default (manualDrivebase)
-    swerve->GetActiveBehaviour()->Interrupt();
-    // map.swerveTable.swerveDriveTable->GetEntry("IsX-ed").SetBoolean(false);
-  }
-  if (map.controllers.driver.GetCPAD_LeftPressed()){ // Initiates behaviour for balancing on the chargestation
-    sched->Schedule(make<DrivebaseBalance>(swerve, &map.swerveBase.gyro));
-  }
-  if (map.controllers.driver.GetLeftTrigger() > 0.5){
-    swerve->ResetPose({72.061_in, 20.208_in, 0_deg});
-  }
+  // if (map.controllers.driver.GetYButton()){ // Sets to Field Relative control mode
+  //   swerve->SetIsFieldRelative(true);
+  // }
+  // if (map.controllers.driver.GetYButton()){ // Sets to Robot Relative control mode
+  //   swerve->SetIsFieldRelative(false);
+  // }
+  // if (map.controllers.driver.GetAButtonPressed()){ // Initiates behaviour for aligning to nearest grid position
+  //   std::vector<frc::Pose2d*> blueGridPoses = {
+  //     &map.bluePoses.innerGrid1, &map.bluePoses.innerGrid2, &map.bluePoses.innerGrid3,
+  //     &map.bluePoses.centreGrid1, &map.bluePoses.centreGrid2, &map.bluePoses.centreGrid3,
+  //     &map.bluePoses.outerGrid1, &map.bluePoses.outerGrid2, &map.bluePoses.outerGrid3
+  //   };
+  //   sched->Schedule(make<AlignDrivebaseToNearestGrid>(swerve, blueGridPoses));
+  // }
+  // if (map.controllers.driver.GetAButtonPressed()){ // Lock the wheels
+  //   sched->Schedule(make<XDrivebase>(swerve));
+  //   // map.swerveTable.swerveDriveTable->GetEntry("IsX-ed").SetBoolean(true);
+  // }
+  // if (map.controllers.driver.GetAButtonPressed()){ // Stop all current behaviours, and return to default (manualDrivebase)
+  //   swerve->GetActiveBehaviour()->Interrupt();
+  //   // map.swerveTable.swerveDriveTable->GetEntry("IsX-ed").SetBoolean(false);
+  // }
+  // if (map.controllers.driver.GetAButtonPressed()){ // Initiates behaviour for balancing on the chargestation
+  //   sched->Schedule(make<DrivebaseBalance>(swerve, &map.swerveBase.gyro));
+  // }
+  // if (map.controllers.driver.GetLeftTriggerAxis() > 0.5){
+  //   swerve->ResetPose({72.061_in, 20.208_in, 0_deg});
+  // }
 
   map.swerveTable.swerveDriveTable->GetEntry("x").SetDouble(swerve->GetPose().X().convert<units::inch>().value());
   map.swerveTable.swerveDriveTable->GetEntry("x").SetDouble(swerve->GetPose().Y().convert<units::inch>().value());
@@ -170,21 +164,21 @@ void Robot::TeleopPeriodic() {
   //   }
   // } 
 
-  if (map.controllers.driver.GetCPAD_LeftPressed()) {
-    if (compressorToggle) {
-      compressorToggle = false;
-    } else {
-      compressorToggle = true;
-    }
-  } 
+  // if (map.controllers.driver.GetBButtonPressed()) {
+  //   if (compressorToggle) {
+  //     compressorToggle = false;
+  //   } else {
+  //     compressorToggle = true;
+  //   }
+  // } 
 
-  if (compressorToggle) {
-    map.controlSystem.pcmCompressor.EnableDigital();
-      // std::cout << "compressor true" << std::endl;
-  } else {
-    map.controlSystem.pcmCompressor.Disable();
-      // std::cout << "compressor false" << std::endl;
-  }
+  // if (compressorToggle) {
+  //   map.controlSystem.pcmCompressor.EnableDigital();
+  //     // std::cout << "compressor true" << std::endl;
+  // } else {
+  //   map.controlSystem.pcmCompressor.Disable();
+  //     // std::cout << "compressor false" << std::endl;
+  // }
 }
 
 

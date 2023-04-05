@@ -1,6 +1,26 @@
 #include "behaviour/ArmavatorBehaviour.h"
 #include <frc/smartdashboard/SmartDashboard.h>
 
+
+ArmavatorGoToAutoSetpoint::ArmavatorGoToAutoSetpoint(Armavator *armavator, units::meter_t height, units::degree_t angle, double elevatorSpeed, double armSpeed) 
+  : _armavator(armavator), _height(height), _angle(angle), _elevatorSpeed(elevatorSpeed), _armSpeed(armSpeed) {
+    Controls(armavator);
+}
+
+void ArmavatorGoToAutoSetpoint::OnStart() {
+  std::cout << "intake + armavator auto setpoint routines start" << std::endl;
+}
+
+void ArmavatorGoToAutoSetpoint::OnTick(units::second_t dt) {
+  ArmavatorPosition pos = {_height, _angle};
+  _armavator->SetSpeedValues(_elevatorSpeed, _armSpeed);
+
+  _armavator->SetPosition(pos);
+  if (_armavator->IsStable()) {
+    SetDone();
+  }
+}
+
 //Constructs class
 ArmavatorGoToPositionBehaviour::ArmavatorGoToPositionBehaviour(Armavator *armavator, ArmavatorPosition setpoint)
 : _armavator(armavator), _setpoint(setpoint) {
@@ -85,55 +105,116 @@ void ArmavatorManualBehaviour::OnTick(units::second_t dt) {
   }
 
   if (rawControl) {
-    double armPower = wom::deadzone(_codriver.GetLeftY());
+    double armPower = -wom::deadzone(_codriver.GetLeftY());
     double elePower = -wom::deadzone(_codriver.GetRightY());
     _armavator->SetManual(armPower * 11_V, elePower * 8_V);
     _manualSetpoint = {_armavator->GetCurrentPosition().height, _armavator->GetCurrentPosition().angle};
     _armavator->SetSpeedValues(0.5, 0.3);
+    frc::SmartDashboard::PutBoolean("PID mode", false); 
+
   } else {
+    
+    frc::SmartDashboard::PutBoolean("PID mode", true); 
+    /**SETPOINTS
+     * hold -> 
+     * place front mid -> 
+     * place back mid -> 
+     * place back high -> 0.2615_m, 157_deg
+     * grab cone -> 
+     * grab cone lying down -> 0.896, -3.4608
+     * grab cone on floor -> 
+     * 
+    */
+
+
+
     if (_codriver.GetPOV() == 0) {
-      //carrying 
-      _setpointValue.height = 0.1_m;
-      _setpointValue.angle = 30_deg;
+      //picking up cone down 
+      // _setpointValue.height = 0.1_m;
+      // _setpointValue.angle = 30_deg;
+
+      _setpointValue.height = 0.86_m;
+      _setpointValue.angle = -7.8_deg;
+
       _armavator->SetPosition(_setpointValue);
       _manualSetpoint = {_armavator->GetCurrentPosition().height, _armavator->GetCurrentPosition().angle};
       std::cout << "GO TO armavator POS 1 " << std::endl;
       _armavator->SetSpeedValues(0.5, 0.2);
 
     } else if (_codriver.GetPOV() == 90) {
-      //placing front 
-      _setpointValue.height = 0.5_m;
-      _setpointValue.angle = 0_deg;
+      //picking up cone up 
+      // _setpointValue.height = 0.5_m;
+      // _setpointValue.angle = 0_deg;
+
+      _setpointValue.height = 0.01_m;
+      _setpointValue.angle = 34.1_deg;
+
       _armavator->SetPosition(_setpointValue);
       _manualSetpoint = {_armavator->GetCurrentPosition().height, _armavator->GetCurrentPosition().angle};
       std::cout << "GO TO armavator POS 2 " << std::endl;
       _armavator->SetSpeedValues(0.5, 0.2);
 
     } else if (_codriver.GetPOV() == 180) {
-      //placing back
-      _setpointValue.height = 0.5_m;
-      _setpointValue.angle = 180_deg;
+      //picking up cone down to collect 
+      // _setpointValue.height = 0.5_m;
+      // _setpointValue.angle = 180_deg;
+
+      _setpointValue.height = 0.86_m;
+      _setpointValue.angle = -6_deg;
+
       _armavator->SetPosition(_setpointValue);
       _manualSetpoint = {_armavator->GetCurrentPosition().height, _armavator->GetCurrentPosition().angle};
       std::cout << "GO TO armavator POS 3 " << std::endl;
       _armavator->SetSpeedValues(0.3, 0.1);
 
     } else if (_codriver.GetPOV() == 270) {
-      //gripper
+      //holding
       //TODO potench change max speed here
-      _setpointValue.height = 0.9_m;
-      _setpointValue.angle = -50_deg;
+      _setpointValue.height = 0.1_m;
+      _setpointValue.angle = 60_deg;
+      // 0.896, -3.4608
       _armavator->SetPosition(_setpointValue);
       _manualSetpoint = {_armavator->GetCurrentPosition().height, _armavator->GetCurrentPosition().angle};
       std::cout << "GO TO armavator POS 4 " << std::endl;
       _armavator->SetSpeedValues(0.35, 0.07);
-    } else{
+    } else if (_codriver.GetXButton()) {
+      //front mid place 
+      _setpointValue.height = 0.612_m;
+      _setpointValue.angle = 6.17_deg;
+      _armavator->SetPosition(_setpointValue);
+      _manualSetpoint = {_armavator->GetCurrentPosition().height, _armavator->GetCurrentPosition().angle};
+      std::cout << "GO TO armavator POS 5 " << std::endl;
+      _armavator->SetSpeedValues(0.35, 0.07);
+    } else if (_codriver.GetYButton()) {
+      // 152_deg 0.1814_m back high place 
+      _setpointValue.height = 0.1918_m;
+      _setpointValue.angle = 159.43_deg;
+      _armavator->SetPosition(_setpointValue);
+      _manualSetpoint = {_armavator->GetCurrentPosition().height, _armavator->GetCurrentPosition().angle};
+      std::cout << "GO TO armavator POS 6 " << std::endl;
+      _armavator->SetSpeedValues(0.35, 0.07);
+
+    } else if (_codriver.GetBButton()) {
+      // ground collect 
+      _setpointValue.height = 0.128_m;
+      _setpointValue.angle = 16.7_deg;
+      _armavator->SetPosition(_setpointValue);
+      _manualSetpoint = {_armavator->GetCurrentPosition().height, _armavator->GetCurrentPosition().angle};
+      std::cout << "GO TO armavator POS 7 " << std::endl;
+      _armavator->SetSpeedValues(0.35, 0.07);
+    } else {
+      units::meter_t height = _armavator->GetCurrentPosition().height;
+      units::degree_t angle = _armavator->GetCurrentPosition().angle;
       _armavator->SetSpeedValues(0.5, 0.3);
+
+  
+      
       if (_manualSetpoint.height > 0.95_m) {
         _manualSetpoint.height = 0.95_m;
       } else if (_manualSetpoint.height < 0.01_m) {
         _manualSetpoint.height = 0.01_m;
       } else {
+        //if not outside deadzone set to current value
         _manualSetpoint.height -= (wom::deadzone(_codriver.GetRightY(), 0.15) * 1_m * 0.05);
       }
 
@@ -142,12 +223,28 @@ void ArmavatorManualBehaviour::OnTick(units::second_t dt) {
       } else if (_manualSetpoint.angle < -60_deg) {
         _manualSetpoint.angle = -60_deg;
       } else {
+         
         _manualSetpoint.angle -= (wom::deadzone(_codriver.GetLeftY(), 0.15) * 1_deg * 3);
+        // _manualSetpoint.angle = angle - (wom::spow2(wom::deadzone(_codriver.GetLeftY(), 0.3)) * 1_deg * 30);
       }
+      // units::degree_t trimmed_angle;
+      // units::degree_t max_angle = units::math::asin((height - (1.9_m - 0.51_m)) / (-_armavator->arm->GetConfig().armLength));
+      units::meter_t max_height = (1.9_m - 0.51_m) - _armavator->arm->GetConfig().armLength * units::math::sin(_manualSetpoint.angle);
+      // if (_manualSetpoint.angle < 90_deg) {
+      //   trimmed_angle = units::math::min(max_angle, _manualSetpoint.angle);
+      // } else if (_manualSetpoint.angle >= 90_deg) {
+      //   trimmed_angle = units::math::max(3.1415_rad - max_angle,  _manualSetpoint.angle);
+      // }
+      
+      ArmavatorPosition sp{
+        units::math::min(_manualSetpoint.height, max_height),
+        // trimmed_angle
+        _manualSetpoint.angle
+      };
 
-      // _manualSetpoint = {0.1_m, 70_deg};
+      // _manualSetpoint.angle = trimmed_angle;
 
-      _armavator->SetPosition(_manualSetpoint);
+      _armavator->SetPosition(sp);
     }
   }
   // std::cout << "arm angle setpoint: " <<_manualSetpoint.angle.convert<units::degree>().value() << std::endl;

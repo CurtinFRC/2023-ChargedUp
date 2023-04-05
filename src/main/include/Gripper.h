@@ -28,12 +28,13 @@ class Gripper : public behaviour::HasBehaviour {
 
   void SetIdle();
   void SetIntaking();
-  void SetOutaking();
+  void SetOutaking(double speed);
   void SetHolding();
 
   std::string GetState();
 
  private: 
+  double _speed;
   GripperConfig _config;
   GripperState _state = GripperState::kIdle;
 };

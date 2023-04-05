@@ -19,7 +19,7 @@ class ManualDrivebase : public behaviour::Behaviour{
    * @param driverController
    * A pointer to the controller that the driver has been allocated
   */
-  ManualDrivebase(wom::SwerveDrive *swerveDrivebase, wom::Controller *driverController);
+  ManualDrivebase(wom::SwerveDrive *swerveDrivebase, frc::XboxController *driverController);
 
   void OnTick(units::second_t deltaTime) override;
   /**
@@ -30,27 +30,42 @@ class ManualDrivebase : public behaviour::Behaviour{
   
  private:
   wom::SwerveDrive *_swerveDrivebase;
-  wom::Controller *_driverController;
+  // wom::Controller *_driverController;
+  frc::XboxController *_driverController;
 
   units::degree_t _requestedAngle;
 
   const double driverDeadzone = 0.08;
   const double turningDeadzone = 0.1;
 
-  units::meters_per_second_t maxMovementMagnitude = 6.5_ft / 1_s;
-  units::radians_per_second_t maxRotationMagnitude = 360_deg / 1_s;
 
-  const units::meters_per_second_t highSensitivityDriveSpeed = 6.5_ft / 1_s;
+  double prevJoystickX = 0;
+  double prevJoystickY = 0;
+
+  double prevPrevJoystickX = 0;
+  double prevPrevJoystickY = 0;
+
+  double usingJoystickXPos = 0;
+  double usingJoystickYPos = 0;
+
+  double smoothingThreshold = 1; // the speed that the joystick must travel to activate averaging
+
+
   const units::meters_per_second_t lowSensitivityDriveSpeed = 3.25_ft / 1_s;
-
-  const units::radians_per_second_t highSensitivityRotateSpeed = 360_deg / 1_s;
   const units::radians_per_second_t lowSensitivityRotateSpeed = 90_deg / 1_s;
+
+  const units::meters_per_second_t defaultDriveSpeed = 13_ft / 1_s;
+  const units::meters_per_second_t defaultRotateSpeed = 360 / 1_s;
+
+  const units::meters_per_second_t highSensitivityDriveSpeed = 18_ft / 1_s;
+  const units::radians_per_second_t highSensitivityRotateSpeed = 720_deg / 1_s;
+
+  units::meters_per_second_t maxMovementMagnitude = defaultDriveSpeed;
+  units::radians_per_second_t maxRotationMagnitude = defaultRotateSpeed;
 
   bool isFieldOrientated = true;
   bool isZero = false;
-
   std::shared_ptr<nt::NetworkTable> _swerveDriveTable = nt::NetworkTableInstance::GetDefault().GetTable("swerve");
-
 };
 
 
@@ -69,7 +84,7 @@ class DrivebasePoseBehaviour : public behaviour::Behaviour{
    * @param hold
    * An optional variable (defaulting false), to say whether this position should be maintained
   */
-  DrivebasePoseBehaviour(wom::SwerveDrive *swerveDrivebase, frc::Pose2d pose, bool hold = false);
+  DrivebasePoseBehaviour(wom::SwerveDrive *swerveDrivebase, frc::Pose2d pose, units::volt_t voltageLimit =10_V ,bool hold = false);
   
   /**
    * @brief 
@@ -82,6 +97,7 @@ class DrivebasePoseBehaviour : public behaviour::Behaviour{
   wom::SwerveDrive *_swerveDrivebase;
   frc::Pose2d _pose;
   bool _hold;
+  units::volt_t _voltageLimit;
   
   std::shared_ptr<nt::NetworkTable> _swerveDriveTable = nt::NetworkTableInstance::GetDefault().GetTable("swerve");
 };
@@ -111,7 +127,7 @@ class DrivebaseBalance : public behaviour::Behaviour{
 
   wom::SwerveDriveConfig::balance_conf_t balancePIDConfig{
     "swerve/balancePID/",
-    465_mps / 10000_deg,
+    70_mps / 1000_deg,
     wom::SwerveDriveConfig::balance_conf_t::ki_t{0.00},
     wom::SwerveDriveConfig::balance_conf_t::kd_t{0}
   };

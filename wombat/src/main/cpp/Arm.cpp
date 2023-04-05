@@ -64,6 +64,10 @@ void Arm::OnUpdate(units::second_t dt) {
   // units::volt_t voltageMin = _config.leftGearbox.motor.Voltage(-torqueLimit, _config.leftGearbox.encoder->GetEncoderAngularVelocity());
 
   // voltage = units::math::max(units::math::min(voltage, voltageMax), voltageMin);
+  units::volt_t voltageMin = -5.5_V;
+  units::volt_t voltageMax = 5.5_V;
+  voltage = units::math::max(units::math::min(voltage, voltageMax), voltageMin);
+
 
   // std::cout << "voltage: " << voltage.value() << std::endl;
 
@@ -109,7 +113,7 @@ units::radians_per_second_t Arm::MaxSpeed() const {
 }
 
 bool Arm::IsStable() const {
-  return _pid.IsStable();
+  return _pid.IsStable(5_deg);
 }
 
 

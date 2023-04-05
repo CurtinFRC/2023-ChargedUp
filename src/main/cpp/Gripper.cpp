@@ -15,7 +15,7 @@ void Gripper::OnUpdate(units::second_t dt) {
       break;
 
     case GripperState::kOutaking:
-      voltage = -8_V;
+      voltage = _speed * -7_V;
       break;  
 
     case GripperState::kHolding:
@@ -34,7 +34,8 @@ void Gripper::SetIntaking() {
   _state = GripperState::kIntaking;
 }
 
-void Gripper::SetOutaking() {
+void Gripper::SetOutaking(double speed) {
+  _speed = speed;
   _state = GripperState::kOutaking;
 }
 

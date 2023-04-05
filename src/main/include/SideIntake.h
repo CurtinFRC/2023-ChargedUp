@@ -62,7 +62,7 @@ class SideIntake : public behaviour::HasBehaviour {
  private:
   SideIntakeConfig _config;
   SideIntakeState _state = SideIntakeState::kIdle;
-  IntakeActuationState _actuationState = IntakeActuationState::kStowed;
+  IntakeActuationState _actuationState;
   IntakeCloseState _closedState = IntakeCloseState::kOpen;
 
   units::volt_t intakeVoltage = 10_V;

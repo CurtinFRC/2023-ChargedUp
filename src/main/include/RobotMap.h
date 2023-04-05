@@ -37,7 +37,7 @@ struct RobotMap {
 
   struct Controllers {    
     //sets driver station numbers for the controllers
-    wom::XboxController driver{0};
+    frc::XboxController driver{0};
     frc::XboxController codriver{1};
   };
   Controllers controllers;
@@ -288,11 +288,16 @@ struct ControlSystem {
         leftOtherArmEncoder,
         wom::PIDConfig<units::radian, units::volts>(
           "/armavator/arm/pid/config",
-          12_V / 25_deg
+          10_V / 25_deg,
+          0.1_V / (1_deg * 1_s),
+          0_V / (1_deg / 1_s),
+          5_deg,
+          2_deg / 1_s,
+          10_deg
         ),
         5_kg, 
         5_kg,
-        1_m,
+        1.37_m,
         -90_deg,
         270_deg,
         0_deg
@@ -358,7 +363,11 @@ struct ControlSystem {
         {
           //creates the pid for the elevator to remove error
           "/armavator/elevator/pid/config",
-          18_V / 1_m //16V
+          19_V / 1_m, //16V
+          0.3_V / (1_m * 1_s),
+          0_V / (1_m / 1_s),
+          0.1_m
+          // 0.05_m / 1_s
         }
       };
 
