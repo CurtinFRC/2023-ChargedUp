@@ -112,6 +112,7 @@ class ArmavatorManualBehaviour : public behaviour::Behaviour {
 
   units::meter_t startHeight; 
   frc::EventLoop *loop;
-
+  
+  bool velocityControl = false;
   bool rawControl = true;
 };

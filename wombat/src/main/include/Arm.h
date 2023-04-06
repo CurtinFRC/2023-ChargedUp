@@ -68,6 +68,7 @@ namespace wom {
     std::shared_ptr<nt::NetworkTable> _table;
 
     double armLimit = 0.4;
+    units::radians_per_second_t lastVelocity;
 
     units::volt_t _voltage{0};
   };

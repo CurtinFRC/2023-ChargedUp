@@ -38,9 +38,13 @@ void Arm::OnUpdate(units::second_t dt) {
     case ArmState::kVelocity:
       {
         units::newton_meter_t torque = 9.81_m / 1_s / 1_s * _config.armLength * units::math::cos(angle + _config.angleOffset) * (0.5 * _config.armMass + _config.loadMass);
+        // units::volt_t feedforward = _config.leftGearbox.motor.Voltage(torque, 0_rad/1_s);
         units::volt_t feedforward = _config.leftGearbox.motor.Voltage(torque, _velocityPID.GetSetpoint());
+        // feedforward = 3.5_V;
         // std::cout << "feedforward" << feedforward.value() << std::endl;
         voltage = _velocityPID.Calculate(GetArmVelocity(), dt, feedforward);
+        // std::cout << "arm velocity voltage is: " << voltage.value() << std::endl;
+        // voltage = 0_V;
       }
       break;
     case ArmState::kAngle:

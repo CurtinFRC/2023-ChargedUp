@@ -237,9 +237,9 @@ struct ControlSystem {
 
   struct Armavator {
     //sets up the percieved masses for the load, arm and carraige
-    static constexpr units::kilogram_t loadMass = 10_kg;
-    static constexpr units::kilogram_t armMass = 5_kg;
-    static constexpr units::kilogram_t carriageMass = 5_kg;
+    static constexpr units::kilogram_t loadMass = 1_kg;
+    static constexpr units::kilogram_t armMass = 2_kg;
+    static constexpr units::kilogram_t carriageMass = 3_kg;
 
     //stores nessesary info for arm
     struct Arm {
@@ -296,12 +296,12 @@ struct ControlSystem {
         ),
         wom::PIDConfig<units::radians_per_second, units::volts>(
           "/armavator/arm/velocityPID/config",
-          13_V / (25_deg / 1_s),
+          9_V / (180_deg / 1_s),
           0_V / 25_deg,
-          0_V / (25_deg / 1_s / 1_s)
+          0_V / (90_deg / 1_s / 1_s)
         ),
-        5_kg, 
-        5_kg,
+        2_kg, 
+        2_kg,
         1.37_m,
         -90_deg,
         270_deg,
@@ -376,7 +376,7 @@ struct ControlSystem {
         },
         {
           "/armavator/elevator/velocity/pid/config",
-          12_V / (1_m / 1_s),
+          6_V / (1_m / 1_s),
           0_V / 1_m,
           0_V / (1_m / 1_s / 1_s)
         }

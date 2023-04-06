@@ -97,11 +97,16 @@ void ManualDrivebase::OnTick(units::second_t deltaTime) {
       });
     }
     else {  // Robot Relative Controls
-      _swerveDrivebase->SetVelocity(frc::ChassisSpeeds{
-          xVelocity * maxMovementMagnitude,
-          yVelocity * maxMovementMagnitude,
-          r_x * maxRotationMagnitude
+      _swerveDrivebase->SetFieldRelativeVelocity(wom::FieldRelativeSpeeds{
+        xVelocity * maxMovementMagnitude,
+        yVelocity * maxMovementMagnitude,
+        r_x * maxRotationMagnitude
       });
+      // _swerveDrivebase->SetVelocity(frc::ChassisSpeeds{
+      //     xVelocity * maxMovementMagnitude,
+      //     yVelocity * maxMovementMagnitude,
+      //     r_x * maxRotationMagnitude
+      // });
     }
   }
 } 

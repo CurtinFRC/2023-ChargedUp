@@ -32,7 +32,9 @@ void Armavator::OnUpdate(units::second_t dt) {
     case ArmavatorState::kIdle:
       break;
     case ArmavatorState::kVelocity:
+      // arm->SetVelocity(0_rad_per_s);
       arm->SetVelocity(_velocitySetpoint.angleSpeed);
+      // elevator->SetVelocity(0_mps);
       elevator->SetVelocity(_velocitySetpoint.elevatorSpeed);
       break;
     case ArmavatorState::kPosition:
