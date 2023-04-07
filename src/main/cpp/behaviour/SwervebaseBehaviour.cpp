@@ -34,57 +34,38 @@ void ManualDrivebase::OnTick(units::second_t deltaTime) {
   }
 
 
-
+  //  SOLUTION TO "ANTI-TIP"
   double joystickSpeedX = (_driverController->GetLeftX() - prevJoystickX) / deltaTime.value();
   double JoystickSpeedY = (_driverController->GetLeftY() - prevJoystickY) / deltaTime.value();
 
-
-  /*
-  
-  if joystick speed > some constant
-    use average
-  else
-    use current joystick positions
-  
-  */
   if (sqrt(joystickSpeedX*joystickSpeedX + JoystickSpeedY*JoystickSpeedY) > smoothingThreshold){
     usingJoystickXPos = (prevPrevJoystickX + prevJoystickX + _driverController->GetLeftX()) / 3;
     usingJoystickYPos = (prevPrevJoystickY + prevJoystickY + _driverController->GetLeftY()) / 3;
-  }
-  else {
+  } else {
     usingJoystickXPos = _driverController->GetLeftX();
     usingJoystickYPos = _driverController->GetLeftY();
   }
 
-
-
-
-
   /*   TOGGLE SOLUTION   */
-  if (_driverController->GetLeftBumperPressed()){
+  /*if (_driverController->GetLeftBumperPressed()){
     maxMovementMagnitude = highSensitivityDriveSpeed;
     maxRotationMagnitude = highSensitivityRotateSpeed;
   }
   if (_driverController->GetRightBumperPressed()){
     maxMovementMagnitude = lowSensitivityDriveSpeed;
     maxRotationMagnitude = lowSensitivityRotateSpeed;
-  }
+  }*/
+
   /*   HOLD SOLUTION   */
   if (_driverController->GetLeftBumperPressed()){
-    maxMovementMagnitude = highSensitivityDriveSpeed;
-    maxRotationMagnitude = highSensitivityRotateSpeed;
-  }
-  else if (_driverController->GetLeftBumperReleased() & !_driverController->GetRightBumper()){
-    maxMovementMagnitude = defaultDriveSpeed;
-    maxRotationMagnitude = defaultRotateSpeed;
+    maxMovementMagnitude = lowSensitivityDriveSpeed;   maxRotationMagnitude = lowSensitivityRotateSpeed;
+  } else if (_driverController->GetLeftBumperReleased() & !_driverController->GetRightBumper()){
+    maxMovementMagnitude = defaultDriveSpeed;   maxRotationMagnitude = defaultRotateSpeed;
   }
   if (_driverController->GetRightBumperPressed()){
-    maxMovementMagnitude = lowSensitivityDriveSpeed;
-    maxRotationMagnitude = lowSensitivityRotateSpeed;
-  }
-  else if (_driverController->GetRightBumperReleased() & !_driverController->GetLeftBumper()){
-    maxMovementMagnitude = defaultDriveSpeed;
-    maxRotationMagnitude = defaultRotateSpeed;
+    maxMovementMagnitude = highSensitivityDriveSpeed;   maxRotationMagnitude = highSensitivityRotateSpeed;
+  } else if (_driverController->GetRightBumperReleased() & !_driverController->GetLeftBumper()){
+    maxMovementMagnitude = defaultDriveSpeed;   maxRotationMagnitude = defaultRotateSpeed;
   }
 
 
@@ -98,28 +79,14 @@ void ManualDrivebase::OnTick(units::second_t deltaTime) {
   else {
     double xVelocity = wom::spow2(-wom::deadzone(usingJoystickYPos, driverDeadzone));  // GetLeftY due to x being where y should be on field
     double yVelocity = wom::spow2(-wom::deadzone(usingJoystickXPos, driverDeadzone));
-
-    // double l_x = wom::spow2(-wom::deadzone(_driverController->GetLeftY(), 0.15));  // GetLeftY due to x being where y should be on field
-    // if (l_x > 0.15) {
-    //   l_x = l_x - 0.15;
-    // }
-    // double l_y = wom::spow2(-wom::deadzone(_driverController->GetLeftX(), 0.3));
-    // if (l_y > 0.3) {
-    //   l_y = l_y - 0.3;
-    // }
-    // double r_x = wom::spow2(-wom::deadzone(_driverController->GetRightX(), 0.15));
-    // if (r_x > 0.15) {
-    //   r_x = r_x - 0.15;
-    // }
     double r_x = wom::spow2(-wom::deadzone(usingJoystickXPos, turningDeadzone));
     double r_y = wom::spow2(-wom::deadzone(usingJoystickYPos, turningDeadzone));
 
-
-    double turnX = _driverController->GetRightX();   double turnY = _driverController->GetRightY();
-    double num = sqrt(turnX * turnX + turnY * turnY);
-    if (num < turningDeadzone) {
-      turnX = 0;  turnY = 0;
-    }
+    // double turnX = _driverController->GetRightX();   double turnY = _driverController->GetRightY();
+    // double num = sqrt(turnX * turnX + turnY * turnY);
+    // if (num < turningDeadzone) {
+    //   turnX = 0;   turnY = 0;
+    // }
 
     if (_swerveDrivebase->GetIsFieldRelative()) {  // Field Relative Controls
       // frc::Pose2d currentPose = _swerveDrivebase->GetPose();
@@ -147,8 +114,8 @@ void ManualDrivebase::OnTick(units::second_t deltaTime) {
     }
   }
 
-  prevPrevJoystickX = prevJoystickY;
-  prevPrevJoystickY = prevPrevJoystickY;
+  prevPrevJoystickX = prevJoystickX;
+  prevPrevJoystickY = prevJoystickY;
   prevJoystickX = _driverController->GetLeftX();
   prevJoystickY = _driverController->GetLeftY();
 } 

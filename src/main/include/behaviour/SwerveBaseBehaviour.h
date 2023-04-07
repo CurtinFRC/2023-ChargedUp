@@ -15,9 +15,9 @@ class ManualDrivebase : public behaviour::Behaviour{
  public:
    /**
    * @param swerveDrivebase
-   * A pointer to the swerve drivebase
+   * A pointer to the swerve drivebase (the allocated memory address that stores the "swerve drivebase" object)
    * @param driverController
-   * A pointer to the controller that the driver has been allocated
+   * A pointer to the controller that the driver has been allocated (the allocated memory address that stores the "driver controller" object)
   */
   ManualDrivebase(wom::SwerveDrive *swerveDrivebase, frc::XboxController *driverController);
 
@@ -29,43 +29,43 @@ class ManualDrivebase : public behaviour::Behaviour{
   void OnStart(units::second_t dt);
   
  private:
+  std::shared_ptr<nt::NetworkTable> _swerveDriveTable = nt::NetworkTableInstance::GetDefault().GetTable("swerve");
   wom::SwerveDrive *_swerveDrivebase;
-  // wom::Controller *_driverController;
   frc::XboxController *_driverController;
+  
+  // State-handler Boolean : Is the robot in field orientated control, or robot relative?
+  bool isFieldOrientated = true;
+  // State-handler Boolean : Do we currently want the angles of the wheels to be 0?
+  bool isZero = false;
+  
 
   units::degree_t _requestedAngle;
 
+
+  // Deadzones
   const double driverDeadzone = 0.08;
   const double turningDeadzone = 0.1;
 
 
-  double prevJoystickX = 0;
-  double prevJoystickY = 0;
+  // Variables for solution to Anti-tip
+  double prevJoystickX, prevJoystickY, prevPrevJoystickX, prevPrevJoystickY, usingJoystickXPos, usingJoystickYPos;
+  // The speed that the joystick must travel to activate averaging over previous 3 joystick positions
+  const double smoothingThreshold = 1;
 
-  double prevPrevJoystickX = 0;
-  double prevPrevJoystickY = 0;
+  typedef units::meters_per_second_t translationSpeed_;
+  typedef units::radians_per_second_t rotationSpeed_;
 
-  double usingJoystickXPos = 0;
-  double usingJoystickYPos = 0;
+  // The translation speeds for when "slow speed", "normal speed", "fast speed" modes are active
+  const translationSpeed_ lowSensitivityDriveSpeed = 3.25_ft / 1_s;
+  const translationSpeed_ defaultDriveSpeed = 13_ft / 1_s;
+  const translationSpeed_ highSensitivityDriveSpeed = 18_ft / 1_s;
+  // The rotation speeds for when "slow speed", "normal speed", "fast speed" modes are active
+  const rotationSpeed_ lowSensitivityRotateSpeed = 90_deg / 1_s;
+  const rotationSpeed_ defaultRotateSpeed = 360_deg / 1_s;
+  const rotationSpeed_ highSensitivityRotateSpeed = 720_deg / 1_s;
 
-  double smoothingThreshold = 1; // the speed that the joystick must travel to activate averaging
-
-
-  const units::meters_per_second_t lowSensitivityDriveSpeed = 3.25_ft / 1_s;
-  const units::radians_per_second_t lowSensitivityRotateSpeed = 90_deg / 1_s;
-
-  const units::meters_per_second_t defaultDriveSpeed = 13_ft / 1_s;
-  const units::radians_per_second_t defaultRotateSpeed = 360_deg / 1_s;
-
-  const units::meters_per_second_t highSensitivityDriveSpeed = 18_ft / 1_s;
-  const units::radians_per_second_t highSensitivityRotateSpeed = 720_deg / 1_s;
-
-  units::meters_per_second_t maxMovementMagnitude = defaultDriveSpeed;
-  units::radians_per_second_t maxRotationMagnitude = defaultRotateSpeed;
-
-  bool isFieldOrientated = true;
-  bool isZero = false;
-  std::shared_ptr<nt::NetworkTable> _swerveDriveTable = nt::NetworkTableInstance::GetDefault().GetTable("swerve");
+  translationSpeed_ maxMovementMagnitude = defaultDriveSpeed;
+  rotationSpeed_ maxRotationMagnitude = defaultRotateSpeed;
 };
 
 
