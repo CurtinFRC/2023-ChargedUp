@@ -10,6 +10,10 @@
 #include <frc/XboxController.h>
 #include <frc/PS4Controller.h>
 
+#include <vector>
+
+#include "Poses.h"
+
 // #include <units/units.h>
 
 using namespace wom;
@@ -188,27 +192,44 @@ void XDrivebase::OnTick(units::second_t deltaTime) {   _swerveDrivebase->SetXWhe
 
 
 // Code for auto aligning to the nearest grid position
-AlignDrivebaseToNearestGrid::AlignDrivebaseToNearestGrid(wom::SwerveDrive *swerveDrivebase, std::vector<frc::Pose2d*> gridPoses) : _swerveDrivebase(swerveDrivebase), _gridPoses(gridPoses) {   Controls(swerveDrivebase);   }
+AlignDrivebaseToNearestGrid::AlignDrivebaseToNearestGrid(wom::SwerveDrive *swerveDrivebase) : _swerveDrivebase(swerveDrivebase){   Controls(swerveDrivebase);   }
+AlignDrivebaseToNearestGrid::AlignDrivebaseToNearestGrid(wom::SwerveDrive *swerveDrivebase, Vision *vision) : _swerveDrivebase(swerveDrivebase), _vision(vision) {   Controls(swerveDrivebase);   }
 
 void AlignDrivebaseToNearestGrid::OnStart(){
+  frc::Pose2d currentPose; 
+  if (_vision == nullptr){
+    currentPose = _swerveDrivebase->GetPose();
+  } else {
+    
+    photonlib::PhotonPipelineResult capturedImage = _vision->GetLatestResults(_vision->GetConfig()->camera);
+    capturedImage.HasTargets();
+
+
+    // if has april tag in field:
+    currentPose = _vision->EstimatePose(_vision->GetConfig()).ToPose2d();
+    // else
+      //SetDone();
+
+
+    // if (PoseNotFound) {   SetDone();   }
+  }
+  frc::Pose2d nearestGrid = _gridPoses[0];
   units::degree_t alignAngle = 0_deg;
-  frc::Pose2d currentPose = _swerveDrivebase->GetPose();
   double angle = std::fmod(currentPose.Rotation().Degrees().value(), 360);
   if (90 < angle && angle <= 270){   alignAngle = 180_deg;   }
-
-  frc::Pose2d *nearestGrid = _gridPoses[0];
-
-
-  for (frc::Pose2d *pose : _gridPoses) {
-    frc::Pose2d difference = currentPose.RelativeTo(*pose);
+  for (frc::Pose2d pose : _gridPoses) {
+    frc::Pose2d difference = currentPose.RelativeTo(pose);
     double distance = pow(difference.X().value(), 2) + pow(difference.Y().value(), 2);
-    if (distance < pow(nearestGrid->X().value(), 2) + pow(nearestGrid->Y().value(), 2)){
+    if (distance < pow(nearestGrid.X().value(), 2) + pow(nearestGrid.Y().value(), 2)){
       nearestGrid = pose;
     }
   }
-  if (pow(nearestGrid->X().value(), 2) + pow(nearestGrid->Y().value(), 2) < 2){
-    _swerveDrivebase->SetPose(frc::Pose2d{nearestGrid->X(), nearestGrid->Y(), alignAngle});
-  }
+  // if (pow(nearestGrid.X().value(), 2) + pow(nearestGrid.Y().value(), 2) < alignmentAllowDistance.value()){
+  //   _swerveDrivebase->SetPose(frc::Pose2d{nearestGrid.X(), nearestGrid.Y(), alignAngle});
+  // }
+
+  // if (_swerveDrivebase->IsAtSetPose()){   SetDone();   }
+  SetDone();
 }
 
 void AlignDrivebaseToNearestGrid::OnTick(units::second_t deltaTime) { }

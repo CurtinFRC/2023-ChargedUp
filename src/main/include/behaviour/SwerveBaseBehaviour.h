@@ -8,6 +8,9 @@
 #include "PID.h"
 #include <vector>
 
+#include "Vision.h"
+#include "Auto.h"
+
 /**
  * @brief Behaviour class to handle manual drivebase controlling with the controller
  */ 
@@ -170,30 +173,43 @@ class XDrivebase : public behaviour::Behaviour{
  * @brief Behaviour Class to handle the swerve drivebase driving to the nearest team grid position if it is within range
  */
 class AlignDrivebaseToNearestGrid : public behaviour::Behaviour{
-  struct SwerveGridPoses{
-    frc::Pose2d innerGrid1;
-    frc::Pose2d innerGrid2;
-    frc::Pose2d innerGrid3;
-    frc::Pose2d centreGrid1;
-    frc::Pose2d centreGrid2;
-    frc::Pose2d centreGrid3;
-    frc::Pose2d outerGrid1;
-    frc::Pose2d outerGrid2;
-    frc::Pose2d outerGrid3;
-  };
- public:
   /**
    * @param wom::SwerveDrive
    * A pointer to the swerve drivebase
    * @param std::vector<frc::Pose2d*>
    * A vector of frc::Pose2d's storing all 9 current alliance grid positions
   */
-  AlignDrivebaseToNearestGrid(wom::SwerveDrive *swerveDrivebase, std::vector<frc::Pose2d*> gridPoses);
+  AlignDrivebaseToNearestGrid(wom::SwerveDrive *swerveDrivebase);
+  AlignDrivebaseToNearestGrid(wom::SwerveDrive *swerveDrivebase, Vision *vision);
+  
 
   void OnTick(units::second_t deltaTime) override;
   void OnStart() override;
 
  private:
+
+  units::meter_t alignmentAllowDistance = 1.5_m;
+
   wom::SwerveDrive *_swerveDrivebase;
-  std::vector<frc::Pose2d*> _gridPoses;
+  Vision *_vision = nullptr;
+  std::vector<frc::Pose2d> _gridPoses = {
+      frc::Pose2d{72.061_in, 20.208_in, 0_deg},
+      frc::Pose2d{72.061_in, 42.2_in, 0_deg},
+      frc::Pose2d{72.061_in, 64.185_in, 0_deg},
+      frc::Pose2d{72.061_in, 86.078_in, 0_deg},
+      frc::Pose2d{72.061_in, 108.131_in, 0_deg},
+      frc::Pose2d{72.061_in, 130.185_in, 0_deg},
+      frc::Pose2d{72.061_in, 152.185_in, 0_deg},
+      frc::Pose2d{72.061_in, 174.170_in, 0_deg},
+      frc::Pose2d{72.061_in, 196.185_in, 0_deg},
+      frc::Pose2d{579.351_in, 20.185_in, 0_deg},
+      frc::Pose2d{579.351_in, 42.185_in, 0_deg},
+      frc::Pose2d{579.351_in, 64.185_in, 0_deg},
+      frc::Pose2d{579.351_in, 86.185_in, 0_deg},
+      frc::Pose2d{579.351_in, 108.185_in, 0_deg},
+      frc::Pose2d{579.351_in, 130.293_in, 0_deg},
+      frc::Pose2d{579.351_in, 152.185_in, 0_deg},
+      frc::Pose2d{579.351_in, 174.185_in, 0_deg},
+      frc::Pose2d{579.351_in, 196.185_in, 0_deg}
+  };
 };

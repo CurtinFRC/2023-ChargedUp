@@ -56,9 +56,9 @@ struct ControlSystem {
     VisionConfig config{
       std::make_shared<photonlib::PhotonCamera>("camera"), 
       frc::Transform3d{ frc::Translation3d{ 0_m, 0_m, 0_m }, frc::Rotation3d{ 0_rad, 0_rad, 0_rad } },
+      0_deg,
       Get2023Layout()
     };
-    
   };
   Vision vision;
 

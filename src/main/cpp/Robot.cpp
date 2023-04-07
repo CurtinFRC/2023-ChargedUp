@@ -46,10 +46,10 @@ void Robot::RobotInit() {
   });
 
   vision = new Vision(&map.vision.config);
-  BehaviourScheduler::GetInstance()->Register(vision);
-  vision->SetDefaultBehaviour([this]() {
-    return make<VisionBehaviour>(vision, swerve, &map.controllers.codriver);
-  });
+  // BehaviourScheduler::GetInstance()->Register(vision);
+  // vision->SetDefaultBehaviour([this]() {
+  //   return make<VisionBehaviour>(vision, swerve, &map.controllers.codriver);
+  // });
 
   armavator = new Armavator(map.armavator.arm.leftGearbox, map.armavator.arm.rightGearbox, map.armavator.elevator.rightGearbox, map.armavator.elevator.leftGearbox, map.armavator.config);
   BehaviourScheduler::GetInstance()->Register(armavator);
