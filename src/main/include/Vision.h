@@ -31,7 +31,7 @@ struct VisionConfig {
   std::shared_ptr<frc::AprilTagFieldLayout> layout;
 };
 
-class Vision {
+class Vision : public behaviour::HasBehaviour {
   private :
     VisionConfig defaultConfig;
     VisionConfig visionConfig;
