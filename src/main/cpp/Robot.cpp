@@ -106,6 +106,7 @@ void Robot::RobotPeriodic() {
   armavator->OnUpdate(dt);
   sideIntake->OnUpdate(dt);
   gripper->OnUpdate(dt);
+  vision->OnUpdate(dt);
 }
 
 void Robot::AutonomousInit() {
