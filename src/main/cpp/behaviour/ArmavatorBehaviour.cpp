@@ -5,8 +5,8 @@
  * TODO change toggle armavator control to normally position/velocity with an overide
 */
 
-ArmavatorGoToAutoSetpoint::ArmavatorGoToAutoSetpoint(Armavator *armavator, units::meter_t height, units::degree_t angle) 
-  : _armavator(armavator), _height(height), _angle(angle) {
+ArmavatorGoToAutoSetpoint::ArmavatorGoToAutoSetpoint(Armavator *armavator, units::meter_t height, units::degree_t angle, double elevatorSpeed, double armSpeed) 
+  : _armavator(armavator), _height(height), _angle(angle), _elevatorSpeed(elevatorSpeed), _armSpeed(armSpeed) {
     Controls(armavator);
 }
 
@@ -16,7 +16,7 @@ void ArmavatorGoToAutoSetpoint::OnStart() {
 
 void ArmavatorGoToAutoSetpoint::OnTick(units::second_t dt) {
   ArmavatorPosition pos = {_height, _angle};
-  _armavator->SetSpeedValues(0.35, 0.2);
+  _armavator->SetSpeedValues(_elevatorSpeed, _armSpeed);
 
   _armavator->SetPosition(pos);
   if (_armavator->IsStable()) {
@@ -38,7 +38,6 @@ void ArmavatorGoToPositionBehaviour::OnStart() {
 
 //Function for OnTick
 void ArmavatorGoToPositionBehaviour::OnTick(units::second_t dt) {
-
   if(_setpoint.height < 1_m) {
     if (_setpoint.angle >  0_rad){ // _setpoint.angle.value() < 0
       _setpoint.angle = 0_rad;
@@ -111,7 +110,11 @@ void ArmavatorManualBehaviour::OnTick(units::second_t dt) {
     _armavator->SetManual(armPower * 11_V, elePower * 8_V);
     _manualSetpoint = {_armavator->GetCurrentPosition().height, _armavator->GetCurrentPosition().angle};
     _armavator->SetSpeedValues(0.5, 0.3);
+    frc::SmartDashboard::PutBoolean("PID mode", false); 
+
   } else {
+    
+    frc::SmartDashboard::PutBoolean("PID mode", true); 
     /**SETPOINTS
      * hold -> 
      * place front mid -> 
@@ -208,7 +211,6 @@ void ArmavatorManualBehaviour::OnTick(units::second_t dt) {
         // std::cout << "angle speed is: " << av.angleSpeed.value() << std::endl;
         av.elevatorSpeed = -wom::spow2(wom::deadzone(_codriver.GetRightY(), 0.1)) * (2_m / 1_s);
         _armavator->SetVelocity(av);
-
         frc::SmartDashboard::PutNumber("ArmVelocitySetpoint", av.angleSpeed.value());
       } else {
         units::meter_t height = _armavator->GetCurrentPosition().height;

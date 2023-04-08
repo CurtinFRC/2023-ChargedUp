@@ -54,8 +54,8 @@ void SwerveModule::OnUpdate(units::second_t dt) {
   //driveVoltage = units::math::min(driveVoltage, 10_V);
   turnVoltage = units::math::min(turnVoltage, 7_V);
 
-  driveVoltage = units::math::min(units::math::max(driveVoltage, -10_V), 10_V); // was originally 10_V
-  // std::cout << "drive-voltage: " << driveVoltage.value() << std::endl;
+  driveVoltage = units::math::min(units::math::max(driveVoltage, -_driveModuleVoltageLimit), _driveModuleVoltageLimit); // was originally 10_V
+  std::cout << "drive-voltage: " << driveVoltage.value() << std::endl;
   units::volt_t turnVoltageMax = 7_V - (driveVoltage * (7_V / 10_V));
   turnVoltage = units::math::min(units::math::max(turnVoltage, -turnVoltageMax), turnVoltageMax);
   // turnVoltage = units::math::min(units::math::max(turnVoltage, -7_V), 7_V);
@@ -81,6 +81,10 @@ void SwerveDrive::SetAccelerationLimit(units::meters_per_second_squared_t limit)
   for (int motorNumber = 0; motorNumber < 4; motorNumber++){
     _modules[motorNumber].SetAccelerationLimit(limit);
   }
+}
+
+void SwerveModule::SetVoltageLimit(units::volt_t driveModuleVoltageLimit ) {
+  _driveModuleVoltageLimit = driveModuleVoltageLimit;
 }
 
 void SwerveModule::SetIdle() {
@@ -197,6 +201,9 @@ void SwerveDrive::OnUpdate(units::second_t dt) {
       [[fallthrough]];
     case SwerveDriveState::kFieldRelativeVelocity:
       _target_speed = _target_fr_speeds.ToChassisSpeeds(GetPose().Rotation().Radians());
+      if (isRotateToMatchJoystick){
+        _target_speed.omega = _anglePIDController.Calculate(GetPose().Rotation().Radians(), dt);
+      }
       // std::cout << "vx = " << _target_speed.vx.value() << " vy = " << _target_fr_speeds.vy.value() << std::endl;
       [[fallthrough]];
     case SwerveDriveState::kVelocity:
@@ -224,10 +231,13 @@ void SwerveDrive::OnUpdate(units::second_t dt) {
       _modules[3].SetPID(315_deg, 0_mps, dt);
       break;
     case SwerveDriveState::kFRVelocityRotationLock:
-      _target_speed = _requestedSpeeds.ToChassisSpeeds(GetPose().Rotation().Radians());
+      _target_speed.vx = _xPIDController.Calculate(GetPose().X(), dt);
+      _target_speed.vy = _yPIDController.Calculate(GetPose().Y(), dt);
       _target_speed.omega = _anglePIDController.Calculate(GetPose().Rotation().Radians(), dt);
+      _target_speed = _requestedSpeeds.ToChassisSpeeds(GetPose().Rotation().Radians());
       auto target_states = _kinematics.ToSwerveModuleStates(_target_speed);
       for (size_t i = 0; i < _modules.size(); i++) {
+        std::cout << "Speeds :" << target_states[i].speed.value() << std::endl;
         _modules[i].SetPID(target_states[i].angle.Radians(), target_states[i].speed, dt);
       }
       break;
@@ -259,6 +269,12 @@ void SwerveDrive::SetZeroing() {
   _state = SwerveDriveState::kZeroing;
 }
 
+void SwerveDrive::SetVoltageLimit(units::volt_t driveVoltageLimit) {
+  for(auto mod : _modules) {
+    mod.SetVoltageLimit(driveVoltageLimit);
+  }
+}
+
 // double SwerveDrive::GetModuleCANPosition(int mod) {
 //   return _modules[mod].GetCancoderPosition();
 // }
@@ -274,8 +290,19 @@ void SwerveDrive::OnStart() {
   _modules[3].OnStart(); // back left
 }
 
+void SwerveDrive::OnResetMode() {
+  _xPIDController.Reset();
+  _yPIDController.Reset();
+  _anglePIDController.Reset();
+  std::cout << "reset" << std::endl;
+}
+
 void SwerveDrive::RotateMatchJoystick(units::radian_t joystickAngle, FieldRelativeSpeeds speeds) {
-  _state = SwerveDriveState::kFRVelocityRotationLock;
+  // _state = SwerveDriveState::kFRVelocityRotationLock;
+  // _anglePIDController.SetSetpoint(joystickAngle);
+  // _target_fr_speeds = speeds;
+  _state = SwerveDriveState::kFieldRelativeVelocity;
+  isRotateToMatchJoystick = true;
   _anglePIDController.SetSetpoint(joystickAngle);
   _target_fr_speeds = speeds;
 }
@@ -311,6 +338,7 @@ void SwerveDrive::SetTuning(units::radian_t angle, units::meters_per_second_t sp
 
 void SwerveDrive::SetFieldRelativeVelocity(FieldRelativeSpeeds speeds) {
   _state = SwerveDriveState::kFieldRelativeVelocity;
+  isRotateToMatchJoystick = false;
   _target_fr_speeds = speeds;
 }
 

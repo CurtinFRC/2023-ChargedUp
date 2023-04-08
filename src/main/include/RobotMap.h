@@ -9,16 +9,12 @@
 #include <frc/Compressor.h>
 
 #include "XInputController.h"
-
 #include <ctre/Phoenix.h>
-
 #include "drivetrain/SwerveDrive.h"
 #include <frc/DoubleSolenoid.h>
 #include <units/length.h>
 
-
 #include "Encoder.h"
-
 #include <iostream>
 #include <string>
 
@@ -39,6 +35,7 @@ struct RobotMap {
     //sets driver station numbers for the controllers
     frc::XboxController driver{0};
     frc::XboxController codriver{1};
+    frc::XboxController test{2};
   };
   Controllers controllers;
 
@@ -56,9 +53,9 @@ struct ControlSystem {
     VisionConfig config{
       std::make_shared<photonlib::PhotonCamera>("camera"), 
       frc::Transform3d{ frc::Translation3d{ 0_m, 0_m, 0_m }, frc::Rotation3d{ 0_rad, 0_rad, 0_rad } },
+      70_deg,
       Get2023Layout()
     };
-    
   };
   Vision vision;
 
@@ -143,11 +140,11 @@ struct ControlSystem {
     // Setting the PID path and values to be used for SwerveDrive and SwerveModules
     wom::SwerveModule::angle_pid_conf_t anglePID {
       "/drivetrain/pid/angle/config",
-      14_V / 180_deg,
+      16_V / 180_deg,
       0.0_V / (100_deg * 1_s),
       0_V / (100_deg / 1_s),
       1_deg,
-      0.5_deg / 1_s
+      0.5_deg / 2_s
     };
     wom::SwerveModule::velocity_pid_conf_t velocityPID{
       "/drivetrain/pid/velocity/config",
@@ -291,8 +288,9 @@ struct ControlSystem {
           13_V / 25_deg, //prev 13_V/25_deg
           0.1_V / (1_deg * 1_s), //0.1_V / (1_deg * 1_s)
           0_V / (1_deg / 1_s),
-          3_deg,
-          0.5_deg / 1_s
+          5_deg,
+          2_deg / 1_s,
+          10_deg
         ),
         wom::PIDConfig<units::radians_per_second, units::volts>(
           "/armavator/arm/velocityPID/config",
