@@ -39,6 +39,7 @@ struct RobotMap {
     //sets driver station numbers for the controllers
     frc::XboxController driver{0};
     frc::XboxController codriver{1};
+    frc::XboxController test{2};
   };
   Controllers controllers;
 
@@ -56,7 +57,7 @@ struct ControlSystem {
     VisionConfig config{
       std::make_shared<photonlib::PhotonCamera>("camera"), 
       frc::Transform3d{ frc::Translation3d{ 0_m, 0_m, 0_m }, frc::Rotation3d{ 0_rad, 0_rad, 0_rad } },
-      0_deg,
+      70_deg,
       Get2023Layout()
     };
   };

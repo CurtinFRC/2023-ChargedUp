@@ -60,7 +60,7 @@ class ManualDrivebase : public behaviour::Behaviour{
 
   // The translation speeds for when "slow speed", "normal speed", "fast speed" modes are active
   const translationSpeed_ lowSensitivityDriveSpeed = 3.25_ft / 1_s;
-  const translationSpeed_ defaultDriveSpeed = 13_ft / 1_s;
+  const translationSpeed_ defaultDriveSpeed = 5_ft / 1_s; // 13
   const translationSpeed_ highSensitivityDriveSpeed = 18_ft / 1_s;
   // The rotation speeds for when "slow speed", "normal speed", "fast speed" modes are active
   const rotationSpeed_ lowSensitivityRotateSpeed = 90_deg / 1_s;
@@ -173,6 +173,7 @@ class XDrivebase : public behaviour::Behaviour{
  * @brief Behaviour Class to handle the swerve drivebase driving to the nearest team grid position if it is within range
  */
 class AlignDrivebaseToNearestGrid : public behaviour::Behaviour{
+  public:
   /**
    * @param wom::SwerveDrive
    * A pointer to the swerve drivebase
@@ -180,7 +181,7 @@ class AlignDrivebaseToNearestGrid : public behaviour::Behaviour{
    * A vector of frc::Pose2d's storing all 9 current alliance grid positions
   */
   AlignDrivebaseToNearestGrid(wom::SwerveDrive *swerveDrivebase);
-  AlignDrivebaseToNearestGrid(wom::SwerveDrive *swerveDrivebase, Vision *vision);
+  AlignDrivebaseToNearestGrid(wom::SwerveDrive *swerveDrivebase, Vision *vision, int alignType);
   
 
   void OnTick(units::second_t deltaTime) override;
@@ -188,8 +189,8 @@ class AlignDrivebaseToNearestGrid : public behaviour::Behaviour{
 
  private:
 
-  units::meter_t alignmentAllowDistance = 1.5_m;
-
+  units::meter_t alignmentAllowDistance = 5_m;
+  int _alignType = 0;
   wom::SwerveDrive *_swerveDrivebase;
   Vision *_vision = nullptr;
   std::vector<frc::Pose2d> _gridPoses = {

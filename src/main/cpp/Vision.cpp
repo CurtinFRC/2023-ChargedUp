@@ -11,7 +11,7 @@ void Vision::OnUpdate(units::second_t dt) {
   //photonlib::PhotonPipelineResult result = _config.camera->GetLatestResult();
   // photonlib::PhotonTrackedTarget target = result.GetBestTarget();
   std::pair<frc::Pose3d, units::millisecond_t> pose_result = _estimator.Update();
-  auto table = nt::NetworkTableInstance::GetDefault().GetTable("Vision");
+  
   wom::WritePose3NT(table, pose_result.first);
 }
 

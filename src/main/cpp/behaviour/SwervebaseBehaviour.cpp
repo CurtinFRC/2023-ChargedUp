@@ -32,23 +32,23 @@ void ManualDrivebase::OnStart(units::second_t dt) {
 void ManualDrivebase::OnTick(units::second_t deltaTime) {
   _swerveDrivebase->SetVoltageLimit(10_V);
 
-  if (_driverController->GetBButton()) {
-    std::cout << "RESETING POSE" << std::endl;
-    _swerveDrivebase->ResetPose(frc::Pose2d());
-  }
+  // if (_driverController->GetBButton()) {
+  //   std::cout << "RESETING POSE" << std::endl;
+  //   _swerveDrivebase->ResetPose(frc::Pose2d());
+  // }
 
 
   //  SOLUTION TO "ANTI-TIP"
-  double joystickSpeedX = (_driverController->GetLeftX() - prevJoystickX) / deltaTime.value();
-  double JoystickSpeedY = (_driverController->GetLeftY() - prevJoystickY) / deltaTime.value();
+  // double joystickSpeedX = (_driverController->GetLeftX() - prevJoystickX) / deltaTime.value();
+  // double JoystickSpeedY = (_driverController->GetLeftY() - prevJoystickY) / deltaTime.value();
 
-  if (sqrt(joystickSpeedX*joystickSpeedX + JoystickSpeedY*JoystickSpeedY) > smoothingThreshold){
-    usingJoystickXPos = (prevPrevJoystickX + prevJoystickX + _driverController->GetLeftX()) / 3;
-    usingJoystickYPos = (prevPrevJoystickY + prevJoystickY + _driverController->GetLeftY()) / 3;
-  } else {
-    usingJoystickXPos = _driverController->GetLeftX();
-    usingJoystickYPos = _driverController->GetLeftY();
-  }
+  // if (sqrt(joystickSpeedX*joystickSpeedX + JoystickSpeedY*JoystickSpeedY) > smoothingThreshold){
+  //   usingJoystickXPos = (prevPrevJoystickX + prevJoystickX + _driverController->GetLeftX()) / 3;
+  //   usingJoystickYPos = (prevPrevJoystickY + prevJoystickY + _driverController->GetLeftY()) / 3;
+  // } else {
+    // usingJoystickXPos = _driverController->GetLeftX();
+    // usingJoystickYPos = _driverController->GetLeftY();
+  // }
 
   /*   TOGGLE SOLUTION   */
   /*if (_driverController->GetLeftBumperPressed()){
@@ -61,16 +61,16 @@ void ManualDrivebase::OnTick(units::second_t deltaTime) {
   }*/
 
   /*   HOLD SOLUTION   */
-  if (_driverController->GetLeftBumperPressed()){
-    maxMovementMagnitude = lowSensitivityDriveSpeed;   maxRotationMagnitude = lowSensitivityRotateSpeed;
-  } else if (_driverController->GetLeftBumperReleased() & !_driverController->GetRightBumper()){
-    maxMovementMagnitude = defaultDriveSpeed;   maxRotationMagnitude = defaultRotateSpeed;
-  }
-  if (_driverController->GetRightBumperPressed()){
-    maxMovementMagnitude = highSensitivityDriveSpeed;   maxRotationMagnitude = highSensitivityRotateSpeed;
-  } else if (_driverController->GetRightBumperReleased() & !_driverController->GetLeftBumper()){
-    maxMovementMagnitude = defaultDriveSpeed;   maxRotationMagnitude = defaultRotateSpeed;
-  }
+  // if (_driverController->GetLeftBumperPressed()){
+  //   maxMovementMagnitude = lowSensitivityDriveSpeed;   maxRotationMagnitude = lowSensitivityRotateSpeed;
+  // } else if (_driverController->GetLeftBumperReleased() & !_driverController->GetRightBumper()){
+  //   maxMovementMagnitude = defaultDriveSpeed;   maxRotationMagnitude = defaultRotateSpeed;
+  // }
+  // if (_driverController->GetRightBumperPressed()){
+  //   maxMovementMagnitude = highSensitivityDriveSpeed;   maxRotationMagnitude = highSensitivityRotateSpeed;
+  // } else if (_driverController->GetRightBumperReleased() & !_driverController->GetLeftBumper()){
+  //   maxMovementMagnitude = defaultDriveSpeed;   maxRotationMagnitude = defaultRotateSpeed;
+  // }
 
 
   if (_driverController->GetAButtonReleased()) {
@@ -81,10 +81,10 @@ void ManualDrivebase::OnTick(units::second_t deltaTime) {
     _swerveDrivebase->SetZeroing();
   }
   else {
-    double xVelocity = wom::spow2(-wom::deadzone(usingJoystickYPos, driverDeadzone));  // GetLeftY due to x being where y should be on field
-    double yVelocity = wom::spow2(-wom::deadzone(usingJoystickXPos, driverDeadzone));
-    double r_x = wom::spow2(-wom::deadzone(usingJoystickXPos, turningDeadzone));
-    double r_y = wom::spow2(-wom::deadzone(usingJoystickYPos, turningDeadzone));
+    double xVelocity = wom::spow2(-wom::deadzone(_driverController->GetLeftY(), driverDeadzone));  // GetLeftY due to x being where y should be on field
+    double yVelocity = wom::spow2(-wom::deadzone(_driverController->GetLeftX(), driverDeadzone));
+    double r_x = wom::spow2(-wom::deadzone(_driverController->GetRightX(), turningDeadzone));
+    double r_y = wom::spow2(-wom::deadzone(_driverController->GetRightY(), turningDeadzone));
 
     // double turnX = _driverController->GetRightX();   double turnY = _driverController->GetRightY();
     // double num = sqrt(turnX * turnX + turnY * turnY);
@@ -93,8 +93,7 @@ void ManualDrivebase::OnTick(units::second_t deltaTime) {
     // }
 
     if (_swerveDrivebase->GetIsFieldRelative()) {  // Field Relative Controls
-      // frc::Pose2d currentPose = _swerveDrivebase->GetPose();
-      // units::degree_t currentAngle = currentPose.Rotation().Degrees();
+      // units::degree_t currentAngle = _swerveDrivebase->GetPose().Rotation().Degrees();
       // CalculateRequestedAngle(turnX, turnY, currentAngle);
 
       // _swerveDrivebase->RotateMatchJoystick(_requestedAngle, wom::FieldRelativeSpeeds{
@@ -118,10 +117,10 @@ void ManualDrivebase::OnTick(units::second_t deltaTime) {
     }
   }
 
-  prevPrevJoystickX = prevJoystickX;
-  prevPrevJoystickY = prevJoystickY;
-  prevJoystickX = _driverController->GetLeftX();
-  prevJoystickY = _driverController->GetLeftY();
+  // prevPrevJoystickX = prevJoystickX;
+  // prevPrevJoystickY = prevJoystickY;
+  // prevJoystickX = _driverController->GetLeftX();
+  // prevJoystickY = _driverController->GetLeftY();
 } 
 
 // void ManualDrivebase::CalculateRequestedAngle(double joystickX, double joystickY, units::degree_t defaultAngle){
@@ -193,43 +192,83 @@ void XDrivebase::OnTick(units::second_t deltaTime) {   _swerveDrivebase->SetXWhe
 
 // Code for auto aligning to the nearest grid position
 AlignDrivebaseToNearestGrid::AlignDrivebaseToNearestGrid(wom::SwerveDrive *swerveDrivebase) : _swerveDrivebase(swerveDrivebase){   Controls(swerveDrivebase);   }
-AlignDrivebaseToNearestGrid::AlignDrivebaseToNearestGrid(wom::SwerveDrive *swerveDrivebase, Vision *vision) : _swerveDrivebase(swerveDrivebase), _vision(vision) {   Controls(swerveDrivebase);   }
+AlignDrivebaseToNearestGrid::AlignDrivebaseToNearestGrid(wom::SwerveDrive *swerveDrivebase, Vision *vision, int alignType) : _swerveDrivebase(swerveDrivebase), _vision(vision), _alignType(alignType) {   Controls(swerveDrivebase);   }
 
-void AlignDrivebaseToNearestGrid::OnStart(){
+void AlignDrivebaseToNearestGrid::OnTick(units::second_t deltaTime){
+
+  photonlib::PhotonPipelineResult capturedImage = _vision->GetLatestResults(_vision->GetConfig()->camera);
+  
   frc::Pose2d currentPose; 
-  if (_vision == nullptr){
+  if (capturedImage.HasTargets() == false){
     currentPose = _swerveDrivebase->GetPose();
   } else {
-    
-    photonlib::PhotonPipelineResult capturedImage = _vision->GetLatestResults(_vision->GetConfig()->camera);
-    capturedImage.HasTargets();
-
 
     // if has april tag in field:
     currentPose = _vision->EstimatePose(_vision->GetConfig()).ToPose2d();
     // else
       //SetDone();
-
-
     // if (PoseNotFound) {   SetDone();   }
-  }
-  frc::Pose2d nearestGrid = _gridPoses[0];
-  units::degree_t alignAngle = 0_deg;
-  double angle = std::fmod(currentPose.Rotation().Degrees().value(), 360);
-  if (90 < angle && angle <= 270){   alignAngle = 180_deg;   }
-  for (frc::Pose2d pose : _gridPoses) {
-    frc::Pose2d difference = currentPose.RelativeTo(pose);
-    double distance = pow(difference.X().value(), 2) + pow(difference.Y().value(), 2);
-    if (distance < pow(nearestGrid.X().value(), 2) + pow(nearestGrid.Y().value(), 2)){
-      nearestGrid = pose;
-    }
-  }
-  // if (pow(nearestGrid.X().value(), 2) + pow(nearestGrid.Y().value(), 2) < alignmentAllowDistance.value()){
-  //   _swerveDrivebase->SetPose(frc::Pose2d{nearestGrid.X(), nearestGrid.Y(), alignAngle});
-  // }
 
-  // if (_swerveDrivebase->IsAtSetPose()){   SetDone();   }
-  SetDone();
+
+    frc::Pose2d nearestGrid = _gridPoses[0];
+    int poseIndex = 0;
+    units::degree_t alignAngle = 0_deg;
+    double angle = std::fmod(currentPose.Rotation().Degrees().value(), 360);
+    if (90 < angle && angle <= 270){   alignAngle = 180_deg;   }
+
+    int iterationNum = 0;
+    for (frc::Pose2d pose : _gridPoses) {
+      frc::Pose2d difference = currentPose.RelativeTo(pose);
+      double distance = pow(difference.X().value(), 2) + pow(difference.Y().value(), 2);
+      if (distance < pow(nearestGrid.X().value(), 2) + pow(nearestGrid.Y().value(), 2)){
+        nearestGrid = pose;
+        poseIndex = iterationNum;
+      }
+      iterationNum++;
+    }
+
+    frc::Pose2d targetGridPose = nearestGrid;
+    _vision->table->GetEntry("x1").SetDouble(targetGridPose.X().value());
+    _vision->table->GetEntry("y1").SetDouble(targetGridPose.Y().value());
+
+
+
+    if (_alignType == -1) { // left
+      if (poseIndex != 0 & poseIndex != 9){
+        targetGridPose = _gridPoses[poseIndex - 1];
+      }
+    }
+    if (_alignType == 0) { // forward
+
+    }
+    if (_alignType == 1) { // right
+      if (poseIndex != 8 & poseIndex != 17){
+        targetGridPose = _gridPoses[poseIndex + 1];
+      }
+    }
+
+    _vision->table->GetEntry("x2").SetDouble(targetGridPose.X().value());
+    _vision->table->GetEntry("y2").SetDouble(targetGridPose.Y().value());
+
+    if (pow(targetGridPose.X().value(), 2) + pow(targetGridPose.Y().value(), 2) < alignmentAllowDistance.value()){
+      // _swerveDrivebase->SetPose(frc::Pose2d{targetGridPose.X(), targetGridPose.Y(), alignAngle});
+      _vision->table->GetEntry("goToPoseX").SetDouble(targetGridPose.X().value());
+      _vision->table->GetEntry("goToPoseY").SetDouble(targetGridPose.Y().value());
+      _vision->table->GetEntry("goToPoseRotation").SetDouble(alignAngle.value());
+
+      _swerveDrivebase->SetPose(frc::Pose2d{_swerveDrivebase->GetPose().X(), targetGridPose.Y(), alignAngle});
+    }
+    _vision->table->GetEntry("isworking").SetBoolean(true);
+    std::cout << "running vision" << std::endl;
+    }
+
+
+
+    // if (_swerveDrivebase->IsAtSetPose()){   SetDone();   }
+    // SetDone();
+  
 }
 
-void AlignDrivebaseToNearestGrid::OnTick(units::second_t deltaTime) { }
+void AlignDrivebaseToNearestGrid::OnStart() { 
+  std::cout << "vision started" << std::endl;
+}

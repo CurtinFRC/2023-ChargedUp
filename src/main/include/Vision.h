@@ -41,7 +41,9 @@ class Vision {
   public :
     Vision(VisionConfig *config);
     
-    void OnUpdate(units::second_t dt); 
+    void OnUpdate(units::second_t dt);
+
+    std::shared_ptr<nt::NetworkTable> table = nt::NetworkTableInstance::GetDefault().GetTable("Vision");
 
     VisionConfig* GetConfig() {   return _config;   }
 

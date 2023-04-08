@@ -38,6 +38,8 @@ void Robot::RobotInit() {
   // map.swerveBase.moduleConfigs[3].turnMotor.encoder->SetEncoderOffset(0_rad);
 
   map.swerveBase.gyro.Reset();
+  
+  vision = new Vision(&map.vision.config);
 
   swerve = new wom::SwerveDrive(map.swerveBase.config, frc::Pose2d());
   BehaviourScheduler::GetInstance()->Register(swerve);
@@ -45,11 +47,16 @@ void Robot::RobotInit() {
     return make<ManualDrivebase>(swerve, &map.controllers.driver);
   });
 
-  vision = new Vision(&map.vision.config);
+
   // BehaviourScheduler::GetInstance()->Register(vision);
   // vision->SetDefaultBehaviour([this]() {
   //   return make<VisionBehaviour>(vision, swerve, &map.controllers.codriver);
   // });
+
+  vision->table->GetEntry("goToPoseX").SetDouble(0);
+  vision->table->GetEntry("goToPoseY").SetDouble(0);
+  vision->table->GetEntry("goToPoseRotation").SetDouble(0);
+
 
   armavator = new Armavator(map.armavator.arm.leftGearbox, map.armavator.arm.rightGearbox, map.armavator.elevator.rightGearbox, map.armavator.elevator.leftGearbox, map.armavator.config);
   BehaviourScheduler::GetInstance()->Register(armavator);
@@ -68,6 +75,9 @@ void Robot::RobotInit() {
   gripper->SetDefaultBehaviour([this]() {
     return make<GripperBehaviour>(gripper, map.controllers.codriver);
   });
+
+
+
 }
 
 void Robot::RobotPeriodic() {
@@ -112,73 +122,52 @@ void Robot::AutonomousPeriodic() {
 
 void Robot::TeleopInit() {
   loop.Clear();
-  sched = BehaviourScheduler::GetInstance();
-  sched->InterruptAll(); // removes all previously scheduled behaviours
+  BehaviourScheduler *sched = BehaviourScheduler::GetInstance();
+  // sched = BehaviourScheduler::GetInstance();
+  // sched->InterruptAll(); // removes all previously scheduled behaviours
+    sched->InterruptAll();
 
   swerve->OnStart();
   armavator->OnStart();
+
+   map.controllers.driver.B(&loop).Rising().IfHigh([sched, this]() {
+    swerve->GetActiveBehaviour()->Interrupt();
+  });
+  map.controllers.driver.Y(&loop).Rising().IfHigh([sched, this]() { // temp solutions
+    swerve->ResetPose(vision->EstimatePose(vision->GetConfig()).ToPose2d());
+  });
+  map.controllers.driver.POV(0, &loop).Rising().IfHigh([sched, this]() {
+    sched->Schedule(make<AlignDrivebaseToNearestGrid>(swerve, vision, 0));
+  });
+  map.controllers.driver.POV(270, &loop).Rising().IfHigh([sched, this]() {
+    sched->Schedule(make<AlignDrivebaseToNearestGrid>(swerve, vision, -1));
+  });
+  map.controllers.driver.POV(90, &loop).Rising().IfHigh([sched, this]() {
+    sched->Schedule(make<AlignDrivebaseToNearestGrid>(swerve, vision, 1));
+  });
+  // sched->Schedule(make<ArmavatorGoToAutoSetpoint>(armavator, 0.2_m, 0_deg));
 }
 
 void Robot::TeleopPeriodic() {
-  // if (map.controllers.driver.GetYButton()){ // Sets to Field Relative control mode
-  //   swerve->SetIsFieldRelative(true);
-  // }
-  // if (map.controllers.driver.GetYButton()){ // Sets to Robot Relative control mode
-  //   swerve->SetIsFieldRelative(false);
-  // }
-  // if (map.controllers.driver.GetAButtonPressed()){ // Initiates behaviour for aligning to nearest grid position
-  //   std::vector<frc::Pose2d*> blueGridPoses = {
-  //     &map.bluePoses.innerGrid1, &map.bluePoses.innerGrid2, &map.bluePoses.innerGrid3,
-  //     &map.bluePoses.centreGrid1, &map.bluePoses.centreGrid2, &map.bluePoses.centreGrid3,
-  //     &map.bluePoses.outerGrid1, &map.bluePoses.outerGrid2, &map.bluePoses.outerGrid3
-  //   };
-  //   sched->Schedule(make<AlignDrivebaseToNearestGrid>(swerve, blueGridPoses));
-  // }
-  // if (map.controllers.driver.GetAButtonPressed()){ // Lock the wheels
-  //   sched->Schedule(make<XDrivebase>(swerve));
-  //   // map.swerveTable.swerveDriveTable->GetEntry("IsX-ed").SetBoolean(true);
-  // }
-  // if (map.controllers.driver.GetAButtonPressed()){ // Stop all current behaviours, and return to default (manualDrivebase)
-  //   swerve->GetActiveBehaviour()->Interrupt();
-  //   // map.swerveTable.swerveDriveTable->GetEntry("IsX-ed").SetBoolean(false);
-  // }
-  // if (map.controllers.driver.GetAButtonPressed()){ // Initiates behaviour for balancing on the chargestation
-  //   sched->Schedule(make<DrivebaseBalance>(swerve, &map.swerveBase.gyro));
-  // }
-  // if (map.controllers.driver.GetLeftTriggerAxis() > 0.5){
-  //   swerve->ResetPose({72.061_in, 20.208_in, 0_deg});
-  // }
-
   map.swerveTable.swerveDriveTable->GetEntry("x").SetDouble(swerve->GetPose().X().convert<units::inch>().value());
   map.swerveTable.swerveDriveTable->GetEntry("x").SetDouble(swerve->GetPose().Y().convert<units::inch>().value());
+  auto dt = wom::now() - lastPeriodic;
+
+  vision->OnUpdate(dt);
+  
 
 
 
-  // std::cout << "Elevator reading: " << map.armavator.arm.leftEncoder
-
-  // if (map.controllers.codriver.GetXButtonPressed()) {
-  //   if (compressorToggle) {
-  //     compressorToggle = false;
-  //   } else {
-  //     compressorToggle = true;
-  //   }
-  // } 
-
-  // if (map.controllers.driver.GetBButtonPressed()) {
-  //   if (compressorToggle) {
-  //     compressorToggle = false;
-  //   } else {
-  //     compressorToggle = true;
-  //   }
-  // } 
-
-  // if (compressorToggle) {
-  //   map.controlSystem.pcmCompressor.EnableDigital();
-  //     // std::cout << "compressor true" << std::endl;
-  // } else {
-  //   map.controlSystem.pcmCompressor.Disable();
-  //     // std::cout << "compressor false" << std::endl;
+  // // test function
+  // if (map.controllers.driver.GetLeftTriggerAxis() >= 0.5){
+  //   vision->table->GetEntry("triggerPressed").SetBoolean(true);
+  //   sched->Schedule(make<AlignDrivebaseToNearestGrid>(swerve, vision));
   // }
+  // returns to ful manual control
+  if (map.controllers.test.GetBButtonPressed()){
+    swerve->GetActiveBehaviour()->Interrupt();
+  }
+
 }
 
 
@@ -186,6 +175,13 @@ void Robot::DisabledInit() { }
 void Robot::DisabledPeriodic() { }
 
 void Robot::TestInit() { }
-void Robot::TestPeriodic() { }
+void Robot::TestPeriodic() {
+  auto dt = wom::now() - lastPeriodic;
+
+  vision->OnUpdate(dt);
+  
+
+
+}
 
 
