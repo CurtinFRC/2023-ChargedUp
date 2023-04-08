@@ -58,4 +58,17 @@ class Robot : public frc::TimedRobot {
 
   units::meter_t _elevatorSetpoint = 0_m;
   units::radian_t _armSetpoint = 0_deg;
+
+
+  
+  frc::SendableChooser<std::string> m_chooser;
+  const std::string kLowPlace = "kLowPlace";
+  const std::string kLowPlaceTaxi = "lowPlaceTaxi";
+  const std::string kHighPlaceTaxi = "highPlaceTaxi";
+  const std::string kHighPlace = "highPlace";
+  const std::string kPlaceDock = "placeDock";
+  const std::string kDock = "dock";
+  
+  
+  std::string m_autoSelected;
 };
