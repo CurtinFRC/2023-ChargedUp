@@ -1,5 +1,5 @@
 #include "Auto.h"
-// #include "Poses.h"
+#include "Poses.h"
 
 #include "behaviour/SwerveBaseBehaviour.h"
 #include "behaviour/ArmavatorBehaviour.h"
@@ -18,6 +18,7 @@ AutoPathDetails GetAutoPathingDetails(Drivebase drivebase, StartingConfig startC
   AutoPathDetails autoPathingDetails;
   std::shared_ptr<Behaviour> adjustmentPathing;
   std::shared_ptr<Behaviour> endPathing;
+  std::shared_ptr<Behaviour> midPathing;
 
   autoPathingDetails.endPathing = make<WaitTime>(0_ms);
   for (frc::Pose2d pose : adjustmentPoses) {
@@ -38,15 +39,60 @@ AutoPathDetails GetAutoPathingDetails(Drivebase drivebase, StartingConfig startC
       definedPoses.poseSet = definedPoses.alliancePoses.bottomPoses;
      break;
   }
-
   autoPathingDetails.startPos = definedPoses.poseSet.startPos;
+
+
+  auto piece1_1 = make<DrivebasePoseBehaviour>(drivebase.swerve, definedPoses.poseSet.pathingPoses.placeGrid1) | make<WaitTime>(6_s); // because PID
+  
+  auto piece2_1 = make<DrivebasePoseBehaviour>(drivebase.swerve, definedPoses.poseSet.pathingPoses.grabReturnPos) | make<WaitTime>(6_s); // because PID
+  auto piece2_2 = make<DrivebasePoseBehaviour>(drivebase.swerve, definedPoses.poseSet.pathingPoses.grabChargestationAvoidPos) | make<WaitTime>(6_s); // because PID
+  auto piece2_3 = make<DrivebasePoseBehaviour>(drivebase.swerve, definedPoses.poseSet.collectPath.retrievePiece1Pos) | make<WaitTime>(6_s); // because PID
+  auto piece2_4 = make<DrivebasePoseBehaviour>(drivebase.swerve, definedPoses.poseSet.pathingPoses.grabChargestationAvoidPos) | make<WaitTime>(6_s); // because PID
+  auto piece2_5 = make<DrivebasePoseBehaviour>(drivebase.swerve, definedPoses.poseSet.pathingPoses.grabReturnPos) | make<WaitTime>(6_s); // because PID
+  auto piece2_6 = make<DrivebasePoseBehaviour>(drivebase.swerve, definedPoses.poseSet.pathingPoses.placeGrid2) | make<WaitTime>(6_s); // because PID
+  
+  auto piece3_1 = make<DrivebasePoseBehaviour>(drivebase.swerve, definedPoses.poseSet.pathingPoses.grabReturnPos) | make<WaitTime>(6_s); // because PID
+  auto piece3_2 = make<DrivebasePoseBehaviour>(drivebase.swerve, definedPoses.poseSet.pathingPoses.grabChargestationAvoidPos) | make<WaitTime>(6_s); // because PID
+  auto piece3_3 = make<DrivebasePoseBehaviour>(drivebase.swerve, definedPoses.poseSet.collectPath.retrievePiece2Pos) | make<WaitTime>(6_s); // because PID
+  auto piece3_4 = make<DrivebasePoseBehaviour>(drivebase.swerve, definedPoses.poseSet.pathingPoses.grabChargestationAvoidPos) | make<WaitTime>(6_s); // because PID
+  auto piece3_5 = make<DrivebasePoseBehaviour>(drivebase.swerve, definedPoses.poseSet.pathingPoses.grabReturnPos) | make<WaitTime>(6_s); // because PID
+  auto piece3_6 = make<DrivebasePoseBehaviour>(drivebase.swerve, definedPoses.poseSet.pathingPoses.placeGrid3) | make<WaitTime>(6_s); // because PID
+  
+  auto piece4_1 = make<DrivebasePoseBehaviour>(drivebase.swerve, definedPoses.poseSet.pathingPoses.grabReturnPos) | make<WaitTime>(6_s); // because PID
+  auto piece4_2 = make<DrivebasePoseBehaviour>(drivebase.swerve, definedPoses.poseSet.pathingPoses.grabChargestationAvoidPos) | make<WaitTime>(6_s); // because PID
+  auto piece4_3 = make<DrivebasePoseBehaviour>(drivebase.swerve, definedPoses.poseSet.collectPath.retrievePiece3Pos) | make<WaitTime>(6_s); // because PID
+  auto piece4_4 = make<DrivebasePoseBehaviour>(drivebase.swerve, definedPoses.poseSet.pathingPoses.grabChargestationAvoidPos) | make<WaitTime>(6_s); // because PID
+  auto piece4_5 = make<DrivebasePoseBehaviour>(drivebase.swerve, definedPoses.poseSet.pathingPoses.grabReturnPos) | make<WaitTime>(6_s); // because PID
+  auto piece4_6 = make<DrivebasePoseBehaviour>(drivebase.swerve, definedPoses.poseSet.pathingPoses.placeGrid4) | make<WaitTime>(6_s); // because PID
+  
+  auto piece5_1 = make<DrivebasePoseBehaviour>(drivebase.swerve, definedPoses.poseSet.pathingPoses.grabReturnPos) | make<WaitTime>(6_s); // because PID
+  auto piece5_2 = make<DrivebasePoseBehaviour>(drivebase.swerve, definedPoses.poseSet.pathingPoses.grabChargestationAvoidPos) | make<WaitTime>(6_s); // because PID
+  auto piece5_3 = make<DrivebasePoseBehaviour>(drivebase.swerve, definedPoses.poseSet.collectPath.retrievePiece3Pos) | make<WaitTime>(6_s); // because PID
+  auto piece5_4 = make<DrivebasePoseBehaviour>(drivebase.swerve, definedPoses.poseSet.pathingPoses.grabChargestationAvoidPos) | make<WaitTime>(6_s); // because PID
+  auto piece5_5 = make<DrivebasePoseBehaviour>(drivebase.swerve, definedPoses.poseSet.pathingPoses.grabReturnPos) | make<WaitTime>(6_s); // because PID
+  auto piece5_6 = make<DrivebasePoseBehaviour>(drivebase.swerve, definedPoses.poseSet.pathingPoses.placeGrid5) | make<WaitTime>(6_s); // because PID
+  
+  midPathing = midPathing << piece1_1;
+  if (calledFromID >= 2){  // if double
+    midPathing = midPathing << piece2_1 << piece2_2 << piece2_3 << piece2_4 << piece2_5 << piece2_6;
+  }
+  if (calledFromID >= 3){  // if triple
+    midPathing = midPathing << piece3_1 << piece3_2 << piece3_3 << piece3_4 << piece3_5 << piece3_6;
+  }
+  if (calledFromID >= 4){  // if quadruple
+    midPathing = midPathing << piece4_1 << piece4_2 << piece4_3 << piece4_4 << piece4_5 << piece4_6;
+  }
+  if (calledFromID == 5){  // if quintuple
+    midPathing = midPathing << piece5_1 << piece5_2 << piece5_3 << piece5_4 << piece5_5 << piece5_6;
+  }
+  autoPathingDetails.midPathing = midPathing;
 
   switch (endConfig) {
     case EndingConfig::Dock:
-        {
+        {        
         auto wait_until1 = make<DrivebasePoseBehaviour>(drivebase.swerve, definedPoses.poseSet.dock_LineUp_Pos) | make<WaitTime>(3_s); // because PID
         auto wait_until2 = make<DrivebasePoseBehaviour>(drivebase.swerve, definedPoses.poseSet.dockPos) | make<WaitTime>(3_s); // because PID
-        endPathing = wait_until1 << wait_until2 << make<DrivebaseBalance>(drivebase.swerve, drivebase.gyro);
+        endPathing = midPathing << wait_until1 << wait_until2 << make<DrivebaseBalance>(drivebase.swerve, drivebase.gyro);
       break;}
     case EndingConfig::PrepareManual:
         endPathing = make<DrivebasePoseBehaviour>(drivebase.swerve, definedPoses.poseSet.subStationWaitPos);
@@ -125,7 +171,7 @@ std::shared_ptr<Behaviour> Single(Drivebase drivebase, Armavator *armavator, Gri
     // << make<ArmavatorGoToAutoSetpoint>(armavator, 0.9_m, 0_deg)->WithTimeout(2_s)
     // << make<WaitTime>(0.01_s)
     // << ((
-    << make<DrivebasePoseBehaviour>(Drivebase.swerve, frc::Pose2d{0.1_m, 0_m, 0_deg})->WithTimeout(1_s)
+    << make<DrivebasePoseBehaviour>(drivebase.swerve, frc::Pose2d{0.1_m, 0_m, 0_deg})->WithTimeout(1_s)
     << make<ArmavatorGoToAutoSetpoint>(armavator, 0.9_m, 0_deg)
     << make<ArmavatorGoToAutoSetpoint>(armavator, 0.3_m, 90_deg)
     << make<ArmavatorGoToAutoSetpoint>(armavator, 0.4_m, 140_deg, 0.4, 0.15)

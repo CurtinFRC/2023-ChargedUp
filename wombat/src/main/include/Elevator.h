@@ -19,6 +19,7 @@ namespace wom {
     kIdle, 
     kPID,
     kManual,
+    kVelocity
   };
 
   struct ElevatorConfig {
@@ -34,6 +35,7 @@ namespace wom {
     units::meter_t minHeight;
     units::meter_t initialHeight;
     PIDConfig<units::meter, units::volt> pid;
+    PIDConfig<units::meters_per_second, units::volt> velocityPID;
 
     void WriteNT(std::shared_ptr<nt::NetworkTable> table);
   };
@@ -49,6 +51,8 @@ namespace wom {
     void SetIdle();
     void SetRaw();
 
+    void SetVelocity(units::meters_per_second_t velocity);
+
     units::volt_t GetRaw();
 
     double GetElevatorEncoderPos();
@@ -61,6 +65,7 @@ namespace wom {
 
     units::meter_t GetHeight() const;
     units::meters_per_second_t MaxSpeed() const;
+    units::meters_per_second_t GetElevatorVelocity() const;
   
    private:
     units::volt_t _setpointManual{0};
@@ -69,7 +74,10 @@ namespace wom {
     ElevatorState _state;
     double speedLimit = 0.5;
 
+    units::meters_per_second_t _velocity;
+
     PIDController<units::meter, units::volt> _pid;
+    PIDController<units::meters_per_second, units::volt> _velocityPID;
 
     std::shared_ptr<nt::NetworkTable> _table;
   };

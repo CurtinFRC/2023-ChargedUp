@@ -9,16 +9,12 @@
 #include <frc/Compressor.h>
 
 #include "XInputController.h"
-
 #include <ctre/Phoenix.h>
-
 #include "drivetrain/SwerveDrive.h"
 #include <frc/DoubleSolenoid.h>
 #include <units/length.h>
 
-
 #include "Encoder.h"
-
 #include <iostream>
 #include <string>
 
@@ -39,6 +35,7 @@ struct RobotMap {
     //sets driver station numbers for the controllers
     frc::XboxController driver{0};
     frc::XboxController codriver{1};
+    frc::XboxController test{2};
   };
   Controllers controllers;
 
@@ -56,9 +53,9 @@ struct ControlSystem {
     VisionConfig config{
       std::make_shared<photonlib::PhotonCamera>("camera"), 
       frc::Transform3d{ frc::Translation3d{ 0_m, 0_m, 0_m }, frc::Rotation3d{ 0_rad, 0_rad, 0_rad } },
+      70_deg,
       Get2023Layout()
     };
-    
   };
   Vision vision;
 
@@ -143,11 +140,11 @@ struct ControlSystem {
     // Setting the PID path and values to be used for SwerveDrive and SwerveModules
     wom::SwerveModule::angle_pid_conf_t anglePID {
       "/drivetrain/pid/angle/config",
-      14_V / 180_deg,
+      16_V / 180_deg,
       0.0_V / (100_deg * 1_s),
       0_V / (100_deg / 1_s),
       1_deg,
-      0.5_deg / 1_s
+      0.5_deg / 2_s
     };
     wom::SwerveModule::velocity_pid_conf_t velocityPID{
       "/drivetrain/pid/velocity/config",
@@ -237,9 +234,9 @@ struct ControlSystem {
 
   struct Armavator {
     //sets up the percieved masses for the load, arm and carraige
-    static constexpr units::kilogram_t loadMass = 10_kg;
-    static constexpr units::kilogram_t armMass = 5_kg;
-    static constexpr units::kilogram_t carriageMass = 5_kg;
+    static constexpr units::kilogram_t loadMass = 1_kg;
+    static constexpr units::kilogram_t armMass = 2_kg;
+    static constexpr units::kilogram_t carriageMass = 3_kg;
 
     //stores nessesary info for arm
     struct Arm {
@@ -288,15 +285,21 @@ struct ControlSystem {
         leftOtherArmEncoder,
         wom::PIDConfig<units::radian, units::volts>(
           "/armavator/arm/pid/config",
-          10_V / 25_deg,
-          0.1_V / (1_deg * 1_s),
+          13_V / 25_deg, //prev 13_V/25_deg
+          0.1_V / (1_deg * 1_s), //0.1_V / (1_deg * 1_s)
           0_V / (1_deg / 1_s),
           5_deg,
           2_deg / 1_s,
           10_deg
         ),
-        5_kg, 
-        5_kg,
+        wom::PIDConfig<units::radians_per_second, units::volts>(
+          "/armavator/arm/velocityPID/config",
+          9_V / (180_deg / 1_s),
+          0_V / 25_deg,
+          0_V / (90_deg / 1_s / 1_s)
+        ),
+        2_kg, 
+        2_kg,
         1.37_m,
         -90_deg,
         270_deg,
@@ -366,8 +369,14 @@ struct ControlSystem {
           19_V / 1_m, //16V
           0.3_V / (1_m * 1_s),
           0_V / (1_m / 1_s),
-          0.1_m
-          // 0.05_m / 1_s
+          0.1_m,
+          0.05_m / 1_s
+        },
+        {
+          "/armavator/elevator/velocity/pid/config",
+          6_V / (1_m / 1_s),
+          0_V / 1_m,
+          0_V / (1_m / 1_s / 1_s)
         }
       };
 

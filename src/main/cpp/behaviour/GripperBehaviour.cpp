@@ -37,24 +37,4 @@ void GripperBehaviour::OnTick(units::second_t dt) {
   } else {
     gripper->SetIdle();
   }
-
-  // if (_codriver.GetYButtonReleased()) {
-  //   if (holdingObject) {
-  //     holdingObject = false;
-  //   } else {
-  //     holdingObject = true;
-  //   }
-  // }
-
-  // if (holdingObject) {
-  //   gripper->SetHolding();
-  // } else {
-  //   if (_codriver.GetRightBumper()) {
-  //     gripper->SetIntaking();
-  //   } else if (_codriver.GetLeftBumper()) {
-  //     gripper->SetOutaking();
-  //   } else {
-  //     gripper->SetIdle();
-  //   }
-  // }
 }
