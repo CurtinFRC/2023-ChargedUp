@@ -1,5 +1,5 @@
 # 2023-Charged Up
-Our code for FRC 2023: CHARGED UP, using multiproject Gradle
+Our code for FRC 2023: CHARGED UP, using Gradle
 
 # Project Setup
 
@@ -34,9 +34,8 @@ Our code for FRC 2023: CHARGED UP, using multiproject Gradle
 
 2. Build the project
 	- Run `./gradlew build` to build and compile all gradle projects
-	- (Note: you can run `./gradlew <PROJECT>:build` to build a single project)
 
-3. Inside each projects `build.gradle` (I.e [build.gradle](4788/build.gradle)) consists of options on how that project should compile. If desktop support is disabled then the project will only compile and publish shared and static linuxathena builds. If enabled, the project will build for both linuxathena and the current platform. I.e `windowsx86-64` & `linuxathena`.
+3. Inside `build.gradle` consists of options on how that project should compile. If desktop support is disabled then the project will only compile and publish shared and static linuxathena builds. If enabled, the project will build for both linuxathena and the current platform. I.e `windowsx86-64` & `linuxathena`.
 
 # Main Project
 
