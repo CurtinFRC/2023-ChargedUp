@@ -35,6 +35,7 @@ void ManualDrivebase::OnTick(units::second_t deltaTime) {
   if (_driverController->GetYButton()) {
     std::cout << "RESETING POSE" << std::endl;
     _swerveDrivebase->ResetPose(frc::Pose2d());
+    
   }
 
 

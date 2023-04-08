@@ -207,6 +207,7 @@ namespace wom {
     std::shared_ptr<nt::NetworkTable> _table;
 
     bool _isFieldRelative = true;
+    bool isRotateToMatchJoystick = false;
 
     int _mod;
     units::radian_t _angle;

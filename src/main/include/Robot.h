@@ -50,6 +50,7 @@ class Robot : public frc::TimedRobot {
   Vision *vision;
   SideIntake *sideIntake;
   Gripper *gripper;
+  
 
   bool compressorToggle = false;
   bool intakeSol = false;

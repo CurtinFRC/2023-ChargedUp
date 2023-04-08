@@ -201,6 +201,9 @@ void SwerveDrive::OnUpdate(units::second_t dt) {
       [[fallthrough]];
     case SwerveDriveState::kFieldRelativeVelocity:
       _target_speed = _target_fr_speeds.ToChassisSpeeds(GetPose().Rotation().Radians());
+      if (isRotateToMatchJoystick){
+        _target_speed.omega = _anglePIDController.Calculate(GetPose().Rotation().Radians(), dt);
+      }
       // std::cout << "vx = " << _target_speed.vx.value() << " vy = " << _target_fr_speeds.vy.value() << std::endl;
       [[fallthrough]];
     case SwerveDriveState::kVelocity:
@@ -228,10 +231,13 @@ void SwerveDrive::OnUpdate(units::second_t dt) {
       _modules[3].SetPID(315_deg, 0_mps, dt);
       break;
     case SwerveDriveState::kFRVelocityRotationLock:
-      _target_speed = _requestedSpeeds.ToChassisSpeeds(GetPose().Rotation().Radians());
+      _target_speed.vx = _xPIDController.Calculate(GetPose().X(), dt);
+      _target_speed.vy = _yPIDController.Calculate(GetPose().Y(), dt);
       _target_speed.omega = _anglePIDController.Calculate(GetPose().Rotation().Radians(), dt);
+      _target_speed = _requestedSpeeds.ToChassisSpeeds(GetPose().Rotation().Radians());
       auto target_states = _kinematics.ToSwerveModuleStates(_target_speed);
       for (size_t i = 0; i < _modules.size(); i++) {
+        std::cout << "Speeds :" << target_states[i].speed.value() << std::endl;
         _modules[i].SetPID(target_states[i].angle.Radians(), target_states[i].speed, dt);
       }
       break;
@@ -286,7 +292,11 @@ void SwerveDrive::OnStart() {
 }
 
 void SwerveDrive::RotateMatchJoystick(units::radian_t joystickAngle, FieldRelativeSpeeds speeds) {
-  _state = SwerveDriveState::kFRVelocityRotationLock;
+  // _state = SwerveDriveState::kFRVelocityRotationLock;
+  // _anglePIDController.SetSetpoint(joystickAngle);
+  // _target_fr_speeds = speeds;
+  _state = SwerveDriveState::kFieldRelativeVelocity;
+  isRotateToMatchJoystick = true;
   _anglePIDController.SetSetpoint(joystickAngle);
   _target_fr_speeds = speeds;
 }
