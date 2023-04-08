@@ -8,7 +8,7 @@
 
 class VisionBehaviour : public behaviour::Behaviour {
  public:
-  // VisionBehaviour(Vision *vision, frc::XboxController *codriver);
+  VisionBehaviour(Vision *vision, frc::XboxController *codriver);
   VisionBehaviour(Vision *vision, wom::SwerveDrive *swerveDrivebase, frc::XboxController *codriver);
 
   void OnTick(units::second_t dt) override;
