@@ -1,7 +1,6 @@
 #include "behaviour/ArmavatorBehaviour.h"
 #include <frc/smartdashboard/SmartDashboard.h>
 
-
 /**
  * TODO change toggle armavator control to normally position/velocity with an overide
 */
@@ -78,20 +77,19 @@ ArmavatorManualBehaviour::ArmavatorManualBehaviour(Armavator *armavator, frc::Xb
 }
 
 void ArmavatorManualBehaviour::OnStart() {
-  // startHeight = _armavator->GetCurrentPosition().height;
-  // _manualSetpoint = _armavator->GetCurrentPosition();
-  // _config.elevator.leftGearbox.encoder->ZeroEncoder();
-  // _config.elevator.rightGearbox.encoder->ZeroEncoder();
-
-  // _config.arm.leftGearbox.encoder->SetEncoderPosition(90_deg);
   _armavator->OnStart();
-  // _config.arm.rightGearbox.encoder->SetEncoderPosition(90_deg);
-  // startHeight = 0_m;
-  // std::cout << "AHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH"<< std::endl;
-  // _manualSetpoint = {_armavator->elevator->GetConfig().leftGearbox.encoder->GetEncoderPosition() * _armavator->elevator->GetConfig().radius, _armavator->arm->GetConfig().leftGearbox.encoder->GetEncoderPosition()};
 }
 
 void ArmavatorManualBehaviour::OnTick(units::second_t dt) {
+
+  if (!rawControl) {
+    frc::SmartDashboard::PutString("Armavator Mode", "Position Control");
+  } else if (velocityControl) {
+    frc::SmartDashboard::PutString("Armavator Mode", "Velocity Control");
+  } else {
+    frc::SmartDashboard::PutString("Armavator Mode", "Raw Control");
+  }
+
   if (_armavator->GetCurrentPosition().height > 5_m) {
     _armavator->OnStart();
   }
@@ -101,7 +99,6 @@ void ArmavatorManualBehaviour::OnTick(units::second_t dt) {
 
   if (_codriver.GetAButtonPressed()) {
     if (rawControl) {
-      // _manualSetpoint = {_armavator->GetCurrentPosition().height, _armavator->GetCurrentPosition().angle};
       rawControl = false;
     } else {
       rawControl = true;
@@ -125,7 +122,6 @@ void ArmavatorManualBehaviour::OnTick(units::second_t dt) {
      * grab cone on floor -> 
      * 
     */
-
 
 
     if (_codriver.GetPOV() == 0) {
@@ -204,11 +200,9 @@ void ArmavatorManualBehaviour::OnTick(units::second_t dt) {
       _armavator->SetSpeedValues(0.35, 0.07);
     } else {
       if (_codriver.GetLeftBumperPressed()) {
-        if (velocityControl) {
-           velocityControl = false;
-        } else {
-          velocityControl = true;
-        }
+        velocityControl = true;
+      } else {
+        velocityControl = false;
       }
 
       if (velocityControl) {
