@@ -11,7 +11,7 @@
 #include <networktables/NetworkTableInstance.h>
 
 #include <cameraserver/CameraServer.h>
-
+#include "frc/smartdashboard/SendableChooser.h"
 #include "Auto.h"
 
 using namespace frc;
@@ -20,6 +20,19 @@ using namespace behaviour;
 static units::second_t lastPeriodic;
 
 void Robot::RobotInit() {
+  frc::SendableChooser<std::string> m_chooser;
+  const std::string kAutoNameDefault = "Default";
+  const std::string kAutoNameCustom = "My Auto";
+
+  std::string m_autoSelected;
+  m_chooser.SetDefaultOption(kAutoNameDefault, kAutoNameDefault);
+  m_chooser.AddOption("h", kAutoNameCustom);
+  frc::SmartDashboard::PutData("Auto Modes", &m_chooser);
+
+  /*
+  https://docs.wpilib.org/en/stable/docs/software/vision-processing/roborio/using-the-cameraserver-on-the-roborio.html
+  he following 4 lines of code were absolutely robbed from this website
+  */
   cs::UsbCamera camera = CameraServer::StartAutomaticCapture();
   camera.SetResolution(640, 480);
   cs::CvSink cvSink = frc::CameraServer::GetVideo();

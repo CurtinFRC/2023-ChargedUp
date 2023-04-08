@@ -215,6 +215,17 @@ class DefinedPoses {
     frc::Pose2d returnPiece4Pos;
   };
 
+
+  struct PathingPoses {
+    frc::Pose2d placeGrid1;
+    frc::Pose2d placeGrid2;
+    frc::Pose2d placeGrid3;
+    frc::Pose2d placeGrid4;
+    frc::Pose2d placeGrid5;
+    frc::Pose2d grabReturnPos;
+    frc::Pose2d grabChargestationAvoidPos;
+  };
+
   struct Poses {
     frc::Pose2d startPos;
     frc::Pose2d dock_LineUp_Pos;
@@ -223,6 +234,7 @@ class DefinedPoses {
     frc::Pose2d taxiPos;
     frc::Pose2d subStationWaitPos;
     CollectPath collectPath;
+    PathingPoses pathingPoses;
   };
   Poses poseSet{};
 
@@ -272,17 +284,21 @@ class DefinedPoses {
         {132.81_in, 60.185_in, 0_deg}, // returnPiece3Pos
         {278.389_in, 36.185_in, 0_deg}, // retrievePiece4Pos
         {132.81_in, 36.185_in, 0_deg} // returnPiece4Pos
-      }  /*  Collect Path - END  */
+      },  /*  Collect Path - END  */
+      {  /* Pathing Poses - START */
+        {}, // placeGrid1
+        {}, // placeGrid2
+        {}, // placeGrid3
+        {}, // placeGrid4
+        {}, // placeGrid5
+        {}, // grabReturnPos
+        {} // grabChargestationAvoidPos
+      }  /* Pathing Poses - END */
     }, /*  Top Poses - END  */
     {  /*  Middle Poses - START  */
       {72.043_in, 86.608_in, 0_deg}, // startPos
       {76.629_in, 107.795_in, 0_deg}, // dock_LineUp_Pos
-      {190.407_in, 107.992_in, 0_deg}, // dockPos
-
-      {0_m, 0_m, 0_deg}, // stealPos
-      {0_m, 0_m, 0_deg}, // taxiPos
-      {0_m, 0_m, 0_deg},  // subStationWaitPos
-
+      {132.407_in, 107.992_in, 0_deg}, // dockPos
     }, /*  Middle Poses - END  */
     {  /*  Bottom Poses - START  */
       {72.061_in, 20.208_in, 0_deg}, // startPos
@@ -291,15 +307,6 @@ class DefinedPoses {
       {288.932_in, 35.832_in, 0_deg}, // stealPos
       {221.744_in, 17.986_in, 0_deg}, // taxiPos
       {278.389_in, 36.185_in, 0_deg},  // subStationWaitPos
-
-
-      // the following are just for testing without vision
-      // {0_in, 0_in, 0_deg}, // startPos
-      // {10.077_in, 93.55_in, 0_deg}, // dock_LineUp_Pos
-      // {61.097_in, 93.55_in, 0_deg}, // dockPos
-      // {288.932_in, 35.832_in, 0_deg}, // stealPos
-      // {221.744_in, 17.986_in, 0_deg}, // taxiPos
-
       {  /*  Collect Path - START  */
         {72.061_in, 20.208_in, 0_deg}, // startingFromPos
         {278.389_in, 36.185_in, 0_deg}, // retrievePiece1Pos
@@ -310,7 +317,16 @@ class DefinedPoses {
         {200.81_in, 156.185_in, 0_deg}, // returnPiece3Pos
         {278.389_in, 180.185_in, 0_deg}, // retrievePiece4Pos
         {200.81_in, 180.185_in, 0_deg} // returnPiece4Pos
-      }  /*  Collect Path - END  */
+      },  /*  Collect Path - END  */
+      {  /* Pathing Poses - START */
+        {}, // placeGrid1
+        {}, // placeGrid2
+        {}, // placeGrid3
+        {}, // placeGrid4
+        {}, // placeGrid5
+        {}, // grabReturnPos
+        {} // grabChargestationAvoidPos
+      }  /* Pathing Poses - END */
     }, /*  Bottom Poses - END  */
     {  /*  Game Piece Poses - START  */
       {278.389_in, 36.185_in, 0_deg},  // the bottom-most game piece
@@ -323,75 +339,94 @@ class DefinedPoses {
       {72.061_in, 42.2_in, 0_deg},
       {72.061_in, 64.185_in, 0_deg},
       {72.061_in, 86.078_in, 0_deg},
-      {72.061_in, 108.131_in, 216_deg},
+      {72.061_in, 108.131_in, 0_deg},
       {72.061_in, 130.185_in, 0_deg},
       {72.061_in, 152.185_in, 0_deg},
       {72.061_in, 174.170_in, 0_deg},
       {72.061_in, 196.185_in, 0_deg}
-    }  /* Grid Positions - START */
+    }  /* Grid Positions - END */
   };
 
   AlliancePoses redAlliancePoses{
     {  // Top Poses - START  */
-      {72.055_in, 196.3_in, 0_deg}, // startPos
-      {83.607_in, 139.388_in, 0_deg}, // dock_LineUp_Pos
-      {140.808_in, 139.286_in, 0_deg}, // dockPos
-      {287.887_in, 180.555_in, 0_deg}, // stealPos
-      {171.061_in, 195.748_in, 0_deg}, // taxiPos
-      {291.192_in, 246.31_in, 0_deg},  // subStationWaitPos
+      {579.357_in, 196.277_in, 0.0_deg}, // startPos
+      {559.274_in, 106.76_in, 0.0_deg}, // dock_LineUp_Pos
+      {527.254_in, 106.76_in, 0.0_deg}, // dockPos
+      {363.525_in, 180.532_in, 0.0_deg}, // stealPos
+      {480.351_in, 195.725_in, 0.0_deg}, // taxiPos
+      {360.22_in, 246.287_in, 0.0_deg}, // subStationWaitPos
       {  /*  Collect Path - START  */
-        {72.055_in, 196.3_in, 0_deg}, // startingFromPos
-        {278.389_in, 180.185_in, 0_deg}, // retrievePiece1Pos
-        {132.81_in, 156.185_in, 0_deg}, // returnPiece1Pos
-        {278.389_in, 132.185_in, 0_deg}, // retrievePiece2Pos
-        {132.81_in, 108.185_in, 0_deg}, // returnPiece2Pos
-        {278.389_in, 84.185_in, 0_deg}, // retrievePiece3Pos
-        {132.81_in, 60.185_in, 0_deg}, // returnPiece3Pos
-        {278.389_in, 36.185_in, 0_deg}, // retrievePiece4Pos
-        {132.81_in, 36.185_in, 0_deg} // returnPiece4Pos
-      }  /*  Collect Path - END  */
+        {579.357_in, 196.277_in, 0.0_deg}, // startingFromPos
+        {373.023_in, 180.162_in, 0.0_deg}, // retrievePiece1Pos
+        {518.602_in, 156.162_in, 0.0_deg}, // returnPiece1Pos
+        {373.023_in, 132.162_in, 0.0_deg}, // retrievePiece2Pos
+        {518.602_in, 108.162_in, 0.0_deg}, // returnPiece2Pos
+        {373.023_in, 84.162_in, 0.0_deg}, // retrievePiece3Pos
+        {518.602_in, 60.162_in, 0.0_deg}, // returnPiece3Pos
+        {373.023_in, 36.162_in, 0.0_deg}, // retrievePiece4Pos
+        {518.602_in, 36.162_in, 0.0_deg}, // returnPiece4Pos
+      },  /*  Collect Path - END  */
+      {  /* Pathing Poses - START */
+        {}, // placeGrid1
+        {}, // placeGrid2
+        {}, // placeGrid3
+        {}, // placeGrid4
+        {}, // placeGrid5
+        {}, // grabReturnPos
+        {} // grabChargestationAvoidPos
+      }  /* Pathing Poses - END */
     }, /*  Top Poses - END  */
     {  /*  Middle Poses - START  */
-      {72.043_in, 86.608_in, 0_deg}, // startPos
-      {83.629_in, 107.795_in, 0_deg}, // dock_LineUp_Pos
-      {140.407_in, 107.992_in, 0_deg}, // dockPos
-
-      {0_m, 0_m, 0_deg}, // stealPos
-      {0_m, 0_m, 0_deg}, // taxiPos
-      {0_m, 0_m, 0_deg},  // subStationWaitPos
-
+      {579.369_in, 86.585_in, 0.0_deg}, // startPos
+      {574.783_in, 107.772_in, 0.0_deg}, // dock_LineUp_Pos
+      {519.005_in, 107.969_in, 0.0_deg}, // dockPos
     }, /*  Middle Poses - END  */
     {  /*  Bottom Poses - START  */
-      {72.061_in, 20.208_in, 0_deg}, // startPos
-      {82.138_in, 76.783_in, 0_deg}, // dock_LineUp_Pos
-      {140.158_in, 75.594_in, 0_deg}, // dockPos
-      {288.932_in, 35.832_in, 0_deg}, // stealPos
-      {221.744_in, 17.986_in, 0_deg}, // taxiPos
-
-      {0_m, 0_m, 0_deg},  // subStationWaitPos
+      {579.351_in, 20.185_in, 0.0_deg}, // startPos
+      {559.274_in, 106.76_in, 0.0_deg}, // dock_LineUp_Pos
+      {527.254_in, 106.76_in, 0.0_deg}, // dockPos
+      {362.48_in, 35.809_in, 0.0_deg}, // stealPos
+      {429.668_in, 17.963_in, 0.0_deg}, // taxiPos
+      {373.023_in, 36.162_in, 0.0_deg}, // subStationWaitPos
       {  /*  Collect Path - START  */
-        {72.061_in, 20.208_in, 0_deg}, // startingFromPos
-        {278.389_in, 36.185_in, 0_deg}, // retrievePiece1Pos
-        {132.81_in, 60.185_in, 0_deg}, // returnPiece1Pos
-        {278.389_in, 84.185_in, 0_deg}, // retrievePiece2Pos
-        {132.81_in, 108.185_in, 0_deg}, // returnPiece2Pos
-        {278.389_in, 132.185_in, 0_deg}, // retrievePiece3Pos
-        {132.81_in, 156.185_in, 0_deg}, // returnPiece3Pos
-        {278.389_in, 180.185_in, 0_deg}, // retrievePiece4Pos
-        {132.81_in, 180.185_in, 0_deg} // returnPiece4Pos
-      }  /*  Collect Path - END  */
+        {579.351_in, 20.185_in, 0.0_deg}, // startingFromPos
+        {373.023_in, 36.162_in, 0.0_deg}, // retrievePiece1Pos
+        {450.602_in, 60.162_in, 0.0_deg}, // returnPiece1Pos
+        {373.023_in, 84.162_in, 0.0_deg}, // retrievePiece2Pos
+        {450.602_in, 108.162_in, 0.0_deg}, // returnPiece2Pos
+        {373.023_in, 132.162_in, 0.0_deg}, // retrievePiece3Pos
+        {450.602_in, 156.162_in, 0.0_deg}, // returnPiece3Pos
+        {373.023_in, 180.162_in, 0.0_deg}, // retrievePiece4Pos
+        {450.602_in, 180.162_in, 0.0_deg}, // returnPiece4Pos
+      },  /*  Collect Path - END  */
+      {  /* Pathing Poses - START */
+        {}, // placeGrid1
+        {}, // placeGrid2
+        {}, // placeGrid3
+        {}, // placeGrid4
+        {}, // placeGrid5
+        {}, // grabReturnPos
+        {} // grabChargestationAvoidPos
+      }  /* Pathing Poses - END */
     }, /*  Bottom Poses - END  */
     {  /*  Game Piece Poses - START  */
-      {278.389_in, 36.185_in, 0_deg},  // the bottom-most game piece
-      {278.389_in, 84.185_in, 0_deg},  // the bottom-middle game piece
-      {278.389_in, 132.185_in, 0_deg},  // the top-middle game piece
-      {278.389_in, 180.185_in, 0_deg}  // the top-most game piece
-    }  /* Game Piece Poses - END  */
+      {373.023_in, 36.185_in, 0_deg},  // the bottom-most game piece
+      {373.023_in, 84.185_in, 0_deg},  // the bottom-middle game piece
+      {373.023_in, 132.185_in, 0_deg},  // the top-middle game piece
+      {373.023_in, 180.185_in, 0_deg}  // the top-most game piece
+    },  /* Game Piece Poses - END  */
+    {  /* Grid Positions - START */
+        {579.351_in, 20.185_in, 0_deg},
+        {579.351_in, 42.185_in, 0_deg},
+        {579.351_in, 64.185_in, 0_deg},
+        {579.351_in, 86.185_in, 0_deg},
+        {579.351_in, 108.185_in, 0_deg},
+        {579.351_in, 130.293_in, 0_deg},
+        {579.351_in, 152.185_in, 0_deg},
+        {579.351_in, 174.185_in, 0_deg},
+        {579.351_in, 196.185_in, 0_deg}
+    }  /* Grid Positions - END */
   };
-
-
-  
-
 
   AlliancePoses alliancePoses;
 };
@@ -402,6 +437,7 @@ struct Drivebase {
 };
 struct AutoPathDetails {
   frc::Pose2d startPos;
+  std::shared_ptr<behaviour::Behaviour> midPathing;
   std::shared_ptr<behaviour::Behaviour> endPathing;
 };
 
