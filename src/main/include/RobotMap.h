@@ -144,11 +144,11 @@ struct ControlSystem {
     // Setting the PID path and values to be used for SwerveDrive and SwerveModules
     wom::SwerveModule::angle_pid_conf_t anglePID {
       "/drivetrain/pid/angle/config",
-      14_V / 180_deg,
+      16_V / 180_deg,
       0.0_V / (100_deg * 1_s),
       0_V / (100_deg / 1_s),
       1_deg,
-      0.5_deg / 1_s
+      0.5_deg / 2_s
     };
     wom::SwerveModule::velocity_pid_conf_t velocityPID{
       "/drivetrain/pid/velocity/config",

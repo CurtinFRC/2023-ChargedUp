@@ -30,12 +30,12 @@ void ManualDrivebase::OnStart(units::second_t dt) {
 }
 
 void ManualDrivebase::OnTick(units::second_t deltaTime) {
-  _swerveDrivebase->SetVoltageLimit(10_V);
+  // _swerveDrivebase->SetVoltageLimit(10_V);
 
-  // if (_driverController->GetBButton()) {
-  //   std::cout << "RESETING POSE" << std::endl;
-  //   _swerveDrivebase->ResetPose(frc::Pose2d());
-  // }
+  if (_driverController->GetYButton()) {
+    std::cout << "RESETING POSE" << std::endl;
+    _swerveDrivebase->ResetPose(frc::Pose2d());
+  }
 
 
   //  SOLUTION TO "ANTI-TIP"
@@ -46,8 +46,8 @@ void ManualDrivebase::OnTick(units::second_t deltaTime) {
   //   usingJoystickXPos = (prevPrevJoystickX + prevJoystickX + _driverController->GetLeftX()) / 3;
   //   usingJoystickYPos = (prevPrevJoystickY + prevJoystickY + _driverController->GetLeftY()) / 3;
   // } else {
-    // usingJoystickXPos = _driverController->GetLeftX();
-    // usingJoystickYPos = _driverController->GetLeftY();
+  //   usingJoystickXPos = _driverController->GetLeftX();
+  //   usingJoystickYPos = _driverController->GetLeftY();
   // }
 
   /*   TOGGLE SOLUTION   */
@@ -61,16 +61,23 @@ void ManualDrivebase::OnTick(units::second_t deltaTime) {
   }*/
 
   /*   HOLD SOLUTION   */
-  // if (_driverController->GetLeftBumperPressed()){
-  //   maxMovementMagnitude = lowSensitivityDriveSpeed;   maxRotationMagnitude = lowSensitivityRotateSpeed;
-  // } else if (_driverController->GetLeftBumperReleased() & !_driverController->GetRightBumper()){
-  //   maxMovementMagnitude = defaultDriveSpeed;   maxRotationMagnitude = defaultRotateSpeed;
-  // }
-  // if (_driverController->GetRightBumperPressed()){
-  //   maxMovementMagnitude = highSensitivityDriveSpeed;   maxRotationMagnitude = highSensitivityRotateSpeed;
-  // } else if (_driverController->GetRightBumperReleased() & !_driverController->GetLeftBumper()){
-  //   maxMovementMagnitude = defaultDriveSpeed;   maxRotationMagnitude = defaultRotateSpeed;
-  // }
+  if (_driverController->GetLeftBumperPressed()){
+    maxMovementMagnitude = lowSensitivityDriveSpeed;   maxRotationMagnitude = lowSensitivityRotateSpeed;
+  } else if (_driverController->GetLeftBumperReleased() & !_driverController->GetRightBumper()){
+    maxMovementMagnitude = defaultDriveSpeed;   maxRotationMagnitude = defaultRotateSpeed;
+    _swerveDrivebase->SetAccelerationLimit(6_mps_sq);
+    _swerveDrivebase->SetVoltageLimit(10_V);
+  }
+  if (_driverController->GetRightBumperPressed()){
+    maxMovementMagnitude = highSensitivityDriveSpeed;   maxRotationMagnitude = highSensitivityRotateSpeed;
+  _swerveDrivebase->SetAccelerationLimit(12_mps_sq);
+    _swerveDrivebase->SetVoltageLimit(14_V);
+    
+  } else if (_driverController->GetRightBumperReleased() & !_driverController->GetLeftBumper()){
+    maxMovementMagnitude = defaultDriveSpeed;   maxRotationMagnitude = defaultRotateSpeed;
+    _swerveDrivebase->SetAccelerationLimit(6_mps_sq);
+    _swerveDrivebase->SetVoltageLimit(10_V);
+  }
 
 
   if (_driverController->GetAButtonReleased()) {
@@ -86,27 +93,28 @@ void ManualDrivebase::OnTick(units::second_t deltaTime) {
     double r_x = wom::spow2(-wom::deadzone(_driverController->GetRightX(), turningDeadzone));
     double r_y = wom::spow2(-wom::deadzone(_driverController->GetRightY(), turningDeadzone));
 
-    // double turnX = _driverController->GetRightX();   double turnY = _driverController->GetRightY();
-    // double num = sqrt(turnX * turnX + turnY * turnY);
-    // if (num < turningDeadzone) {
-    //   turnX = 0;   turnY = 0;
-    // }
+    double turnX = _driverController->GetRightX();   double turnY = _driverController->GetRightY();
+    double num = sqrt(turnX * turnX + turnY * turnY);
+    if (num < turningDeadzone) {
+      turnX = 0;   turnY = 0;
+    }
 
     if (_swerveDrivebase->GetIsFieldRelative()) {  // Field Relative Controls
-      // units::degree_t currentAngle = _swerveDrivebase->GetPose().Rotation().Degrees();
-      // CalculateRequestedAngle(turnX, turnY, currentAngle);
+      units::degree_t currentAngle = _swerveDrivebase->GetPose().Rotation().Degrees();
+      CalculateRequestedAngle(turnX, turnY, currentAngle);
+      _swerveDriveTable->GetEntry("RotateMatch").SetDouble(_requestedAngle.value());
 
-      // _swerveDrivebase->RotateMatchJoystick(_requestedAngle, wom::FieldRelativeSpeeds{
-      //   xVelocity * maxMovementMagnitude,
-      //   yVelocity * maxMovementMagnitude,
-      //   r_x * maxRotationMagnitude
-      // });
-
-      _swerveDrivebase->SetFieldRelativeVelocity(wom::FieldRelativeSpeeds{
+      _swerveDrivebase->RotateMatchJoystick(_requestedAngle, wom::FieldRelativeSpeeds{
         xVelocity * maxMovementMagnitude,
         yVelocity * maxMovementMagnitude,
         r_x * maxRotationMagnitude
       });
+
+      // _swerveDrivebase->SetFieldRelativeVelocity(wom::FieldRelativeSpeeds{
+      //   xVelocity * maxMovementMagnitude,
+      //   yVelocity * maxMovementMagnitude,
+      //   r_x * maxRotationMagnitude
+      // });
     }
     else {  // Robot Relative Controls
       _swerveDrivebase->SetVelocity(frc::ChassisSpeeds{
@@ -123,25 +131,12 @@ void ManualDrivebase::OnTick(units::second_t deltaTime) {
   // prevJoystickY = _driverController->GetLeftY();
 } 
 
-// void ManualDrivebase::CalculateRequestedAngle(double joystickX, double joystickY, units::degree_t defaultAngle){
-//   _requestedAngle = defaultAngle;
-//   if (joystickX > 0 && joystickY > 0) { // Quadrant 1
-//     _requestedAngle = (1_rad * atan2(joystickY, joystickX));
-//   } else if (joystickX < 0 && joystickY > 0) { // Quadrant 2
-//     _requestedAngle = 180_deg - (1_rad * atan2(joystickY, joystickX));
-//   } else if (joystickX < 0 && joystickY < 0) { // Quadrant 3
-//     _requestedAngle = 180_deg + (1_rad * atan2(joystickY, joystickX));
-//   } else if (joystickX > 0 && joystickY < 0) { // Quadrant 4
-//     _requestedAngle = 360_deg - (1_rad * atan2(joystickY, joystickX));
-//   } if (joystickX == 0) {
-//     if (joystickY > 0){   _requestedAngle = 90_deg;   }
-//     else if (joystickY < 0){   _requestedAngle = 270_deg;   }
-//   } if (joystickY == 0){
-//     if (joystickX > 0){   _requestedAngle = 0_deg;   }
-//     else if (joystickX < 0){   _requestedAngle = 180_deg;   }
-//   }
-//   // else, default to currentAngle
-// }
+void ManualDrivebase::CalculateRequestedAngle(double joystickX, double joystickY, units::degree_t defaultAngle){
+  _requestedAngle = (1_rad * atan2(joystickY, -joystickX)) + 90_deg;
+  if (joystickX == 0 & joystickY == 0){
+    _requestedAngle = _swerveDrivebase->GetPose().Rotation().Radians();
+  }
+}
 
 
 

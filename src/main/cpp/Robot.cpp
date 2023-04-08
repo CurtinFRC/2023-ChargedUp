@@ -133,9 +133,9 @@ void Robot::TeleopInit() {
    map.controllers.driver.B(&loop).Rising().IfHigh([sched, this]() {
     swerve->GetActiveBehaviour()->Interrupt();
   });
-  map.controllers.driver.Y(&loop).Rising().IfHigh([sched, this]() { // temp solutions
-    swerve->ResetPose(vision->EstimatePose(vision->GetConfig()).ToPose2d());
-  });
+  // map.controllers.driver.Y(&loop).Rising().IfHigh([sched, this]() { // temp solutions
+  //   swerve->ResetPose(vision->EstimatePose(vision->GetConfig()).ToPose2d());
+  // });
   map.controllers.driver.POV(0, &loop).Rising().IfHigh([sched, this]() {
     sched->Schedule(make<AlignDrivebaseToNearestGrid>(swerve, vision, 0));
   });

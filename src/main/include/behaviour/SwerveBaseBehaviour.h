@@ -47,7 +47,7 @@ class ManualDrivebase : public behaviour::Behaviour{
 
   // Deadzones
   const double driverDeadzone = 0.08;
-  const double turningDeadzone = 0.1;
+  const double turningDeadzone = 0.2;
 
 
   // Variables for solution to Anti-tip
@@ -60,7 +60,7 @@ class ManualDrivebase : public behaviour::Behaviour{
 
   // The translation speeds for when "slow speed", "normal speed", "fast speed" modes are active
   const translationSpeed_ lowSensitivityDriveSpeed = 3.25_ft / 1_s;
-  const translationSpeed_ defaultDriveSpeed = 5_ft / 1_s; // 13
+  const translationSpeed_ defaultDriveSpeed = 13_ft / 1_s;
   const translationSpeed_ highSensitivityDriveSpeed = 18_ft / 1_s;
   // The rotation speeds for when "slow speed", "normal speed", "fast speed" modes are active
   const rotationSpeed_ lowSensitivityRotateSpeed = 90_deg / 1_s;
