@@ -42,8 +42,8 @@ Our code for FRC 2023: CHARGED UP, using multiproject Gradle
 
 ## Commands (Robot)
 
-- Build robot code using `./gradlew 4788:build`
-- Deploy robot code using `./gradlew 4788:deploy`
+- Build robot code using `./gradlew build`
+- Deploy robot code using `./gradlew deploy`
 
 ## Commands (All)
 
