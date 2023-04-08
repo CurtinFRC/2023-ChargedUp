@@ -47,8 +47,6 @@ Our code for FRC 2023: CHARGED UP, using multiproject Gradle
 
 ## Commands (All)
 
-### All code is all subprojects contained in this main proect (E.g, 4788, etc...)
-
 - Clean all code using `./gradlew clean`
 - Build all code using `./gradlew build`
 - Deploy all code using `./gradlew deploy`
