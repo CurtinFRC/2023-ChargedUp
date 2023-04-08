@@ -288,8 +288,8 @@ struct ControlSystem {
         leftOtherArmEncoder,
         wom::PIDConfig<units::radian, units::volts>(
           "/armavator/arm/pid/config",
-          13_V / 25_deg,
-          0.1_V / (1_deg * 1_s),
+          13_V / 25_deg, //prev 13_V/25_deg
+          0.1_V / (1_deg * 1_s), //0.1_V / (1_deg * 1_s)
           0_V / (1_deg / 1_s),
           3_deg,
           0.5_deg / 1_s
