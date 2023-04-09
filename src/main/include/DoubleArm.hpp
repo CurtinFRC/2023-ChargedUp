@@ -9,8 +9,13 @@
 
 
 struct DoubleArmConfig {
-  wom::ArmConfig baseArm;
-  wom::ArmConfig extendedArm;
+  wom::Arm baseArm;
+  wom::Arm extensionArm;
+
+// not sure whether or not to define here or in class
+// will do here for now
+  wom::Gearbox baseControl;
+  wom::Gearbox connectorControl;
 };
 
 struct DoubleArmPos {
@@ -22,8 +27,6 @@ enum class DoubleArmState {
   kIdle,
   kAngleBase,
   kAngleExtension,
-  kAngle,
-  kRaw,
   kPos,
   kManual
 };
@@ -31,7 +34,8 @@ enum class DoubleArmState {
 class DoubleArm : public  behaviour::HasBehaviour {
   public :
 
-  DoubleArm(wom::Gearbox _baseControl, wom::Gearbox _connectorControl);
+  DoubleArm(DoubleArmConfig _config);
+  // DoubleArm(DoubleArmConfig _config, wom::Gearbox _baseArm, wom::Gearbox _connectorControl)
 
   // set info for states
   void SetIdle();
@@ -49,14 +53,15 @@ class DoubleArm : public  behaviour::HasBehaviour {
   wom::Arm *_baseArm;
   wom::Arm *_extensionArm;
   DoubleArmPos _setpoint;
+  units::radian_t _inputAngle;
 
   private :
     DoubleArmState _state = DoubleArmState::kIdle;
 
     // creates an instance of double arm
     DoubleArmConfig *_config;
-    wom::Gearbox *_baseControl;
-    wom::Gearbox *_connectorControl;
+    // wom::Gearbox *_baseControl;
+    // wom::Gearbox *_connectorControl;
 
     units::volt_t _extensionArmRaw;
     units::volt_t _baseArmRaw;

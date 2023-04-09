@@ -34,3 +34,36 @@ DoubleArmPos DoubleArm::GetCurrentPos() {
       _extensionArm->GetAngle()
   };
 }
+
+void DoubleArm::OnStart() {
+  _config->baseControl.encoder->SetEncoderPosition(_zeroed.baseAngle);
+  _config->connectorControl.encoder->SetEncoderPosition(_zeroed.extensionAngle);
+}
+
+void DoubleArm::OnUpdate(units::second_t dt) {
+  units::volt_t voltage{0};
+
+  switch(_state) {
+    case DoubleArmState::kIdle:
+      break;
+
+    case DoubleArmState::kPos:
+      _config->baseArm.SetAngle(_setpoint.baseAngle);
+      _config->extensionArm.SetAngle(_setpoint.extensionAngle);
+      break;
+
+    case DoubleArmState::kManual:
+      // do math later bc u have to do kinematics or some crap idk
+      break;
+    
+    case DoubleArmState::kAngleBase:
+      _config->baseArm.SetAngle(_inputAngle);
+      break;
+    
+    case DoubleArmState::kAngleExtension:
+      _config->extensionArm.SetAngle(_inputAngle);
+      break;}
+
+    _config->baseArm.OnUpdate(dt);
+    _config->extensionArm.OnUpdate(dt);
+  }
