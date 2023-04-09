@@ -300,15 +300,63 @@ std::shared_ptr<behaviour::Behaviour> SubsystemTestPlace(Armavator *armavator) {
 }
 
 
-std::shared_ptr<behaviour::Behaviour> LowPlace(Armavator *armavator , Gripper *gripper){
+std::shared_ptr<behaviour::Behaviour> LowPlace(RoboPackage robotPackage){
+  return 
+    make<ArmavatorGoToAutoSetpoint>(robotPackage.armavator, 0.9_m, -25_deg)->WithTimeout(2_s)
+    << make<DrivebasePoseBehaviour>(robotPackage.swervePackage.swerve, frc::Pose2d{0.3_m, 0_m, 0_deg})->WithTimeout(1_s)
+    << make<DrivebasePoseBehaviour>(robotPackage.swervePackage.swerve, frc::Pose2d{-0.4_m, 0_m, 0_deg})->WithTimeout(1_s);
+    // << make<DrivebasePoseBehaviour>(robotPackage.swervePackage.swerve, frc::Pose2d{3.5_m, 0_m, 0_deg})->WithTimeout(3_s);
+}
+
+std::shared_ptr<behaviour::Behaviour> HighPlace(RoboPackage robotPackage){
+  return 
+    make<ArmavatorGoToAutoSetpoint>(robotPackage.armavator, 0.9_m, -55_deg)->WithTimeout(1_s) //start in starting config
+    << make<DrivebasePoseBehaviour>(robotPackage.swervePackage.swerve, frc::Pose2d{0.1_m, 0_m, 0_deg})->WithTimeout(1_s)
+    << make<ArmavatorGoToAutoSetpoint>(robotPackage.armavator, 0.9_m, 0_deg)
+    << make<ArmavatorGoToAutoSetpoint>(robotPackage.armavator, 0.3_m, 90_deg)
+    << make<ArmavatorGoToAutoSetpoint>(robotPackage.armavator, 0.4_m, 140_deg, 0.4, 0.15)
+    << make<WaitTime>(0.5_s)
+    << make<ArmavatorGoToAutoSetpoint>(robotPackage.armavator, 0.25_m, 160_deg, 0.2, 0.2)
+    << make<GripperAutoBehaviour>(robotPackage.gripper, 1)->Until(make<WaitTime>(1_s))
+    << make<GripperAutoBehaviour>(robotPackage.gripper, 3)->Until(make<WaitTime>(1_s))
+    << make<DrivebasePoseBehaviour>(robotPackage.swervePackage.swerve, frc::Pose2d{0.3_m, 0_m, 0_deg})->WithTimeout(1_s)
+    << make<ArmavatorGoToAutoSetpoint>(robotPackage.armavator, 0.3_m, 90_deg)
+    << make<DrivebasePoseBehaviour>(robotPackage.swervePackage.swerve, frc::Pose2d{4_m, 0_m, 0_deg})->WithTimeout(5_s);
+}
+
+std::shared_ptr<behaviour::Behaviour> Taxi(RoboPackage robotPackage){
   return make<WaitTime>(1_s);
 }
-std::shared_ptr<behaviour::Behaviour> HighPlace(Armavator *armavator , Gripper *gripper){
+
+std::shared_ptr<behaviour::Behaviour> Dock(RoboPackage robotPackage){
   return make<WaitTime>(1_s);
 }
-std::shared_ptr<behaviour::Behaviour> Taxi(Drivebase drivebase, Armavator *armavator){
-  return make<WaitTime>(1_s);
-}
-std::shared_ptr<behaviour::Behaviour> Dock(Drivebase drivebase, Armavator *armavator){
-  return make<WaitTime>(1_s);
-}
+
+// low and high
+
+
+
+// std::shared_ptr<Behaviour> Single(RoboPackage robotPackage){
+//   return 
+//     make<ArmavatorGoToAutoSetpoint>(robotPackage.armavator, 0.9_m, -55_deg)->WithTimeout(1_s) //start in starting config
+//     << make<DrivebasePoseBehaviour>(robotPackage.swervePackage.swerve, frc::Pose2d{0.1_m, 0_m, 0_deg})->WithTimeout(1_s)
+//     << make<ArmavatorGoToAutoSetpoint>(robotPackage.armavator, 0.9_m, 0_deg)
+//     << make<ArmavatorGoToAutoSetpoint>(robotPackage.armavator, 0.3_m, 90_deg)
+//     << make<ArmavatorGoToAutoSetpoint>(robotPackage.armavator, 0.4_m, 140_deg, 0.4, 0.15)
+//     << make<WaitTime>(0.5_s)
+//     << make<ArmavatorGoToAutoSetpoint>(robotPackage.armavator, 0.25_m, 160_deg, 0.2, 0.2)
+//     << make<GripperAutoBehaviour>(robotPackage.gripper, 1)->Until(make<WaitTime>(1_s))
+//     << make<GripperAutoBehaviour>(robotPackage.gripper, 3)->Until(make<WaitTime>(1_s))
+//     << make<DrivebasePoseBehaviour>(robotPackage.swervePackage.swerve, frc::Pose2d{0.3_m, 0_m, 0_deg})->WithTimeout(1_s)
+//     << make<ArmavatorGoToAutoSetpoint>(robotPackage.armavator, 0.3_m, 90_deg)
+//     << make<DrivebasePoseBehaviour>(robotPackage.swervePackage.swerve, frc::Pose2d{4_m, 0_m, 0_deg})->WithTimeout(5_s);
+// }
+
+// std::shared_ptr<Behaviour> ForwardDrive(RoboPackage robotPackage){
+//   return
+//     make<ArmavatorGoToAutoSetpoint>(robotPackage.armavator, 0.9_m, -25_deg)->WithTimeout(2_s)
+//     << make<DrivebasePoseBehaviour>(robotPackage.swervePackage.swerve, frc::Pose2d{0.3_m, 0_m, 0_deg})->WithTimeout(1_s)
+//     << make<DrivebasePoseBehaviour>(robotPackage.swervePackage.swerve, frc::Pose2d{-0.4_m, 0_m, 0_deg})->WithTimeout(1_s)
+//     << make<DrivebasePoseBehaviour>(robotPackage.swervePackage.swerve, frc::Pose2d{3.5_m, 0_m, 0_deg})->WithTimeout(3_s)
+//     << make<WaitTime>(20_s);
+// }

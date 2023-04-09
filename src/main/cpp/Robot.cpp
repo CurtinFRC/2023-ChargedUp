@@ -106,32 +106,35 @@ void Robot::AutonomousInit() {
   BehaviourScheduler *sched = BehaviourScheduler::GetInstance();
   
   //sched->Schedule(Single(Drivebase{swerve,  &map.swerveBase.gyro}, armavator, gripper, true, StartingConfig::Bottom, EndingConfig::Dock));
-  
-  Drivebase swervePackage = Drivebase{swerve,  &map.swerveBase.gyro};
 
+  RoboPackage robotPackage{
+    {swerve,  &map.swerveBase.gyro},
+    armavator,
+    gripper    
+  };
   // idea: maybe have a robo package, including swervePackage, armavator, and gripper
 
 
   if (m_autoSelected == "kLowPlace") {
-    sched->Schedule(LowPlace(armavator, gripper));
+    sched->Schedule(LowPlace(robotPackage));
   }
   else if (m_autoSelected == "kHighPlace") {
-    sched->Schedule(HighPlace(armavator, gripper));
+    sched->Schedule(HighPlace(robotPackage));
   }
   else if (m_autoSelected == "kLowPlaceTaxi") {
-    sched->Schedule(LowPlace(armavator, gripper) << Taxi(swervePackage, armavator));
+    sched->Schedule(LowPlace(robotPackage) << Taxi(robotPackage));
   }
   else if (m_autoSelected == "kHighPlaceTaxi") {
-    sched->Schedule(HighPlace(armavator, gripper) << Taxi(swervePackage, armavator));
+    sched->Schedule(HighPlace(robotPackage) << Taxi(robotPackage));
   }
   else if (m_autoSelected == "kLowPlaceDock") {
-    sched->Schedule(LowPlace(armavator, gripper) << Dock(swervePackage, armavator));
+    sched->Schedule(LowPlace(robotPackage) << Dock(robotPackage));
   }
   else if (m_autoSelected == "kHighPlaceDock") {
-    sched->Schedule(HighPlace(armavator, gripper) << Dock(swervePackage, armavator));
+    sched->Schedule(HighPlace(robotPackage) << Dock(robotPackage));
   }
   else if (m_autoSelected == "kDock") {
-    sched->Schedule(Dock(swervePackage, armavator));
+    sched->Schedule(Dock(robotPackage));
 
   }
 }

@@ -11,6 +11,11 @@ struct Drivebase {
   wom::SwerveDrive *swerve;
   wom::NavX *gyro;
 };
+struct RoboPackage {
+  Drivebase swervePackage;
+  Armavator *armavator;
+  Gripper *gripper;
+};
 
 /*
 for CollectDock, could move the Collect out of the switch statement
@@ -31,12 +36,14 @@ we can treat it like an else condition, and then we do if (collect) and if (coll
 
 // std::shared_ptr<behaviour::Behaviour> Quintuple(Drivebase drivebase, bool blueAlliance, StartingConfig startConfig, EndingConfig endConfig);
 
-std::shared_ptr<behaviour::Behaviour> ForwardDrive(Drivebase drivebase, Armavator *armavator);
+std::shared_ptr<behaviour::Behaviour> ForwardDrive(RoboPackage robotPackage);
 
-std::shared_ptr<behaviour::Behaviour> Balance(Drivebase drivebase, Armavator *armavator);
+std::shared_ptr<behaviour::Behaviour> Balance(RoboPackage robotPackage);
 
 
-std::shared_ptr<behaviour::Behaviour> LowPlace(Armavator *armavator , Gripper *gripper);
-std::shared_ptr<behaviour::Behaviour> HighPlace(Armavator *armavator , Gripper *gripper);
-std::shared_ptr<behaviour::Behaviour> Taxi(Drivebase drivebase, Armavator *armavator);
-std::shared_ptr<behaviour::Behaviour> Dock(Drivebase drivebase, Armavator *armavator);
+std::shared_ptr<behaviour::Behaviour> LowPlace(RoboPackage robotPackage);
+std::shared_ptr<behaviour::Behaviour> HighPlace(RoboPackage robotPackage);
+std::shared_ptr<behaviour::Behaviour> Taxi(RoboPackage robotPackage);
+std::shared_ptr<behaviour::Behaviour> Dock(RoboPackage robotPackage);
+
+std::shared_ptr<behaviour::Behaviour> Single(RoboPackage robotPackage);
