@@ -3,6 +3,8 @@
 #include <ctre/Phoenix.h>
 #include <units/math.h>
 #include <units/velocity.h>
+#include <frc/XboxController.h>
+
 
 #include "Gearbox.h"
 #include "Arm.h"
@@ -33,7 +35,6 @@ enum class DoubleArmState {
 
 class DoubleArm : public  behaviour::HasBehaviour {
   public :
-
   DoubleArm(DoubleArmConfig _config);
   // DoubleArm(DoubleArmConfig _config, wom::Gearbox _baseArm, wom::Gearbox _connectorControl)
 
@@ -43,7 +44,8 @@ class DoubleArm : public  behaviour::HasBehaviour {
   void SetZeroing();
   void SetManual(units::volt_t BaseArm, units::volt_t extensionArm);
   void SetSpeedValues(double baseArmSpeed, double extensionArmSpeed);
-
+  bool IsStable();
+  DoubleArmConfig *GetConfig();
   DoubleArmPos GetCurrentPos();
 
   void OnStart();

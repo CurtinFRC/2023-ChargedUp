@@ -35,6 +35,10 @@ DoubleArmPos DoubleArm::GetCurrentPos() {
   };
 }
 
+bool DoubleArm::IsStable() {
+  return _extensionArm->IsStable() && _baseArm->IsStable();
+}
+
 void DoubleArm::OnStart() {
   _config->baseControl.encoder->SetEncoderPosition(_zeroed.baseAngle);
   _config->connectorControl.encoder->SetEncoderPosition(_zeroed.extensionAngle);
@@ -67,3 +71,7 @@ void DoubleArm::OnUpdate(units::second_t dt) {
     _config->baseArm.OnUpdate(dt);
     _config->extensionArm.OnUpdate(dt);
   }
+
+DoubleArmConfig *DoubleArm::GetConfig() {
+  return _config;
+}
