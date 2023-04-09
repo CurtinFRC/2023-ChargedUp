@@ -103,25 +103,35 @@ void Robot::RobotPeriodic() {
 void Robot::AutonomousInit() {
   swerve->OnStart();
   swerve->ResetPose(frc::Pose2d());
-  // swerve->ResetPose(frc::Pose2d());  
   BehaviourScheduler *sched = BehaviourScheduler::GetInstance();
-  // sched->Schedule(SubsystemTestPlace(armavator));
-  // sched->Schedule(Single(Drivebase{swerve,  &map.swerveBase.gyro}, armavator, gripper, true, StartingConfig::Bottom, EndingConfig::Dock));
-  // sched->Schedule(ForwardDrive(Drivebase{swerve, &map.swerveBase.gyro}, armavator));
-  sched->Schedule(Single(Drivebase{swerve,  &map.swerveBase.gyro}, armavator, gripper, true, StartingConfig::Bottom, EndingConfig::Dock));
-  // sched->Schedule(Balence(Drivebase{swerve, &map.swerveBase.gyro}, armavator));
+  
+  //sched->Schedule(Single(Drivebase{swerve,  &map.swerveBase.gyro}, armavator, gripper, true, StartingConfig::Bottom, EndingConfig::Dock));
+  
+  Drivebase swervePackage = Drivebase{swerve,  &map.swerveBase.gyro};
+
+  // idea: maybe have a robo package, including swervePackage, armavator, and gripper
+
 
   if (m_autoSelected == "kLowPlace") {
-
-  } else if (m_autoSelected == "lowPlaceTaxi") {
-
-  } else if (m_autoSelected == "highPlaceTaxi") {
-
-  } else if (m_autoSelected == "highPlace") {
-
-  } else if (m_autoSelected == "placeDock") {
-
-  } else if (m_autoSelected == "dock") {
+    sched->Schedule(LowPlace(armavator, gripper));
+  }
+  else if (m_autoSelected == "kHighPlace") {
+    sched->Schedule(HighPlace(armavator, gripper));
+  }
+  else if (m_autoSelected == "kLowPlaceTaxi") {
+    sched->Schedule(LowPlace(armavator, gripper) << Taxi(swervePackage, armavator));
+  }
+  else if (m_autoSelected == "kHighPlaceTaxi") {
+    sched->Schedule(HighPlace(armavator, gripper) << Taxi(swervePackage, armavator));
+  }
+  else if (m_autoSelected == "kLowPlaceDock") {
+    sched->Schedule(LowPlace(armavator, gripper) << Dock(swervePackage, armavator));
+  }
+  else if (m_autoSelected == "kHighPlaceDock") {
+    sched->Schedule(HighPlace(armavator, gripper) << Dock(swervePackage, armavator));
+  }
+  else if (m_autoSelected == "kDock") {
+    sched->Schedule(Dock(swervePackage, armavator));
 
   }
 }
