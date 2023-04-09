@@ -39,6 +39,8 @@ void Robot::RobotInit() {
   m_chooser.AddOption(kDock, kDock);
   frc::SmartDashboard::PutData("Auto Modes", &m_chooser);
 
+
+
   lastPeriodic = wom::now();
   map.swerveBase.gyro.Reset();
 
@@ -105,14 +107,22 @@ void Robot::AutonomousInit() {
   swerve->ResetPose(frc::Pose2d());
   BehaviourScheduler *sched = BehaviourScheduler::GetInstance();
   
-  //sched->Schedule(Single(Drivebase{swerve,  &map.swerveBase.gyro}, armavator, gripper, true, StartingConfig::Bottom, EndingConfig::Dock));
+  // sched->Schedule(Single(Drivebase{swerve,  &map.swerveBase.gyro}, armavator, gripper, true, StartingConfig::Bottom, EndingConfig::Dock));
 
   RoboPackage robotPackage{
     {swerve,  &map.swerveBase.gyro},
     armavator,
     gripper    
   };
-  // idea: maybe have a robo package, including swervePackage, armavator, and gripper
+
+
+  m_autoSelected = frc::SmartDashboard::GetString("Auto Selector", "get trolled lmao");
+
+  bool isValidAuto = false;
+  for (auto element : autoOptions){   if (element == m_autoSelected){   isValidAuto = true;   }   }
+  if (!isValidAuto){   m_autoSelected = defaultAuto;   }
+
+  nt::NetworkTableInstance::GetDefault().GetTable("FUCk")->GetEntry("fuck3").SetString(m_autoSelected);
 
 
   if (m_autoSelected == "kLowPlace") {
@@ -135,7 +145,6 @@ void Robot::AutonomousInit() {
   }
   else if (m_autoSelected == "kDock") {
     sched->Schedule(Dock(robotPackage));
-
   }
 }
 
@@ -147,8 +156,6 @@ void Robot::AutonomousPeriodic() {
 void Robot::TeleopInit() {
   loop.Clear();
   BehaviourScheduler *sched = BehaviourScheduler::GetInstance();
-  // sched = BehaviourScheduler::GetInstance();
-  // sched->InterruptAll(); // removes all previously scheduled behaviours
   sched->InterruptAll();
 
   swerve->OnStart();
@@ -157,9 +164,7 @@ void Robot::TeleopInit() {
    map.controllers.driver.B(&loop).Rising().IfHigh([sched, this]() {
     swerve->GetActiveBehaviour()->Interrupt();
   });
-  // map.controllers.driver.Y(&loop).Rising().IfHigh([sched, this]() { // temp solutions
-  //   swerve->ResetPose(vision->EstimatePose(vision->GetConfig()).ToPose2d());
-  // });
+  
   map.controllers.driver.POV(0, &loop).Rising().IfHigh([sched, this]() {
     sched->Schedule(make<AlignDrivebaseToNearestGrid>(swerve, vision, 0));
   });
