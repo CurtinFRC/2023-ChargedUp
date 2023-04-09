@@ -9,12 +9,16 @@
 #include <frc/Compressor.h>
 
 #include "XInputController.h"
+
 #include <ctre/Phoenix.h>
+
 #include "drivetrain/SwerveDrive.h"
 #include <frc/DoubleSolenoid.h>
 #include <units/length.h>
 
+
 #include "Encoder.h"
+
 #include <iostream>
 #include <string>
 
@@ -146,22 +150,19 @@ struct ControlSystem {
       1_deg,
       0.5_deg / 2_s
     };
-
     wom::SwerveModule::velocity_pid_conf_t velocityPID{
       "/drivetrain/pid/velocity/config",
       //  12_V / 4_mps // webers per metre
     };
-
     wom::SwerveDriveConfig::pose_angle_conf_t poseAnglePID {
       "/drivetrain/pid/pose/angle/config",
-      (180_deg / 1_s) / 45_deg,
-      wom::SwerveDriveConfig::pose_angle_conf_t::ki_t{0.1}, //0.1
+      180_deg / 1_s / 45_deg,
+      wom::SwerveDriveConfig::pose_angle_conf_t::ki_t{0.1},
       0_deg / 1_deg,
       10_deg,
       10_deg / 1_s
     };
-
-    wom::SwerveDriveConfig::pose_position_conf_t posePositionPID {
+    wom::SwerveDriveConfig::pose_position_conf_t posePositionPID{
       "/drivetrain/pid/pose/position/config",
       3_mps / 1_m,
       wom::SwerveDriveConfig::pose_position_conf_t::ki_t{0.15},
@@ -169,14 +170,6 @@ struct ControlSystem {
       20_cm, 
       10_cm / 1_s,
       10_cm
-    };
-    wom::SwerveDriveConfig::pose_angle_conf_t rotateMatchPID {
-      "/drivetrain/pid/rotateMatchAngle/config",
-      180_deg / 1_s / 45_deg,
-      wom::SwerveDriveConfig::pose_angle_conf_t::ki_t{0.1},
-      0_deg / 1_deg,
-      10_deg,
-      10_deg / 1_s
     };
 
     // the config for the whole swerve drive
@@ -187,7 +180,6 @@ struct ControlSystem {
       &gyro,
       poseAnglePID, 
       posePositionPID,
-      rotateMatchPID,
       60_kg, // robot mass (estimate rn)
       {0.1, 0.1, 0.1},
       {0.9, 0.9, 0.9}
@@ -246,9 +238,9 @@ struct ControlSystem {
 
   struct Armavator {
     //sets up the percieved masses for the load, arm and carraige
-    static constexpr units::kilogram_t loadMass = 1_kg;
-    static constexpr units::kilogram_t armMass = 2_kg;
-    static constexpr units::kilogram_t carriageMass = 3_kg;
+    static constexpr units::kilogram_t loadMass = 10_kg;
+    static constexpr units::kilogram_t armMass = 5_kg;
+    static constexpr units::kilogram_t carriageMass = 5_kg;
 
     //stores nessesary info for arm
     struct Arm {
@@ -297,21 +289,15 @@ struct ControlSystem {
         leftOtherArmEncoder,
         wom::PIDConfig<units::radian, units::volts>(
           "/armavator/arm/pid/config",
-          13_V / 25_deg, //prev 13_V/25_deg
-          0.1_V / (1_deg * 1_s), //0.1_V / (1_deg * 1_s)
+          10_V / 25_deg,
+          0.1_V / (1_deg * 1_s),
           0_V / (1_deg / 1_s),
           5_deg,
           2_deg / 1_s,
           10_deg
         ),
-        wom::PIDConfig<units::radians_per_second, units::volts>(
-          "/armavator/arm/velocityPID/config",
-          9_V / (180_deg / 1_s),
-          0_V / 25_deg,
-          0_V / (90_deg / 1_s / 1_s)
-        ),
-        2_kg, 
-        2_kg,
+        5_kg, 
+        5_kg,
         1.37_m,
         -90_deg,
         270_deg,
@@ -381,14 +367,8 @@ struct ControlSystem {
           19_V / 1_m, //16V
           0.3_V / (1_m * 1_s),
           0_V / (1_m / 1_s),
-          0.1_m,
-          0.05_m / 1_s
-        },
-        {
-          "/armavator/elevator/velocity/pid/config",
-          6_V / (1_m / 1_s),
-          0_V / 1_m,
-          0_V / (1_m / 1_s / 1_s)
+          0.1_m
+          // 0.05_m / 1_s
         }
       };
 

@@ -9,10 +9,12 @@
 #include "XInputController.h"
 #include <frc/XboxController.h>
 #include <frc/PS4Controller.h>
-#include <vector>
-#include "Poses.h"
-#include <frc/smartdashboard/SmartDashboard.h>
 
+#include <vector>
+
+#include "Poses.h"
+
+// #include <units/units.h>
 
 using namespace wom;
 
@@ -28,20 +30,36 @@ void ManualDrivebase::OnStart(units::second_t dt) {
 }
 
 void ManualDrivebase::OnTick(units::second_t deltaTime) {
-  // if (_driverController->GetXButtonPressed()) {
-  //   // ResetMode();
-  //   if (isRotateMatch) {
-  //     isRotateMatch = false;
-  //   } else {
-  //     isRotateMatch = true;
-  //   }
-  // }
+  // _swerveDrivebase->SetVoltageLimit(10_V);
 
   if (_driverController->GetYButton()) {
     std::cout << "RESETING POSE" << std::endl;
     _swerveDrivebase->ResetPose(frc::Pose2d());
     
   }
+
+
+  //  SOLUTION TO "ANTI-TIP"
+  // double joystickSpeedX = (_driverController->GetLeftX() - prevJoystickX) / deltaTime.value();
+  // double JoystickSpeedY = (_driverController->GetLeftY() - prevJoystickY) / deltaTime.value();
+
+  // if (sqrt(joystickSpeedX*joystickSpeedX + JoystickSpeedY*JoystickSpeedY) > smoothingThreshold){
+  //   usingJoystickXPos = (prevPrevJoystickX + prevJoystickX + _driverController->GetLeftX()) / 3;
+  //   usingJoystickYPos = (prevPrevJoystickY + prevJoystickY + _driverController->GetLeftY()) / 3;
+  // } else {
+  //   usingJoystickXPos = _driverController->GetLeftX();
+  //   usingJoystickYPos = _driverController->GetLeftY();
+  // }
+
+  /*   TOGGLE SOLUTION   */
+  /*if (_driverController->GetLeftBumperPressed()){
+    maxMovementMagnitude = highSensitivityDriveSpeed;
+    maxRotationMagnitude = highSensitivityRotateSpeed;
+  }
+  if (_driverController->GetRightBumperPressed()){
+    maxMovementMagnitude = lowSensitivityDriveSpeed;
+    maxRotationMagnitude = lowSensitivityRotateSpeed;
+  }*/
 
   /*   HOLD SOLUTION   */
   if (_driverController->GetLeftBumperPressed()){
@@ -73,7 +91,6 @@ void ManualDrivebase::OnTick(units::second_t deltaTime) {
   else {
     double xVelocity = wom::spow2(-wom::deadzone(_driverController->GetLeftY(), driverDeadzone));  // GetLeftY due to x being where y should be on field
     double yVelocity = wom::spow2(-wom::deadzone(_driverController->GetLeftX(), driverDeadzone));
-
     double r_x = wom::spow2(-wom::deadzone(_driverController->GetRightX(), turningDeadzone));
     double r_y = wom::spow2(-wom::deadzone(_driverController->GetRightY(), turningDeadzone));
 
@@ -106,37 +123,14 @@ void ManualDrivebase::OnTick(units::second_t deltaTime) {
           yVelocity * maxMovementMagnitude,
           r_x * maxRotationMagnitude
       });
-
-      // _swerveDrivebase->RotateMatchJoystick(_requestedAngle, wom::FieldRelativeSpeeds{
-      //   xVelocity * maxMovementMagnitude,
-      //   yVelocity * maxMovementMagnitude,
-      //   r_x * maxRotationMagnitude
-      // });
     }
-
-      // // if (isRotateMatch) {
-      //   units::degree_t currentAngle = _swerveDrivebase->GetPose().Rotation().Degrees();
-      //   CalculateRequestedAngle(turnX, turnY, currentAngle);
-      //   _swerveDriveTable->GetEntry("RotateMatch").SetDouble(_requestedAngle.value());
-      //   _swerveDrivebase->RotateMatchJoystick(_requestedAngle, wom::FieldRelativeSpeeds{ //also field relative 
-      //     xVelocity * maxMovementMagnitude,
-      //     yVelocity * maxMovementMagnitude,
-      //     r_x * maxRotationMagnitude
-      //   });
-      // // } else {
-      // //   _swerveDrivebase->SetFieldRelativeVelocity(wom::FieldRelativeSpeeds{
-      // //     xVelocity * maxMovementMagnitude,
-      // //     yVelocity * maxMovementMagnitude,
-      // //     r_x * maxRotationMagnitude
-      // //   });
-      // // }
   }
-} 
 
-// void ManualDrivebase::ResetMode() {
-//   _swerveDrivebase->OnResetMode();
-//   resetMode = false;
-// }
+  // prevPrevJoystickX = prevJoystickX;
+  // prevPrevJoystickY = prevJoystickY;
+  // prevJoystickX = _driverController->GetLeftX();
+  // prevJoystickY = _driverController->GetLeftY();
+} 
 
 void ManualDrivebase::CalculateRequestedAngle(double joystickX, double joystickY, units::degree_t defaultAngle){
   _requestedAngle = (1_rad * atan2(joystickY, -joystickX)) + 90_deg;
@@ -144,6 +138,9 @@ void ManualDrivebase::CalculateRequestedAngle(double joystickX, double joystickY
     _requestedAngle = _swerveDrivebase->GetPose().Rotation().Radians();
   }
 }
+
+
+
 
 // Code for Drivebase Pose Controls
 DrivebasePoseBehaviour::DrivebasePoseBehaviour(
@@ -154,17 +151,13 @@ DrivebasePoseBehaviour::DrivebasePoseBehaviour(
 void DrivebasePoseBehaviour::OnTick(units::second_t deltaTime) {
   double currentAngle = _swerveDrivebase->GetPose().Rotation().Degrees().value();
   units::degree_t adjustedAngle = 1_deg * (currentAngle - fmod(currentAngle, 360) + _pose.Rotation().Degrees().value());
-  frc::SmartDashboard::PutNumber("drivebase angle", adjustedAngle.value());
   _swerveDrivebase->SetVoltageLimit(_voltageLimit);
   _swerveDrivebase->SetPose(frc::Pose2d{_pose.X(), _pose.Y(), adjustedAngle});
 
-  if (_swerveDrivebase->IsAtSetPose() && !_hold){
-    SetDone();
-    frc::SmartDashboard::PutBoolean("drivebase pose done", true);
-  } else {
-    frc::SmartDashboard::PutBoolean("drivebase pose done", false);
-  }
+  if (_swerveDrivebase->IsAtSetPose() && !_hold){   SetDone();   }
 }
+
+
 
 // Code for Drivebase balancing on the chargestation
 DrivebaseBalance::DrivebaseBalance(wom::SwerveDrive *swerveDrivebase, wom::NavX *gyro) : _swerveDrivebase(swerveDrivebase), _gyro(gyro) {
@@ -185,9 +178,13 @@ void DrivebaseBalance::OnTick(units::second_t deltaTime) {
   _swerveDriveTable->GetEntry("BalanceSidewaysSpeed").SetDouble(sidewaysMotorSpeed.value());
 }
 
+
+
 // Code for x-ing the wheels on the drivebase
 XDrivebase::XDrivebase(wom::SwerveDrive *swerveDrivebase) : _swerveDrivebase(swerveDrivebase) {   Controls(swerveDrivebase);   }
 void XDrivebase::OnTick(units::second_t deltaTime) {   _swerveDrivebase->SetXWheelState();   }
+
+
 
 // Code for auto aligning to the nearest grid position
 AlignDrivebaseToNearestGrid::AlignDrivebaseToNearestGrid(wom::SwerveDrive *swerveDrivebase) : _swerveDrivebase(swerveDrivebase){   Controls(swerveDrivebase);   }
@@ -261,8 +258,11 @@ void AlignDrivebaseToNearestGrid::OnTick(units::second_t deltaTime){
     std::cout << "running vision" << std::endl;
     }
 
+
+
     // if (_swerveDrivebase->IsAtSetPose()){   SetDone();   }
     // SetDone();
+  
 }
 
 void AlignDrivebaseToNearestGrid::OnStart() { 

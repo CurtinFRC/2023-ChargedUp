@@ -55,11 +55,11 @@ void SwerveModule::OnUpdate(units::second_t dt) {
   turnVoltage = units::math::min(turnVoltage, 7_V);
 
   driveVoltage = units::math::min(units::math::max(driveVoltage, -_driveModuleVoltageLimit), _driveModuleVoltageLimit); // was originally 10_V
-  // std::cout << "drive-voltage: " << driveVoltage.value() << std::endl;
+  std::cout << "drive-voltage: " << driveVoltage.value() << std::endl;
   units::volt_t turnVoltageMax = 7_V - (driveVoltage * (7_V / 10_V));
   turnVoltage = units::math::min(units::math::max(turnVoltage, -turnVoltageMax), turnVoltageMax);
   // turnVoltage = units::math::min(units::math::max(turnVoltage, -7_V), 7_V);
-  // std::cout << "turn-voltage-max: " << turnVoltageMax.value() << std::endl;
+  std::cout << "turn-voltage-max: " << turnVoltageMax.value() << std::endl;
 
   _config.driveMotor.transmission->SetVoltage(driveVoltage);
   _config.turnMotor.transmission->SetVoltage(turnVoltage);
@@ -158,7 +158,6 @@ SwerveDrive::SwerveDrive(SwerveDriveConfig config, frc::Pose2d initialPose) :
     initialPose,
     _config.stateStdDevs, _config.visionMeasurementStdDevs
   ),
-  _rotateMatchJoystickController(config.path + "/pid/rotate", _config.rotateMatchPID),
   _anglePIDController(config.path + "/pid/heading", _config.poseAnglePID),
   _xPIDController(config.path + "/pid/x", _config.posePositionPID),
   _yPIDController(config.path + "/pid/y", _config.posePositionPID),
@@ -203,7 +202,7 @@ void SwerveDrive::OnUpdate(units::second_t dt) {
     case SwerveDriveState::kFieldRelativeVelocity:
       _target_speed = _target_fr_speeds.ToChassisSpeeds(GetPose().Rotation().Radians());
       if (isRotateToMatchJoystick){
-        _target_speed.omega = _rotateMatchJoystickController.Calculate(GetPose().Rotation().Radians(), dt);
+        _target_speed.omega = _anglePIDController.Calculate(GetPose().Rotation().Radians(), dt);
       }
       // std::cout << "vx = " << _target_speed.vx.value() << " vy = " << _target_fr_speeds.vy.value() << std::endl;
       [[fallthrough]];
@@ -280,6 +279,7 @@ void SwerveDrive::SetVoltageLimit(units::volt_t driveVoltageLimit) {
 //   return _modules[mod].GetCancoderPosition();
 // }
 
+
 void SwerveDrive::OnStart() {
   _xPIDController.Reset();
   _yPIDController.Reset();
@@ -290,13 +290,6 @@ void SwerveDrive::OnStart() {
   _modules[2].OnStart(); // back right 
   _modules[3].OnStart(); // back left
 }
-
-// void SwerveDrive::OnResetMode() {
-//   _xPIDController.Reset();
-//   _yPIDController.Reset();
-//   _anglePIDController.Reset();
-//   std::cout << "reset" << std::endl;
-// }
 
 void SwerveDrive::RotateMatchJoystick(units::radian_t joystickAngle, FieldRelativeSpeeds speeds) {
   // _state = SwerveDriveState::kFRVelocityRotationLock;
@@ -339,7 +332,6 @@ void SwerveDrive::SetTuning(units::radian_t angle, units::meters_per_second_t sp
 
 void SwerveDrive::SetFieldRelativeVelocity(FieldRelativeSpeeds speeds) {
   _state = SwerveDriveState::kFieldRelativeVelocity;
-  isRotateToMatchJoystick = false;
   _target_fr_speeds = speeds;
 }
 

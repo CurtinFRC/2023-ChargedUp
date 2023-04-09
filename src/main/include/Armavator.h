@@ -31,17 +31,11 @@ struct ArmavatorPosition {
 
 };
 
-struct ArmavatorVelocity {
-  units::meters_per_second_t elevatorSpeed;
-  units::radians_per_second_t angleSpeed;
-};
-
 //creates the states used to control the robot
 enum class ArmavatorState {
   kIdle,
   kPosition,
-  kManual,
-  kVelocity
+  kManual
 };
 
 //the behaviour class information
@@ -60,8 +54,6 @@ class Armavator : public behaviour::HasBehaviour {
   void SetManual(units::volt_t arm, units::volt_t elevator);
   void SetSpeedValues(double elevatorSpeed, double armSpeed);
 
-  void SetVelocity(ArmavatorVelocity vel);
-
   ArmavatorPosition GetCurrentPosition() const;
   bool IsStable() const;
 
@@ -69,8 +61,6 @@ class Armavator : public behaviour::HasBehaviour {
   wom::Arm *arm;
   wom::Elevator *elevator;
   ArmavatorPosition _setpoint;
-  ArmavatorVelocity _velocitySetpoint;
-
 
  private: 
   ArmavatorState _state = ArmavatorState::kIdle;

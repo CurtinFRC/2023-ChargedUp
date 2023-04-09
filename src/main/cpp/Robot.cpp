@@ -25,40 +25,38 @@ void Robot::RobotInit() {
   cs::CvSink cvSink = frc::CameraServer::GetVideo();
   cs::CvSource outputStream = frc::CameraServer::PutVideo("Rectangle", 640, 480);
 
-  // map.swerveBase.moduleConfigs[0].turnMotor.encoder->SetEncoderOffset(0.951068_rad);
-  // map.swerveBase.moduleConfigs[1].turnMotor.encoder->SetEncoderOffset(4.41479_rad);
-  // map.swerveBase.moduleConfigs[2].turnMotor.encoder->SetEncoderOffset(4.81669_rad);
-  // map.swerveBase.moduleConfigs[3].turnMotor.encoder->SetEncoderOffset(3.81194_rad);
-
-  map.swerveBase.moduleConfigs[0].turnMotor.encoder->SetEncoderOffset(1.02009_rad);
-  map.swerveBase.moduleConfigs[1].turnMotor.encoder->SetEncoderOffset(4.457748_rad);
-  map.swerveBase.moduleConfigs[2].turnMotor.encoder->SetEncoderOffset(4.77528_rad);
-  map.swerveBase.moduleConfigs[3].turnMotor.encoder->SetEncoderOffset(3.756194_rad);
-
-
-  m_chooser.SetDefaultOption(kLowPlace, kLowPlace);
-  m_chooser.AddOption(kLowPlaceTaxi, kLowPlaceTaxi);
-  m_chooser.AddOption(kHighPlaceTaxi, kHighPlaceTaxi);
-  m_chooser.AddOption(kHighPlace, kHighPlace);
-  m_chooser.AddOption(kPlaceDock, kPlaceDock);
-  m_chooser.AddOption(kDock, kDock);
-  frc::SmartDashboard::PutData("Auto Modes", &m_chooser);
-
-
-
   lastPeriodic = wom::now();
-  map.swerveBase.gyro.Reset();
 
+  map.swerveBase.moduleConfigs[0].turnMotor.encoder->SetEncoderOffset(4.11207_rad);
+  map.swerveBase.moduleConfigs[1].turnMotor.encoder->SetEncoderOffset(1.32638_rad);
+  map.swerveBase.moduleConfigs[2].turnMotor.encoder->SetEncoderOffset(1.67817_rad);
+  map.swerveBase.moduleConfigs[3].turnMotor.encoder->SetEncoderOffset(0.60899_rad);
+
+  // map.swerveBase.moduleConfigs[0].turnMotor.encoder->SetEncoderOffset(0_rad);
+  // map.swerveBase.moduleConfigs[1].turnMotor.encoder->SetEncoderOffset(0_rad);
+  // map.swerveBase.moduleConfigs[2].turnMotor.encoder->SetEncoderOffset(0_rad);
+  // map.swerveBase.moduleConfigs[3].turnMotor.encoder->SetEncoderOffset(0_rad);
+
+  map.swerveBase.gyro.Reset();
+  
   vision = new Vision(&map.vision.config);
+
   swerve = new wom::SwerveDrive(map.swerveBase.config, frc::Pose2d());
   BehaviourScheduler::GetInstance()->Register(swerve);
   swerve->SetDefaultBehaviour([this]() {
     return make<ManualDrivebase>(swerve, &map.controllers.driver);
   });
 
+
+  // BehaviourScheduler::GetInstance()->Register(vision);
+  // vision->SetDefaultBehaviour([this]() {
+  //   return make<VisionBehaviour>(vision, swerve, &map.controllers.codriver);
+  // });
+
   vision->table->GetEntry("goToPoseX").SetDouble(0);
   vision->table->GetEntry("goToPoseY").SetDouble(0);
   vision->table->GetEntry("goToPoseRotation").SetDouble(0);
+
 
   armavator = new Armavator(map.armavator.arm.leftGearbox, map.armavator.arm.rightGearbox, map.armavator.elevator.rightGearbox, map.armavator.elevator.leftGearbox, map.armavator.config);
   BehaviourScheduler::GetInstance()->Register(armavator);
@@ -102,8 +100,6 @@ void Robot::RobotPeriodic() {
   else
     nt::NetworkTableInstance::GetDefault().GetTable("TOF")->GetEntry("distance").SetDouble(-1);
 
-  std::cout << "drivebase gyro pos: " << swerve->GetConfig().gyro->GetAngle() << std::endl;
-
   armavator->OnUpdate(dt);
   sideIntake->OnUpdate(dt);
   gripper->OnUpdate(dt);
@@ -112,67 +108,11 @@ void Robot::RobotPeriodic() {
 void Robot::AutonomousInit() {
   swerve->OnStart();
   swerve->ResetPose(frc::Pose2d());
+  // swerve->ResetPose(frc::Pose2d());  
   BehaviourScheduler *sched = BehaviourScheduler::GetInstance();
-  // sched->Schedule(SubsystemTestPlace(Drivebase{swerve, &map.swerveBase.gyro}, armavator, gripper));
-  // sched->Schedule(Single(Drivebase{swerve,  &map.swerveBase.gyro}, armavator, gripper, true, StartingConfig::Bottom, EndingConfig::Dock));
   // sched->Schedule(ForwardDrive(Drivebase{swerve, &map.swerveBase.gyro}, armavator));
-  // sched->Schedule(Single(Drivebase{swerve,  &map.swerveBase.gyro}, armavator, gripper, true, StartingConfig::Bottom, EndingConfig::Dock));
+  sched->Schedule(Single(Drivebase{swerve,  &map.swerveBase.gyro}, armavator, gripper, true, StartingConfig::Bottom, EndingConfig::Dock));
   // sched->Schedule(Balence(Drivebase{swerve, &map.swerveBase.gyro}, armavator));
-  // sched->Schedule(BalenceWithPlace(Drivebase{swerve, &map.swerveBase.gyro}, armavator, gripper));
-
-  // if (m_autoSelected == "kLowPlace") {
-
-  // } else if (m_autoSelected == "kLowPlaceTaxi") {
-
-  // } else if (m_autoSelected == "kHighPlaceTaxi") {
-
-  // } else if (m_autoSelected == "kHighPlace") {
-
-  // } else if (m_autoSelected == "kPlaceDock") {
-
-  // } else if (m_autoSelected == "kDock") {
-
-  // }
-  
-  // // sched->Schedule(Single(Drivebase{swerve,  &map.swerveBase.gyro}, armavator, gripper, true, StartingConfig::Bottom, EndingConfig::Dock));
-
-  // RoboPackage robotPackage{
-  //   {swerve,  &map.swerveBase.gyro},
-  //   armavator,
-  //   gripper    
-  // };
-
-
-  // m_autoSelected = frc::SmartDashboard::GetString("Auto Selector", "get trolled lmao");
-
-  // bool isValidAuto = false;
-  // for (auto element : autoOptions){   if (element == m_autoSelected){   isValidAuto = true;   }   }
-  // if (!isValidAuto){   m_autoSelected = defaultAuto;   }
-
-  // nt::NetworkTableInstance::GetDefault().GetTable("FUCk")->GetEntry("fuck3").SetString(m_autoSelected);
-
-
-  // if (m_autoSelected == "kLowPlace") {
-  //   sched->Schedule(LowPlace(robotPackage));
-  // }
-  // else if (m_autoSelected == "kHighPlace") {
-  //   sched->Schedule(HighPlace(robotPackage));
-  // }
-  // else if (m_autoSelected == "kLowPlaceTaxi") {
-  //   sched->Schedule(LowPlace(robotPackage) << Taxi(robotPackage));
-  // }
-  // else if (m_autoSelected == "kHighPlaceTaxi") {
-  //   sched->Schedule(HighPlace(robotPackage) << Taxi(robotPackage));
-  // }
-  // else if (m_autoSelected == "kLowPlaceDock") {
-  //   sched->Schedule(LowPlace(robotPackage) << Dock(robotPackage));
-  // }
-  // else if (m_autoSelected == "kHighPlaceDock") {
-  //   sched->Schedule(HighPlace(robotPackage) << Dock(robotPackage));
-  // }
-  // else if (m_autoSelected == "kDock") {
-  //   sched->Schedule(Dock(robotPackage));
-  // }
 }
 
 void Robot::AutonomousPeriodic() {
@@ -183,7 +123,9 @@ void Robot::AutonomousPeriodic() {
 void Robot::TeleopInit() {
   loop.Clear();
   BehaviourScheduler *sched = BehaviourScheduler::GetInstance();
-  sched->InterruptAll();
+  // sched = BehaviourScheduler::GetInstance();
+  // sched->InterruptAll(); // removes all previously scheduled behaviours
+    sched->InterruptAll();
 
   swerve->OnStart();
   armavator->OnStart();
@@ -191,7 +133,9 @@ void Robot::TeleopInit() {
    map.controllers.driver.B(&loop).Rising().IfHigh([sched, this]() {
     swerve->GetActiveBehaviour()->Interrupt();
   });
-  
+  // map.controllers.driver.Y(&loop).Rising().IfHigh([sched, this]() { // temp solutions
+  //   swerve->ResetPose(vision->EstimatePose(vision->GetConfig()).ToPose2d());
+  // });
   map.controllers.driver.POV(0, &loop).Rising().IfHigh([sched, this]() {
     sched->Schedule(make<AlignDrivebaseToNearestGrid>(swerve, vision, 0));
   });
@@ -210,6 +154,9 @@ void Robot::TeleopPeriodic() {
   auto dt = wom::now() - lastPeriodic;
 
   vision->OnUpdate(dt);
+  
+
+
 
   // // test function
   // if (map.controllers.driver.GetLeftTriggerAxis() >= 0.5){
@@ -220,6 +167,7 @@ void Robot::TeleopPeriodic() {
   if (map.controllers.test.GetBButtonPressed()){
     swerve->GetActiveBehaviour()->Interrupt();
   }
+
 }
 
 
@@ -231,6 +179,9 @@ void Robot::TestPeriodic() {
   auto dt = wom::now() - lastPeriodic;
 
   vision->OnUpdate(dt);
+  
+
+
 }
 
 

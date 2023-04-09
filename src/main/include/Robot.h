@@ -19,7 +19,6 @@
 
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <frc/event/BooleanEvent.h>
-#include "frc/smartdashboard/SendableChooser.h"
 
 using namespace frc;
 
@@ -59,24 +58,4 @@ class Robot : public frc::TimedRobot {
 
   units::meter_t _elevatorSetpoint = 0_m;
   units::radian_t _armSetpoint = 0_deg;
-  
-  frc::SendableChooser<std::string> m_chooser;
-  const std::string kLowPlace = "kLowPlace";
-  const std::string kLowPlaceTaxi = "kLowPlaceTaxi";
-  const std::string kHighPlaceTaxi = "kHighPlaceTaxi";
-  const std::string kHighPlace = "kHighPlace";
-  const std::string kPlaceDock = "kPlaceDock";
-  const std::string kDock = "kDock";
-  // Please modify the code below if auto is being changed, or new autos are added
-  std::string defaultAuto = "kLowPlace";
-  std::vector<std::string> autoOptions = {
-    kLowPlace,
-    kLowPlaceTaxi,
-    kHighPlaceTaxi,
-    kHighPlace,
-    kPlaceDock,
-    kDock
-  };
-  
-  std::string m_autoSelected;
 };

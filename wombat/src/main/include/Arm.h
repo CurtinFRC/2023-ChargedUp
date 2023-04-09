@@ -19,7 +19,6 @@ namespace wom {
     wom::Gearbox rightGearbox;
     rev::SparkMaxRelativeEncoder armEncoder;
     wom::PIDConfig<units::radian, units::volt> pidConfig;
-    wom::PIDConfig<units::radians_per_second, units::volt> velocityConfig;
 
     units::kilogram_t armMass;
     units::kilogram_t loadMass;
@@ -35,8 +34,7 @@ namespace wom {
   enum class ArmState {
     kIdle,
     kAngle,
-    kRaw,
-    kVelocity
+    kRaw
   };
 
   class Arm : public behaviour::HasBehaviour {
@@ -48,7 +46,6 @@ namespace wom {
     void SetIdle();
     void SetAngle(units::radian_t angle);
     void SetRaw(units::volt_t voltage);
-    void SetVelocity(units::radians_per_second_t velocity);
 
     void SetArmSpeedLimit(double limit); //units, what are they?? 
 
@@ -56,19 +53,16 @@ namespace wom {
 
     units::radian_t GetAngle() const;
     units::radians_per_second_t MaxSpeed() const;
-    units::radians_per_second_t GetArmVelocity() const;
     
     bool IsStable() const;
   private:
     ArmConfig _config;
     ArmState _state = ArmState::kIdle;
     wom::PIDController<units::radian, units::volt> _pid;
-    wom::PIDController<units::radians_per_second, units::volt> _velocityPID;
     
     std::shared_ptr<nt::NetworkTable> _table;
 
     double armLimit = 0.4;
-    units::radians_per_second_t lastVelocity;
 
     units::volt_t _voltage{0};
   };
