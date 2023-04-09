@@ -28,14 +28,14 @@ void ManualDrivebase::OnStart(units::second_t dt) {
 }
 
 void ManualDrivebase::OnTick(units::second_t deltaTime) {
-  if (_driverController->GetXButtonPressed()) {
-    ResetMode();
-    if (isRotateMatch) {
-      isRotateMatch = false;
-    } else {
-      isRotateMatch = true;
-    }
-  }
+  // if (_driverController->GetXButtonPressed()) {
+  //   // ResetMode();
+  //   if (isRotateMatch) {
+  //     isRotateMatch = false;
+  //   } else {
+  //     isRotateMatch = true;
+  //   }
+  // }
 
   if (_driverController->GetYButton()) {
     std::cout << "RESETING POSE" << std::endl;
@@ -82,29 +82,61 @@ void ManualDrivebase::OnTick(units::second_t deltaTime) {
     if (num < turningDeadzone) {
       turnX = 0;   turnY = 0;
     }
-      if (isRotateMatch) {
-        units::degree_t currentAngle = _swerveDrivebase->GetPose().Rotation().Degrees();
-        CalculateRequestedAngle(turnX, turnY, currentAngle);
-        _swerveDriveTable->GetEntry("RotateMatch").SetDouble(_requestedAngle.value());
-        _swerveDrivebase->RotateMatchJoystick(_requestedAngle, wom::FieldRelativeSpeeds{ //also field relative 
+
+    if (_swerveDrivebase->GetIsFieldRelative()) {  // Field Relative Controls
+      units::degree_t currentAngle = _swerveDrivebase->GetPose().Rotation().Degrees();
+      CalculateRequestedAngle(turnX, turnY, currentAngle);
+      _swerveDriveTable->GetEntry("RotateMatch").SetDouble(_requestedAngle.value());
+
+      _swerveDrivebase->RotateMatchJoystick(_requestedAngle, wom::FieldRelativeSpeeds{
+        xVelocity * maxMovementMagnitude,
+        yVelocity * maxMovementMagnitude,
+        r_x * maxRotationMagnitude
+      });
+
+      // _swerveDrivebase->SetFieldRelativeVelocity(wom::FieldRelativeSpeeds{
+      //   xVelocity * maxMovementMagnitude,
+      //   yVelocity * maxMovementMagnitude,
+      //   r_x * maxRotationMagnitude
+      // });
+    }
+    else {  // Robot Relative Controls
+      _swerveDrivebase->SetVelocity(frc::ChassisSpeeds{
           xVelocity * maxMovementMagnitude,
           yVelocity * maxMovementMagnitude,
           r_x * maxRotationMagnitude
-        });
-      } else {
-        _swerveDrivebase->SetFieldRelativeVelocity(wom::FieldRelativeSpeeds{
-          xVelocity * maxMovementMagnitude,
-          yVelocity * maxMovementMagnitude,
-          r_x * maxRotationMagnitude
-        });
-      }
+      });
+
+      // _swerveDrivebase->RotateMatchJoystick(_requestedAngle, wom::FieldRelativeSpeeds{
+      //   xVelocity * maxMovementMagnitude,
+      //   yVelocity * maxMovementMagnitude,
+      //   r_x * maxRotationMagnitude
+      // });
+    }
+
+      // // if (isRotateMatch) {
+      //   units::degree_t currentAngle = _swerveDrivebase->GetPose().Rotation().Degrees();
+      //   CalculateRequestedAngle(turnX, turnY, currentAngle);
+      //   _swerveDriveTable->GetEntry("RotateMatch").SetDouble(_requestedAngle.value());
+      //   _swerveDrivebase->RotateMatchJoystick(_requestedAngle, wom::FieldRelativeSpeeds{ //also field relative 
+      //     xVelocity * maxMovementMagnitude,
+      //     yVelocity * maxMovementMagnitude,
+      //     r_x * maxRotationMagnitude
+      //   });
+      // // } else {
+      // //   _swerveDrivebase->SetFieldRelativeVelocity(wom::FieldRelativeSpeeds{
+      // //     xVelocity * maxMovementMagnitude,
+      // //     yVelocity * maxMovementMagnitude,
+      // //     r_x * maxRotationMagnitude
+      // //   });
+      // // }
   }
 } 
 
-void ManualDrivebase::ResetMode() {
-  _swerveDrivebase->OnResetMode();
-  resetMode = false;
-}
+// void ManualDrivebase::ResetMode() {
+//   _swerveDrivebase->OnResetMode();
+//   resetMode = false;
+// }
 
 void ManualDrivebase::CalculateRequestedAngle(double joystickX, double joystickY, units::degree_t defaultAngle){
   _requestedAngle = (1_rad * atan2(joystickY, -joystickX)) + 90_deg;

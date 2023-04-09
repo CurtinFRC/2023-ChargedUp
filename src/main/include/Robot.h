@@ -67,6 +67,16 @@ class Robot : public frc::TimedRobot {
   const std::string kHighPlace = "kHighPlace";
   const std::string kPlaceDock = "kPlaceDock";
   const std::string kDock = "kDock";
+  // Please modify the code below if auto is being changed, or new autos are added
+  std::string defaultAuto = "kLowPlace";
+  std::vector<std::string> autoOptions = {
+    kLowPlace,
+    kLowPlaceTaxi,
+    kHighPlaceTaxi,
+    kHighPlace,
+    kPlaceDock,
+    kDock
+  };
   
   std::string m_autoSelected;
 };

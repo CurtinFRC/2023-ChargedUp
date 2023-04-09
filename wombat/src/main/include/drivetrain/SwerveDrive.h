@@ -39,6 +39,7 @@ namespace wom {
    public:
     using angle_pid_conf_t = PIDConfig<units::radian, units::volt>;
     using velocity_pid_conf_t = PIDConfig<units::meters_per_second, units::volt>;
+    using rotate_match_pid_conf_t = PIDConfig<units::radian, units::volt>;
 
     SwerveModule(std::string path, SwerveModuleConfig config, angle_pid_conf_t anglePID, velocity_pid_conf_t velocityPID);
     void OnUpdate(units::second_t dt);
@@ -104,6 +105,7 @@ namespace wom {
 
     pose_angle_conf_t poseAnglePID;
     pose_position_conf_t posePositionPID;
+    pose_angle_conf_t rotateMatchPID;
 
     units::kilogram_t mass;
 
@@ -167,7 +169,7 @@ namespace wom {
     void SetTuning(units::radian_t angle, units::meters_per_second_t speed);
     void SetZero();
     void SetVoltageLimit(units::volt_t driveVoltageLimit);
-    void OnResetMode();
+    // void OnResetMode();
     // double GetModuleCANPosition(int mod);  // from liam's
 
     void SetXWheelState();
@@ -200,9 +202,12 @@ namespace wom {
     frc::SwerveDriveKinematics<4> _kinematics;
     frc::SwerveDrivePoseEstimator<4> _poseEstimator;
 
+
     PIDController<units::radian, units::radians_per_second> _anglePIDController;
+    PIDController<units::radian, units::radians_per_second> _rotateMatchJoystickController;
     PIDController<units::meter, units::meters_per_second> _xPIDController;
     PIDController<units::meter, units::meters_per_second> _yPIDController;
+
 
     std::shared_ptr<nt::NetworkTable> _table;
 

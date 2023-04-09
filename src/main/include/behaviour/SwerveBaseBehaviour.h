@@ -30,7 +30,7 @@ class ManualDrivebase : public behaviour::Behaviour{
   */
   void CalculateRequestedAngle(double joystickX, double joystickY, units::degree_t defaultAngle);
   void OnStart(units::second_t dt);
-  void ResetMode();
+  // void ResetMode();
   
  private:
   std::shared_ptr<nt::NetworkTable> _swerveDriveTable = nt::NetworkTableInstance::GetDefault().GetTable("swerve");
@@ -41,10 +41,10 @@ class ManualDrivebase : public behaviour::Behaviour{
   bool isFieldOrientated = true;
   // State-handler Boolean : Do we currently want the angles of the wheels to be 0?
   bool isZero = false;
-  bool resetMode = false;
+  // bool resetMode = false;
 
   units::degree_t _requestedAngle;
-  bool isRotateMatch = false;
+  // bool isRotateMatch = false;
 
   // Deadzones
   const double driverDeadzone = 0.08;

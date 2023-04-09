@@ -163,26 +163,6 @@ std::shared_ptr<Behaviour> Balence(Drivebase drivebase, Armavator *armavator) {
     }));
 }
 
-std::shared_ptr<Behaviour> BalenceWithPlace(Drivebase drivebase, Armavator *armavator, Gripper *gripper) {
-  return 
-    // make<ArmavatorGoToAutoSetpoint>(armavator, 0.9_m, -55_deg)->WithTimeout(1_s) //start in starting config
-    // << make<DrivebasePoseBehaviour>(drivebase.swerve, frc::Pose2d{0.1_m, 0_m, 0_deg})->WithTimeout(1_s)
-    // << make<ArmavatorGoToAutoSetpoint>(armavator, 0.9_m, 0_deg)
-    // << make<ArmavatorGoToAutoSetpoint>(armavator, 0.3_m, 90_deg)
-    // << make<ArmavatorGoToAutoSetpoint>(armavator, 0.4_m, 140_deg, 0.4, 0.15)
-    // << make<WaitTime>(0.5_s)
-    // << make<ArmavatorGoToAutoSetpoint>(armavator, 0.25_m, 160_deg, 0.2, 0.2)
-    // << make<GripperAutoBehaviour>(gripper, 1)->Until(make<WaitTime>(1_s))
-    // << make<GripperAutoBehaviour>(gripper, 3)->Until(make<WaitTime>(1_s))
-    // make<ArmavatorGoToAutoSetpoint>(armavator, 0.1_m, 60_deg) //readd
-    // << make<DrivebasePoseBehaviour>(drivebase.swerve, frc::Pose2d{4_m, 0_m, 0_deg})->WithTimeout(5_s)
-    make<DrivebasePoseBehaviour>(drivebase.swerve, frc::Pose2d{-4_m, 0_m,  0_deg}, 4_V)->Until(make<WaitFor>([drivebase]() {
-      return units::math::abs(drivebase.gyro->GetPitch()) > 10_deg ||  units::math::abs(drivebase.gyro->GetRoll()) > 10_deg;
-    }))
-    << make<DrivebaseBalance>(drivebase.swerve, drivebase.gyro)
-    <<make<WaitTime>(10_s);
-}
-
 std::shared_ptr<Behaviour> Single(Drivebase drivebase, Armavator *armavator, Gripper *gripper, bool blueAlliance, StartingConfig startConfig, EndingConfig endConfig){
   AutoPathDetails autoPathDetails = GetAutoPathingDetails(drivebase, startConfig, endConfig, blueAlliance, 1);
   return 
@@ -300,23 +280,21 @@ std::shared_ptr<Behaviour> Quintuple(Drivebase drivebase, bool blueAlliance, Sta
     << autoPathDetails.endPathing;
 }
 
-std::shared_ptr<behaviour::Behaviour> SubsystemTestPlace(Drivebase drivebase, Armavator *armavator, Gripper *gripper) {
+std::shared_ptr<behaviour::Behaviour> SubsystemTestPlace(Armavator *armavator) {
   return 
-    // make<WaitTime>(1_s)
-    // << make<ArmavatorGoToAutoSetpoint>(armavator, 0.9_m, -55_deg)->WithTimeout(1_s) //start in starting config
-    // << make<DrivebasePoseBehaviour>(drivebase.swerve, frc::Pose2d{0.1_m, 0_m, 0_deg})->WithTimeout(1_s)
-    // << make<ArmavatorGoToAutoSetpoint>(armavator, 0.9_m, 0_deg)
-    // << make<ArmavatorGoToAutoSetpoint>(armavator, 0.3_m, 90_deg)
-    // << make<ArmavatorGoToAutoSetpoint>(armavator, 0.4_m, 140_deg, 0.4, 0.15)
-    // << make<WaitTime>(0.5_s)
-    // << make<ArmavatorGoToAutoSetpoint>(armavator, 0.25_m, 160_deg, 0.2, 0.2)
-    // << make<GripperAutoBehaviour>(gripper, 1)->Until(make<WaitTime>(1_s))
-    // << make<GripperAutoBehaviour>(gripper, 3)->Until(make<WaitTime>(1_s))
-    // << make<DrivebasePoseBehaviour>(drivebase.swerve, frc::Pose2d{-0.3_m, 0_m, 0_deg}, 5_V)->WithTimeout(1_s)
-    // << make<ArmavatorGoToAutoSetpoint>(armavator, 0.3_m, 90_deg)
-    // << make<DrivebasePoseBehaviour>(drivebase.swerve, frc::Pose2d{-4_m, 0_m, 0_deg}, 5_V)->WithTimeout(5_s)
-    // << make<WaitTime>(10_s);
-  make <ArmavatorGoToAutoSetpoint>(armavator, 0.1_m, 65_deg)->WithTimeout(2_s)
-    << make<DrivebasePoseBehaviour>(drivebase.swerve, frc::Pose2d{0_m, 0_m, 100_deg})->WithTimeout(4_s)
-    << make<WaitTime>(20_s);
+    make<WaitTime>(1_s)
+    << make<ArmavatorGoToAutoSetpoint>(armavator, 0.8_m, -40_deg)
+    // << wait_until
+    << make<WaitTime>(5_s)
+    << make<ArmavatorGoToAutoSetpoint>(armavator, 0.7_m, -10_deg)
+    << make<WaitTime>(1_s)
+    << make<ArmavatorGoToAutoSetpoint>(armavator, 0.6_m, 0_deg);
+    // << make<ArmavatorGoToPositionBehaviour(armavator, pos);
+    // << make<ArmavatorGoToAutoSetpoint(armavator)
+    // << make<WaitTime>(0.3_s);
+    // << make<ArmavatorGoToPositionBehaviour(armavator, {0_deg, 0.8_m})
+    // << make<WaitTime>(0.3_s)
+    // << make<ArmavatorGoToPositionBehaviour(armavator, {90_deg, 0.3_m})
+    // << make<WaitTime>(0.3_s)
+    // << make<ArmavatorGoToPositionBehaviour(armavator, {160_deg, 0.4_m});
 }

@@ -161,7 +161,7 @@ struct ControlSystem {
       10_deg / 1_s
     };
 
-    wom::SwerveDriveConfig::pose_position_conf_t posePositionPID{
+    wom::SwerveDriveConfig::pose_position_conf_t posePositionPID {
       "/drivetrain/pid/pose/position/config",
       3_mps / 1_m,
       wom::SwerveDriveConfig::pose_position_conf_t::ki_t{0.15},
@@ -169,6 +169,14 @@ struct ControlSystem {
       20_cm, 
       10_cm / 1_s,
       10_cm
+    };
+    wom::SwerveDriveConfig::pose_angle_conf_t rotateMatchPID {
+      "/drivetrain/pid/rotateMatchAngle/config",
+      180_deg / 1_s / 45_deg,
+      wom::SwerveDriveConfig::pose_angle_conf_t::ki_t{0.1},
+      0_deg / 1_deg,
+      10_deg,
+      10_deg / 1_s
     };
 
     // the config for the whole swerve drive
@@ -179,6 +187,7 @@ struct ControlSystem {
       &gyro,
       poseAnglePID, 
       posePositionPID,
+      rotateMatchPID,
       60_kg, // robot mass (estimate rn)
       {0.1, 0.1, 0.1},
       {0.9, 0.9, 0.9}

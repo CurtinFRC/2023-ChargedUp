@@ -158,6 +158,7 @@ SwerveDrive::SwerveDrive(SwerveDriveConfig config, frc::Pose2d initialPose) :
     initialPose,
     _config.stateStdDevs, _config.visionMeasurementStdDevs
   ),
+  _rotateMatchJoystickController(config.path + "/pid/rotate", _config.rotateMatchPID),
   _anglePIDController(config.path + "/pid/heading", _config.poseAnglePID),
   _xPIDController(config.path + "/pid/x", _config.posePositionPID),
   _yPIDController(config.path + "/pid/y", _config.posePositionPID),
@@ -202,7 +203,7 @@ void SwerveDrive::OnUpdate(units::second_t dt) {
     case SwerveDriveState::kFieldRelativeVelocity:
       _target_speed = _target_fr_speeds.ToChassisSpeeds(GetPose().Rotation().Radians());
       if (isRotateToMatchJoystick){
-        _target_speed.omega = _anglePIDController.Calculate(GetPose().Rotation().Radians(), dt);
+        _target_speed.omega = _rotateMatchJoystickController.Calculate(GetPose().Rotation().Radians(), dt);
       }
       // std::cout << "vx = " << _target_speed.vx.value() << " vy = " << _target_fr_speeds.vy.value() << std::endl;
       [[fallthrough]];
@@ -290,12 +291,12 @@ void SwerveDrive::OnStart() {
   _modules[3].OnStart(); // back left
 }
 
-void SwerveDrive::OnResetMode() {
-  _xPIDController.Reset();
-  _yPIDController.Reset();
-  _anglePIDController.Reset();
-  std::cout << "reset" << std::endl;
-}
+// void SwerveDrive::OnResetMode() {
+//   _xPIDController.Reset();
+//   _yPIDController.Reset();
+//   _anglePIDController.Reset();
+//   std::cout << "reset" << std::endl;
+// }
 
 void SwerveDrive::RotateMatchJoystick(units::radian_t joystickAngle, FieldRelativeSpeeds speeds) {
   // _state = SwerveDriveState::kFRVelocityRotationLock;
