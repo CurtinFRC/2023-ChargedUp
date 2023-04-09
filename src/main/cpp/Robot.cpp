@@ -25,10 +25,15 @@ void Robot::RobotInit() {
   cs::CvSink cvSink = frc::CameraServer::GetVideo();
   cs::CvSource outputStream = frc::CameraServer::PutVideo("Rectangle", 640, 480);
 
-  map.swerveBase.moduleConfigs[0].turnMotor.encoder->SetEncoderOffset(0.951068_rad);
-  map.swerveBase.moduleConfigs[1].turnMotor.encoder->SetEncoderOffset(4.41479_rad);
-  map.swerveBase.moduleConfigs[2].turnMotor.encoder->SetEncoderOffset(4.81669_rad);
-  map.swerveBase.moduleConfigs[3].turnMotor.encoder->SetEncoderOffset(3.81194_rad);
+  // map.swerveBase.moduleConfigs[0].turnMotor.encoder->SetEncoderOffset(0.951068_rad);
+  // map.swerveBase.moduleConfigs[1].turnMotor.encoder->SetEncoderOffset(4.41479_rad);
+  // map.swerveBase.moduleConfigs[2].turnMotor.encoder->SetEncoderOffset(4.81669_rad);
+  // map.swerveBase.moduleConfigs[3].turnMotor.encoder->SetEncoderOffset(3.81194_rad);
+
+  map.swerveBase.moduleConfigs[0].turnMotor.encoder->SetEncoderOffset(1.02009_rad);
+  map.swerveBase.moduleConfigs[1].turnMotor.encoder->SetEncoderOffset(4.457748_rad);
+  map.swerveBase.moduleConfigs[2].turnMotor.encoder->SetEncoderOffset(4.77528_rad);
+  map.swerveBase.moduleConfigs[3].turnMotor.encoder->SetEncoderOffset(3.756194_rad);
 
 
   m_chooser.SetDefaultOption(kLowPlace, kLowPlace);
@@ -95,6 +100,8 @@ void Robot::RobotPeriodic() {
   else
     nt::NetworkTableInstance::GetDefault().GetTable("TOF")->GetEntry("distance").SetDouble(-1);
 
+  std::cout << "drivebase gyro pos: " << swerve->GetConfig().gyro->GetAngle() << std::endl;
+
   armavator->OnUpdate(dt);
   sideIntake->OnUpdate(dt);
   gripper->OnUpdate(dt);
@@ -103,27 +110,27 @@ void Robot::RobotPeriodic() {
 void Robot::AutonomousInit() {
   swerve->OnStart();
   swerve->ResetPose(frc::Pose2d());
-  // swerve->ResetPose(frc::Pose2d());  
   BehaviourScheduler *sched = BehaviourScheduler::GetInstance();
-  // sched->Schedule(SubsystemTestPlace(armavator));
+  sched->Schedule(SubsystemTestPlace(Drivebase{swerve, &map.swerveBase.gyro}, armavator, gripper));
   // sched->Schedule(Single(Drivebase{swerve,  &map.swerveBase.gyro}, armavator, gripper, true, StartingConfig::Bottom, EndingConfig::Dock));
   // sched->Schedule(ForwardDrive(Drivebase{swerve, &map.swerveBase.gyro}, armavator));
-  sched->Schedule(Single(Drivebase{swerve,  &map.swerveBase.gyro}, armavator, gripper, true, StartingConfig::Bottom, EndingConfig::Dock));
+  // sched->Schedule(Single(Drivebase{swerve,  &map.swerveBase.gyro}, armavator, gripper, true, StartingConfig::Bottom, EndingConfig::Dock));
   // sched->Schedule(Balence(Drivebase{swerve, &map.swerveBase.gyro}, armavator));
+  // sched->Schedule(BalenceWithPlace(Drivebase{swerve, &map.swerveBase.gyro}, armavator, gripper));
 
-  if (m_autoSelected == "kLowPlace") {
+  // if (m_autoSelected == "kLowPlace") {
 
-  } else if (m_autoSelected == "lowPlaceTaxi") {
+  // } else if (m_autoSelected == "kLowPlaceTaxi") {
 
-  } else if (m_autoSelected == "highPlaceTaxi") {
+  // } else if (m_autoSelected == "kHighPlaceTaxi") {
 
-  } else if (m_autoSelected == "highPlace") {
+  // } else if (m_autoSelected == "kHighPlace") {
 
-  } else if (m_autoSelected == "placeDock") {
+  // } else if (m_autoSelected == "kPlaceDock") {
 
-  } else if (m_autoSelected == "dock") {
+  // } else if (m_autoSelected == "kDock") {
 
-  }
+  // }
 }
 
 void Robot::AutonomousPeriodic() {

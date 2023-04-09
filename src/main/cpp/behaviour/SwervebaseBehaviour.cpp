@@ -11,6 +11,8 @@
 #include <frc/PS4Controller.h>
 #include <vector>
 #include "Poses.h"
+#include <frc/smartdashboard/SmartDashboard.h>
+
 
 using namespace wom;
 
@@ -80,7 +82,6 @@ void ManualDrivebase::OnTick(units::second_t deltaTime) {
     if (num < turningDeadzone) {
       turnX = 0;   turnY = 0;
     }
-
       if (isRotateMatch) {
         units::degree_t currentAngle = _swerveDrivebase->GetPose().Rotation().Degrees();
         CalculateRequestedAngle(turnX, turnY, currentAngle);
@@ -121,10 +122,16 @@ DrivebasePoseBehaviour::DrivebasePoseBehaviour(
 void DrivebasePoseBehaviour::OnTick(units::second_t deltaTime) {
   double currentAngle = _swerveDrivebase->GetPose().Rotation().Degrees().value();
   units::degree_t adjustedAngle = 1_deg * (currentAngle - fmod(currentAngle, 360) + _pose.Rotation().Degrees().value());
+  frc::SmartDashboard::PutNumber("drivebase angle", adjustedAngle.value());
   _swerveDrivebase->SetVoltageLimit(_voltageLimit);
   _swerveDrivebase->SetPose(frc::Pose2d{_pose.X(), _pose.Y(), adjustedAngle});
 
-  if (_swerveDrivebase->IsAtSetPose() && !_hold){  SetDone();  }
+  if (_swerveDrivebase->IsAtSetPose() && !_hold){
+    SetDone();
+    frc::SmartDashboard::PutBoolean("drivebase pose done", true);
+  } else {
+    frc::SmartDashboard::PutBoolean("drivebase pose done", false);
+  }
 }
 
 // Code for Drivebase balancing on the chargestation

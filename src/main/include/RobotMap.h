@@ -146,18 +146,21 @@ struct ControlSystem {
       1_deg,
       0.5_deg / 2_s
     };
+
     wom::SwerveModule::velocity_pid_conf_t velocityPID{
       "/drivetrain/pid/velocity/config",
       //  12_V / 4_mps // webers per metre
     };
+
     wom::SwerveDriveConfig::pose_angle_conf_t poseAnglePID {
       "/drivetrain/pid/pose/angle/config",
-      180_deg / 1_s / 45_deg,
-      wom::SwerveDriveConfig::pose_angle_conf_t::ki_t{0.1},
+      (180_deg / 1_s) / 45_deg,
+      wom::SwerveDriveConfig::pose_angle_conf_t::ki_t{0.1}, //0.1
       0_deg / 1_deg,
       10_deg,
       10_deg / 1_s
     };
+
     wom::SwerveDriveConfig::pose_position_conf_t posePositionPID{
       "/drivetrain/pid/pose/position/config",
       3_mps / 1_m,

@@ -292,3 +292,7 @@ std::shared_ptr<behaviour::Behaviour> Quintuple(Drivebase drivebase, bool blueAl
 std::shared_ptr<behaviour::Behaviour> ForwardDrive(Drivebase drivebase, Armavator *armavator);
 
 std::shared_ptr<behaviour::Behaviour> Balence(Drivebase drivebase, Armavator *armavator);
+
+std::shared_ptr<behaviour::Behaviour> BalenceWithPlace(Drivebase drivebase, Armavator *armavator, Gripper *gripper);
+
+std::shared_ptr<behaviour::Behaviour> SubsystemTestPlace(Drivebase drivebase, Armavator *armavator, Gripper *gripper);
