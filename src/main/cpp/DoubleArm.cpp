@@ -60,18 +60,12 @@ void DoubleArm::OnUpdate(units::second_t dt) {
       // do math later bc u have to do kinematics or some crap idk
       break;
     
-    case DoubleArmState::kAngleBase:
-      _config->baseArm.SetAngle(_inputAngle);
+    case DoubleArmState::kRaw:
+      _config->baseArm.SetAngle(_inputAngleBase);
+      _config->extensionArm.SetAngle(_inputAngleExtension);
       break;
-    
-    case DoubleArmState::kAngleExtension:
-      _config->extensionArm.SetAngle(_inputAngle);
-      break;}
 
     _config->baseArm.OnUpdate(dt);
     _config->extensionArm.OnUpdate(dt);
   }
-
-DoubleArmConfig *DoubleArm::GetConfig() {
-  return _config;
 }

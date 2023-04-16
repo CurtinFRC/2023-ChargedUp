@@ -27,11 +27,15 @@ struct DoubleArmPos {
 
 enum class DoubleArmState {
   kIdle,
-  kAngleBase,
-  kAngleExtension,
+  kRaw,
   kPos,
   kManual
 };
+
+struct ConfigSpacePos {
+      units::meter_t X;
+      units::meter_t Y;
+    };
 
 class DoubleArm : public  behaviour::HasBehaviour {
   public :
@@ -45,9 +49,12 @@ class DoubleArm : public  behaviour::HasBehaviour {
   void SetManual(units::volt_t BaseArm, units::volt_t extensionArm);
   void SetSpeedValues(double baseArmSpeed, double extensionArmSpeed);
   bool IsStable();
-  DoubleArmConfig *GetConfig();
+  DoubleArmConfig *GetConfig() { return _config; };
   DoubleArmPos GetCurrentPos();
-
+  
+  ConfigSpacePos GetEndEffectorPos(units::meter_t r1, units::meter_t r2, units::radian_t baseAngle, units::radian_t extensionAngle) {
+      return ConfigSpacePos{((units::math::sin(baseAngle) * r1) + (units::math::sin(extensionAngle) * r2)).value() * 1_m, ((units::math::cos(baseAngle) * r1)  + (units::math::cos(extensionAngle) * r2)).value() * 1_m};
+  };
   void OnStart();
   void OnUpdate(units::second_t dt);
 
@@ -55,8 +62,8 @@ class DoubleArm : public  behaviour::HasBehaviour {
   wom::Arm *_baseArm;
   wom::Arm *_extensionArm;
   DoubleArmPos _setpoint;
-  units::radian_t _inputAngle;
-
+  units::radian_t _inputAngleBase;
+  units::radian_t _inputAngleExtension;
   private :
     DoubleArmState _state = DoubleArmState::kIdle;
 

@@ -4,6 +4,8 @@
 #include "behaviour/Behaviour.h"
 
 #include <frc/XboxController.h>
+#include <math.h>
+#include <units/math.h>
 
 enum class DoubleArmSetpointStates {
   
