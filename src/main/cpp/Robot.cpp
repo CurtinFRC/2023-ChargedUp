@@ -32,6 +32,14 @@ void Robot::RobotInit() {
   map.swerveBase.moduleConfigs[2].turnMotor.encoder->SetEncoderOffset(1.67817_rad);
   map.swerveBase.moduleConfigs[3].turnMotor.encoder->SetEncoderOffset(0.60899_rad);
 
+  m_chooser.SetDefaultOption(kLowPlace, kLowPlace);
+  m_chooser.AddOption(kLowPlaceTaxi, kLowPlaceTaxi);
+  m_chooser.AddOption(kHighPlaceTaxi, kHighPlaceTaxi);
+  m_chooser.AddOption(kHighPlace, kHighPlace);
+  m_chooser.AddOption(kPlaceDock, kPlaceDock);
+  m_chooser.AddOption(kDock, kDock);
+  frc::SmartDashboard::PutData("Auto Modes", &m_chooser);
+
   // map.swerveBase.moduleConfigs[0].turnMotor.encoder->SetEncoderOffset(0_rad);
   // map.swerveBase.moduleConfigs[1].turnMotor.encoder->SetEncoderOffset(0_rad);
   // map.swerveBase.moduleConfigs[2].turnMotor.encoder->SetEncoderOffset(0_rad);
@@ -111,8 +119,39 @@ void Robot::AutonomousInit() {
   // swerve->ResetPose(frc::Pose2d());  
   BehaviourScheduler *sched = BehaviourScheduler::GetInstance();
   // sched->Schedule(ForwardDrive(Drivebase{swerve, &map.swerveBase.gyro}, armavator));
-  sched->Schedule(Single(Drivebase{swerve,  &map.swerveBase.gyro}, armavator, gripper, true, StartingConfig::Bottom, EndingConfig::Dock));
+  // sched->Schedule(Single(Drivebase{swerve,  &map.swerveBase.gyro}, armavator, gripper, true, StartingConfig::Bottom, EndingConfig::Dock));
   // sched->Schedule(Balence(Drivebase{swerve, &map.swerveBase.gyro}, armavator));
+
+  // m_autoSelected = frc::SmartDashboard::GetString("Auto Selector", "get trolled lmao");
+
+  // bool isValidAuto = false;
+  // for (auto element : autoOptions){   if (element == m_autoSelected){   isValidAuto = true;   }   }
+  // if (!isValidAuto){   m_autoSelected = defaultAuto;   }
+
+  // if (m_autoSelected == "kLowPlace") {
+  //   // sched->Schedule(LowPlace(robotPackage));
+  //   sched->Schedule(LowPlace(Drivebase{swerve, &map.swerveBase.gyro}, armavator));
+  // } else if (m_autoSelected == "kHighPlace") {
+  //   // sched->Schedule(HighPlace(robotPackage));
+  //   sched->Schedule(HighPlace(Drivebase{swerve,  &map.swerveBase.gyro}, armavator, gripper));
+  // } else if (m_autoSelected == "kLowPlaceTaxi") {
+  //   // sched->Schedule(LowPlace(robotPackage) << Taxi(robotPackage));
+  //   sched->Schedule(ForwardDrive(Drivebase{swerve, &map.swerveBase.gyro}, armavator));
+  // } else if (m_autoSelected == "kHighPlaceTaxi") {
+  //   // sched->Schedule(HighPlace(robotPackage) << Taxi(robotPackage));
+  //   sched->Schedule(Single(Drivebase{swerve,  &map.swerveBase.gyro}, armavator, gripper, true, StartingConfig::Bottom, EndingConfig::Dock));
+  // } else if (m_autoSelected == "kLowPlaceDock") {
+  //   // sched->Schedule(LowPlace(robotPackage) << Dock(robotPackage));
+  //   sched->Schedule(LowPlaceBalence(Drivebase{swerve,  &map.swerveBase.gyro}, armavator));
+  // } else if (m_autoSelected == "kHighPlaceDock") {
+  //   // sched->Schedule(HighPlace(robotPackage) << Dock(robotPackage));
+  //   sched->Schedule(PlaceBalence(Drivebase{swerve,  &map.swerveBase.gyro}, armavator, gripper));
+  // } else if (m_autoSelected == "kDock") {
+  //   // sched->Schedule(Dock(robotPackage));
+  //   sched->Schedule(Balence(Drivebase{swerve,  &map.swerveBase.gyro}, armavator));
+  // }
+
+
 }
 
 void Robot::AutonomousPeriodic() {
@@ -154,16 +193,7 @@ void Robot::TeleopPeriodic() {
   auto dt = wom::now() - lastPeriodic;
 
   vision->OnUpdate(dt);
-  
 
-
-
-  // // test function
-  // if (map.controllers.driver.GetLeftTriggerAxis() >= 0.5){
-  //   vision->table->GetEntry("triggerPressed").SetBoolean(true);
-  //   sched->Schedule(make<AlignDrivebaseToNearestGrid>(swerve, vision));
-  // }
-  // returns to ful manual control
   if (map.controllers.test.GetBButtonPressed()){
     swerve->GetActiveBehaviour()->Interrupt();
   }
@@ -177,11 +207,7 @@ void Robot::DisabledPeriodic() { }
 void Robot::TestInit() { }
 void Robot::TestPeriodic() {
   auto dt = wom::now() - lastPeriodic;
-
   vision->OnUpdate(dt);
-  
-
-
 }
 
 
