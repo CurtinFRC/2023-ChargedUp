@@ -7,6 +7,7 @@ Armavator::Armavator(wom::Gearbox &leftArmGearbox, wom::Gearbox &rightArmGearbox
   elevator = new wom::Elevator(config.elevator);
 }
 
+
 Armavator::~Armavator() {
   free(arm);
   free(elevator);
@@ -30,6 +31,12 @@ void Armavator::OnUpdate(units::second_t dt) {
 
   switch(_state) {
     case ArmavatorState::kIdle:
+      break;
+    case ArmavatorState::kVelocity:
+      // arm->SetVelocity(0_rad_per_s);
+      arm->SetVelocity(_velocitySetpoint.angleSpeed);
+      // elevator->SetVelocity(0_mps);
+      elevator->SetVelocity(_velocitySetpoint.elevatorSpeed);
       break;
     case ArmavatorState::kPosition:
       arm->SetAngle(_setpoint.angle);
@@ -62,6 +69,11 @@ void Armavator::SetManual(units::volt_t arm, units::volt_t elevator) {
   _state = ArmavatorState::kManual;
   _rawArm = arm;
   _rawElevator = elevator;
+}
+
+void Armavator::SetVelocity(ArmavatorVelocity vel) {
+  _state = ArmavatorState::kVelocity;
+  _velocitySetpoint = vel;
 }
 
 void Armavator::SetSpeedValues(double elevatorSpeed, double armSpeed) {

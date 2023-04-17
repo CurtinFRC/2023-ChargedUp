@@ -139,9 +139,6 @@ void ManualDrivebase::CalculateRequestedAngle(double joystickX, double joystickY
   }
 }
 
-
-
-
 // Code for Drivebase Pose Controls
 DrivebasePoseBehaviour::DrivebasePoseBehaviour(
     wom::SwerveDrive *swerveDrivebase, frc::Pose2d pose, units::volt_t voltageLimit, bool hold)
@@ -156,8 +153,6 @@ void DrivebasePoseBehaviour::OnTick(units::second_t deltaTime) {
 
   if (_swerveDrivebase->IsAtSetPose() && !_hold){   SetDone();   }
 }
-
-
 
 // Code for Drivebase balancing on the chargestation
 DrivebaseBalance::DrivebaseBalance(wom::SwerveDrive *swerveDrivebase, wom::NavX *gyro) : _swerveDrivebase(swerveDrivebase), _gyro(gyro) {
@@ -227,8 +222,6 @@ void AlignDrivebaseToNearestGrid::OnTick(units::second_t deltaTime){
     _vision->table->GetEntry("x1").SetDouble(targetGridPose.X().value());
     _vision->table->GetEntry("y1").SetDouble(targetGridPose.Y().value());
 
-
-
     if (_alignType == -1) { // left
       if (poseIndex != 0 & poseIndex != 9){
         targetGridPose = _gridPoses[poseIndex - 1];
@@ -254,15 +247,14 @@ void AlignDrivebaseToNearestGrid::OnTick(units::second_t deltaTime){
 
       _swerveDrivebase->SetPose(frc::Pose2d{_swerveDrivebase->GetPose().X(), targetGridPose.Y(), alignAngle});
     }
+
+    
     _vision->table->GetEntry("isworking").SetBoolean(true);
     std::cout << "running vision" << std::endl;
     }
 
-
-
     // if (_swerveDrivebase->IsAtSetPose()){   SetDone();   }
     // SetDone();
-  
 }
 
 void AlignDrivebaseToNearestGrid::OnStart() { 

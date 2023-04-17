@@ -9,7 +9,6 @@ using namespace behaviour;
 
 DefinedPoses definedPoses;
 
-
 /*
 for adding auto behaviours for other systems, add into the autoPathingDetails.endPathing, and between current behaviours
 */
@@ -152,7 +151,6 @@ std::shared_ptr<Behaviour> ForwardDrive(Drivebase drivebase, Armavator *armavato
     << make<DrivebasePoseBehaviour>(drivebase.swerve, frc::Pose2d{3.5_m, 0_m, 0_deg})->WithTimeout(3_s) //2.5
     << make<WaitTime>(20_s);
     // make<ArmavatorGoToAutoSetpoint>(armavator, 0.5_m, 40_deg)
-    
 }
 
 std::shared_ptr<Behaviour> Balence(Drivebase drivebase, Armavator *armavator) {
@@ -221,14 +219,14 @@ std::shared_ptr<Behaviour> Single(Drivebase drivebase, Armavator *armavator, Gri
 
 
 //Just drive auto 
-// std::shared_ptr<Behaviour> Single(Drivebase drivebase, Armavator *armavator, bool blueAlliance, StartingConfig startConfig, EndingConfig endConfig){
-//   AutoPathDetails autoPathDetails = GetAutoPathingDetails(drivebase, startConfig, endConfig, blueAlliance, 1);
-//   return 
-//     make<DrivebasePoseBehaviour>(drivebase.swerve, autoPathDetails.startPos)
-//     << autoPathDetails.endPathing
-//     << make<WaitTime>(1_s)
-//     << make<ArmavatorGoToAutoSetpoint>(armavator, 0.3_m, 60_deg);
-// }
+std::shared_ptr<Behaviour> Single(Drivebase drivebase, Armavator *armavator, bool blueAlliance, StartingConfig startConfig, EndingConfig endConfig){
+  AutoPathDetails autoPathDetails = GetAutoPathingDetails(drivebase, startConfig, endConfig, blueAlliance, 1);
+  return 
+    make<DrivebasePoseBehaviour>(drivebase.swerve, autoPathDetails.startPos)
+    << autoPathDetails.endPathing
+    << make<WaitTime>(1_s)
+    << make<ArmavatorGoToAutoSetpoint>(armavator, 0.3_m, 60_deg);
+}
 
 std::shared_ptr<Behaviour> Double(Drivebase drivebase, bool blueAlliance, StartingConfig startConfig, EndingConfig endConfig){
   AutoPathDetails autoPathDetails = GetAutoPathingDetails(drivebase, startConfig, endConfig, blueAlliance, 2);
@@ -241,6 +239,7 @@ std::shared_ptr<Behaviour> Double(Drivebase drivebase, bool blueAlliance, Starti
     << make<DrivebasePoseBehaviour>(drivebase.swerve, definedPoses.alliancePoses.gridPoses.outerGrid3)
     << autoPathDetails.endPathing;
 }
+
 
 std::shared_ptr<Behaviour> Triple(Drivebase drivebase, bool blueAlliance, StartingConfig startConfig, EndingConfig endConfig){
   AutoPathDetails autoPathDetails = GetAutoPathingDetails(drivebase, startConfig, endConfig, blueAlliance, 3);
@@ -262,24 +261,7 @@ std::shared_ptr<Behaviour> Triple(Drivebase drivebase, bool blueAlliance, Starti
     << autoPathDetails.endPathing;
 }
 
-std::shared_ptr<Behaviour> Quad(Drivebase drivebase, bool blueAlliance, StartingConfig startConfig, EndingConfig endConfig){
-  AutoPathDetails autoPathDetails = GetAutoPathingDetails(drivebase, startConfig, endConfig, blueAlliance, 4);
-  return
-    make<DrivebasePoseBehaviour>(drivebase.swerve, autoPathDetails.startPos)
-    // << make<DrivebasePoseBehaviour>(drivebase.swerve, frc::Pose2d{224_in, 0_m, 0_deg})
-    // << make<DrivebasePoseBehaviour>(drivebase.swerve, frc::Pose2d{0_m, 0_m, 0_deg})
-    << autoPathDetails.endPathing;
-}
-
-std::shared_ptr<Behaviour> Quintuple(Drivebase drivebase, bool blueAlliance, StartingConfig startConfig, EndingConfig endConfig){
-  AutoPathDetails autoPathDetails = GetAutoPathingDetails(drivebase, startConfig, endConfig, blueAlliance, 5);
-  return
-    make<DrivebasePoseBehaviour>(drivebase.swerve, autoPathDetails.startPos)
-    // << make<DrivebasePoseBehaviour>(drivebase.swerve, frc::Pose2d{224_in, 0_m, 0_deg})
-    // << make<DrivebasePoseBehaviour>(drivebase.swerve, frc::Pose2d{0_m, 0_m, 0_deg})
-    << autoPathDetails.endPathing;
-}
-
+//Auto testing behaviour 
 std::shared_ptr<behaviour::Behaviour> SubsystemTestPlace(Armavator *armavator) {
   return 
     make<WaitTime>(1_s)
