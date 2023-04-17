@@ -39,7 +39,7 @@ struct ConfigSpacePos {
 
 class DoubleArm : public  behaviour::HasBehaviour {
   public :
-  DoubleArm(DoubleArmConfig _config);
+  DoubleArm(DoubleArmConfig _config, frc::XboxController codriver);
   // DoubleArm(DoubleArmConfig _config, wom::Gearbox _baseArm, wom::Gearbox _connectorControl)
 
   // set info for states
@@ -74,6 +74,8 @@ class DoubleArm : public  behaviour::HasBehaviour {
 
     units::volt_t _extensionArmRaw;
     units::volt_t _baseArmRaw;
+
+    frc::XboxController &_codriver;
 
   protected :
     DoubleArmPos _zeroed;

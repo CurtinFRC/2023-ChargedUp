@@ -115,4 +115,3 @@ namespace wom {
     PIDController<units::degree, units::degrees_per_second> _pid;
   };
 }
-
