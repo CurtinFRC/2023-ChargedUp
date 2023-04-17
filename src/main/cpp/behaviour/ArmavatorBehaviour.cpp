@@ -211,8 +211,8 @@ void ArmavatorManualBehaviour::OnTick(units::second_t dt) {
       
       if (_manualSetpoint.height > 0.95_m) {
         _manualSetpoint.height = 0.95_m;
-      } else if (_manualSetpoint.height < 0.01_m) {
-        _manualSetpoint.height = 0.01_m;
+      } else if (_manualSetpoint.height < 0.08_m) {
+        _manualSetpoint.height = 0.08_m;
       } else {
         //if not outside deadzone set to current value
         _manualSetpoint.height -= (wom::deadzone(_codriver.GetRightY(), 0.15) * 1_m * 0.05);
