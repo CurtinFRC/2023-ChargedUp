@@ -11,6 +11,9 @@
 #include <units/length.h>
 #include <units/time.h>
 #include <frc/XboxController.h>
+#include<iostream>
+#include<algorithm>
+#include <utility>
 
 #include <frc/interfaces/Gyro.h>
 #include <frc/kinematics/DifferentialDriveKinematics.h>
@@ -93,6 +96,10 @@ namespace wom {
       units::meter_t GetDistance();
       units::radian_t GetAngle();
 
+      PIDController<units::meter, units::meters_per_second> _xPIDController;
+      PIDController<units::meter, units::meters_per_second> _yPIDController;
+      PIDController<units::radian, units::radians_per_second> _anglePIDController;
+
 
     protected :
     // gearbox getters
@@ -100,6 +107,8 @@ namespace wom {
       Gearbox GetTopRight() { return _config->topRight; }
       Gearbox GetBottomLeft() { return _config->bottomLeft; }
       Gearbox GetBottomRight() { return _config->bottomRight; }
+
+
 
     private :
       MecanumConfig *_config;
@@ -114,30 +123,34 @@ namespace wom {
       PIDController<units::meters_per_second, units::volt> bottomRightVelocityController;
       PIDController<units::meters_per_second, units::volt> bottomLeftVelocityController;
 
-      PIDController<units::meter, units::meters_per_second> _xPIDController;
-      PIDController<units::meter, units::meters_per_second> _yPIDController;
-      PIDController<units::radian, units::radians_per_second> _anglePIDController;
+
   };
 
 class MecanumTurnToAngle : public behaviour::Behaviour {
   public :
-    MecanumTurnToAngle(MecanumBase driveBase, units::radian_t angle);
+    MecanumTurnToAngle(MecanumBase *driveBase, units::radian_t angle);
 
     void OnStart() override;
     void OnTick(units::second_t dt) override;
 
+    MecanumBase *GetBase() { return _drivebase; }
+
   private :
   MecanumBase *_drivebase;
+  units::radian_t _angle;
+  MecanumConfig *_config = _drivebase->GetConfig();
 };
 
 class MecanumDriveToPose : public behaviour::Behaviour {
   public :
-    MecanumDriveToPose(MecanumBase driveBase, frc::Pose2d pose);
+    MecanumDriveToPose(MecanumBase *driveBase, frc::Pose2d pose);
 
     void OnStart() override;
     void OnTick(units::second_t dt) override;
     
   private :
     MecanumBase *_drivebase;
+    frc::Pose2d _pose;
+    MecanumConfig *_config = _drivebase->GetConfig();
 };
 };
