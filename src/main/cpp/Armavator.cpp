@@ -31,6 +31,12 @@ void Armavator::OnUpdate(units::second_t dt) {
   switch(_state) {
     case ArmavatorState::kIdle:
       break;
+    case ArmavatorState::kVelocity:
+      // arm->SetVelocity(0_rad_per_s);
+      arm->SetVelocity(_velocitySetpoint.angleSpeed);
+      // elevator->SetVelocity(0_mps);
+      elevator->SetVelocity(_velocitySetpoint.elevatorSpeed);
+      break;
     case ArmavatorState::kPosition:
       arm->SetAngle(_setpoint.angle);
       elevator->SetPID(_setpoint.height);
@@ -55,6 +61,11 @@ void Armavator::SetIdle() {
 void Armavator::SetPosition(ArmavatorPosition pos) {
   _state = ArmavatorState::kPosition;
   _setpoint = pos;
+}
+
+void Armavator::SetVelocity(ArmavatorVelocity vel) {
+  _state = ArmavatorState::kVelocity;
+  _velocitySetpoint = vel;
 }
 
 //manual state setup

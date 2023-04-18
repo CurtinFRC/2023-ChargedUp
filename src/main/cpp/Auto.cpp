@@ -1,5 +1,5 @@
 #include "Auto.h"
-// #include "Poses.h"
+#include "Poses.h"
 
 #include "behaviour/SwerveBaseBehaviour.h"
 #include "behaviour/ArmavatorBehaviour.h"

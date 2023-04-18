@@ -9,6 +9,9 @@
 #include "PID.h"
 #include <vector>
 
+#include "Vision.h"
+#include "Auto.h"
+
 /**
  * @brief Behaviour class to handle manual drivebase controlling with the controller
  */ 
@@ -16,9 +19,9 @@ class ManualDrivebase : public behaviour::Behaviour{
  public:
    /**
    * @param swerveDrivebase
-   * A pointer to the swerve drivebase
+   * A pointer to the swerve drivebase (the allocated memory address that stores the "swerve drivebase" object)
    * @param driverController
-   * A pointer to the controller that the driver has been allocated
+   * A pointer to the controller that the driver has been allocated (the allocated memory address that stores the "driver controller" object)
   */
   ManualDrivebase(wom::SwerveDrive *swerveDrivebase, frc::XboxController *driverController);
 
@@ -28,29 +31,46 @@ class ManualDrivebase : public behaviour::Behaviour{
   */
   void CalculateRequestedAngle(double joystickX, double joystickY, units::degree_t defaultAngle);
   void OnStart(units::second_t dt);
+  void ResetMode();
   
  private:
+  std::shared_ptr<nt::NetworkTable> _swerveDriveTable = nt::NetworkTableInstance::GetDefault().GetTable("swerve");
   wom::SwerveDrive *_swerveDrivebase;
-  // wom::Controller *_driverController;
   frc::XboxController *_driverController;
+  
+  // State-handler Boolean : Is the robot in field orientated control, or robot relative?
+  bool isFieldOrientated = true;
+  // State-handler Boolean : Do we currently want the angles of the wheels to be 0?
+  bool isZero = false;
+  bool resetMode = false;
 
   units::degree_t _requestedAngle;
+  bool isRotateMatch = false;
 
+  // Deadzones
   const double driverDeadzone = 0.08;
-  const double turningDeadzone = 0.1;
+  const double turningDeadzone = 0.2;
 
-  units::meters_per_second_t maxMovementMagnitude = 13_ft / 1_s;
-  units::radians_per_second_t maxRotationMagnitude = 360_deg / 1_s;
 
-  const units::meters_per_second_t highSensitivityDriveSpeed = 13_ft / 1_s;
-  const units::meters_per_second_t lowSensitivityDriveSpeed = 3.25_ft / 1_s;
+  // Variables for solution to Anti-tip
+  double prevJoystickX, prevJoystickY, prevPrevJoystickX, prevPrevJoystickY, usingJoystickXPos, usingJoystickYPos;
+  // The speed that the joystick must travel to activate averaging over previous 3 joystick positions
+  const double smoothingThreshold = 1;
 
-  const units::radians_per_second_t highSensitivityRotateSpeed = 360_deg / 1_s;
-  const units::radians_per_second_t lowSensitivityRotateSpeed = 90_deg / 1_s;
+  typedef units::meters_per_second_t translationSpeed_;
+  typedef units::radians_per_second_t rotationSpeed_;
 
-  bool isFieldOrientated = true;
-  bool isZero = false;
-  std::shared_ptr<nt::NetworkTable> _swerveDriveTable = nt::NetworkTableInstance::GetDefault().GetTable("swerve");
+  // The translation speeds for when "slow speed", "normal speed", "fast speed" modes are active
+  const translationSpeed_ lowSensitivityDriveSpeed = 3.25_ft / 1_s;
+  const translationSpeed_ defaultDriveSpeed = 13_ft / 1_s;
+  const translationSpeed_ highSensitivityDriveSpeed = 18_ft / 1_s;
+  // The rotation speeds for when "slow speed", "normal speed", "fast speed" modes are active
+  const rotationSpeed_ lowSensitivityRotateSpeed = 90_deg / 1_s;
+  const rotationSpeed_ defaultRotateSpeed = 360_deg / 1_s;
+  const rotationSpeed_ highSensitivityRotateSpeed = 720_deg / 1_s;
+
+  translationSpeed_ maxMovementMagnitude = defaultDriveSpeed;
+  rotationSpeed_ maxRotationMagnitude = defaultRotateSpeed;
 };
 
 
@@ -155,30 +175,44 @@ class XDrivebase : public behaviour::Behaviour{
  * @brief Behaviour Class to handle the swerve drivebase driving to the nearest team grid position if it is within range
  */
 class AlignDrivebaseToNearestGrid : public behaviour::Behaviour{
-  struct SwerveGridPoses{
-    frc::Pose2d innerGrid1;
-    frc::Pose2d innerGrid2;
-    frc::Pose2d innerGrid3;
-    frc::Pose2d centreGrid1;
-    frc::Pose2d centreGrid2;
-    frc::Pose2d centreGrid3;
-    frc::Pose2d outerGrid1;
-    frc::Pose2d outerGrid2;
-    frc::Pose2d outerGrid3;
-  };
- public:
+  public:
   /**
    * @param wom::SwerveDrive
    * A pointer to the swerve drivebase
    * @param std::vector<frc::Pose2d*>
    * A vector of frc::Pose2d's storing all 9 current alliance grid positions
   */
-  AlignDrivebaseToNearestGrid(wom::SwerveDrive *swerveDrivebase, std::vector<frc::Pose2d*> gridPoses);
+  AlignDrivebaseToNearestGrid(wom::SwerveDrive *swerveDrivebase);
+  AlignDrivebaseToNearestGrid(wom::SwerveDrive *swerveDrivebase, Vision *vision, int alignType);
+  
 
   void OnTick(units::second_t deltaTime) override;
   void OnStart() override;
 
  private:
+
+  units::meter_t alignmentAllowDistance = 5_m;
+  int _alignType = 0;
   wom::SwerveDrive *_swerveDrivebase;
-  std::vector<frc::Pose2d*> _gridPoses;
+  Vision *_vision = nullptr;
+  std::vector<frc::Pose2d> _gridPoses = {
+      frc::Pose2d{72.061_in, 20.208_in, 0_deg},
+      frc::Pose2d{72.061_in, 42.2_in, 0_deg},
+      frc::Pose2d{72.061_in, 64.185_in, 0_deg},
+      frc::Pose2d{72.061_in, 86.078_in, 0_deg},
+      frc::Pose2d{72.061_in, 108.131_in, 0_deg},
+      frc::Pose2d{72.061_in, 130.185_in, 0_deg},
+      frc::Pose2d{72.061_in, 152.185_in, 0_deg},
+      frc::Pose2d{72.061_in, 174.170_in, 0_deg},
+      frc::Pose2d{72.061_in, 196.185_in, 0_deg},
+      frc::Pose2d{579.351_in, 20.185_in, 0_deg},
+      frc::Pose2d{579.351_in, 42.185_in, 0_deg},
+      frc::Pose2d{579.351_in, 64.185_in, 0_deg},
+      frc::Pose2d{579.351_in, 86.185_in, 0_deg},
+      frc::Pose2d{579.351_in, 108.185_in, 0_deg},
+      frc::Pose2d{579.351_in, 130.293_in, 0_deg},
+      frc::Pose2d{579.351_in, 152.185_in, 0_deg},
+      frc::Pose2d{579.351_in, 174.185_in, 0_deg},
+      frc::Pose2d{579.351_in, 196.185_in, 0_deg}
+  };
 };

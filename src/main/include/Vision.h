@@ -31,7 +31,7 @@ struct VisionConfig {
   std::shared_ptr<frc::AprilTagFieldLayout> layout;
 };
 
-class Vision : public behaviour::HasBehaviour {
+class Vision {
   private :
     VisionConfig defaultConfig;
     VisionConfig visionConfig;
@@ -41,42 +41,55 @@ class Vision : public behaviour::HasBehaviour {
   public :
     Vision(VisionConfig *config);
     
-    void OnUpdate(units::second_t dt); 
+    void OnUpdate(units::second_t dt);
 
-    PhotonPipelineResult getLatestResults(std::shared_ptr<PhotonCamera> camera) {
+    std::shared_ptr<nt::NetworkTable> table = nt::NetworkTableInstance::GetDefault().GetTable("Vision");
+
+    VisionConfig* GetConfig() {   return _config;   }
+
+    PhotonPipelineResult GetLatestResults(std::shared_ptr<PhotonCamera> camera) {
       PhotonPipelineResult ppResult = camera->GetLatestResult();
       return ppResult;
     };
 
-    auto getTargets(std::shared_ptr<PhotonCamera> camera) {
-      PhotonPipelineResult ppResults = getLatestResults(visionConfig.camera);
-      auto targets = ppResults.GetTargets();
-      return targets;
+    std::span<const photonlib::PhotonTrackedTarget> GetTargets(std::shared_ptr<PhotonCamera> camera) {
+      PhotonPipelineResult ppResults = GetLatestResults(visionConfig.camera);
+      return ppResults.GetTargets();
     };
 
-  PhotonTrackedTarget getBestTarget(std::shared_ptr<PhotonCamera> camera, PhotonPipelineResult result) {
+  PhotonTrackedTarget GetBestTarget(std::shared_ptr<PhotonCamera> camera, PhotonPipelineResult result) {
     PhotonTrackedTarget bestTarget = result.GetBestTarget();
     return bestTarget;
   };
 
-  auto estimatePose(VisionConfig config) {
+  auto EstimatePose(VisionConfig config) {
     visionConfig = config;
     _estimator = RobotPoseEstimator{
       visionConfig.layout,
       photonlib::AVERAGE_BEST_TARGETS,
       {std::make_pair(config.camera, config.robotToCamera)}
     };
-
+    std::pair<frc::Pose3d, units::millisecond_t> pose_result = _estimator.Update();
+    auto table = nt::NetworkTableInstance::GetDefault().GetTable("Vision");
+    wom::WritePose3NT(table, pose_result.first);
+    return pose_result.first;
+  };
+  auto EstimatePose(VisionConfig *config) {
+    _estimator = RobotPoseEstimator{
+      config->layout,
+      photonlib::AVERAGE_BEST_TARGETS,
+      {std::make_pair(config->camera, config->robotToCamera)}
+    };
     std::pair<frc::Pose3d, units::millisecond_t> pose_result = _estimator.Update();
     auto table = nt::NetworkTableInstance::GetDefault().GetTable("Vision");
     wom::WritePose3NT(table, pose_result.first);
     return pose_result.first;
   };
 
-  auto getPathForBest(std::shared_ptr<PhotonCamera> camera) {
-    PhotonPipelineResult ppResults = getLatestResults(camera);
-    PhotonTrackedTarget bestTarget = getBestTarget(camera, ppResults);
-    frc::Pose3d poseEstimate = estimatePose(defaultConfig);
+  frc::Pose2d GetPathForBest(std::shared_ptr<PhotonCamera> camera) {
+    PhotonPipelineResult ppResults = GetLatestResults(camera);
+    PhotonTrackedTarget bestTarget = GetBestTarget(camera, ppResults);
+    frc::Pose3d poseEstimate = EstimatePose(defaultConfig);
     frc::Transform3d relativeBestTargetPose = bestTarget.GetBestCameraToTarget(); // relative position of target (treating robot position as (0, 0, 0, 0))
     frc::Pose2d bestTargetPose = frc::Pose2d{
       frc::Translation2d{poseEstimate.X() + relativeBestTargetPose.X(), poseEstimate.Y() + relativeBestTargetPose.Y()},

@@ -15,16 +15,15 @@ void ElevatorConfig::WriteNT(std::shared_ptr<nt::NetworkTable> table) {
 Elevator::Elevator(ElevatorConfig config)
   : _config(config), _state(ElevatorState::kIdle),
   _pid{config.path + "/pid", config.pid},
+  _velocityPID{config.path + "/velocityPID", config.velocityPID},
   _table(nt::NetworkTableInstance::GetDefault().GetTable(config.path)) {
   // _config.leftGearbox.encoder->SetEncoderPosition(_config.initialHeight / _config.radius * 1_rad);
 }
-
 
 void Elevator::OnUpdate(units::second_t dt) {
   units::volt_t voltage{0};
 
   units::meter_t height = GetElevatorEncoderPos() * 1_m;
-
 
   switch(_state) {
     case ElevatorState::kIdle:
@@ -33,6 +32,19 @@ void Elevator::OnUpdate(units::second_t dt) {
     case ElevatorState::kManual:
       voltage = _setpointManual;
     break;
+    case ElevatorState::kVelocity:
+      {
+        units::volt_t feedforward = _config.rightGearbox.motor.Voltage((_config.mass * 9.81_mps_sq) * _config.radius, _velocityPID.GetSetpoint() / (14.0/60.0 * 2.0 * 3.1415 * 0.02225 * 1_m) * 1_rad);
+        // units::volt_t feedforward = _config.rightGearbox.motor.Voltage(0_Nm, _velocityPID.GetSetpoint() / (14.0/60.0 * 2.0 * 3.1415 * 0.02225 * 1_m) * 1_rad);
+        feedforward = 1.2_V;
+        voltage = _velocityPID.Calculate(GetElevatorVelocity(), dt, feedforward);
+        if (voltage > 6_V) {
+          voltage = 6_V;
+        }
+        std::cout << "elevator feedforward: " << feedforward.value() << std::endl;
+        // voltage = 0_V;
+      }
+      break;
     case ElevatorState::kPID:
       {
         units::volt_t feedforward = _config.rightGearbox.motor.Voltage((_config.mass * 9.81_mps_sq) * _config.radius, 0_rad_per_s);
@@ -83,6 +95,11 @@ void Elevator::SetElevatorSpeedLimit(double limit) {
   speedLimit = limit;
 }
 
+void Elevator::SetVelocity(units::meters_per_second_t velocity) {
+  _velocityPID.SetSetpoint(velocity);
+  _state = ElevatorState::kVelocity;
+}
+
 void Elevator::SetIdle() {
   _state = ElevatorState::kIdle;
 }
@@ -107,6 +124,10 @@ units::meter_t Elevator::GetHeight() const {
   // std::cout << "elevator position"<< _config.rightGearbox.encoder->GetEncoderTicks() << std::endl;
   // return _config.rightGearbox.encoder->GetEncoderDistance() * 1_m;
   return _config.elevatorEncoder.GetPosition() * 14/60 * 2 * 3.1415 * 0.02225 * 1_m;
+}
+
+units::meters_per_second_t Elevator::GetElevatorVelocity() const {
+  return _config.elevatorEncoder.GetVelocity() / 60_s * 14/60 * 2 * 3.1415 * 0.02225 * 1_m;
 }
 
 units::meters_per_second_t Elevator::MaxSpeed() const {
