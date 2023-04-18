@@ -108,6 +108,7 @@ void Robot::RobotPeriodic() {
   else
     nt::NetworkTableInstance::GetDefault().GetTable("TOF")->GetEntry("distance").SetDouble(-1);
 
+
   armavator->OnUpdate(dt);
   sideIntake->OnUpdate(dt);
   gripper->OnUpdate(dt);
@@ -121,6 +122,7 @@ void Robot::AutonomousInit() {
   // sched->Schedule(ForwardDrive(Drivebase{swerve, &map.swerveBase.gyro}, armavator));
   // sched->Schedule(Single(Drivebase{swerve,  &map.swerveBase.gyro}, armavator, gripper, true, StartingConfig::Bottom, EndingConfig::Dock));
   // sched->Schedule(Balence(Drivebase{swerve, &map.swerveBase.gyro}, armavator));
+  sched->Schedule(PlaceBalence(Drivebase{swerve, &map.swerveBase.gyro}, armavator, gripper));
 
   // m_autoSelected = frc::SmartDashboard::GetString("Auto Selector", "get trolled lmao");
 

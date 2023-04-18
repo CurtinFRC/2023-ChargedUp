@@ -144,7 +144,7 @@ struct ControlSystem {
     // Setting the PID path and values to be used for SwerveDrive and SwerveModules
     wom::SwerveModule::angle_pid_conf_t anglePID {
       "/drivetrain/pid/angle/config",
-      16_V / 180_deg,
+      14_V / 180_deg,
       0.0_V / (100_deg * 1_s),
       0_V / (100_deg / 1_s),
       1_deg,
@@ -370,7 +370,7 @@ struct ControlSystem {
         {
           //creates the pid for the elevator to remove error
           "/armavator/elevator/pid/config",
-          19_V / 1_m, //16V
+          20_V / 1_m, //16V
           0.3_V / (1_m * 1_s),
           0_V / (1_m / 1_s),
           0.1_m,
