@@ -8,7 +8,6 @@ class GripperAutoBehaviour : public behaviour::Behaviour {
  public: 
   GripperAutoBehaviour(Gripper *gripper, int out);
 
-  void OnStart() override;
   void OnTick(units::second_t dt) override;
  private:
   Gripper *gripper;
@@ -17,10 +16,8 @@ class GripperAutoBehaviour : public behaviour::Behaviour {
 
 class GripperBehaviour : public behaviour::Behaviour {
  public: 
-
   GripperBehaviour(Gripper *gripper, frc::XboxController &codriver);
 
-  void OnStart() override;
   void OnTick(units::second_t dt) override;
 
  private: 

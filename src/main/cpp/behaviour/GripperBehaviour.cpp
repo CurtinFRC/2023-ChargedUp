@@ -1,11 +1,8 @@
 #include "behaviour/GripperBehaviour.h"
 
+//Behaviour used in auto to control the gripper, inputs an integer for which gripper mode you want
 GripperAutoBehaviour::GripperAutoBehaviour(Gripper *gripper, int out) : gripper(gripper), _out(out) {
   Controls(gripper);
-}
-
-void GripperAutoBehaviour::OnStart() {
-
 }
 
 void GripperAutoBehaviour::OnTick(units::second_t dt) {
@@ -19,17 +16,14 @@ void GripperAutoBehaviour::OnTick(units::second_t dt) {
   }
 }
 
+//Teleop gripper behaviour
 GripperBehaviour::GripperBehaviour(Gripper *gripper, frc::XboxController &codriver)
   : gripper(gripper), _codriver(codriver) {
     Controls(gripper);
   }
 
-void GripperBehaviour::OnStart() {
-
-}
-
 void GripperBehaviour::OnTick(units::second_t dt) {
-
+  //setting the gripper mode
   if (_codriver.GetRightTriggerAxis() > 0.2) {
     gripper->SetOutaking(_codriver.GetRightTriggerAxis());
   } else if (_codriver.GetRightBumper()) {
@@ -37,24 +31,4 @@ void GripperBehaviour::OnTick(units::second_t dt) {
   } else {
     gripper->SetIdle();
   }
-
-  // if (_codriver.GetYButtonReleased()) {
-  //   if (holdingObject) {
-  //     holdingObject = false;
-  //   } else {
-  //     holdingObject = true;
-  //   }
-  // }
-
-  // if (holdingObject) {
-  //   gripper->SetHolding();
-  // } else {
-  //   if (_codriver.GetRightBumper()) {
-  //     gripper->SetIntaking();
-  //   } else if (_codriver.GetLeftBumper()) {
-  //     gripper->SetOutaking();
-  //   } else {
-  //     gripper->SetIdle();
-  //   }
-  // }
 }

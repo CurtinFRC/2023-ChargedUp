@@ -4,7 +4,6 @@
 #include "drivetrain/SwerveDrive.h"
 #include "Armavator.h"
 #include "Gripper.h"
-#include "Poses.h"
 
 class DefinedPoses {
  public:

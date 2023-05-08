@@ -7,7 +7,6 @@
 #include <networktables/NetworkTableInstance.h>
 #include "PID.h"
 #include <vector>
-
 #include "Vision.h"
 #include "Auto.h"
 
@@ -167,8 +166,6 @@ class XDrivebase : public behaviour::Behaviour{
   wom::SwerveDrive *_swerveDrivebase;
 };
 
-
-
 /**
  * @brief Behaviour Class to handle the swerve drivebase driving to the nearest team grid position if it is within range
  */
@@ -188,7 +185,6 @@ class AlignDrivebaseToNearestGrid : public behaviour::Behaviour{
   void OnStart() override;
 
  private:
-
   units::meter_t alignmentAllowDistance = 5_m;
   int _alignType = 0;
   wom::SwerveDrive *_swerveDrivebase;

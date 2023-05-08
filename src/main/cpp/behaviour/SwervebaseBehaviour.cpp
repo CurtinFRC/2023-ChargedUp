@@ -1,28 +1,21 @@
 #include "behaviour/SwerveBaseBehaviour.h"
-
 #include <units/angular_velocity.h>
 #include <units/charge.h>
 #include <units/moment_of_inertia.h>
-
 #include "ControlUtil.h"
-
 #include "XInputController.h"
 #include <frc/XboxController.h>
 #include <frc/PS4Controller.h>
-
 #include <vector>
-
-#include "Poses.h"
-
-// #include <units/units.h>
 
 using namespace wom;
 
-// Code for Manual Drivebase
+//Manual drivebase behaviour 
 ManualDrivebase::ManualDrivebase(wom::SwerveDrive *swerveDrivebase, frc::XboxController *driverController) : _swerveDrivebase(swerveDrivebase), _driverController(driverController) {
   Controls(swerveDrivebase);
 }
 
+//Runs when the behaviour is started
 void ManualDrivebase::OnStart(units::second_t dt) {
   _swerveDrivebase->OnStart();
   _swerveDrivebase->SetAccelerationLimit(6_mps_sq);
@@ -30,107 +23,63 @@ void ManualDrivebase::OnStart(units::second_t dt) {
 }
 
 void ManualDrivebase::OnTick(units::second_t deltaTime) {
-  // _swerveDrivebase->SetVoltageLimit(10_V);
-
+  //resets the drivebase pose, can be used to re-field-orient the robot
   if (_driverController->GetYButton()) {
     std::cout << "RESETING POSE" << std::endl;
     _swerveDrivebase->ResetPose(frc::Pose2d());
-    
   }
 
-
-  //  SOLUTION TO "ANTI-TIP"
-  // double joystickSpeedX = (_driverController->GetLeftX() - prevJoystickX) / deltaTime.value();
-  // double JoystickSpeedY = (_driverController->GetLeftY() - prevJoystickY) / deltaTime.value();
-
-  // if (sqrt(joystickSpeedX*joystickSpeedX + JoystickSpeedY*JoystickSpeedY) > smoothingThreshold){
-  //   usingJoystickXPos = (prevPrevJoystickX + prevJoystickX + _driverController->GetLeftX()) / 3;
-  //   usingJoystickYPos = (prevPrevJoystickY + prevJoystickY + _driverController->GetLeftY()) / 3;
-  // } else {
-  //   usingJoystickXPos = _driverController->GetLeftX();
-  //   usingJoystickYPos = _driverController->GetLeftY();
-  // }
-
-  /*   TOGGLE SOLUTION   */
-  /*if (_driverController->GetLeftBumperPressed()){
-    maxMovementMagnitude = highSensitivityDriveSpeed;
-    maxRotationMagnitude = highSensitivityRotateSpeed;
-  }
-  if (_driverController->GetRightBumperPressed()){
+  /*   HOLD SOLUTION to variable drivebase speeds, 
+        when the left bumper is held slow mode is engaged, used for fine precision movements
+        When the right bumpber is held fast mode is engaged, used for traversing the entire field 
+        otherwise a normal speed is used
+   */
+  if (_driverController->GetLeftBumperPressed()){
     maxMovementMagnitude = lowSensitivityDriveSpeed;
     maxRotationMagnitude = lowSensitivityRotateSpeed;
-  }*/
-
-  /*   HOLD SOLUTION   */
-  if (_driverController->GetLeftBumperPressed()){
-    maxMovementMagnitude = lowSensitivityDriveSpeed;   maxRotationMagnitude = lowSensitivityRotateSpeed;
   } else if (_driverController->GetLeftBumperReleased() & !_driverController->GetRightBumper()){
-    maxMovementMagnitude = defaultDriveSpeed;   maxRotationMagnitude = defaultRotateSpeed;
+    maxMovementMagnitude = defaultDriveSpeed; 
+    maxRotationMagnitude = defaultRotateSpeed;
     _swerveDrivebase->SetAccelerationLimit(6_mps_sq);
     _swerveDrivebase->SetVoltageLimit(10_V);
   }
+  
   if (_driverController->GetRightBumperPressed()){
-    maxMovementMagnitude = highSensitivityDriveSpeed;   maxRotationMagnitude = highSensitivityRotateSpeed;
-  _swerveDrivebase->SetAccelerationLimit(12_mps_sq);
+    maxMovementMagnitude = highSensitivityDriveSpeed;
+    maxRotationMagnitude = highSensitivityRotateSpeed;
+    _swerveDrivebase->SetAccelerationLimit(12_mps_sq);
     _swerveDrivebase->SetVoltageLimit(14_V);
-    
   } else if (_driverController->GetRightBumperReleased() & !_driverController->GetLeftBumper()){
-    maxMovementMagnitude = defaultDriveSpeed;   maxRotationMagnitude = defaultRotateSpeed;
+    maxMovementMagnitude = defaultDriveSpeed;
+    maxRotationMagnitude = defaultRotateSpeed;
     _swerveDrivebase->SetAccelerationLimit(6_mps_sq);
     _swerveDrivebase->SetVoltageLimit(10_V);
   }
 
+  //input from the driver controller
+  double xVelocity = wom::spow2(-wom::deadzone(_driverController->GetLeftY(), driverDeadzone));
+  double yVelocity = wom::spow2(-wom::deadzone(_driverController->GetLeftX(), driverDeadzone));
+  double r_x = wom::spow2(-wom::deadzone(_driverController->GetRightX(), turningDeadzone));
+  double r_y = wom::spow2(-wom::deadzone(_driverController->GetRightY(), turningDeadzone));
 
-  if (_driverController->GetAButtonReleased()) {
-    isZero = !isZero;
-  } 
-
-  if (isZero) {
-    _swerveDrivebase->SetZeroing();
-  }
-  else {
-    double xVelocity = wom::spow2(-wom::deadzone(_driverController->GetLeftY(), driverDeadzone));  // GetLeftY due to x being where y should be on field
-    double yVelocity = wom::spow2(-wom::deadzone(_driverController->GetLeftX(), driverDeadzone));
-    double r_x = wom::spow2(-wom::deadzone(_driverController->GetRightX(), turningDeadzone));
-    double r_y = wom::spow2(-wom::deadzone(_driverController->GetRightY(), turningDeadzone));
-
-    double turnX = _driverController->GetRightX();   double turnY = _driverController->GetRightY();
-    double num = sqrt(turnX * turnX + turnY * turnY);
-    if (num < turningDeadzone) {
-      turnX = 0;   turnY = 0;
-    }
-
-    if (_swerveDrivebase->GetIsFieldRelative()) {  // Field Relative Controls
-      units::degree_t currentAngle = _swerveDrivebase->GetPose().Rotation().Degrees();
-      CalculateRequestedAngle(turnX, turnY, currentAngle);
-      _swerveDriveTable->GetEntry("RotateMatch").SetDouble(_requestedAngle.value());
-
-      _swerveDrivebase->RotateMatchJoystick(_requestedAngle, wom::FieldRelativeSpeeds{
-        xVelocity * maxMovementMagnitude,
-        yVelocity * maxMovementMagnitude,
-        r_x * maxRotationMagnitude
-      });
-
-      // _swerveDrivebase->SetFieldRelativeVelocity(wom::FieldRelativeSpeeds{
-      //   xVelocity * maxMovementMagnitude,
-      //   yVelocity * maxMovementMagnitude,
-      //   r_x * maxRotationMagnitude
-      // });
-    }
-    else {  // Robot Relative Controls
-      _swerveDrivebase->SetVelocity(frc::ChassisSpeeds{
-          xVelocity * maxMovementMagnitude,
-          yVelocity * maxMovementMagnitude,
-          r_x * maxRotationMagnitude
-      });
-    }
+  double turnX = _driverController->GetRightX();
+  double turnY = _driverController->GetRightY();
+  double num = sqrt(turnX * turnX + turnY * turnY);
+  if (num < turningDeadzone) {
+    turnX = 0; 
+    turnY = 0;
   }
 
-  // prevPrevJoystickX = prevJoystickX;
-  // prevPrevJoystickY = prevJoystickY;
-  // prevJoystickX = _driverController->GetLeftX();
-  // prevJoystickY = _driverController->GetLeftY();
-} 
+  units::degree_t currentAngle = _swerveDrivebase->GetPose().Rotation().Degrees();
+  CalculateRequestedAngle(turnX, turnY, currentAngle);
+  _swerveDriveTable->GetEntry("RotateMatch").SetDouble(_requestedAngle.value());
+
+  _swerveDrivebase->RotateMatchJoystick(_requestedAngle, wom::FieldRelativeSpeeds{
+    xVelocity * maxMovementMagnitude,
+    yVelocity * maxMovementMagnitude,
+    r_x * maxRotationMagnitude
+  });
+}
 
 void ManualDrivebase::CalculateRequestedAngle(double joystickX, double joystickY, units::degree_t defaultAngle){
   _requestedAngle = (1_rad * atan2(joystickY, -joystickX)) + 90_deg;
@@ -139,12 +88,14 @@ void ManualDrivebase::CalculateRequestedAngle(double joystickX, double joystickY
   }
 }
 
-// Code for Drivebase Pose Controls
+//Drivebase Pose Control behaviour
 DrivebasePoseBehaviour::DrivebasePoseBehaviour(
     wom::SwerveDrive *swerveDrivebase, frc::Pose2d pose, units::volt_t voltageLimit, bool hold)
     : _swerveDrivebase(swerveDrivebase), _pose(pose), _voltageLimit(voltageLimit), _hold(hold) {
   Controls(swerveDrivebase);
 }
+
+//used in autonomous for going to set drive poses
 void DrivebasePoseBehaviour::OnTick(units::second_t deltaTime) {
   double currentAngle = _swerveDrivebase->GetPose().Rotation().Degrees().value();
   units::degree_t adjustedAngle = 1_deg * (currentAngle - fmod(currentAngle, 360) + _pose.Rotation().Degrees().value());
@@ -158,30 +109,38 @@ void DrivebasePoseBehaviour::OnTick(units::second_t deltaTime) {
 DrivebaseBalance::DrivebaseBalance(wom::SwerveDrive *swerveDrivebase, wom::NavX *gyro) : _swerveDrivebase(swerveDrivebase), _gyro(gyro) {
   Controls(swerveDrivebase);
 }
+
+//auto balences on the charge station 
 void DrivebaseBalance::OnTick(units::second_t deltaTime) {
   units::meters_per_second_t lateralMotorSpeed = lateralBalancePID.Calculate(_gyro->GetPitch(), deltaTime);
   units::meters_per_second_t sidewaysMotorSpeed = sidwaysBalancePID.Calculate(-_gyro->GetRoll(), deltaTime);
   _swerveDrivebase->SetVelocity(frc::ChassisSpeeds{
-    // units::math::min(units::math::max(lateralMotorSpeed, -0.8), 0.8),
     -lateralMotorSpeed,
     -sidewaysMotorSpeed,
     0_deg / 1_s
   });
 
+  //print values to shuffleboard
   _swerveDriveTable->GetEntry("Pitch").SetDouble(_gyro->GetPitch().convert<units::degree>().value());
   _swerveDriveTable->GetEntry("BalanceLateralSpeed").SetDouble(lateralMotorSpeed.value());
   _swerveDriveTable->GetEntry("BalanceSidewaysSpeed").SetDouble(sidewaysMotorSpeed.value());
 }
 
 
-
 // Code for x-ing the wheels on the drivebase
-XDrivebase::XDrivebase(wom::SwerveDrive *swerveDrivebase) : _swerveDrivebase(swerveDrivebase) {   Controls(swerveDrivebase);   }
-void XDrivebase::OnTick(units::second_t deltaTime) {   _swerveDrivebase->SetXWheelState();   }
+XDrivebase::XDrivebase(wom::SwerveDrive *swerveDrivebase) : _swerveDrivebase(swerveDrivebase) {   
+  Controls(swerveDrivebase);
+}
+//wasn't used in comp, should probably be utalised for WARP 
+void XDrivebase::OnTick(units::second_t deltaTime) {
+  _swerveDrivebase->SetXWheelState();   
+}
 
 
 
-// Code for auto aligning to the nearest grid position
+
+
+// Code for auto aligning to the nearest grid position, unfinished
 AlignDrivebaseToNearestGrid::AlignDrivebaseToNearestGrid(wom::SwerveDrive *swerveDrivebase) : _swerveDrivebase(swerveDrivebase){   Controls(swerveDrivebase);   }
 AlignDrivebaseToNearestGrid::AlignDrivebaseToNearestGrid(wom::SwerveDrive *swerveDrivebase, Vision *vision, int alignType) : _swerveDrivebase(swerveDrivebase), _vision(vision), _alignType(alignType) {   Controls(swerveDrivebase);   }
 
