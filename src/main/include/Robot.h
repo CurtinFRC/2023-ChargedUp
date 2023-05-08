@@ -23,7 +23,6 @@
 
 using namespace frc;
 
-//overrides the preset robot functions so that we can edit them
 class Robot : public frc::TimedRobot {
  public:
   void RobotInit() override;
@@ -37,19 +36,15 @@ class Robot : public frc::TimedRobot {
   void TestInit() override;
   void TestPeriodic() override;
 
-  // void SimulationInit() override;
-  // void SimulationPeriodic() override;
-
  private:
   frc::EventLoop loop;
   RobotMap map;
   behaviour::BehaviourScheduler *sched;
-  
+
   //creates nessesary instances to use in robot.cpp and robotmap.h
   wom::SwerveDrive *swerve;
   Armavator *armavator;
   Vision *vision;
-  SideIntake *sideIntake;
   Gripper *gripper;
   
 
@@ -59,7 +54,7 @@ class Robot : public frc::TimedRobot {
 
   units::meter_t _elevatorSetpoint = 0_m;
   units::radian_t _armSetpoint = 0_deg;
-  
+
   frc::SendableChooser<std::string> m_chooser;
   const std::string kLowPlace = "kLowPlace";
   const std::string kLowPlaceTaxi = "kLowPlaceTaxi";
@@ -67,6 +62,16 @@ class Robot : public frc::TimedRobot {
   const std::string kHighPlace = "kHighPlace";
   const std::string kPlaceDock = "kPlaceDock";
   const std::string kDock = "kDock";
-  
-  std::string m_autoSelected;
+
+  // Please modify the code below if auto is being changed, or new autos are added
+  std::string defaultAuto = "kLowPlace";
+  std::vector<std::string> autoOptions = {
+    kLowPlace,
+    kLowPlaceTaxi,
+    kHighPlaceTaxi,
+    kHighPlace,
+    kPlaceDock,
+    kDock
+  };
 };
+

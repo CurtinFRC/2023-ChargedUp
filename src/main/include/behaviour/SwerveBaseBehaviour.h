@@ -7,7 +7,6 @@
 #include <networktables/NetworkTableInstance.h>
 #include "PID.h"
 #include <vector>
-
 #include "Vision.h"
 #include "Auto.h"
 
@@ -30,7 +29,6 @@ class ManualDrivebase : public behaviour::Behaviour{
   */
   void CalculateRequestedAngle(double joystickX, double joystickY, units::degree_t defaultAngle);
   void OnStart(units::second_t dt);
-  void ResetMode();
   
  private:
   std::shared_ptr<nt::NetworkTable> _swerveDriveTable = nt::NetworkTableInstance::GetDefault().GetTable("swerve");
@@ -41,10 +39,10 @@ class ManualDrivebase : public behaviour::Behaviour{
   bool isFieldOrientated = true;
   // State-handler Boolean : Do we currently want the angles of the wheels to be 0?
   bool isZero = false;
-  bool resetMode = false;
+  
 
   units::degree_t _requestedAngle;
-  bool isRotateMatch = false;
+
 
   // Deadzones
   const double driverDeadzone = 0.08;
@@ -131,7 +129,7 @@ class DrivebaseBalance : public behaviour::Behaviour{
 
   wom::SwerveDriveConfig::balance_conf_t balancePIDConfig{
     "swerve/balancePID/",
-    70_mps / 1000_deg,
+    5_mps / 100_deg,
     wom::SwerveDriveConfig::balance_conf_t::ki_t{0.00},
     wom::SwerveDriveConfig::balance_conf_t::kd_t{0}
   };
@@ -168,8 +166,6 @@ class XDrivebase : public behaviour::Behaviour{
   wom::SwerveDrive *_swerveDrivebase;
 };
 
-
-
 /**
  * @brief Behaviour Class to handle the swerve drivebase driving to the nearest team grid position if it is within range
  */
@@ -189,7 +185,6 @@ class AlignDrivebaseToNearestGrid : public behaviour::Behaviour{
   void OnStart() override;
 
  private:
-
   units::meter_t alignmentAllowDistance = 5_m;
   int _alignType = 0;
   wom::SwerveDrive *_swerveDrivebase;

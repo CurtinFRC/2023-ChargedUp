@@ -69,8 +69,8 @@ class Armavator : public behaviour::HasBehaviour {
   wom::Arm *arm;
   wom::Elevator *elevator;
   ArmavatorPosition _setpoint;
-  ArmavatorVelocity _velocitySetpoint;
 
+  ArmavatorVelocity _velocitySetpoint;
 
  private: 
   ArmavatorState _state = ArmavatorState::kIdle;

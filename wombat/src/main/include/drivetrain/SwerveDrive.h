@@ -167,7 +167,7 @@ namespace wom {
     void SetTuning(units::radian_t angle, units::meters_per_second_t speed);
     void SetZero();
     void SetVoltageLimit(units::volt_t driveVoltageLimit);
-    void OnResetMode();
+
     // double GetModuleCANPosition(int mod);  // from liam's
 
     void SetXWheelState();

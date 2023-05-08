@@ -55,7 +55,7 @@ void SwerveModule::OnUpdate(units::second_t dt) {
   turnVoltage = units::math::min(turnVoltage, 7_V);
 
   driveVoltage = units::math::min(units::math::max(driveVoltage, -_driveModuleVoltageLimit), _driveModuleVoltageLimit); // was originally 10_V
-  std::cout << "drive-voltage: " << driveVoltage.value() << std::endl;
+  // std::cout << "drive-voltage: " << driveVoltage.value() << std::endl;
   units::volt_t turnVoltageMax = 7_V - (driveVoltage * (7_V / 10_V));
   turnVoltage = units::math::min(units::math::max(turnVoltage, -turnVoltageMax), turnVoltageMax);
   // turnVoltage = units::math::min(units::math::max(turnVoltage, -7_V), 7_V);
@@ -279,6 +279,7 @@ void SwerveDrive::SetVoltageLimit(units::volt_t driveVoltageLimit) {
 //   return _modules[mod].GetCancoderPosition();
 // }
 
+
 void SwerveDrive::OnStart() {
   _xPIDController.Reset();
   _yPIDController.Reset();
@@ -288,13 +289,6 @@ void SwerveDrive::OnStart() {
   _modules[1].OnStart(); // front right
   _modules[2].OnStart(); // back right 
   _modules[3].OnStart(); // back left
-}
-
-void SwerveDrive::OnResetMode() {
-  _xPIDController.Reset();
-  _yPIDController.Reset();
-  _anglePIDController.Reset();
-  std::cout << "reset" << std::endl;
 }
 
 void SwerveDrive::RotateMatchJoystick(units::radian_t joystickAngle, FieldRelativeSpeeds speeds) {
@@ -338,7 +332,6 @@ void SwerveDrive::SetTuning(units::radian_t angle, units::meters_per_second_t sp
 
 void SwerveDrive::SetFieldRelativeVelocity(FieldRelativeSpeeds speeds) {
   _state = SwerveDriveState::kFieldRelativeVelocity;
-  isRotateToMatchJoystick = false;
   _target_fr_speeds = speeds;
 }
 

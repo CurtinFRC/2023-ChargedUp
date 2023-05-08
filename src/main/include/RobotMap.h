@@ -1,36 +1,33 @@
 #pragma once
 
-#include "VoltageController.h"
-#include "Gyro.h"
-#include "Vision.h"
-#include "behaviour/VisionBehaviour.h"
+#include <iostream>
+#include <string>
 
 #include <ctre/phoenix/motorcontrol/can/WPI_TalonFX.h>
 #include <frc/Compressor.h>
-
-#include "XInputController.h"
 #include <ctre/Phoenix.h>
-#include "drivetrain/SwerveDrive.h"
 #include <frc/DoubleSolenoid.h>
 #include <units/length.h>
+#include <frc/XboxController.h>
+#include <units/angle.h>
 
 #include "Encoder.h"
-#include <iostream>
-#include <string>
+#include "drivetrain/SwerveDrive.h"
+#include "VoltageController.h"
+#include "Gyro.h"
+#include "Vision.h"
+#include "XInputController.h"
+#include "behaviour/VisionBehaviour.h"
 
 #include "Arm.h"
 #include "Elevator.h"
 #include "Armavator.h"
-#include "SideIntake.h"
-#include "behaviour/ArmavatorBehaviour.h"
 #include "Gripper.h"
 #include "TOF.h"
-#include <frc/XboxController.h>
-#include <units/angle.h>
+#include "behaviour/ArmavatorBehaviour.h"
 
 
 struct RobotMap {
-
   struct Controllers {    
     //sets driver station numbers for the controllers
     frc::XboxController driver{0};
@@ -39,16 +36,20 @@ struct RobotMap {
   };
   Controllers controllers;
 
-struct ControlSystem {
+  struct ControlSystem {
     frc::Compressor pcmCompressor{2, frc::PneumaticsModuleType::REVPH};
   }; ControlSystem controlSystem;
 
-  struct GripTest {
-    // rev::CANSparkMax gripper{19, rev::CANSparkMax::MotorType::kBrushless};
-    VictorSPX gripper{18};
-  }; GripTest grTest;
+  struct GripperSystem {
+    wom::MotorVoltageController gripperMotor{ new WPI_VictorSPX(15)};
 
-  //stores nessesary info for vision
+    TOF gamepiecePresence{frc::I2C::Port::kMXP};
+
+    GripperConfig config{
+      &gripperMotor
+    };
+  }; GripperSystem gripper;
+
   struct Vision {
     VisionConfig config{
       std::make_shared<photonlib::PhotonCamera>("camera"), 
@@ -56,10 +57,8 @@ struct ControlSystem {
       70_deg,
       Get2023Layout()
     };
-  };
-  Vision vision;
+  }; Vision vision;
 
-  //stores nessesary info for swerve
   struct SwerveBase{
     CANCoder frontLeftCancoder{19};
     CANCoder frontRightCancoder{17};
@@ -140,7 +139,7 @@ struct ControlSystem {
     // Setting the PID path and values to be used for SwerveDrive and SwerveModules
     wom::SwerveModule::angle_pid_conf_t anglePID {
       "/drivetrain/pid/angle/config",
-      16_V / 180_deg,
+      14_V / 180_deg,
       0.0_V / (100_deg * 1_s),
       0_V / (100_deg / 1_s),
       1_deg,
@@ -148,7 +147,7 @@ struct ControlSystem {
     };
     wom::SwerveModule::velocity_pid_conf_t velocityPID{
       "/drivetrain/pid/velocity/config",
-      //  12_V / 4_mps // webers per metre
+      //  12_V / 4_mps
     };
     wom::SwerveDriveConfig::pose_angle_conf_t poseAnglePID {
       "/drivetrain/pid/pose/angle/config",
@@ -168,7 +167,6 @@ struct ControlSystem {
       10_cm
     };
 
-    // the config for the whole swerve drive
     wom::SwerveDriveConfig config{
       "/drivetrain",
       anglePID, velocityPID,
@@ -176,10 +174,10 @@ struct ControlSystem {
       &gyro,
       poseAnglePID, 
       posePositionPID,
-      60_kg, // robot mass (estimate rn)
+      60_kg, // robot mass (estimate is kinda good enough), keep in mind this needs to be total weight, not the weight recorded in inspection as this doesnt include bumpers or battery weight
       {0.1, 0.1, 0.1},
       {0.9, 0.9, 0.9}
-    };  
+    };
 
     // current limiting and setting idle mode of modules to brake mode
     SwerveBase() {
@@ -307,8 +305,6 @@ struct ControlSystem {
       };
 
       Arm() {
-        //sets the ofset for the encoder so it reads the right value
-        // leftEncoder.SetEncoderOffset(0_deg);
         //inverts the motor so that it goes in the right direction while using RAW controlls
         leftArmMotor.SetInverted(true);
         rightArmMotor.SetInverted(false);
@@ -366,7 +362,7 @@ struct ControlSystem {
         {
           //creates the pid for the elevator to remove error
           "/armavator/elevator/pid/config",
-          19_V / 1_m, //16V
+          20_V / 1_m, //16V
           0.3_V / (1_m * 1_s),
           0_V / (1_m / 1_s),
           0.1_m,
@@ -413,48 +409,4 @@ struct ControlSystem {
     std::shared_ptr<nt::NetworkTable> swerveDriveTable = nt::NetworkTableInstance::GetDefault().GetTable("swerve");
   }; SwerveTable swerveTable;
 
-  struct IntakeTable {
-    std::shared_ptr<nt::NetworkTable> intakeTable = nt::NetworkTableInstance::GetDefault().GetTable("intake");
-  }; IntakeTable intakeTable;
-
-  struct SideIntakeSystem {
-    WPI_VictorSPX leftIntakeMotor{13};
-    WPI_VictorSPX rightIntakeMotor{14};
-
-    wom::MotorVoltageController leftMotorGroup = wom::MotorVoltageController::Group(leftIntakeMotor);
-    wom::MotorVoltageController rightMotorGroup = wom::MotorVoltageController::Group(rightIntakeMotor);
-
-    wom::Gearbox leftGearbox {
-      &leftMotorGroup,
-      nullptr,
-      wom::DCMotor::Bag(1).WithReduction(10)
-    };
-
-    wom::Gearbox rightGearbox {
-      &rightMotorGroup,
-      nullptr,
-      wom::DCMotor::Bag(1).WithReduction(10)
-    };
-
-    frc::DoubleSolenoid claspSolenoid{2, frc::PneumaticsModuleType::REVPH, 1, 2};
-    frc::DoubleSolenoid deploySolenoid{2, frc::PneumaticsModuleType::REVPH, 0, 3};
-
-    SideIntakeConfig config{
-      &claspSolenoid,
-      &deploySolenoid,
-      &rightGearbox,
-      &leftGearbox
-    };
-  }; 
-  SideIntakeSystem sideIntake;
-
-  struct GripperSystem {
-    wom::MotorVoltageController gripperMotor{ new WPI_VictorSPX(15)};
-
-    TOF gamepiecePresence{frc::I2C::Port::kMXP};
-
-    GripperConfig config{
-      &gripperMotor
-    };
-  }; GripperSystem gripper;
 };
