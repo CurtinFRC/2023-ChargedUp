@@ -21,9 +21,6 @@ using namespace photonlib;
 
 std::shared_ptr<frc::AprilTagFieldLayout> Get2023Layout();
 
-
-// pp stands for photonpipeline in variable naming
-
 struct VisionConfig {
   std::shared_ptr<photonlib::PhotonCamera> camera;
   frc::Transform3d robotToCamera;
@@ -99,5 +96,4 @@ class Vision {
   };
 
   bool IsAtSetPoseVision(VisionConfig _config, frc::Pose2d targetPosition);
-
 };

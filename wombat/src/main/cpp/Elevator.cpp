@@ -75,6 +75,8 @@ void Elevator::OnUpdate(units::second_t dt) {
   //   }
   // }
 
+  // std::cout << "elevator: " << elevator.height
+
   // Set voltage to motors...
   voltage *= speedLimit;
   _config.leftGearbox.transmission->SetVoltage(voltage);
