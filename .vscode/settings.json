@@ -118,5 +118,8 @@
     "string_view": "cpp",
     "semaphore": "cpp",
     "cinttypes": "cpp"
-  }
+  },
+  "githubPullRequests.ignoredPullRequestBranches": [
+    "master"
+  ]
 }
