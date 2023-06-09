@@ -49,3 +49,7 @@ Our code for FRC 2023: CHARGED UP, using Gradle
 - Clean all code using `./gradlew clean`
 - Build all code using `./gradlew build`
 - Deploy all code using `./gradlew deploy`
+
+# Wombat
+<!-- update links -->
+This project uses our teams library wombat. To run this project you will need to use this library. It can be found [here](). Just download and extract the code and insert into your repository. For more information see our website [here]()
