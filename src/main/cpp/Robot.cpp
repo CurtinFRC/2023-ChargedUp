@@ -58,10 +58,6 @@ void Robot::RobotInit() {
   });
 
   vision = new Vision(&map.vision.config);
-  // BehaviourScheduler::GetInstance()->Register(vision);
-  // vision->SetDefaultBehaviour([this]() {
-  //   return make<VisionBehaviour>(vision, swerve, &map.controllers.codriver);
-  // });
 
   vision->table->GetEntry("goToPoseX").SetDouble(0);
   vision->table->GetEntry("goToPoseY").SetDouble(0);
