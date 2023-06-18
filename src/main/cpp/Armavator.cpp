@@ -1,6 +1,6 @@
 #include "Armavator.h"
 
-//Armavator configeration
+//Armavator configuration
 Armavator::Armavator(wom::Gearbox &leftArmGearbox, wom::Gearbox &rightArmGearbox , wom::Gearbox &rightElevatorGearbox ,wom::Gearbox &leftElevatorGearbox, ArmavatorConfig &config)
 : _leftArmGearbox(leftArmGearbox), _rightArmGearbox(rightArmGearbox), _rightElevatorGearbox(rightElevatorGearbox), _leftElevatorGearbox(leftElevatorGearbox),_config(config) {
   arm = new wom::Arm(config.arm); //create a new wombat arm

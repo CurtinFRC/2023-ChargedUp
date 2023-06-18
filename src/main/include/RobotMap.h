@@ -17,8 +17,6 @@
 #include "Gyro.h"
 #include "Vision.h"
 #include "XInputController.h"
-#include "behaviour/VisionBehaviour.h"
-
 #include "Arm.h"
 #include "Elevator.h"
 #include "Armavator.h"
