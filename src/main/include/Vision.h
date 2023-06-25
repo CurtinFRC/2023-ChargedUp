@@ -59,24 +59,27 @@ class Vision {
     return bestTarget;
   };
 
-  auto EstimatePose(VisionConfig config) {
+  std::pair<frc::Pose3d, units::millisecond_t> EstimatePose(VisionConfig config) {
     visionConfig = config;
     _estimator = RobotPoseEstimator{
       visionConfig.layout,
       photonlib::AVERAGE_BEST_TARGETS,
       {std::make_pair(config.camera, config.robotToCamera)}
     };
+
     std::pair<frc::Pose3d, units::millisecond_t> pose_result = _estimator.Update();
     auto table = nt::NetworkTableInstance::GetDefault().GetTable("Vision");
     wom::WritePose3NT(table, pose_result.first);
     return pose_result.first;
   };
-  auto EstimatePose(VisionConfig *config) {
+
+  std::pair<frc::Pose3d, units::millisecond_t> EstimatePose(VisionConfig *config) {
     _estimator = RobotPoseEstimator{
       config->layout,
       photonlib::AVERAGE_BEST_TARGETS,
       {std::make_pair(config->camera, config->robotToCamera)}
     };
+
     std::pair<frc::Pose3d, units::millisecond_t> pose_result = _estimator.Update();
     auto table = nt::NetworkTableInstance::GetDefault().GetTable("Vision");
     wom::WritePose3NT(table, pose_result.first);
@@ -92,6 +95,7 @@ class Vision {
       frc::Translation2d{poseEstimate.X() + relativeBestTargetPose.X(), poseEstimate.Y() + relativeBestTargetPose.Y()},
       poseEstimate.Rotation().ToRotation2d()
     };
+
     return bestTargetPose;
   };
 
