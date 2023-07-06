@@ -52,4 +52,4 @@ Our code for FRC 2023: CHARGED UP, using Gradle
 
 # Wombat
 <!-- update links -->
-This project uses our teams library wombat. To run this project you will need to use this library. It can be found [here](). Just download and extract the code and insert into your repository. For more information see our website [here]()
+This project uses our teams library wombat. To run this project you will need to use this library. It can be found [here](https://github.com/CurtinFRC/Wombat). Just download and extract the code and insert into your repository. For more information see our website [here]()
