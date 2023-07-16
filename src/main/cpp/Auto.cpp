@@ -260,8 +260,25 @@ std::shared_ptr<Behaviour> HighPlace(Drivebase drivebase, Armavator *armavator, 
     << make<WaitTime>(10_s);
 }
 
+std::shared_ptr<Behaviour> HighPlaceTaxi(Drivebase drivebase, Armavator *armavator, Gripper *gripper){
+  return 
+    make<ArmavatorGoToAutoSetpoint>(armavator, 0.9_m, -55_deg)->WithTimeout(1_s) //start in starting config
+    << make<DrivebasePoseBehaviour>(drivebase.swerve, frc::Pose2d{0.1_m, 0_m, 0_deg})->WithTimeout(1_s)
+    << make<ArmavatorGoToAutoSetpoint>(armavator, 0.9_m, 0_deg)
+    << make<ArmavatorGoToAutoSetpoint>(armavator, 0.3_m, 90_deg)
+    << make<ArmavatorGoToAutoSetpoint>(armavator, 0.4_m, 140_deg, 0.4, 0.15)
+    << make<WaitTime>(0.5_s)
+    << make<ArmavatorGoToAutoSetpoint>(armavator, 0.25_m, 160_deg, 0.2, 0.2)
+    << make<GripperAutoBehaviour>(gripper, 1)->Until(make<WaitTime>(1_s))
+    << make<GripperAutoBehaviour>(gripper, 3)->Until(make<WaitTime>(1_s))
+    << make<DrivebasePoseBehaviour>(drivebase.swerve, frc::Pose2d{0.3_m, 0_m, 0_deg})->WithTimeout(1_s)
+    << make<ArmavatorGoToAutoSetpoint>(armavator, 0.3_m, 90_deg)
+    << make<DrivebasePoseBehaviour>(drivebase.swerve, frc::Pose2d{4_m, 0_m, 0_deg})->WithTimeout(5_s) //used if you also want mobility 
+    << make<WaitTime>(10_s);
+}
+
 //mobility, drop cube in low goal 
-std::shared_ptr<Behaviour> ForwardDrive(Drivebase drivebase, Armavator *armavator){
+std::shared_ptr<Behaviour> LowPlaceTaxi(Drivebase drivebase, Armavator *armavator){
   return
     // make<DrivebasePoseBehaviour>(drivebase.swerve, frc::Pose2d{-0.4_m, 0_m, 0_deg})->WithTimeout(1_s)
     make<ArmavatorGoToAutoSetpoint>(armavator, 0.9_m, -25_deg)->WithTimeout(2_s)
@@ -282,4 +299,8 @@ std::shared_ptr<Behaviour> LowPlace(Drivebase drivebase, Armavator *armavator){
     << make<DrivebasePoseBehaviour>(drivebase.swerve, frc::Pose2d{-0.4_m, 0_m, 0_deg})->WithTimeout(1_s)
     << make<DrivebasePoseBehaviour>(drivebase.swerve, frc::Pose2d{0.5_m, 0_m, 0_deg})->WithTimeout(2_s) //2.5
     << make<WaitTime>(20_s);
+}
+
+std::shared_ptr<Behaviour> IntakeTest(Intake *intake) {
+  return make<IntakeAutoBehaviour>(intake, 1)->Until(make<WaitTime>(1_s));
 }

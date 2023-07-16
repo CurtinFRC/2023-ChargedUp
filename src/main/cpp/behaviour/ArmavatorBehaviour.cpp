@@ -190,18 +190,18 @@ void ArmavatorManualBehaviour::OnTick(units::second_t dt) {
       _armavator->SetSpeedValues(0.5, 0.3);
 
       //sets hard limits in place, necessary to make the system not break itself (you will burn the neos out if they try to go past what they can)
-      if (_manualSetpoint.height > 0.95_m) {
-        _manualSetpoint.height = 0.95_m;
-      } else if (_manualSetpoint.height < 0.01_m) {
-        _manualSetpoint.height = 0.01_m;
+      if (_manualSetpoint.height > _max_height) {
+        _manualSetpoint.height = _max_height;
+      } else if (_manualSetpoint.height < _min_height) {
+        _manualSetpoint.height = _min_height;
       } else {
         _manualSetpoint.height -= (wom::deadzone(_codriver.GetRightY(), 0.2) * 1_m * 0.05); //slows the system down, otherwise it's wayyy too fast 
       }
 
-      if (_manualSetpoint.angle > 265_deg) {
-        _manualSetpoint.angle = 265_deg;
-      } else if (_manualSetpoint.angle < -60_deg) {
-        _manualSetpoint.angle = -60_deg;
+      if (_manualSetpoint.angle > _max_angle) {
+        _manualSetpoint.angle = _max_angle;
+      } else if (_manualSetpoint.angle < _min_angle) {
+        _manualSetpoint.angle = _min_angle;
       } else {
         _manualSetpoint.angle -= (wom::deadzone(_codriver.GetLeftY(), 0.2) * 1_deg * 1);
       }

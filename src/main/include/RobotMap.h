@@ -23,9 +23,19 @@
 #include "Gripper.h"
 #include "TOF.h"
 #include "behaviour/ArmavatorBehaviour.h"
+#include "Intake.h"
 
 
 struct RobotMap {
+  struct Intake {
+    wom::MotorVoltageController intakeMotor{ new WPI_TalonSRX(99) };
+
+    IntakeConfig config{
+      &intakeMotor
+    };
+  }; 
+  Intake intakeSystem;
+
   struct Controllers {    
     //sets driver station numbers for the controllers
     frc::XboxController driver{0};
@@ -39,7 +49,7 @@ struct RobotMap {
   }; ControlSystem controlSystem;
 
   struct GripperSystem {
-    wom::MotorVoltageController gripperMotor{ new WPI_VictorSPX(15)};
+    wom::MotorVoltageController gripperMotor{new rev::CANSparkMax(15, rev::CANSparkMax::MotorType::kBrushless) };
 
     TOF gamepiecePresence{frc::I2C::Port::kMXP};
 
