@@ -4,6 +4,7 @@
 #include "behaviour/SwerveBaseBehaviour.h"
 #include "behaviour/GripperBehaviour.h"
 
+
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <frc/event/BooleanEvent.h>
 #include <units/math.h>
@@ -43,7 +44,7 @@ void Robot::RobotInit() {
   m_chooser.AddOption(kLowPlaceTaxi, kLowPlaceTaxi);
   m_chooser.AddOption(kHighPlaceTaxi, kHighPlaceTaxi);
   m_chooser.AddOption(kHighPlace, kHighPlace);
-  m_chooser.AddOption(kPlaceDock, kPlaceDock);
+  m_chooser.AddOption(kBalence, kBalence);
   m_chooser.AddOption(kDock, kDock);
   frc::SmartDashboard::PutData("Auto Modes", &m_chooser);
 
@@ -56,6 +57,12 @@ void Robot::RobotInit() {
   swerve->SetDefaultBehaviour([this]() {
     return make<ManualDrivebase>(swerve, &map.controllers.driver);
   });
+
+  // intake = new Intake(map.intakeSystem.config);
+  // BehaviourScheduler::GetInstance()->Register(intake);
+  // intake->SetDefaultBehaviour([this]() {
+  //   return make<IntakeBehaviour>(intake, &map.controllers.codriver);
+  // });
 
   vision = new Vision(&map.vision.config);
 
@@ -73,18 +80,19 @@ void Robot::RobotInit() {
   gripper = new Gripper(map.gripper.config);
   BehaviourScheduler::GetInstance()->Register(gripper);
   gripper->SetDefaultBehaviour([this]() {
-    return make<GripperBehaviour>(gripper, map.controllers.codriver);
+    return make<GripperBehaviour>(gripper, map.controllers.codriver); 
   });
 }
 
 void Robot::RobotPeriodic() {
   auto dt = wom::now() - lastPeriodic;
   lastPeriodic = wom::now();
-  
   loop.Poll();
   BehaviourScheduler::GetInstance()->Tick();
 
   swerve->OnUpdate(dt);
+
+  //intake->OnUpdate(dt);
 
   //publish the encoder values for the swervebase 
   map.swerveTable.swerveDriveTable->GetEntry("frontLeftEncoder").SetDouble(map.swerveBase.moduleConfigs[0].turnMotor.encoder->GetEncoderPosition().value());
@@ -97,25 +105,49 @@ void Robot::RobotPeriodic() {
     nt::NetworkTableInstance::GetDefault().GetTable("TOF")->GetEntry("distance").SetDouble(distance.value().value());
   else
     nt::NetworkTableInstance::GetDefault().GetTable("TOF")->GetEntry("distance").SetDouble(-1);
-
   armavator->OnUpdate(dt);
   gripper->OnUpdate(dt);
 }
 
 void Robot::AutonomousInit() {
-  swerve->OnStart();
-  swerve->ResetPose(frc::Pose2d()); //reset the current swerve pose 
+  //swerve->OnStart();
+  //swerve->ResetPose(frc::Pose2d()); //reset the current swerve pose
   BehaviourScheduler *sched = BehaviourScheduler::GetInstance();
-  sched->Schedule(PlaceBalence(Drivebase{swerve, &map.swerveBase.gyro}, armavator, gripper)); //schedule the auto to be run
+  //sched->Schedule(PlaceBalence(Drivebase{swerve, &map.swerveBase.gyro}, armavator, gripper)); //schedule the auto to be run
+  //sched->Schedule(IntakeTest(intake)); //schedule the intake to be run
+
+  // Auto Select
+  m_autoSelected = m_chooser.GetSelected(); //get the selected auto mode
+
+  //fmt::print("Auto selected: {}\n", m_autoSelected); //print the selected auto mode
+  //std::cout << "Auto selected: " << m_autoSelected << std::endl; //print the selected auto mode
+
+  if (m_autoSelected == kLowPlace) { 
+    sched->Schedule(LowPlace(Drivebase{swerve, &map.swerveBase.gyro}, armavator));
+  } else if (m_autoSelected == kLowPlaceTaxi) {
+    sched->Schedule(LowPlaceTaxi(Drivebase{swerve, &map.swerveBase.gyro}, armavator));
+  } else if (m_autoSelected == kHighPlaceTaxi) {
+    sched->Schedule(HighPlaceTaxi(Drivebase{swerve, &map.swerveBase.gyro}, armavator, gripper));
+  } else if (m_autoSelected == kHighPlace) {
+    sched->Schedule(HighPlace(Drivebase{swerve, &map.swerveBase.gyro}, armavator, gripper));
+  } else if (m_autoSelected == kBalence) {
+    sched->Schedule(Balence(Drivebase{swerve, &map.swerveBase.gyro}, armavator));
+  } else {
+
+  }
+
 }
 
-void Robot::AutonomousPeriodic() {}
+void Robot::AutonomousPeriodic() {
+  m_autoSelected = m_chooser.GetSelected(); //get the selected auto mode
+
+}
 
 void Robot::TeleopInit() {
   loop.Clear();
   BehaviourScheduler *sched = BehaviourScheduler::GetInstance();
   sched->InterruptAll(); // removes all previously scheduled behaviours
-
+  
   swerve->OnStart();
   armavator->OnStart();
 
@@ -144,6 +176,7 @@ void Robot::TeleopPeriodic() {
   auto dt = wom::now() - lastPeriodic;
 
   vision->OnUpdate(dt);
+
 
   //when the b button is pressed, interupt currently running behaviours
   if (map.controllers.test.GetBButtonPressed()){

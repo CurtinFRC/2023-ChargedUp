@@ -16,10 +16,15 @@
 #include "behaviour/BehaviourScheduler.h"
 #include "behaviour/Behaviour.h"
 #include "behaviour/SwerveBaseBehaviour.h"
+#include "behaviour/IntakeBehaviour.h"
+#include "Intake.h"
 
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <frc/event/BooleanEvent.h>
 #include "frc/smartdashboard/SendableChooser.h"
+
+#include <map>
+
 
 using namespace frc;
 
@@ -46,6 +51,7 @@ class Robot : public frc::TimedRobot {
   Armavator *armavator;
   Vision *vision;
   Gripper *gripper;
+  //Intake *intake;
   
 
   bool compressorToggle = false;
@@ -56,11 +62,14 @@ class Robot : public frc::TimedRobot {
   units::radian_t _armSetpoint = 0_deg;
 
   frc::SendableChooser<std::string> m_chooser;
+
+  std::string m_autoSelected;
+
   const std::string kLowPlace = "kLowPlace";
   const std::string kLowPlaceTaxi = "kLowPlaceTaxi";
   const std::string kHighPlaceTaxi = "kHighPlaceTaxi";
   const std::string kHighPlace = "kHighPlace";
-  const std::string kPlaceDock = "kPlaceDock";
+  const std::string kBalence = "kBalence";
   const std::string kDock = "kDock";
 
   // Please modify the code below if auto is being changed, or new autos are added
@@ -70,8 +79,11 @@ class Robot : public frc::TimedRobot {
     kLowPlaceTaxi,
     kHighPlaceTaxi,
     kHighPlace,
-    kPlaceDock,
     kDock
   };
+
+  
+
+  
 };
 
