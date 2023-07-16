@@ -82,6 +82,12 @@ class ArmavatorManualBehaviour : public behaviour::Behaviour {
   ArmavatorPosition _manualSetpoint;
   ArmavatorPosition _setpointValue;
 
+  units::meter_t _max_height = 0.7_m;
+  units::meter_t _min_height = 0.05_m;
+
+  units::degree_t _max_angle = 265_deg;
+  units::degree_t _min_angle = -60_deg;
+
   frc::XboxController &_codriver;
   units::degree_t max_diff = 10_deg;
 

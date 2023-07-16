@@ -4,6 +4,8 @@
 #include "drivetrain/SwerveDrive.h"
 #include "Armavator.h"
 #include "Gripper.h"
+#include "Intake.h"
+#include "behaviour/IntakeBehaviour.h"
 
 class DefinedPoses {
  public:
@@ -288,7 +290,7 @@ std::shared_ptr<behaviour::Behaviour> Quad(Drivebase drivebase, bool blueAllianc
 
 std::shared_ptr<behaviour::Behaviour> Quintuple(Drivebase drivebase, bool blueAlliance, StartingConfig startConfig, EndingConfig endConfig);
 
-std::shared_ptr<behaviour::Behaviour> ForwardDrive(Drivebase drivebase, Armavator *armavator);
+std::shared_ptr<behaviour::Behaviour> LowPlaceTaxi(Drivebase drivebase, Armavator *armavator);
 
 std::shared_ptr<behaviour::Behaviour> Balence(Drivebase drivebase, Armavator *armavator);
 
@@ -298,4 +300,8 @@ std::shared_ptr<behaviour::Behaviour> LowPlace(Drivebase drivebase, Armavator *a
 
 std::shared_ptr<behaviour::Behaviour> LowPlaceBalence(Drivebase drivebase, Armavator *armavator);
 
-std::shared_ptr<behaviour::Behaviour> HighPlace(Drivebase *drivebase, Armavator *armavator, Gripper *gripper);
+std::shared_ptr<behaviour::Behaviour> HighPlace(Drivebase drivebase, Armavator *armavator, Gripper *gripper);
+
+std::shared_ptr<behaviour::Behaviour> HighPlaceTaxi(Drivebase drivebase, Armavator *armavator, Gripper *gripper);
+
+std::shared_ptr<behaviour::Behaviour> IntakeTest(Intake *intake);
