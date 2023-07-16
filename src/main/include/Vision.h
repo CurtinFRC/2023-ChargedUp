@@ -59,7 +59,7 @@ class Vision {
     return bestTarget;
   };
 
-    auto EstimatePose(VisionConfig config) {
+  auto EstimatePose(VisionConfig config) {
     visionConfig = config;
     _estimator = RobotPoseEstimator{
       visionConfig.layout,
@@ -73,7 +73,7 @@ class Vision {
     return pose_result.first;
   };
 
-    auto EstimatePose(VisionConfig *config) {
+  auto EstimatePose(VisionConfig *config) {
     _estimator = RobotPoseEstimator{
       config->layout,
       photonlib::AVERAGE_BEST_TARGETS,
@@ -86,7 +86,7 @@ class Vision {
     return pose_result.first;
   };
 
-  frc::Pose2d GetPathForBest(std::shared_ptr<PhotonCamera> camera) {
+  auto GetPathForBest(std::shared_ptr<PhotonCamera> camera) {
     PhotonPipelineResult ppResults = GetLatestResults(camera);
     PhotonTrackedTarget bestTarget = GetBestTarget(camera, ppResults);
     frc::Pose3d poseEstimate = EstimatePose(defaultConfig);
