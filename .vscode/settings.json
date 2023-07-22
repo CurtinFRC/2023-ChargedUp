@@ -117,7 +117,8 @@
     "memory_resource": "cpp",
     "string_view": "cpp",
     "semaphore": "cpp",
-    "cinttypes": "cpp"
+    "cinttypes": "cpp",
+    "*.mac": "cpp"
   },
   "githubPullRequests.ignoredPullRequestBranches": [
     "master"
