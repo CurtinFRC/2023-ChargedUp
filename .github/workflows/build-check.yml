@@ -12,11 +12,11 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-        with: 
-          submodules: recursive
       - uses: spacey-sooty/Actions-For-GradleRIO@v0.0.31
         with: 
           os: ubuntu
+      - name: Clone
+        run: git clone https://github.com/CurtinFRC/Wombat.git
       - name: Install
         run: ./gradlew installRoboRioToolchain
       - name: Build
