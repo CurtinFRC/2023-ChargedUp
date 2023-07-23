@@ -11,7 +11,7 @@ std::pair<double, double> Limelight::GetOffset() {
   return offset;
 }
 
-auto Limelight::GetAprilTagData(std::string dataName) {
+std::vector<double> Limelight::GetAprilTagData(std::string dataName) {
   return table->GetNumberArray(dataName ,std::vector<double>(6));
 }
 
@@ -20,8 +20,7 @@ void Limelight::OnStart() {
 }
 
 void Limelight::OnUpdate(units::time::second_t dt) {
-  auto pose = GetAprilTagData("botpose");
-  // frc::Pose3d _pose = frc::Pose3d(units::meter{pose[1]}, units::meter{pose[2]}, units::meter{pose[3]}, frc::Rotation3d(units::degree{pose[4]}, units::degree{pose[5]}, units::degree{pose[6]}));
-  frc::Pose3d _pose = frc::Pose3d(units::meter(pose[1]), units::meter(pose[2]), units::meter(pose[3]), frc::Rotation3d(units::degree(pose[4]), units::degree(pose[5]), units::degree(pose[6])));
+  std::vector<double> pose = GetAprilTagData("botpose");
+  frc::Pose3d _pose = frc::Pose3d(pose[1] * 1_m, 1_m * pose[2], 1_m * pose[3], frc::Rotation3d(1_deg *(pose[4]), 1_deg *(pose[5]), 1_deg *(pose[6])));
   wom::WritePose3NT(table, _pose);
 }

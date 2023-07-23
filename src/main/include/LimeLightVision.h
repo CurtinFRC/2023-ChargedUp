@@ -30,7 +30,7 @@ class Limelight : public behaviour::HasBehaviour{
 
   std::pair<double, double> GetOffset();
   
-  auto GetAprilTagData(std::string dataName);
+  std::vector<double> GetAprilTagData(std::string dataName);
 
   void OnUpdate(units::time::second_t dt);
   void OnStart();

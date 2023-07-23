@@ -43,4 +43,3 @@ void Example::OnUpdate(units::second_t dt) {
       break;
   }
 }
-
