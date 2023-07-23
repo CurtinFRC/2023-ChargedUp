@@ -15,8 +15,8 @@ for adding auto behaviours for other systems, add into the autoPathingDetails.en
 AutoPathDetails GetAutoPathingDetails(Drivebase drivebase, StartingConfig startConfig, EndingConfig endConfig, bool blueAlliance, int calledFromID, std::vector<frc::Pose2d> adjustmentPoses){
   AutoPathDetails autoPathingDetails;
   std::shared_ptr<Behaviour> adjustmentPathing;
-  std::shared_ptr<Behaviour> endPathing;
   std::shared_ptr<Behaviour> midPathing;
+  std::shared_ptr<Behaviour> endPathing;
 
   autoPathingDetails.endPathing = make<WaitTime>(0_ms);
   for (frc::Pose2d pose : adjustmentPoses) {
@@ -29,13 +29,13 @@ AutoPathDetails GetAutoPathingDetails(Drivebase drivebase, StartingConfig startC
   switch (startConfig){
     case StartingConfig::Top:
       definedPoses.poseSet = definedPoses.alliancePoses.topPoses;
-     break;
+      break;
     case StartingConfig::Middle:
       definedPoses.poseSet = definedPoses.alliancePoses.middlePoses;
-     break;
+      break;
     case StartingConfig::Bottom:
       definedPoses.poseSet = definedPoses.alliancePoses.bottomPoses;
-     break;
+      break;
   }
   autoPathingDetails.startPos = definedPoses.poseSet.startPos;
 

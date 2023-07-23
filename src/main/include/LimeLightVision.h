@@ -18,6 +18,9 @@
 #include <frc/geometry/Rotation3d.h>
 #include <units/angle.h>
 #include <units/length.h>
+#include <units/math.h>
+
+#include "drivetrain/SwerveDrive.h"
 
 class Limelight : public behaviour::HasBehaviour{
  public:
@@ -34,6 +37,12 @@ class Limelight : public behaviour::HasBehaviour{
 
   void OnUpdate(units::time::second_t dt);
   void OnStart();
+
+  bool IsAtSetPoseVision(frc::Pose3d pose, units::second_t dt);
+
+  units::meters_per_second_t GetSpeed(frc::Pose3d pose1, frc::Pose3d pose2, units::second_t dt);
+
+  frc::Pose3d GetPose();
 
  private:
   std::string *_limelightName;
