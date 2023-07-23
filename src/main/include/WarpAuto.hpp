@@ -19,12 +19,12 @@ class Auto {
     wom::NavX *gyro;
   };
 
-  std::shared_ptr<behaviour::Behaviour> Balance();
-  std::shared_ptr<behaviour::Behaviour> BalanceAndHighPlace();
-  std::shared_ptr<behaviour::Behaviour> BalanceGrabAndHighPlace();
-  std::shared_ptr<behaviour::Behaviour> HighPlace();
-  std::shared_ptr<behaviour::Behaviour> Quad();
-  std::shared_ptr<behaviour::Behaviour> Steal();
+  std::shared_ptr<behaviour::Behaviour> Balance(); // second
+  std::shared_ptr<behaviour::Behaviour> BalanceAndHighPlace(); // third
+  std::shared_ptr<behaviour::Behaviour> BalanceGrabAndHighPlace(); // fourth
+  std::shared_ptr<behaviour::Behaviour> HighPlace(); // first
+  std::shared_ptr<behaviour::Behaviour> Quad(); // last
+  std::shared_ptr<behaviour::Behaviour> Steal(); // fifth
 
   frc::SendableChooser<std::string> m_chooser;
   std::string m_autoSelected;
