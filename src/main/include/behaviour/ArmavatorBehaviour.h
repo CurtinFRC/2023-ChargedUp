@@ -77,6 +77,8 @@ class ArmavatorManualBehaviour : public behaviour::Behaviour {
 
   void OnStart() override;
   void OnTick(units::second_t dt) override;
+
+  
  private: 
   Armavator *_armavator;
   ArmavatorPosition _manualSetpoint;
@@ -96,4 +98,6 @@ class ArmavatorManualBehaviour : public behaviour::Behaviour {
 
   bool velocityControl = false;
   bool rawControl = true;
+
+  void SetPosition(units::degree_t angle, units::meter_t height, std::string name, double elevatorSpeed, double armSpeed);
 };
