@@ -1,7 +1,9 @@
 // this should be your only include in your behaviour cpp files
 #include "example/behaviour/ExampleBehaviours.h"
 
-ExampleBehaviour::ExampleBehaviour(Example *_example): _example(_example) {}
+ExampleBehaviour::ExampleBehaviour(Example *_example): _example(_example) {
+  Controls(_example);
+}
 
 void ExampleBehaviour::OnStart() {
   _example->OnStart();
@@ -10,5 +12,5 @@ void ExampleBehaviour::OnStart() {
 
 void ExampleBehaviour::OnTick(units::second_t dt) {
   _example->SetState(ExampleState::kRunning);
-  _example->OnUpdate(dt);
+  // _example->OnUpdate(dt);
 }
