@@ -13,6 +13,8 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: spacey-sooty/Actions-For-GradleRIO@v0.0.30
+        with: 
+          os: ubuntu
       - name: Install
         run: ./gradlew installRoboRioToolchain
       - name: Build
