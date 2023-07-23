@@ -278,8 +278,6 @@ we can treat it like an else condition, and then we do if (collect) and if (coll
 
 AutoPathDetails GetAutoPathingDetails(Drivebase drivebase, StartingConfig startConfig, EndingConfig endConfig, bool blueAlliance, int calledFromID, std::vector<frc::Pose2d> adjustmentPoses = {});
 
-std::shared_ptr<behaviour::Behaviour> DockBot(Drivebase drivebase, bool blueAlliance, StartingConfig startConfig, EndingConfig endConfig);
-
 std::shared_ptr<behaviour::Behaviour> Single(Drivebase drivebase, Armavator *armavator , Gripper *gripper, bool blueAlliance, StartingConfig startConfig, EndingConfig endConfig);
 
 std::shared_ptr<behaviour::Behaviour> Double(Drivebase drivebase, bool blueAlliance, StartingConfig startConfig, EndingConfig endConfig);
@@ -303,5 +301,3 @@ std::shared_ptr<behaviour::Behaviour> LowPlaceBalence(Drivebase drivebase, Armav
 std::shared_ptr<behaviour::Behaviour> HighPlace(Drivebase drivebase, Armavator *armavator, Gripper *gripper);
 
 std::shared_ptr<behaviour::Behaviour> HighPlaceTaxi(Drivebase drivebase, Armavator *armavator, Gripper *gripper);
-
-std::shared_ptr<behaviour::Behaviour> IntakeTest(Intake *intake);

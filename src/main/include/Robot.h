@@ -2,6 +2,7 @@
 
 #include "RobotMap.h"
 #include "Vision.h"
+#include "WarpAuto.hpp"
 
 #include <string>
 #include <iostream>
@@ -72,18 +73,14 @@ class Robot : public frc::TimedRobot {
   const std::string kBalence = "kBalence";
   const std::string kDock = "kDock";
 
-  // Please modify the code below if auto is being changed, or new autos are added
-  std::string defaultAuto = "kLowPlace";
-  std::vector<std::string> autoOptions = {
-    kLowPlace,
-    kLowPlaceTaxi,
-    kHighPlaceTaxi,
-    kHighPlace,
-    kDock
-  };
+  // std::string defaultAuto = "kLowPlace";
+  // std::vector<std::string> autoOptions = {
+  //   kLowPlace,
+  //   kLowPlaceTaxi,
+  //   kHighPlaceTaxi,
+  //   kHighPlace,
+  //   kDock
+  // };
 
-  
-
-  
+  Auto warpAuto;
 };
-

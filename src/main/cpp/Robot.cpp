@@ -39,14 +39,14 @@ void Robot::RobotInit() {
   // map.swerveBase.moduleConfigs[2].turnMotor.encoder->SetEncoderOffset(0_rad);
   // map.swerveBase.moduleConfigs[3].turnMotor.encoder->SetEncoderOffset(0_rad);
 
-  //the start of selecting which auto mode, was never successfully implemented 
-  m_chooser.SetDefaultOption(kLowPlace, kLowPlace);
-  m_chooser.AddOption(kLowPlaceTaxi, kLowPlaceTaxi);
-  m_chooser.AddOption(kHighPlaceTaxi, kHighPlaceTaxi);
-  m_chooser.AddOption(kHighPlace, kHighPlace);
-  m_chooser.AddOption(kBalence, kBalence);
-  m_chooser.AddOption(kDock, kDock);
-  frc::SmartDashboard::PutData("Auto Modes", &m_chooser);
+  // //the start of selecting which auto mode, was never successfully implemented 
+  // m_chooser.SetDefaultOption(kLowPlace, kLowPlace);
+  // m_chooser.AddOption(kLowPlaceTaxi, kLowPlaceTaxi);
+  // m_chooser.AddOption(kHighPlaceTaxi, kHighPlaceTaxi);
+  // m_chooser.AddOption(kHighPlace, kHighPlace);
+  // m_chooser.AddOption(kBalence, kBalence);
+  // m_chooser.AddOption(kDock, kDock);
+  // frc::SmartDashboard::PutData("Auto Modes", &m_chooser);
 
   //reset the gyro when the robot restarts 
   map.swerveBase.gyro.Reset();
@@ -117,20 +117,20 @@ void Robot::AutonomousInit() {
   //sched->Schedule(IntakeTest(intake)); //schedule the intake to be run
 
   // Auto Select
-  m_autoSelected = m_chooser.GetSelected(); //get the selected auto mode
+  warpAuto.m_autoSelected = warpAuto.m_chooser.GetSelected(); //get the selected auto mode
 
   //fmt::print("Auto selected: {}\n", m_autoSelected); //print the selected auto mode
   //std::cout << "Auto selected: " << m_autoSelected << std::endl; //print the selected auto mode
 
-  if (m_autoSelected == kLowPlace) { 
+  if (warpAuto.m_autoSelected == kLowPlace) { 
     sched->Schedule(LowPlace(Drivebase{swerve, &map.swerveBase.gyro}, armavator));
-  } else if (m_autoSelected == kLowPlaceTaxi) {
+  } else if (warpAuto.m_autoSelected == kLowPlaceTaxi) {
     sched->Schedule(LowPlaceTaxi(Drivebase{swerve, &map.swerveBase.gyro}, armavator));
-  } else if (m_autoSelected == kHighPlaceTaxi) {
+  } else if (warpAuto.m_autoSelected == kHighPlaceTaxi) {
     sched->Schedule(HighPlaceTaxi(Drivebase{swerve, &map.swerveBase.gyro}, armavator, gripper));
-  } else if (m_autoSelected == kHighPlace) {
+  } else if (warpAuto.m_autoSelected == kHighPlace) {
     sched->Schedule(HighPlace(Drivebase{swerve, &map.swerveBase.gyro}, armavator, gripper));
-  } else if (m_autoSelected == kBalence) {
+  } else if (warpAuto.m_autoSelected == kBalence) {
     sched->Schedule(Balence(Drivebase{swerve, &map.swerveBase.gyro}, armavator));
   } else {
 
@@ -139,7 +139,7 @@ void Robot::AutonomousInit() {
 }
 
 void Robot::AutonomousPeriodic() {
-  m_autoSelected = m_chooser.GetSelected(); //get the selected auto mode
+  warpAuto.m_autoSelected = m_chooser.GetSelected(); //get the selected auto mode
 
 }
 

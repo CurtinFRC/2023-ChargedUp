@@ -86,14 +86,13 @@ AutoPathDetails GetAutoPathingDetails(Drivebase drivebase, StartingConfig startC
   autoPathingDetails.midPathing = midPathing;
 
   switch (endConfig) {
-    case EndingConfig::Dock:
-        {        
-        auto wait_until1 = make<DrivebasePoseBehaviour>(drivebase.swerve, definedPoses.poseSet.dock_LineUp_Pos) | make<WaitTime>(3_s); // because PID
-        auto wait_until2 = make<DrivebasePoseBehaviour>(drivebase.swerve, definedPoses.poseSet.dockPos) | make<WaitTime>(3_s); // because PID
-        endPathing = midPathing << wait_until1 << wait_until2 << make<DrivebaseBalance>(drivebase.swerve, drivebase.gyro);
+    case EndingConfig::Dock: {
+      auto wait_until1 = make<DrivebasePoseBehaviour>(drivebase.swerve, definedPoses.poseSet.dock_LineUp_Pos) | make<WaitTime>(3_s); // because PID
+      auto wait_until2 = make<DrivebasePoseBehaviour>(drivebase.swerve, definedPoses.poseSet.dockPos) | make<WaitTime>(3_s); // because PID
+      endPathing = midPathing << wait_until1 << wait_until2 << make<DrivebaseBalance>(drivebase.swerve, drivebase.gyro);
       break;}
     case EndingConfig::PrepareManual:
-        endPathing = make<DrivebasePoseBehaviour>(drivebase.swerve, definedPoses.poseSet.subStationWaitPos);
+      endPathing = make<DrivebasePoseBehaviour>(drivebase.swerve, definedPoses.poseSet.subStationWaitPos);
       break;
     case EndingConfig::Collect:
         {// The Collect assumes that we start with a held game piece, that held game piece will be the only one for SINGLE, hence no swerve motion will take place
@@ -131,16 +130,6 @@ AutoPathDetails GetAutoPathingDetails(Drivebase drivebase, StartingConfig startC
   autoPathingDetails.endPathing = autoPathingDetails.endPathing << endPathing;
   return autoPathingDetails;
 }
-
-
-std::shared_ptr<Behaviour> DockBot(Drivebase drivebase, bool blueAlliance, StartingConfig startConfig, EndingConfig endConfig){
-  AutoPathDetails autoPathDetails = GetAutoPathingDetails(drivebase, startConfig, endConfig, blueAlliance, 0);
-  return
-    make<DrivebasePoseBehaviour>(drivebase.swerve, autoPathDetails.startPos)
-    << autoPathDetails.endPathing;
-}
-
-
 
 std::shared_ptr<Behaviour> Double(Drivebase drivebase, bool blueAlliance, StartingConfig startConfig, EndingConfig endConfig){
   AutoPathDetails autoPathDetails = GetAutoPathingDetails(drivebase, startConfig, endConfig, blueAlliance, 2);
@@ -299,8 +288,4 @@ std::shared_ptr<Behaviour> LowPlace(Drivebase drivebase, Armavator *armavator){
     << make<DrivebasePoseBehaviour>(drivebase.swerve, frc::Pose2d{-0.4_m, 0_m, 0_deg})->WithTimeout(1_s)
     << make<DrivebasePoseBehaviour>(drivebase.swerve, frc::Pose2d{0.5_m, 0_m, 0_deg})->WithTimeout(2_s) //2.5
     << make<WaitTime>(20_s);
-}
-
-std::shared_ptr<Behaviour> IntakeTest(Intake *intake) {
-  return make<IntakeAutoBehaviour>(intake, 1)->Until(make<WaitTime>(1_s));
 }
