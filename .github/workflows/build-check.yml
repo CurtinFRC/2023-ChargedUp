@@ -17,6 +17,8 @@ jobs:
           os: ubuntu
       - name: Clone
         run: git clone https://github.com/CurtinFRC/Wombat.git
+      - name: Rename
+        run: mv Wombat wombat
       - name: Install
         run: ./gradlew installRoboRioToolchain
       - name: Build
