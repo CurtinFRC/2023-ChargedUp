@@ -70,13 +70,13 @@ deploy {
 def deployArtifact = deploy.targets.roborio.artifacts.frcCpp
 
 // Set this to true to enable desktop support.
-def includeDesktopSupport = true
+def includeDesktopSupport = false
 
 // Set to true to run simulation in debug mode
 wpi.cpp.debugSimulation = false
 
 // Default enable simgui
-wpi.sim.addGui().defaultEnabled = true
+wpi.sim.addGui().defaultEnabled = false
 // Enable DS but not by default
 wpi.sim.addDriverstation()
 
