@@ -12,7 +12,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - uses: spacey-sooty/Actions-For-GradleRIO@v0.0.31
+      - uses: spacey-sooty/Actions-For-GradleRIO@master
         with: 
           os: ubuntu
       - name: Clone
