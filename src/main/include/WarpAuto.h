@@ -4,6 +4,7 @@
 #include "behaviour/SwerveBaseBehaviour.h"
 #include "behaviour/ArmavatorBehaviour.h"
 #include "behaviour/LimelightBehaviours.h"
+#include "behaviour/GripperBehaviour.h"
 #include "Auto.h"
 
 #include <frc/smartdashboard/SmartDashboard.h>
@@ -12,14 +13,9 @@
 
 class Auto {
  public:
-  Auto();
+  Auto(Drivebase drivebase, Armavator *armavator, Gripper *gripper);
 
-  struct Drivebase {
-    wom::SwerveDrive *swerve;
-    wom::NavX *gyro;
-  };
-
-  std::shared_ptr<behaviour::Behaviour> Balance(Drivebase *drivebase); // second
+  std::shared_ptr<behaviour::Behaviour> Balance(); // second
   std::shared_ptr<behaviour::Behaviour> BalanceAndHighPlace(); // third
   std::shared_ptr<behaviour::Behaviour> BalanceGrabAndHighPlace(); // fourth
   std::shared_ptr<behaviour::Behaviour> HighPlace(); // first
@@ -37,4 +33,8 @@ class Auto {
   const std::string kHighPlace = "kHighPlace";
   const std::string kQuad = "kQuad";
   const std::string kSteal = "kSteal";
+
+  Drivebase _drivebase;
+  Armavator *_armavator;
+  Gripper *_gripper;
 };

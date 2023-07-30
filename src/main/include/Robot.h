@@ -2,7 +2,7 @@
 
 #include "RobotMap.h"
 #include "Vision.h"
-#include "WarpAuto.hpp"
+#include "WarpAuto.h"
 
 #include <string>
 #include <iostream>
@@ -54,6 +54,7 @@ class Robot : public frc::TimedRobot {
   Gripper *gripper;
   //Intake *intake;
   
+  wom::NavX *gyro;
 
   bool compressorToggle = false;
   bool intakeSol = false;
@@ -82,5 +83,5 @@ class Robot : public frc::TimedRobot {
   //   kDock
   // };
 
-  Auto warpAuto;
+  Auto warpAuto = Auto(Drivebase{swerve, gyro}, armavator, gripper);
 };
