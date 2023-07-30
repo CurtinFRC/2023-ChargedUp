@@ -4,11 +4,11 @@
 #include "behaviour/SwerveBaseBehaviour.h"
 #include "behaviour/ArmavatorBehaviour.h"
 #include "behaviour/LimelightBehaviours.h"
+#include "Auto.h"
 
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <frc/smartdashboard/SendableChooser.h>
 #include <frc/event/BooleanEvent.h>
-
 
 class Auto {
  public:
@@ -19,7 +19,7 @@ class Auto {
     wom::NavX *gyro;
   };
 
-  std::shared_ptr<behaviour::Behaviour> Balance(); // second
+  std::shared_ptr<behaviour::Behaviour> Balance(Drivebase *drivebase); // second
   std::shared_ptr<behaviour::Behaviour> BalanceAndHighPlace(); // third
   std::shared_ptr<behaviour::Behaviour> BalanceGrabAndHighPlace(); // fourth
   std::shared_ptr<behaviour::Behaviour> HighPlace(); // first

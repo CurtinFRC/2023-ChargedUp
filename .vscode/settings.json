@@ -120,8 +120,5 @@
     "cinttypes": "cpp",
     "*.mac": "cpp"
   },
-  "githubPullRequests.ignoredPullRequestBranches": [
-    "master"
-  ],
   "editor.tabSize": 2
 }
