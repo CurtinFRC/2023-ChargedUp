@@ -89,10 +89,12 @@ void ArmavatorManualBehaviour::OnTick(units::second_t dt) {
     frc::SmartDashboard::PutString("Armavator Mode", "Raw Control");
   }
 
-  //there is a weird sensor glitch where occationally the encoder starts with a really big number, so we just re-zero it if this happens
+  //there is a weird sensor glitch where occasionally the encoder starts with a really big number, so we just re-zero it if this happens
   if (_armavator->GetCurrentPosition().height > 5_m) {
     _armavator->OnStart();
   }
+
+  // rawControl = false;
 
   //By default the armavator is on raw control, when codriver presses A it switches to PID mode. 
   if (_codriver.GetAButtonPressed()) {
@@ -133,15 +135,18 @@ void ArmavatorManualBehaviour::OnTick(units::second_t dt) {
     } else if (_codriver.GetXButton()) {
       //front mid place 
 
-      SetPosition(30_deg, 0.15_m, "5", 0.35, 0.07);
+      // SetPosition(30_deg, 0.15_m, "5", 0.35, 0.07);
+      SetPosition(-40_deg, 0.7_m, "pickup from floor", 0.35, 0.07);
     } else if (_codriver.GetYButton()) {
       // 152_deg 0.1814_m back high place 
 
-      SetPosition(152_deg, 0.1814_m, "6", 0.35, 0.07);
+      // SetPosition(152_deg, 0.1814_m, "6", 0.35, 0.07);
+      SetPosition(10_deg, 0.3_m, "pick up from substation", 0.35, 0.07);
     } else if (_codriver.GetBButton()) {
       // high hold
 
-      SetPosition(161_deg, 0.0_m, "7", 0.35, 0.07);
+      // SetPosition(161_deg, 0.0_m, "7", 0.35, 0.07);
+      SetPosition(60_deg, 0.3_m, "place high", 0.35, 0.07);
     } else {
       //change to velocity control 
       if (_codriver.GetLeftBumperPressed()) {

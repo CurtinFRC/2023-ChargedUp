@@ -26,7 +26,8 @@ void GripperBehaviour::OnTick(units::second_t dt) {
   //setting the gripper mode
   if (_codriver.GetRightTriggerAxis() > 0.2) {
     gripper->SetOutaking(_codriver.GetRightTriggerAxis());
-  } else if (_codriver.GetRightBumper()) {
+  } else if (_codriver.GetLeftTriggerAxis() > 0.2) {
+    // todo fix
     gripper->SetIntaking();
   } else {
     gripper->SetIdle();

@@ -68,17 +68,17 @@ struct RobotMap {
   }; Vision vision;
 
   struct SwerveBase{
-    CANCoder frontLeftCancoder{19};
-    CANCoder frontRightCancoder{17};
-    CANCoder backLeftCancoder{16};
-    CANCoder backRightCancoder{18};
+    CANCoder frontLeftCancoder{19, "Drivebase"};
+    CANCoder frontRightCancoder{17, "Drivebase"};
+    CANCoder backLeftCancoder{16, "Drivebase"};
+    CANCoder backRightCancoder{18, "Drivebase"};
 
     wom::NavX gyro;
     wpi::array<WPI_TalonFX*, 4> turnMotors{
-      new WPI_TalonFX(1), new WPI_TalonFX(3), new WPI_TalonFX(5), new WPI_TalonFX(7)
+      new WPI_TalonFX(1, "Drivebase"), new WPI_TalonFX(3, "Drivebase"), new WPI_TalonFX(5, "Drivebase"), new WPI_TalonFX(7, "Drivebase")
     };
     wpi::array<WPI_TalonFX*, 4> driveMotors{
-      new WPI_TalonFX(2), new WPI_TalonFX(4), new WPI_TalonFX(6), new WPI_TalonFX(8)
+      new WPI_TalonFX(2, "Drivebase"), new WPI_TalonFX(4, "Drivebase"), new WPI_TalonFX(6, "Drivebase"), new WPI_TalonFX(8, "Drivebase")
     };
 
     wpi::array<wom::SwerveModuleConfig, 4> moduleConfigs{
