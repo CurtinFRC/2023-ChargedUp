@@ -65,6 +65,9 @@ class Armavator : public behaviour::HasBehaviour {
   ArmavatorPosition GetCurrentPosition() const;
   bool IsStable() const;
 
+  void SetElevatorPosition(units::meter_t setpoint);
+  void SetArmPosition(units::radian_t setpoint);
+
   //creates the arm and the elevator
   wom::Arm *arm;
   wom::Elevator *elevator;

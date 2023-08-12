@@ -17,7 +17,9 @@ void Armavator::OnStart() {
 }
 
 void Armavator::OnUpdate(units::second_t dt) {
-  units::volt_t voltage{0}; 
+  units::volt_t voltage{0};
+
+  std::cout << arm->GetConfig().armEncoder.GetPosition() << std::endl; 
 
   switch(_state) {
     case ArmavatorState::kIdle: //armavator should do nothing when in the idle state
@@ -81,4 +83,12 @@ ArmavatorPosition Armavator::GetCurrentPosition() const {
 //determines if the armavator is stable/done
 bool Armavator::IsStable() const {
   return elevator->IsStable() && arm->IsStable();
+}
+
+void Armavator::SetElevatorPosition(units::meter_t setpoint) {
+  elevator->SetPID(setpoint);
+}
+
+void Armavator::SetArmPosition(units::radian_t setpoint) {
+  arm->SetAngle(setpoint);
 }
