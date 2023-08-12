@@ -24,9 +24,9 @@ GripperBehaviour::GripperBehaviour(Gripper *gripper, frc::XboxController &codriv
 
 void GripperBehaviour::OnTick(units::second_t dt) {
   //setting the gripper mode
-  if (_codriver.GetRightTriggerAxis() > 0.2) {
-    gripper->SetOutaking(_codriver.GetRightTriggerAxis());
-  } else if (_codriver.GetLeftTriggerAxis() > 0.2) {
+  if (_codriver.GetLeftTriggerAxis() > 0.2) {
+    gripper->SetOutaking(_codriver.GetLeftTriggerAxis());
+  } else if (_codriver.GetRightTriggerAxis() > 0.2) {
     gripper->SetIntaking();
   } else {
     gripper->SetIdle();
