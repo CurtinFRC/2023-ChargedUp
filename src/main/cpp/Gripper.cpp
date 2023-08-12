@@ -7,7 +7,7 @@ void Gripper::OnUpdate(units::second_t dt) {
 
   switch (_state) {
     case GripperState::kIdle:
-      voltage = 0_V;
+      voltage = 1_V;
       break;
 
     case GripperState::kIntaking:

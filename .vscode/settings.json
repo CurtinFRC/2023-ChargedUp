@@ -122,5 +122,6 @@
   },
   "githubPullRequests.ignoredPullRequestBranches": [
     "master"
-  ]
+  ],
+  "editor.tabSize": 2
 }
