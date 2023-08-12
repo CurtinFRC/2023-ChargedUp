@@ -22,6 +22,11 @@ enum class ArmavatorAutoSetpointEnum {
   kWaitToCollect
 };
 
+enum class ArmavatorManualModeEnum {
+  kRaw,
+  kVelocity,
+  kPosition
+};
 //armavator go to auto setpoint 
 class ArmavatorGoToAutoSetpoint : public behaviour::Behaviour {
  public: 
@@ -77,9 +82,11 @@ class ArmavatorManualBehaviour : public behaviour::Behaviour {
 
   void OnStart() override;
   void OnTick(units::second_t dt) override;
+
+  
  private: 
   Armavator *_armavator;
-  ArmavatorPosition _manualSetpoint;
+  ArmavatorPosition _manualSetpoint{0_m,0_rad};
   ArmavatorPosition _setpointValue;
 
   units::meter_t _max_height = 0.7_m;
@@ -96,4 +103,8 @@ class ArmavatorManualBehaviour : public behaviour::Behaviour {
 
   bool velocityControl = false;
   bool rawControl = true;
+
+  ArmavatorManualModeEnum _armManualModes = ArmavatorManualModeEnum::kRaw;
+
+  void SetPosition(units::degree_t angle, units::meter_t height, std::string name, double elevatorSpeed, double armSpeed);
 };
