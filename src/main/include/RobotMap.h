@@ -73,7 +73,7 @@ struct RobotMap {
     CANCoder backLeftCancoder{16};
     CANCoder backRightCancoder{18};
 
-    wom::NavX gyro;
+    Pigeon2 gyro = Pigeon2(999);
     wpi::array<WPI_TalonFX*, 4> turnMotors{
       new WPI_TalonFX(1), new WPI_TalonFX(3), new WPI_TalonFX(5), new WPI_TalonFX(7)
     };
