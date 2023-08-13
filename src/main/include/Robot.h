@@ -52,6 +52,7 @@ class Robot : public frc::TimedRobot {
   Armavator *armavator;
   Vision *vision;
   Gripper *gripper;
+  Drivebase *drivebase = new Drivebase{swerve, gyro};
   //Intake *intake;
   
   wom::NavX *gyro;
@@ -83,5 +84,5 @@ class Robot : public frc::TimedRobot {
   //   kDock
   // };
 
-  Auto warpAuto = Auto(Drivebase{swerve, gyro}, armavator, gripper);
+  Auto warpAuto = Auto(drivebase, armavator, gripper);
 };

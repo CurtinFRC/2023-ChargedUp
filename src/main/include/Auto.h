@@ -251,6 +251,7 @@ struct Drivebase {
   wom::SwerveDrive *swerve;
   wom::NavX *gyro;
 };
+
 struct AutoPathDetails {
   frc::Pose2d startPos;
   std::shared_ptr<behaviour::Behaviour> midPathing;
@@ -262,6 +263,7 @@ enum StartingConfig {
   Middle,
   Bottom
 };
+
 enum EndingConfig {
   Dock,
   Steal,

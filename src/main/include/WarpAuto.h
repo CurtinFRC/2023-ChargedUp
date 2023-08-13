@@ -13,7 +13,7 @@
 
 class Auto {
  public:
-  Auto(Drivebase drivebase, Armavator *armavator, Gripper *gripper);
+  Auto(Drivebase *drivebase, Armavator *armavator, Gripper *gripper);
 
   std::shared_ptr<behaviour::Behaviour> Balance(); // second
   std::shared_ptr<behaviour::Behaviour> BalanceAndHighPlace(); // third
@@ -34,7 +34,7 @@ class Auto {
   const std::string kQuad = "kQuad";
   const std::string kSteal = "kSteal";
 
-  Drivebase _drivebase;
+  Drivebase *_drivebase;
   Armavator *_armavator;
   Gripper *_gripper;
 };
