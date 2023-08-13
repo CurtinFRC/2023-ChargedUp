@@ -22,10 +22,10 @@ std::shared_ptr<Behaviour> Auto::Balance() {
   // return make<DrivebasePoseBehaviour>(_drivebase->swerve, frc::Pose2d{4_m, 0_m, 0_deg}, 4_V)->Until(make<WaitFor>([_drivebase]() {
   //   return fabs(_drivebase->gyro->GetAngle()) > 10;
 
-  std::function<bool()> isFlat = []() { return units::math::abs(_drivebase.gyro->GetPitch()) > 10_deg ||  units::math::abs(_drivebase.gyro->GetRoll()) > 10_deg; };
+  std::function<bool()> isFlat = (){ return units::math::abs(_drivebase.gyro->GetPitch()) > 10_deg ||  units::math::abs(_drivebase.gyro->GetRoll()) > 10_deg; };
 
   frc::Pose2d testM{4_m, 0_m, 0_deg};
-    return make<DrivebasePoseBehaviour>(_drivebase->swerve, testM, 4_V)->Until(make<WaitFor>(isFlat));
+    return make<DrivebasePoseBehaviour>(_drivebase->swerve, testM, 4_V->Until(make<WaitFor>(isFlat));
 }
 
 std::shared_ptr<Behaviour> Auto::HighPlace() {
