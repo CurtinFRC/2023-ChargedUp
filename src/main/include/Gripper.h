@@ -17,7 +17,8 @@ enum class GripperState {
   kIdle,
   kIntaking,
   kOutaking,
-  kHolding
+  kHolding,
+  kStop
 };
 
 class Gripper : public behaviour::HasBehaviour {
@@ -30,6 +31,7 @@ class Gripper : public behaviour::HasBehaviour {
   void SetIntaking();
   void SetOutaking(double speed);
   void SetHolding();
+  void SetStop();
 
   std::string GetState();
 
