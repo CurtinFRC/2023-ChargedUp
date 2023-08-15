@@ -107,4 +107,5 @@ class ArmavatorManualBehaviour : public behaviour::Behaviour {
   ArmavatorManualModeEnum _armManualModes = ArmavatorManualModeEnum::kRaw;
 
   void SetPosition(units::degree_t angle, units::meter_t height, std::string name, double elevatorSpeed, double armSpeed);
+  void CheckSetpoints();
 };
