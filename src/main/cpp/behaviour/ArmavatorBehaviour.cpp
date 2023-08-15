@@ -463,7 +463,7 @@ void ArmavatorManualBehaviour::CheckSetpoints() {
 }
 
 void ArmavatorManualBehaviour::SetPosition(units::degree_t angle, units::meter_t height, std::string name, double elevatorSpeed, double armSpeed) {
-  if (_armManualModes == ArmavatorManualModesEnum::kPosition) {
+  if (_armManualModes == ArmavatorManualModeEnum::kPosition) {
     _manualSetpoint.height = height;
     _manualSetpoint.angle  = angle;
     //  _armavator->SetPosition(_manualSetpoint);
@@ -471,12 +471,8 @@ void ArmavatorManualBehaviour::SetPosition(units::degree_t angle, units::meter_t
     std::cout << "GO TO armavator POS " << name << std::endl;
     _armavator->SetSpeedValues(elevatorSpeed, armSpeed);
   }
-  else if (_armManualModes == ArmavatorManualModesEnum::kVelocity) {
-    ArmavatorVelocity av;
-    av.angleSpeed = angle * (180_deg / 1_s);
-    av.elevatorSpeed = height * (2_m / 1_s);
-    _armavator->SetVelocity(av);
-    frc::SmartDashboard::PutNumber("ArmVelocitySetpoint", av.angleSpeed.value());
+  else if (_armManualModes == ArmavatorManualModeEnum::kVelocity) {
+
   }
 }
 
