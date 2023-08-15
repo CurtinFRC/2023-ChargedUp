@@ -187,6 +187,8 @@ void ArmavatorManualBehaviour::OnTick(units::second_t dt) {
         units::meter_t height = _armavator->GetCurrentPosition().height;
         units::degree_t angle = _armavator->GetCurrentPosition().angle;
         _armavator->SetSpeedValues(0.5, 0.3);
+
+        CheckSetpoints();
         //bool above_height = true;
         //sets hard limits in place, necessary to make the system not break itself (you will burn the neos out if they try to go past what they can)
         if (_manualSetpoint.height > _max_height) {
@@ -270,8 +272,8 @@ void ArmavatorManualBehaviour::OnTick(units::second_t dt) {
           //}
           _armavator->SetPosition(sp);
 
-          frc::SmartDashboard::PutNumber("Current Angle", _manualSetpoint.angle.value());
-          frc::SmartDashboard::PutNumber("Current Height", _manualSetpoint.height.value());
+          frc::SmartDashboard::PutNumber("Target Angle", _manualSetpoint.angle.value());
+          frc::SmartDashboard::PutNumber("Target Height", _manualSetpoint.height.value());
 
 
         }
@@ -281,8 +283,7 @@ void ArmavatorManualBehaviour::OnTick(units::second_t dt) {
         std::cout << "set position height: " << _manualSetpoint.height.value() << std::endl;
         std::cout << "set position angle: " << _manualSetpoint.angle.value() << std::endl;
 
-        CheckSetpoints();
-      
+
         break;
       }
 
