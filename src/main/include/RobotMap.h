@@ -25,6 +25,8 @@
 #include "behaviour/ArmavatorBehaviour.h"
 #include "Intake.h"
 
+#include <rev/CANSparkMaxLowLevel.h>
+
 
 struct RobotMap {
   struct Intake {
@@ -68,17 +70,17 @@ struct RobotMap {
   }; Vision vision;
 
   struct SwerveBase{
-    CANCoder frontLeftCancoder{19};
-    CANCoder frontRightCancoder{17};
-    CANCoder backLeftCancoder{16};
-    CANCoder backRightCancoder{18};
+    CANCoder frontLeftCancoder{19, "Drivebase"};
+    CANCoder frontRightCancoder{17, "Drivebase"};
+    CANCoder backLeftCancoder{16, "Drivebase"};
+    CANCoder backRightCancoder{18, "Drivebase"};
 
     wom::NavX gyro;
     wpi::array<WPI_TalonFX*, 4> turnMotors{
-      new WPI_TalonFX(1), new WPI_TalonFX(3), new WPI_TalonFX(5), new WPI_TalonFX(7)
+      new WPI_TalonFX(1, "Drivebase"), new WPI_TalonFX(3, "Drivebase"), new WPI_TalonFX(5, "Drivebase"), new WPI_TalonFX(7, "Drivebase")
     };
     wpi::array<WPI_TalonFX*, 4> driveMotors{
-      new WPI_TalonFX(2), new WPI_TalonFX(4), new WPI_TalonFX(6), new WPI_TalonFX(8)
+      new WPI_TalonFX(2, "Drivebase"), new WPI_TalonFX(4, "Drivebase"), new WPI_TalonFX(6, "Drivebase"), new WPI_TalonFX(8, "Drivebase")
     };
 
     wpi::array<wom::SwerveModuleConfig, 4> moduleConfigs{
@@ -265,6 +267,7 @@ struct RobotMap {
       // wom::CANSparkMaxEncoder leftEncoder{&leftArmMotor, 100};
       // wom::CANSparkMaxEncoder rightEncoder{&rightArmMotor, 100};
 
+      //rev::SparkMaxAbsoluteEncoder leftOtherArmEncoder{leftArmMotor, rev::CANSparkMax::SparkMaxAbsoluteEncoder::Type::kDutyCycle};
       rev::SparkMaxRelativeEncoder leftOtherArmEncoder = leftArmMotor.GetEncoder();
       rev::SparkMaxRelativeEncoder rightOtherArmEncoder = rightArmMotor.GetEncoder();
 
@@ -291,9 +294,9 @@ struct RobotMap {
         leftOtherArmEncoder,
         wom::PIDConfig<units::radian, units::volts>(
           "/armavator/arm/pid/config",
-          13_V / 25_deg, //prev 13_V/25_deg
-          0.1_V / (1_deg * 1_s), //0.1_V / (1_deg * 1_s)
-          0_V / (1_deg / 1_s),
+          18_V / 25_deg, //prev 13_V/25_deg
+          0_V / (1_deg * 1_s), //0.1_V / (1_deg * 1_s)
+          0_V / (1_deg / 1_s), // 0_V / (1_deg / 1_s)
           5_deg,
           2_deg / 1_s,
           10_deg
@@ -304,9 +307,9 @@ struct RobotMap {
           0_V / 25_deg,
           0_V / (90_deg / 1_s / 1_s)
         ),
-        2_kg, 
-        2_kg,
-        1.37_m,
+        1_kg,
+        0.5_kg,
+        1.15_m,
         -90_deg,
         270_deg,
         0_deg
@@ -370,7 +373,7 @@ struct RobotMap {
         {
           //creates the pid for the elevator to remove error
           "/armavator/elevator/pid/config",
-          20_V / 1_m, //16V
+          22_V / 1_m, //16V
           0.3_V / (1_m * 1_s),
           0_V / (1_m / 1_s),
           0.1_m,

@@ -29,15 +29,20 @@ void Robot::RobotInit() {
   lastPeriodic = wom::now();
 
   //sets the offsets of the swerve cancoders to retune these values set the offsets to 0 and record the values
-  map.swerveBase.moduleConfigs[0].turnMotor.encoder->SetEncoderOffset(4.11207_rad);
-  map.swerveBase.moduleConfigs[1].turnMotor.encoder->SetEncoderOffset(1.32638_rad);
-  map.swerveBase.moduleConfigs[2].turnMotor.encoder->SetEncoderOffset(1.67817_rad);
-  map.swerveBase.moduleConfigs[3].turnMotor.encoder->SetEncoderOffset(0.60899_rad);
+  map.swerveBase.moduleConfigs[0].turnMotor.encoder->SetEncoderOffset(2.54181_rad);
+  map.swerveBase.moduleConfigs[1].turnMotor.encoder->SetEncoderOffset(6.03621_rad);
+  map.swerveBase.moduleConfigs[2].turnMotor.encoder->SetEncoderOffset(0.09050_rad);
+  map.swerveBase.moduleConfigs[3].turnMotor.encoder->SetEncoderOffset(5.30451_rad);
 
-  // map.swerveBase.moduleConfigs[0].turnMotor.encoder->SetEncoderOffset(0_rad);
-  // map.swerveBase.moduleConfigs[1].turnMotor.encoder->SetEncoderOffset(0_rad);
-  // map.swerveBase.moduleConfigs[2].turnMotor.encoder->SetEncoderOffset(0_rad);
-  // map.swerveBase.moduleConfigs[3].turnMotor.encoder->SetEncoderOffset(0_rad);
+    // back left: 0.090504866485253
+    // back right: 5.304505564508547
+    // front left: 2.541806165526507
+    // front right: 6.036214400329998
+
+//   map.swerveBase.moduleConfigs[0].turnMotor.encoder->SetEncoderOffset(0_rad);
+//   map.swerveBase.moduleConfigs[1].turnMotor.encoder->SetEncoderOffset(0_rad);
+//   map.swerveBase.moduleConfigs[2].turnMotor.encoder->SetEncoderOffset(0_rad);
+//   map.swerveBase.moduleConfigs[3].turnMotor.encoder->SetEncoderOffset(0_rad);
 
   // //the start of selecting which auto mode, was never successfully implemented 
   // m_chooser.SetDefaultOption(kLowPlace, kLowPlace);

@@ -7,6 +7,10 @@ void Gripper::OnUpdate(units::second_t dt) {
 
   switch (_state) {
     case GripperState::kIdle:
+      voltage = 1_V;
+      break;
+
+    case GripperState::kStop:
       voltage = 0_V;
       break;
 
@@ -39,6 +43,10 @@ void Gripper::SetOutaking(double speed) {
   _state = GripperState::kOutaking;
 }
 
+void Gripper::SetStop() {
+  _state = GripperState::kStop;
+}
+
 void Gripper::SetHolding() {
   _state = GripperState::kHolding;
 }
@@ -56,6 +64,9 @@ std::string Gripper::GetState() {
     break;
   case GripperState::kOutaking:
     return "Outaking";
+    break;
+  case GripperState::kStop:
+    return "Stop";
     break;
   }
 }
