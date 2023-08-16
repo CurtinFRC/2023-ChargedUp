@@ -231,7 +231,7 @@ void ArmavatorManualBehaviour::OnTick(units::second_t dt) {
         frc::SmartDashboard::PutNumber("Max Angle Back: ", max_angle_back.value());
         frc::SmartDashboard::PutNumber("Current Angle", angle.value());
 
-        frc::SmartDashboard::PutNumber("Height", height.value());
+        frc::SmartDashboard::PutNumber("Current Height", height.value());
         frc::SmartDashboard::PutNumber("Max Height", max_height.value());
 
 
@@ -428,35 +428,39 @@ void ArmavatorManualBehaviour::OnTick(units::second_t dt) {
 void ArmavatorManualBehaviour::CheckSetpoints() {
 
   if (_codriver.GetPOV() == 0) {
-    //picking up cone down
+    //BACK SINGLE
 
-    SetPosition(0_deg, 0.7_m, "1", 0.5, 0.2);
+    SetPosition(160_deg, 0.01_m, "1", 0.5, 0.2);
   } else if (_codriver.GetPOV() == 90) {
-    //picking up cone up
+    //BACK DOUBLE
 
-    SetPosition(37.4_deg, 0.01_m, "2", 0.5, 0.2);
+    SetPosition(183_deg, 1.3_m, "2", 0.5, 0.2);
   } else if (_codriver.GetPOV() == 180) {
-    //picking up cone down to collect
+    //FRONT DOUBLE
 
-    SetPosition(-6_deg, 0.7_m, "3", 0.3, 0.1);
+    SetPosition(-8_deg, 1.3_m, "3", 0.3, 0.1);
   } else if (_codriver.GetPOV() == 270) {
-    //low hold
+    // FRONT SINGLE bottom elevator mid angle
+    // FRONT DOUBLE almost top elevator 180 angle
 
-    SetPosition(60_deg, 0.1_m, "4", 0.35, 0.07);
+    // FRONT SINGLE
+
+    SetPosition(20_deg, 0.01_m, "4", 0.35, 0.07);
   } else if (_codriver.GetXButton()) {
-    //front mid place
+    //FRONT MID
 
-    SetPosition(30_deg, 0.15_m, "5", 0.35, 0.07);
+    SetPosition(-7_deg, 0.7_m, "5", 0.35, 0.07);
   } else if (_codriver.GetYButton()) {
-    // 152_deg 0.1814_m back high place
+    // BACK HIGH
 
-    SetPosition(152_deg, 0.1814_m, "6", 0.35, 0.07);
+    SetPosition(172_deg, 1.7_m, "6", 0.35, 0.07);
   } else if (_codriver.GetBButton()) {
-    // high hold
+    // BACK MID
 
-    SetPosition(161_deg, 0.0_m, "7", 0.35, 0.07);
+    SetPosition(187_deg, 0.7_m, "7", 0.35, 0.07);
 
     std::cout << "Mode Position" << std::endl;
+
   }
 
   return;

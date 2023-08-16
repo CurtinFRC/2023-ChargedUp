@@ -303,7 +303,7 @@ struct RobotMap {
         ),
         wom::PIDConfig<units::radians_per_second, units::volts>(
           "/armavator/arm/velocityPID/config",
-          10_V / (180_deg / 1_s),
+          9_V / (180_deg / 1_s),
           0_V / 25_deg,
           0_V / (90_deg / 1_s / 1_s)
         ),
