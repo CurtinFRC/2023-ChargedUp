@@ -294,16 +294,16 @@ struct RobotMap {
         leftOtherArmEncoder,
         wom::PIDConfig<units::radian, units::volts>(
           "/armavator/arm/pid/config",
-          13_V / 25_deg, //prev 13_V/25_deg
-          0.1_V / (1_deg * 1_s), //0.1_V / (1_deg * 1_s)
-          0_V / (1_deg / 1_s),
+          18_V / 25_deg, //prev 13_V/25_deg
+          0_V / (1_deg * 1_s), //0.1_V / (1_deg * 1_s)
+          0_V / (1_deg / 1_s), // 0_V / (1_deg / 1_s)
           5_deg,
           2_deg / 1_s,
           10_deg
         ),
         wom::PIDConfig<units::radians_per_second, units::volts>(
           "/armavator/arm/velocityPID/config",
-          10_V / (180_deg / 1_s),
+          9_V / (180_deg / 1_s),
           0_V / 25_deg,
           0_V / (90_deg / 1_s / 1_s)
         ),
@@ -373,7 +373,7 @@ struct RobotMap {
         {
           //creates the pid for the elevator to remove error
           "/armavator/elevator/pid/config",
-          20_V / 1_m, //16V
+          22_V / 1_m, //16V
           0.3_V / (1_m * 1_s),
           0_V / (1_m / 1_s),
           0.1_m,
