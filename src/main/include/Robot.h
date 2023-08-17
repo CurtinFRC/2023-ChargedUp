@@ -64,16 +64,16 @@ class Robot : public frc::TimedRobot {
   units::meter_t _elevatorSetpoint = 0_m;
   units::radian_t _armSetpoint = 0_deg;
 
-  frc::SendableChooser<std::string> m_chooser;
+ // frc::SendableChooser<std::string> m_chooser;
 
-  std::string m_autoSelected;
+ // std::string m_autoSelected;
 
-  const std::string kLowPlace = "kLowPlace";
-  const std::string kLowPlaceTaxi = "kLowPlaceTaxi";
-  const std::string kHighPlaceTaxi = "kHighPlaceTaxi";
-  const std::string kHighPlace = "kHighPlace";
-  const std::string kBalence = "kBalence";
-  const std::string kDock = "kDock";
+ // const std::string kLowPlace = "kLowPlace";
+ // const std::string kLowPlaceTaxi = "kLowPlaceTaxi";
+ // const std::string kHighPlaceTaxi = "kHighPlaceTaxi";
+ // const std::string kHighPlace = "kHighPlace";
+ // const std::string kBalence = "kBalence";
+ // const std::string kDock = "kDock";
 
   // std::string defaultAuto = "kLowPlace";
   // std::vector<std::string> autoOptions = {
@@ -84,5 +84,5 @@ class Robot : public frc::TimedRobot {
   //   kDock
   // };
 
-  Auto warpAuto = Auto(drivebase, armavator, gripper);
+//  Auto warpAuto = Auto(drivebase, armavator, gripper);
 };

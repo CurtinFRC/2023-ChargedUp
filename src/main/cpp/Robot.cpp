@@ -122,29 +122,29 @@ void Robot::AutonomousInit() {
   //sched->Schedule(IntakeTest(intake)); //schedule the intake to be run
 
   // Auto Select
-  warpAuto.m_autoSelected = warpAuto.m_chooser.GetSelected(); //get the selected auto mode
+  // warpAuto.m_autoSelected = warpAuto.m_chooser.GetSelected(); //get the selected auto mode
 
   //fmt::print("Auto selected: {}\n", m_autoSelected); //print the selected auto mode
   //std::cout << "Auto selected: " << m_autoSelected << std::endl; //print the selected auto mode
 
-  if (warpAuto.m_autoSelected == kLowPlace) { 
-    sched->Schedule(LowPlace(Drivebase{swerve, &map.swerveBase.gyro}, armavator));
-  } else if (warpAuto.m_autoSelected == kLowPlaceTaxi) {
-    sched->Schedule(LowPlaceTaxi(Drivebase{swerve, &map.swerveBase.gyro}, armavator));
-  } else if (warpAuto.m_autoSelected == kHighPlaceTaxi) {
-    sched->Schedule(HighPlaceTaxi(Drivebase{swerve, &map.swerveBase.gyro}, armavator, gripper));
-  } else if (warpAuto.m_autoSelected == kHighPlace) {
-    sched->Schedule(HighPlace(Drivebase{swerve, &map.swerveBase.gyro}, armavator, gripper));
-  } else if (warpAuto.m_autoSelected == kBalence) {
-    sched->Schedule(Balence(Drivebase{swerve, &map.swerveBase.gyro}, armavator));
-  } else {
-
-  }
+//  if (warpAuto.m_autoSelected == kLowPlace) { 
+//    sched->Schedule(LowPlace(Drivebase{swerve, &map.swerveBase.gyro}, armavator));
+//  } else if (warpAuto.m_autoSelected == kLowPlaceTaxi) {
+//    sched->Schedule(LowPlaceTaxi(Drivebase{swerve, &map.swerveBase.gyro}, armavator));
+//  } else if (warpAuto.m_autoSelected == kHighPlaceTaxi) {
+//    sched->Schedule(HighPlaceTaxi(Drivebase{swerve, &map.swerveBase.gyro}, armavator, gripper));
+//  } else if (warpAuto.m_autoSelected == kHighPlace) {
+//    sched->Schedule(HighPlace(Drivebase{swerve, &map.swerveBase.gyro}, armavator, gripper));
+//  } else if (warpAuto.m_autoSelected == kBalence) {
+//    sched->Schedule(Balence(Drivebase{swerve, &map.swerveBase.gyro}, armavator));
+//  } else {
+//
+//  }
 
 }
 
 void Robot::AutonomousPeriodic() {
-  warpAuto.m_autoSelected = m_chooser.GetSelected(); //get the selected auto mode
+//  warpAuto.m_autoSelected = m_chooser.GetSelected(); //get the selected auto mode
 
 }
 
