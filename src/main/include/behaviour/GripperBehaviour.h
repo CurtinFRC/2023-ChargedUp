@@ -25,4 +25,6 @@ class GripperBehaviour : public behaviour::Behaviour {
   frc::XboxController &_codriver;
 
   bool holdingObject = false;
+
+  bool idleHold = false;
 };

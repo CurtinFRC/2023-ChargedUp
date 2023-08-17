@@ -74,10 +74,16 @@ void ManualDrivebase::OnTick(units::second_t deltaTime) {
   CalculateRequestedAngle(turnX, turnY, currentAngle);
   _swerveDriveTable->GetEntry("RotateMatch").SetDouble(_requestedAngle.value());
 
-  _swerveDrivebase->RotateMatchJoystick(_requestedAngle, wom::FieldRelativeSpeeds{
-    xVelocity * maxMovementMagnitude,
-    yVelocity * maxMovementMagnitude,
-    r_x * maxRotationMagnitude
+//  _swerveDrivebase->RotateMatchJoystick(_requestedAngle, wom::FieldRelativeSpeeds{
+//    xVelocity * maxMovementMagnitude,
+//    yVelocity * maxMovementMagnitude,
+//    r_x * maxRotationMagnitude
+//  });
+
+  _swerveDrivebase->SetFieldRelativeVelocity(wom::FieldRelativeSpeeds{
+      xVelocity * maxMovementMagnitude,
+      yVelocity * maxMovementMagnitude,
+      r_x * maxRotationMagnitude
   });
 }
 
