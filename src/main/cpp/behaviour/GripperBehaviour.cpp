@@ -7,9 +7,9 @@ GripperAutoBehaviour::GripperAutoBehaviour(Gripper *gripper, int out) : gripper(
 
 void GripperAutoBehaviour::OnTick(units::second_t dt) {
   if (_out == 1) {
-    gripper->SetOutaking(0.7);
+    gripper->SetOutaking(0.3);
   } else if (_out == 2){
-    gripper->SetIntaking();
+    gripper->SetIntaking(0.2);
   } else if (_out == 3) {
     gripper->SetIdle();
     SetDone();
@@ -28,7 +28,7 @@ void GripperBehaviour::OnTick(units::second_t dt) {
     double outtakeAmount = _codriver.GetLeftTriggerAxis() * _codriver.GetLeftTriggerAxis() * _codriver.GetLeftTriggerAxis();
     gripper->SetOutaking(outtakeAmount);
   } else if (_codriver.GetRightTriggerAxis() > 0.2) {
-    gripper->SetIntaking();
+    gripper->SetIntaking(_codriver.GetRightTriggerAxis());
   } else {
     if (idleHold) {
       gripper->SetIdle();

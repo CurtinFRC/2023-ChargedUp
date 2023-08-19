@@ -5,7 +5,6 @@
 #include <units/math.h>
 #include <units/velocity.h>
 #include <units/charge.h>
-// #include "MotorVoltageController.h"
 #include "Gearbox.h"
 
 
@@ -28,7 +27,7 @@ class Gripper : public behaviour::HasBehaviour {
   void OnUpdate(units::second_t dt);
 
   void SetIdle();
-  void SetIntaking();
+  void SetIntaking(double speed);
   void SetOutaking(double speed);
   void SetHolding();
   void SetStop();
