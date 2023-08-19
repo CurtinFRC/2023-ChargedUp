@@ -55,7 +55,7 @@ class Robot : public frc::TimedRobot {
   Drivebase *drivebase = new Drivebase{swerve, gyro};
   //Intake *intake;
   
-  wom::NavX *gyro;
+  Pigeon2 *gyro;
 
   bool compressorToggle = false;
   bool intakeSol = false;

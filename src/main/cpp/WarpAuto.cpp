@@ -34,13 +34,15 @@ std::shared_ptr<Behaviour> Balance(Drivebase _drivebase, Armavator *armavator) {
     //moves forwards until a tilt of more than 10 degrees is detected, then moves onto the next behaviour 
     << make<DrivebasePoseBehaviour>(_drivebase.swerve, frc::Pose2d{4_m, 0_m,  0_deg}, 4_V)->Until(make<WaitFor>([_drivebase]() {
       return units::math::abs(_drivebase.gyro->GetPitch()) > 10_deg ||  units::math::abs(_drivebase.gyro->GetRoll()) > 10_deg;
-    }))
-    << make<ArmavatorGoToAutoSetpoint>(armavator, 0.1_m, 70_deg) //arm must swing over to get up the charge station 
+      // return fabs(_drivebase.gyro->GetAngle()) > 10_deg;
     << make<DrivebasePoseBehaviour>(_drivebase.swerve, frc::Pose2d{2_m, 0_m, 0_deg}, 4_V)->Until(make<WaitFor>([_drivebase]() {
       return units::math::abs(_drivebase.gyro->GetPitch()) == 0_deg || units::math::abs(_drivebase.gyro->GetRoll()) == 0_deg;
+      // return fabs(_drivebase.gyro->GetAngle()) > 0_deg;
     }))
     << make<DrivebasePoseBehaviour>(_drivebase.swerve, frc::Pose2d{-4_m, 0_m,  0_deg}, 4_V)->Until(make<WaitFor>([_drivebase]() {
       return units::math::abs(_drivebase.gyro->GetPitch()) > 10_deg ||  units::math::abs(_drivebase.gyro->GetRoll()) > 10_deg;
+      // return fabs(_drivebase.gyro->GetAngle()) > 10_deg;
     }))
     << make<DrivebaseBalance>(_drivebase.swerve, _drivebase.gyro); //automatically balances the robot 
-}
+};
+

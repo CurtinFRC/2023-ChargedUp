@@ -115,7 +115,7 @@ void DrivebasePoseBehaviour::OnTick(units::second_t deltaTime) {
 // DrivebaseBalance::DrivebaseBalance(wom::SwerveDrive *swerveDrivebase, wom::NavX *gyro) : _swerveDrivebase(swerveDrivebase), _gyro(gyro) {
 //   Controls(swerveDrivebase);
 // }
-DrivebaseBalance::DrivebaseBalance(wom::SwerveDrive *swerveDrivebase, ctre::phoenix::sensors::Pigeon2 *gyro): _swerveDrivebase(swerveDrivebase), _gyro(gyro) {
+DrivebaseBalance::DrivebaseBalance(wom::SwerveDrive *swerveDrivebase, Pigeon2 *gyro): _swerveDrivebase(swerveDrivebase), _gyro(gyro) {
   Controls(swerveDrivebase);
 }
 

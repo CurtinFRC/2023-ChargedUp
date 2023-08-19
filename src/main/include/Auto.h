@@ -6,6 +6,7 @@
 #include "Gripper.h"
 #include "Intake.h"
 #include "behaviour/IntakeBehaviour.h"
+#include <ctre/Phoenix.h>
 
 // class DefinedPoses {
 //  public:
@@ -250,7 +251,7 @@
 struct Drivebase {
   wom::SwerveDrive *swerve;
   // wom::NavX *gyro;
-  ctre::phoenix::sensors::Pigeon2 *gyro;
+  Pigeon2 *gyro;
 };
 // struct AutoPathDetails {
 //   frc::Pose2d startPos;
