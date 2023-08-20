@@ -37,6 +37,8 @@ void ManualDrivebase::OnTick(units::second_t deltaTime) {
   if (_driverController->GetRightBumperPressed()){
     //maxMovementMagnitude = lowSensitivityDriveSpeed;
     //maxRotationMagnitude = lowSensitivityRotateSpeed;
+    _swerveDrivebase->SetAccelerationLimit(3_mps_sq);
+    _swerveDrivebase->SetVoltageLimit(5_V);
   } else if (_driverController->GetRightBumperReleased() & !_driverController->GetLeftBumper()){
     maxMovementMagnitude = defaultDriveSpeed;
     maxRotationMagnitude = defaultRotateSpeed;

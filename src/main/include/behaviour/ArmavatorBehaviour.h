@@ -90,7 +90,7 @@ class ArmavatorManualBehaviour : public behaviour::Behaviour {
   ArmavatorPosition _setpointValue;
 
   units::meter_t _max_height = 0.7_m;
-  units::meter_t _min_height = 0.05_m;
+  units::meter_t _min_height = 0.01_m;
 
   units::degree_t _max_angle = 265_deg;
   units::degree_t _min_angle = -60_deg;
@@ -108,4 +108,5 @@ class ArmavatorManualBehaviour : public behaviour::Behaviour {
 
   void SetPosition(units::degree_t angle, units::meter_t height, std::string name, double elevatorSpeed, double armSpeed);
   void CheckSetpoints();
+  void ZeroElevatorEncoder();
 };
