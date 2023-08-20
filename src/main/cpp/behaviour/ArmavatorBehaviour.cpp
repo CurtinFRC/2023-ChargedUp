@@ -1,6 +1,8 @@
 #include "behaviour/ArmavatorBehaviour.h"
 #include <frc/smartdashboard/SmartDashboard.h>
 
+
+
 //used to make the armavator move in autonomous, inputs a height for the elevator, angle for the arm (0 is wherever the arm is started when it's turned on), the elevator and armspeed which is a value from 0-1.
 ArmavatorGoToAutoSetpoint::ArmavatorGoToAutoSetpoint(Armavator *armavator, units::meter_t height, units::degree_t angle, double elevatorSpeed, double armSpeed) 
   : _armavator(armavator), _height(height), _angle(angle), _elevatorSpeed(elevatorSpeed), _armSpeed(armSpeed) {

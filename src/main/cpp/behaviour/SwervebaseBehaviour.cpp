@@ -34,22 +34,22 @@ void ManualDrivebase::OnTick(units::second_t deltaTime) {
         When the right bumpber is held fast mode is engaged, used for traversing the entire field 
         otherwise a normal speed is used
    */
-  if (_driverController->GetLeftBumperPressed()){
-    maxMovementMagnitude = lowSensitivityDriveSpeed;
-    maxRotationMagnitude = lowSensitivityRotateSpeed;
-  } else if (_driverController->GetLeftBumperReleased() & !_driverController->GetRightBumper()){
-    maxMovementMagnitude = defaultDriveSpeed; 
+  if (_driverController->GetRightBumperPressed()){
+    //maxMovementMagnitude = lowSensitivityDriveSpeed;
+    //maxRotationMagnitude = lowSensitivityRotateSpeed;
+  } else if (_driverController->GetRightBumperReleased() & !_driverController->GetLeftBumper()){
+    maxMovementMagnitude = defaultDriveSpeed;
     maxRotationMagnitude = defaultRotateSpeed;
     _swerveDrivebase->SetAccelerationLimit(6_mps_sq);
     _swerveDrivebase->SetVoltageLimit(10_V);
   }
   
-  if (_driverController->GetRightBumperPressed()){
+  if (_driverController->GetLeftBumperPressed()){
     maxMovementMagnitude = highSensitivityDriveSpeed;
     maxRotationMagnitude = highSensitivityRotateSpeed;
     _swerveDrivebase->SetAccelerationLimit(12_mps_sq);
     _swerveDrivebase->SetVoltageLimit(14_V);
-  } else if (_driverController->GetRightBumperReleased() & !_driverController->GetLeftBumper()){
+  } else if (_driverController->GetLeftBumperReleased() & !_driverController->GetRightBumper()){
     maxMovementMagnitude = defaultDriveSpeed;
     maxRotationMagnitude = defaultRotateSpeed;
     _swerveDrivebase->SetAccelerationLimit(6_mps_sq);
@@ -85,6 +85,17 @@ void ManualDrivebase::OnTick(units::second_t deltaTime) {
       yVelocity * maxMovementMagnitude,
       r_x * maxRotationMagnitude
   });
+
+  if (_driverController->GetXButton()) {
+    LockWheels();
+  } else if (_driverController->GetXButtonReleased()) {
+    _swerveDrivebase->SetIdle();
+  }
+}
+
+void ManualDrivebase::LockWheels() {
+    // turn all the wheels to 45deg
+    _swerveDrivebase->SetXWheelState();
 }
 
 void ManualDrivebase::CalculateRequestedAngle(double joystickX, double joystickY, units::degree_t defaultAngle){
