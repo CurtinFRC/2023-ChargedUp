@@ -2,6 +2,7 @@
 
 using namespace behaviour;
 
+// not tested!! 
  std::shared_ptr<Behaviour> Balance(Drivebase _drivebase, Armavator *_armavator) {
    return 
     make<ArmavatorGoToAutoSetpoint>(_armavator, 0.9_m, -50_deg)
@@ -11,11 +12,11 @@ using namespace behaviour;
     << make<ArmavatorGoToAutoSetpoint>(_armavator, 0.1_m, 90_deg)
     << make<ArmavatorGoToAutoSetpoint>(_armavator, 0.1_m, 120_deg) //arm must start back in order to get up the charge station 
     << make<DrivebasePoseBehaviour>(_drivebase.swerve, frc::Pose2d{4_m, 0_m,  0_deg}, 4_V)->Until(make<WaitFor>([_drivebase]() {
-       return units::math::abs(_drivebase.gyro->GetPitch()) > 10_deg ||  units::math::abs(_drivebase.gyro->GetRoll()) > 10_deg;
+       return fabs(_drivebase.gyro->GetPitch()) > 10 ||  fabs(_drivebase.gyro->GetRoll()) > 10;
      }))
     << make<DrivebasePoseBehaviour>(_drivebase.swerve, frc::Pose2d{2_m, 0_m, 0_deg}, 4_V)
     << make<DrivebasePoseBehaviour>(_drivebase.swerve, frc::Pose2d{-4_m, 0_m,  0_deg}, 4_V)->Until(make<WaitFor>([_drivebase]() {
-       return units::math::abs(_drivebase.gyro->GetPitch()) < 10_deg ||  units::math::abs(_drivebase.gyro->GetRoll()) < 10_deg;
+       return fabs(_drivebase.gyro->GetPitch()) < 10 ||  fabs(_drivebase.gyro->GetRoll()) < 10;
      }))
      << make<ArmavatorGoToAutoSetpoint>(_armavator, 0.1_m, 70_deg) //arm must swing over to get up the charge station 
      << make<DrivebaseBalance>(_drivebase.swerve, _drivebase.gyro); //automatically balences the robot 
