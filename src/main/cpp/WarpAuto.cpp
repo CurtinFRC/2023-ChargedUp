@@ -41,7 +41,7 @@ std::shared_ptr<Behaviour> MidPlace(Armavator *_armavator, Gripper *_gripper, Dr
 	return make<GripperAutoBehaviour>(_gripper, 2)->Until(make<WaitTime>(0.5_s))
 		<<make<DrivebasePoseBehaviour>(_drivebase.swerve, frc::Pose2d{0.5_m, 0_m, 0_deg})->Until(make<WaitTime>(1_s))
 		<<make<ArmavatorGoToAutoSetpoint>(_armavator, 0.7_m, -40_deg)->Until(make<WaitTime>(1_s))
-		<<make<ArmavatorGoToAutoSetpoint>(_armavator, 0_m, 90_deg)->Until(make<WaitTime>(1_s))
+		<<make<ArmavatorGoToAutoSetpoint>(_armavator, 0_m, 90_deg)->Until(make<WaitTime>(1.5_s))
 		<<make<ArmavatorGoToAutoSetpoint>(_armavator, 0.6_m, 180_deg, 0.5, 0.1)->Until(make<WaitTime>(1_s))
 		<<make<GripperAutoBehaviour>(_gripper, 1)->Until(make<WaitTime>(0.6_s))
 		<<make<GripperAutoBehaviour>(_gripper, 3)->Until(make<WaitTime>(0.6_s))
