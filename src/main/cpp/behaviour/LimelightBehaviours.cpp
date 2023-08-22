@@ -19,13 +19,13 @@ void AlignBehaviour::CancelAlign() {
 }
 
 void AlignBehaviour::OnTick(units::second_t dt) {
-    if (_driver.GetAButton()) {
+    if (_driver.GetPOV() == 0) {
         AlignToTarget(_SetPoints[0]);
-    } else if (_driver.GetXButton()) {
+    } else if (_driver.GetPOV() == 90) {
         AlignToTarget(_SetPoints[1]);
-    } else if (_driver.GetYButton()) {
+    } else if (_driver.GetPOV() == 180) {
         AlignToTarget(_SetPoints[2]);
-    } else if (_driver.GetBButton()) {
+    } else if (_driver.GetPOV() == 270) {
         AlignToTarget(_SetPoints[3]);
     } else if (_driver.GetBackButtonPressed()) {
         CancelAlign();

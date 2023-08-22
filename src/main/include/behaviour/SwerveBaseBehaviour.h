@@ -69,6 +69,8 @@ class ManualDrivebase : public behaviour::Behaviour{
 
   translationSpeed_ maxMovementMagnitude = defaultDriveSpeed;
   rotationSpeed_ maxRotationMagnitude = defaultRotateSpeed;
+
+  void LockWheels();
 };
 
 
