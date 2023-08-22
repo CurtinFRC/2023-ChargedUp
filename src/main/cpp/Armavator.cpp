@@ -92,3 +92,7 @@ void Armavator::SetElevatorPosition(units::meter_t setpoint) {
 void Armavator::SetArmPosition(units::radian_t setpoint) {
   arm->SetAngle(setpoint);
 }
+
+void Armavator::ZeroElevatorEncoder() {
+    elevator->ZeroEncoder();
+}

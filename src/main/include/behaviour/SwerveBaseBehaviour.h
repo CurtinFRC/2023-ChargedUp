@@ -9,6 +9,7 @@
 #include <vector>
 #include "Vision.h"
 #include "Auto.h"
+#include <ctre/phoenix/sensors/Pigeon2.h>
 
 /**
  * @brief Behaviour class to handle manual drivebase controlling with the controller
@@ -68,6 +69,8 @@ class ManualDrivebase : public behaviour::Behaviour{
 
   translationSpeed_ maxMovementMagnitude = defaultDriveSpeed;
   rotationSpeed_ maxRotationMagnitude = defaultRotateSpeed;
+
+  void LockWheels();
 };
 
 
@@ -118,14 +121,15 @@ class DrivebaseBalance : public behaviour::Behaviour{
    * @param gyro
    * A pointer to the type of gyro being used on the swerve drivebase
   */
-  DrivebaseBalance(wom::SwerveDrive *swerveDrivebase, wom::NavX *gyro);
+  DrivebaseBalance(wom::SwerveDrive *swerveDrivebase, ctre::phoenix::sensors::Pigeon2 *gyro);
 
   void OnTick(units::second_t deltaTime) override;
 
 
  private:
   wom::SwerveDrive *_swerveDrivebase;
-  wom::NavX *_gyro;
+  // wom::NavX *_gyro;
+  ctre::phoenix::sensors::Pigeon2 *_gyro;
 
   wom::SwerveDriveConfig::balance_conf_t balancePIDConfig{
     "swerve/balancePID/",

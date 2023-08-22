@@ -68,6 +68,8 @@ class Armavator : public behaviour::HasBehaviour {
   void SetElevatorPosition(units::meter_t setpoint);
   void SetArmPosition(units::radian_t setpoint);
 
+  void ZeroElevatorEncoder();
+
   //creates the arm and the elevator
   wom::Arm *arm;
   wom::Elevator *elevator;

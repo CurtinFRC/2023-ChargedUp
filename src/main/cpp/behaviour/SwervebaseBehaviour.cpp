@@ -34,22 +34,24 @@ void ManualDrivebase::OnTick(units::second_t deltaTime) {
         When the right bumpber is held fast mode is engaged, used for traversing the entire field 
         otherwise a normal speed is used
    */
-  if (_driverController->GetLeftBumperPressed()){
-    maxMovementMagnitude = lowSensitivityDriveSpeed;
-    maxRotationMagnitude = lowSensitivityRotateSpeed;
-  } else if (_driverController->GetLeftBumperReleased() & !_driverController->GetRightBumper()){
-    maxMovementMagnitude = defaultDriveSpeed; 
+  if (_driverController->GetRightBumperPressed()){
+    //maxMovementMagnitude = lowSensitivityDriveSpeed;
+    //maxRotationMagnitude = lowSensitivityRotateSpeed;
+    _swerveDrivebase->SetAccelerationLimit(3_mps_sq);
+    _swerveDrivebase->SetVoltageLimit(5_V);
+  } else if (_driverController->GetRightBumperReleased() & !_driverController->GetLeftBumper()){
+    maxMovementMagnitude = defaultDriveSpeed;
     maxRotationMagnitude = defaultRotateSpeed;
     _swerveDrivebase->SetAccelerationLimit(6_mps_sq);
     _swerveDrivebase->SetVoltageLimit(10_V);
   }
   
-  if (_driverController->GetRightBumperPressed()){
+  if (_driverController->GetLeftBumperPressed()){
     maxMovementMagnitude = highSensitivityDriveSpeed;
     maxRotationMagnitude = highSensitivityRotateSpeed;
     _swerveDrivebase->SetAccelerationLimit(12_mps_sq);
     _swerveDrivebase->SetVoltageLimit(14_V);
-  } else if (_driverController->GetRightBumperReleased() & !_driverController->GetLeftBumper()){
+  } else if (_driverController->GetLeftBumperReleased() & !_driverController->GetRightBumper()){
     maxMovementMagnitude = defaultDriveSpeed;
     maxRotationMagnitude = defaultRotateSpeed;
     _swerveDrivebase->SetAccelerationLimit(6_mps_sq);
@@ -85,6 +87,17 @@ void ManualDrivebase::OnTick(units::second_t deltaTime) {
       yVelocity * maxMovementMagnitude,
       r_x * maxRotationMagnitude
   });
+
+  if (_driverController->GetXButton()) {
+    LockWheels();
+  } else if (_driverController->GetXButtonReleased()) {
+    _swerveDrivebase->SetIdle();
+  }
+}
+
+void ManualDrivebase::LockWheels() {
+    // turn all the wheels to 45deg
+    _swerveDrivebase->SetXWheelState();
 }
 
 void ManualDrivebase::CalculateRequestedAngle(double joystickX, double joystickY, units::degree_t defaultAngle){
@@ -112,14 +125,17 @@ void DrivebasePoseBehaviour::OnTick(units::second_t deltaTime) {
 }
 
 // Code for Drivebase balancing on the chargestation
-DrivebaseBalance::DrivebaseBalance(wom::SwerveDrive *swerveDrivebase, wom::NavX *gyro) : _swerveDrivebase(swerveDrivebase), _gyro(gyro) {
+// DrivebaseBalance::DrivebaseBalance(wom::SwerveDrive *swerveDrivebase, wom::NavX *gyro) : _swerveDrivebase(swerveDrivebase), _gyro(gyro) {
+//   Controls(swerveDrivebase);
+// }
+DrivebaseBalance::DrivebaseBalance(wom::SwerveDrive *swerveDrivebase, ctre::phoenix::sensors::Pigeon2 *gyro): _swerveDrivebase(swerveDrivebase), _gyro(gyro) {
   Controls(swerveDrivebase);
 }
 
 //auto balences on the charge station 
 void DrivebaseBalance::OnTick(units::second_t deltaTime) {
-  units::meters_per_second_t lateralMotorSpeed = lateralBalancePID.Calculate(_gyro->GetPitch(), deltaTime);
-  units::meters_per_second_t sidewaysMotorSpeed = sidwaysBalancePID.Calculate(-_gyro->GetRoll(), deltaTime);
+  units::meters_per_second_t lateralMotorSpeed = lateralBalancePID.Calculate(units::radian_t{_gyro->GetPitch()}, deltaTime);
+  units::meters_per_second_t sidewaysMotorSpeed = sidwaysBalancePID.Calculate(units::radian_t{-_gyro->GetRoll()}, deltaTime);
   _swerveDrivebase->SetVelocity(frc::ChassisSpeeds{
     -lateralMotorSpeed,
     -sidewaysMotorSpeed,
@@ -127,17 +143,16 @@ void DrivebaseBalance::OnTick(units::second_t deltaTime) {
   });
 
   //print values to shuffleboard
-  _swerveDriveTable->GetEntry("Pitch").SetDouble(_gyro->GetPitch().convert<units::degree>().value());
+  _swerveDriveTable->GetEntry("Pitch").SetDouble(_gyro->GetPitch());
   _swerveDriveTable->GetEntry("BalanceLateralSpeed").SetDouble(lateralMotorSpeed.value());
   _swerveDriveTable->GetEntry("BalanceSidewaysSpeed").SetDouble(sidewaysMotorSpeed.value());
 }
-
 
 // Code for x-ing the wheels on the drivebase
 XDrivebase::XDrivebase(wom::SwerveDrive *swerveDrivebase) : _swerveDrivebase(swerveDrivebase) {   
   Controls(swerveDrivebase);
 }
-//wasn't used in comp, should probably be utalised for WARP 
+//wasn't used in comp, should probably be utilized for WARP 
 void XDrivebase::OnTick(units::second_t deltaTime) {
   _swerveDrivebase->SetXWheelState();   
 }
