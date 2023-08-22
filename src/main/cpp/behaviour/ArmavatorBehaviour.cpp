@@ -196,8 +196,8 @@ void ArmavatorManualBehaviour::OnTick(units::second_t dt) {
             if (goingToSetpoint) {
                 if (angle >= 90_deg) {
                     // side = back
-                    if (_setpointValue.angle < 90_deg) {
-                        if (height > _min_height) {
+                    if (_setpointValue.angle <= 90_deg) {
+                        if (height > 0.12_m) {
                             _manualSetpoint.height = _min_height;
                         } else {
                             _manualSetpoint.angle = _setpointValue.angle;
@@ -216,8 +216,8 @@ void ArmavatorManualBehaviour::OnTick(units::second_t dt) {
 
                 } else {
                     // side = front
-                    if (_setpointValue.angle < 90_deg) {
-                        if (height > _min_height) {
+                    if (_setpointValue.angle > 90_deg) {
+                        if (height > 0.12_m) {
                             _manualSetpoint.height = _min_height;
                         } else {
                             _manualSetpoint.angle = _setpointValue.angle;
