@@ -89,8 +89,6 @@ class ArmavatorManualBehaviour : public behaviour::Behaviour {
   ArmavatorPosition _manualSetpoint{0_m,0_rad};
   ArmavatorPosition _setpointValue;
 
-  bool goingToSetpoint = false;
-
   units::meter_t _max_height = 0.7_m;
   units::meter_t _min_height = 0.01_m;
 
@@ -105,8 +103,6 @@ class ArmavatorManualBehaviour : public behaviour::Behaviour {
 
   bool velocityControl = false;
   bool rawControl = true;
-
-
 
   ArmavatorManualModeEnum _armManualModes = ArmavatorManualModeEnum::kRaw;
 
