@@ -216,6 +216,10 @@ void Robot::TeleopPeriodic() {
   if (map.controllers.test.GetBButtonPressed()){
     swerve->GetActiveBehaviour()->Interrupt();
   }
+
+  if (map.controllers.test.GetAButtonPressed()){
+    swerve->SetIndividualTuning(1, 270_deg, 0_m/1_s);
+  }
 }
 
 
