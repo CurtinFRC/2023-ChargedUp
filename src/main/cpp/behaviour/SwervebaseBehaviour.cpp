@@ -125,14 +125,17 @@ void DrivebasePoseBehaviour::OnTick(units::second_t deltaTime) {
 }
 
 // Code for Drivebase balancing on the chargestation
-DrivebaseBalance::DrivebaseBalance(wom::SwerveDrive *swerveDrivebase, wom::NavX *gyro) : _swerveDrivebase(swerveDrivebase), _gyro(gyro) {
+// DrivebaseBalance::DrivebaseBalance(wom::SwerveDrive *swerveDrivebase, wom::NavX *gyro) : _swerveDrivebase(swerveDrivebase), _gyro(gyro) {
+//   Controls(swerveDrivebase);
+// }
+DrivebaseBalance::DrivebaseBalance(wom::SwerveDrive *swerveDrivebase, ctre::phoenix::sensors::Pigeon2 *gyro): _swerveDrivebase(swerveDrivebase), _gyro(gyro) {
   Controls(swerveDrivebase);
 }
 
 //auto balences on the charge station 
 void DrivebaseBalance::OnTick(units::second_t deltaTime) {
-  units::meters_per_second_t lateralMotorSpeed = lateralBalancePID.Calculate(_gyro->GetPitch(), deltaTime);
-  units::meters_per_second_t sidewaysMotorSpeed = sidwaysBalancePID.Calculate(-_gyro->GetRoll(), deltaTime);
+  units::meters_per_second_t lateralMotorSpeed = lateralBalancePID.Calculate(units::radian_t{_gyro->GetPitch()}, deltaTime);
+  units::meters_per_second_t sidewaysMotorSpeed = sidwaysBalancePID.Calculate(units::radian_t{-_gyro->GetRoll()}, deltaTime);
   _swerveDrivebase->SetVelocity(frc::ChassisSpeeds{
     -lateralMotorSpeed,
     -sidewaysMotorSpeed,
@@ -140,17 +143,16 @@ void DrivebaseBalance::OnTick(units::second_t deltaTime) {
   });
 
   //print values to shuffleboard
-  _swerveDriveTable->GetEntry("Pitch").SetDouble(_gyro->GetPitch().convert<units::degree>().value());
+  _swerveDriveTable->GetEntry("Pitch").SetDouble(_gyro->GetPitch());
   _swerveDriveTable->GetEntry("BalanceLateralSpeed").SetDouble(lateralMotorSpeed.value());
   _swerveDriveTable->GetEntry("BalanceSidewaysSpeed").SetDouble(sidewaysMotorSpeed.value());
 }
-
 
 // Code for x-ing the wheels on the drivebase
 XDrivebase::XDrivebase(wom::SwerveDrive *swerveDrivebase) : _swerveDrivebase(swerveDrivebase) {   
   Controls(swerveDrivebase);
 }
-//wasn't used in comp, should probably be utalised for WARP 
+//wasn't used in comp, should probably be utilized for WARP 
 void XDrivebase::OnTick(units::second_t deltaTime) {
   _swerveDrivebase->SetXWheelState();   
 }
