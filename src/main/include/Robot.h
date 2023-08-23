@@ -63,23 +63,31 @@ class Robot : public frc::TimedRobot {
 
   frc::SendableChooser<std::string> m_chooser;
 
+
   std::string m_autoSelected;
 
-  const std::string kLowPlace = "kLowPlace";
-  const std::string kLowPlaceTaxi = "kLowPlaceTaxi";
-  const std::string kHighPlaceTaxi = "kHighPlaceTaxi";
-  const std::string kHighPlace = "kHighPlace";
-  const std::string kBalence = "kBalence";
-  const std::string kDock = "kDock";
+  const std::string kTaxi = "kTaxi";
+  const std::string HighPlace = "HighPlace";
+  const std::string kBalance = "kBalance";
+  const std::string kMidPlace = "kMidPlace";
+  const std::string kBalanceAndHighPlace = "kBalanceAndHighPlace";
+  const std::string kBalanceAndMidPlace = "kBalanceAndMidPlace";
+  const std::string kSmallDrivebaseMovement = "kSmallDrivebaseMovement";
+  const std::string kSmallArmMovement = "kSmallArmMovement";
 
-  // Please modify the code below if auto is being changed, or new autos are added
-  std::string defaultAuto = "kLowPlace";
+
+    // Please modify the code below if auto is being changed, or new autos are added
+  std::string defaultAuto = "kTaxi";
   std::vector<std::string> autoOptions = {
-    kLowPlace,
-    kLowPlaceTaxi,
-    kHighPlaceTaxi,
-    kHighPlace,
-    kDock
+    kTaxi,
+    HighPlace,
+    kBalance,
+    kMidPlace,
+    kMidPlace,
+    kBalanceAndHighPlace,
+    kBalanceAndMidPlace,
+    kSmallDrivebaseMovement,
+    kSmallArmMovement
   };
 
   

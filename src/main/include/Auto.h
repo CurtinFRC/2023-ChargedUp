@@ -247,11 +247,11 @@
 //   AlliancePoses alliancePoses;
 // };
 
-struct Drivebase {
-  wom::SwerveDrive *swerve;
-  // wom::NavX *gyro;
-  ctre::phoenix::sensors::Pigeon2 *gyro;
-};
+//struct Drivebase {
+//  wom::SwerveDrive *swerve;
+//  // wom::NavX *gyro;
+//  ctre::phoenix::sensors::Pigeon2 *gyro;
+//};
 // struct AutoPathDetails {
 //   frc::Pose2d startPos;
 //   std::shared_ptr<behaviour::Behaviour> midPathing;
