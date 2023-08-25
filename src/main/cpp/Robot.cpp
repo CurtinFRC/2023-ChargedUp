@@ -4,6 +4,8 @@
 #include "behaviour/SwerveBaseBehaviour.h"
 #include "behaviour/GripperBehaviour.h"
 
+#include "WarpAuto.h"
+
 
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <frc/event/BooleanEvent.h>
@@ -45,13 +47,17 @@ void Robot::RobotInit() {
 //   map.swerveBase.moduleConfigs[3].turnMotor.encoder->SetEncoderOffset(0_rad);
 
   //the start of selecting which auto mode, was never successfully implemented 
-  m_chooser.SetDefaultOption(kLowPlace, kLowPlace);
-  m_chooser.AddOption(kLowPlaceTaxi, kLowPlaceTaxi);
-  m_chooser.AddOption(kHighPlaceTaxi, kHighPlaceTaxi);
-  m_chooser.AddOption(kHighPlace, kHighPlace);
-  m_chooser.AddOption(kBalence, kBalence);
-  m_chooser.AddOption(kDock, kDock);
+  m_chooser.SetDefaultOption("kTaxi", "kTaxi");
+
+    for (auto &option : autoOptions) {
+        m_chooser.AddOption(option, option);
+    }
+
   frc::SmartDashboard::PutData("Auto Modes", &m_chooser);
+
+  //m_selected = m_chooser.GetSelected();
+
+
 
   //reset the gyro when the robot restarts 
   // map.swerveBase.gyro.Reset();
@@ -122,7 +128,7 @@ void Robot::AutonomousInit() {
   // sched->Schedule(PlaceBalence(Drivebase{swerve, &map.swerveBase.gyro}, armavator, gripper));
   // sched->Schedule(IntakeTest(intake));
 
-  // m_autoSelected = m_chooser.GetSelected(); //get the selected auto mode
+   m_autoSelected = m_chooser.GetSelected(); //get the selected auto mode
 
   // fmt::print("Auto selected: {}\n", m_autoSelected); //print the selected auto mode
   //   //std::cout << "Auto selected: " << m_autoSelected << std::endl; //print the selected auto mode
@@ -138,6 +144,41 @@ void Robot::AutonomousInit() {
   //   } else if (m_autoSelected == kBalence) {
   //     sched->Schedule(Balence(Drivebase{swerve, &map.swerveBase.gyro}, armavator));
   //   } else {}
+
+
+        if (m_autoSelected == "kTaxi")
+        {
+            sched->Schedule(Taxi(Drivebase{swerve, &map.swerveBase.gyro}, armavator));
+        }
+        if (m_autoSelected == "kHighPlace")
+        {
+            //sched->Schedule(HighPlace(armavator, gripper, Drivebase{swerve, &map.swerveBase.gyro}));
+        }
+        if (m_autoSelected ==  "kBalance")
+        {
+            sched->Schedule(Balance(Drivebase{swerve, &map.swerveBase.gyro}, armavator));
+        }
+        if (m_autoSelected ==  "kMidPlace")
+        {
+            sched->Schedule(MidPlace(armavator, gripper, Drivebase{swerve, &map.swerveBase.gyro}));
+        }
+        if (m_autoSelected ==  "kBalanceAndHighPlace")
+        {
+            //sched->Schedule(BalanceAndHighPlace(Drivebase{swerve, &map.swerveBase.gyro}, armavator, gripper));
+        }
+        if (m_autoSelected ==  "kBalanceAndMidPlace")
+        {
+            //sched->Schedule(BalanceAndMidPlace(Drivebase{swerve, &map.swerveBase.gyro}, armavator, gripper));
+        }
+        if (m_autoSelected ==  "kSmallArmMovement")
+        {
+            sched->Schedule(SmallArmMovement(armavator));
+        }
+        if (m_autoSelected ==  "kSmallDrivebaseMovement")
+        {
+            sched->Schedule(SmallDrivebaseMovement(Drivebase{swerve, &map.swerveBase.gyro}));
+        }
+
 }
 void Robot::AutonomousPeriodic() {
   // m_autoSelected = m_chooser.GetSelected(); //get the selected auto mode
@@ -215,6 +256,10 @@ void Robot::TeleopPeriodic() {
   //when the b button is pressed, interupt currently running behaviours
   if (map.controllers.test.GetBButtonPressed()){
     swerve->GetActiveBehaviour()->Interrupt();
+  }
+
+  if (map.controllers.test.GetAButtonPressed()){
+    swerve->SetIndividualTuning(1, 270_deg, 0_m/1_s);
   }
 }
 

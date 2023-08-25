@@ -90,6 +90,7 @@ private:
     ArmavatorPosition _setpointValue;
 
     bool goingToSetpoint = false;
+    std::string _setpointName = "None";
 
     units::meter_t _max_height = 0.7_m;
     units::meter_t _min_height = 0.01_m;
