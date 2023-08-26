@@ -1,6 +1,7 @@
 #pragma once
 
 #include "RobotMap.h"
+#include "LimelightVision.h"
 #include "Vision.h"
 
 #include <string>
@@ -47,12 +48,11 @@ class Robot : public frc::TimedRobot {
   behaviour::BehaviourScheduler *sched;
 
   //creates nessesary instances to use in robot.cpp and robotmap.h
-  wom::SwerveDrive *swerve;
+  wom::SwerveDrive *swerve; 
   Armavator *armavator;
   Vision *vision;
   Gripper *gripper;
   //Intake *intake;
-  
 
   bool compressorToggle = false;
   bool intakeSol = false;
@@ -67,7 +67,7 @@ class Robot : public frc::TimedRobot {
   std::string m_autoSelected;
 
   const std::string kTaxi = "kTaxi";
-  const std::string HighPlace = "HighPlace";
+  const std::string kHighPlace = "kHighPlace";
   const std::string kBalance = "kBalance";
   const std::string kMidPlace = "kMidPlace";
   const std::string kBalanceAndHighPlace = "kBalanceAndHighPlace";
@@ -80,7 +80,7 @@ class Robot : public frc::TimedRobot {
   std::string defaultAuto = "kTaxi";
   std::vector<std::string> autoOptions = {
     kTaxi,
-    HighPlace,
+    kHighPlace,
     kBalance,
     kMidPlace,
     kMidPlace,
@@ -89,9 +89,5 @@ class Robot : public frc::TimedRobot {
     kSmallDrivebaseMovement,
     kSmallArmMovement
   };
-
-  
-
-  
 };
 

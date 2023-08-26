@@ -14,12 +14,12 @@ using namespace behaviour;
 
 struct Drivebase {
     wom::SwerveDrive *swerve;
-    Pigeon2 *gyro;
+    wom::NavX *gyro;
 };
 
 std::shared_ptr<Behaviour> Taxi(Drivebase _drivebase, Armavator *_armavator);
-std::shared_ptr<Behaviour> HighPlace(Armavator *_armavator, Gripper *_gripper, Drivebase _drivebase); // first
-std::shared_ptr<Behaviour> Balance(Drivebase _drivebase, Armavator *_armavator); // second
+std::shared_ptr<Behaviour> highPlace(Armavator *_armavator, Gripper *_gripper, Drivebase _drivebase); // first
+// std::shared_ptr<Behaviour> Balance(Drivebase _drivebase, Armavator *_armavator); // second
 std::shared_ptr<Behaviour> MidPlace(Armavator *_armavator, Gripper *_gripper, Drivebase _drivebase);
 std::shared_ptr<Behaviour> BalanceAndHighPlace(Drivebase _drivebase, Armavator *_armavator, Gripper *_gripper); // third
 std::shared_ptr<Behaviour> BalanceAndMidPlace(Drivebase _drivebase, Armavator *_armavator, Gripper *_gripper);

@@ -1,4 +1,6 @@
 #include "Robot.h"
+#include "LimelightVision.h"
+#include "behaviour/LimelightBehaviours.h"
 #include "behaviour/BehaviourScheduler.h"
 #include "behaviour/Behaviour.h"
 #include "behaviour/SwerveBaseBehaviour.h"
@@ -150,13 +152,13 @@ void Robot::AutonomousInit() {
         {
             sched->Schedule(Taxi(Drivebase{swerve, &map.swerveBase.gyro}, armavator));
         }
-        if (m_autoSelected == "kHighPlace")
+        if (m_autoSelected == "kHighPlace") 
         {
-            //sched->Schedule(HighPlace(armavator, gripper, Drivebase{swerve, &map.swerveBase.gyro}));
+            sched->Schedule(highPlace(armavator, gripper, Drivebase{swerve, &map.swerveBase.gyro}));
         }
         if (m_autoSelected ==  "kBalance")
         {
-            sched->Schedule(Balance(Drivebase{swerve, &map.swerveBase.gyro}, armavator));
+            //sched->Schedule(Balance(Drivebase{swerve, &map.swerveBase.gyro}, armavator));
         }
         if (m_autoSelected ==  "kMidPlace")
         {
@@ -250,8 +252,6 @@ void Robot::TeleopPeriodic() {
   map.swerveTable.swerveDriveTable->GetEntry("x").SetDouble(swerve->GetPose().Y().convert<units::meter>().value());
   auto dt = wom::now() - lastPeriodic;
 
-  vision->OnUpdate(dt);
-
 
   //when the b button is pressed, interupt currently running behaviours
   if (map.controllers.test.GetBButtonPressed()){
@@ -270,7 +270,5 @@ void Robot::DisabledPeriodic() { }
 void Robot::TestInit() { }
 void Robot::TestPeriodic() {
   auto dt = wom::now() - lastPeriodic;
-  vision->OnUpdate(dt);
 }
-
 

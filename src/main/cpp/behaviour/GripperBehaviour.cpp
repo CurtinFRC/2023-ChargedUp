@@ -13,6 +13,8 @@ void GripperAutoBehaviour::OnTick(units::second_t dt) {
   } else if (_out == 3) {
     gripper->SetIdle();
     SetDone();
+  } else if (_out == 4) {
+    gripper->SetHolding();
   }
 }
 
