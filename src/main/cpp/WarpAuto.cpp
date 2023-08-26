@@ -15,7 +15,7 @@ std::shared_ptr<Behaviour> highPlace(Armavator *_armavator, Gripper *_gripper, D
             <<make<ArmavatorGoToAutoSetpoint>(_armavator, 0.7_m, 172_deg)->Until(make<WaitTime>(2_s))
             <<make<GripperAutoBehaviour>(_gripper, 1)->Until(make<WaitTime>(0.6_s))
             <<make<GripperAutoBehaviour>(_gripper, 3)->Until(make<WaitTime>(0.6_s))
-            <<make<DrivebasePoseBehaviour>(_drivebase.swerve, frc::Pose2d{4_m, 0_m, 0_deg})->Until(make<WaitTime>(3.5_s)) // increase distance for taxi
+            <<make<DrivebasePoseBehaviour>(_drivebase.swerve, frc::Pose2d{4.75_m, 0_m, 0_deg})->Until(make<WaitTime>(4.3_s))
             <<make<ArmavatorGoToAutoSetpoint>(_armavator, 0_m, 0_deg)->Until(make<WaitTime>(1_s))
             <<make<ArmavatorGoToAutoSetpoint>(_armavator, 0.7_m, 0_deg)->Until(make<WaitTime>(1_s))
             <<make<ArmavatorGoToAutoSetpoint>(_armavator, 0.7_m, -60_deg)->Until(make<WaitTime>(1_s));
