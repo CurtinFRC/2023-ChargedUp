@@ -70,12 +70,13 @@ struct RobotMap {
   }; Vision vision;
 
   struct SwerveBase{
+
     CANCoder frontLeftCancoder{19, "Drivebase"};
     CANCoder frontRightCancoder{17, "Drivebase"};
     CANCoder backLeftCancoder{16, "Drivebase"};
     CANCoder backRightCancoder{18, "Drivebase"};
 
-    Pigeon2 gyro = Pigeon2(999);
+    wom::NavX gyro = wom::NavX();
     wpi::array<WPI_TalonFX*, 4> turnMotors{
       new WPI_TalonFX(1, "Drivebase"), new WPI_TalonFX(3, "Drivebase"), new WPI_TalonFX(5, "Drivebase"), new WPI_TalonFX(7, "Drivebase")
     };

@@ -128,7 +128,7 @@ void DrivebasePoseBehaviour::OnTick(units::second_t deltaTime) {
 // DrivebaseBalance::DrivebaseBalance(wom::SwerveDrive *swerveDrivebase, wom::NavX *gyro) : _swerveDrivebase(swerveDrivebase), _gyro(gyro) {
 //   Controls(swerveDrivebase);
 // }
-DrivebaseBalance::DrivebaseBalance(wom::SwerveDrive *swerveDrivebase, ctre::phoenix::sensors::Pigeon2 *gyro): _swerveDrivebase(swerveDrivebase), _gyro(gyro) {
+DrivebaseBalance::DrivebaseBalance(wom::SwerveDrive *swerveDrivebase, wom::NavX *gyro): _swerveDrivebase(swerveDrivebase), _gyro(gyro) {
   Controls(swerveDrivebase);
 }
 
@@ -143,7 +143,7 @@ void DrivebaseBalance::OnTick(units::second_t deltaTime) {
   });
 
   //print values to shuffleboard
-  _swerveDriveTable->GetEntry("Pitch").SetDouble(_gyro->GetPitch());
+  _swerveDriveTable->GetEntry("Pitch").SetDouble(_gyro->GetPitch().value());
   _swerveDriveTable->GetEntry("BalanceLateralSpeed").SetDouble(lateralMotorSpeed.value());
   _swerveDriveTable->GetEntry("BalanceSidewaysSpeed").SetDouble(sidewaysMotorSpeed.value());
 }

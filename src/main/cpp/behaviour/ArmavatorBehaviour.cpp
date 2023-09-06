@@ -246,20 +246,20 @@ void ArmavatorManualBehaviour::OnTick(units::second_t dt) {
 
             //bool above_height = true;
             //sets hard limits in place, necessary to make the system not break itself (you will burn the neos out if they try to go past what they can)
-            if (_manualSetpoint.height >= _max_height) {
-                _manualSetpoint.height = _max_height;
+            if (_manualSetpoint.height > _max_height) {
+                _manualSetpoint.height = _max_height - 0.05_m;
             } else if (_manualSetpoint.height < _min_height) {
                 _manualSetpoint.height = _min_height;
             } else {
-                if (_manualSetpoint.height >= _max_height) {
-                    if (_codriver.GetRightY() < -0.2) {
-                        _manualSetpoint.height -= (wom::deadzone(_codriver.GetRightY(), 0.2) * 1_m *
-                                                   0.1); //slows the system down, otherwise it's wayyy too fast
-                    }
-                } else {
-                    _manualSetpoint.height -= (wom::deadzone(_codriver.GetRightY(), 0.2) * 1_m *
+//                if (_manualSetpoint.height >= _max_height) {
+//                    if (_codriver.GetRightY() < -0.2) {
+//                        _manualSetpoint.height -= (wom::deadzone(_codriver.GetRightY(), 0.2) * 1_m *
+//                                                   0.1); //slows the system down, otherwise it's wayyy too fast
+//                    }
+//               } else {
+                   _manualSetpoint.height -= (wom::deadzone(_codriver.GetRightY(), 0.2) * 1_m *
                                                0.1); //slows the system down, otherwise it's wayyy too fast
-                }
+  //              }
             }
 
             if (_manualSetpoint.angle > _max_angle) {
